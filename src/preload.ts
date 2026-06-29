@@ -10,6 +10,7 @@ import { contextBridge, ipcRenderer } from "electron";
 interface PrintOptions {
   silent?: boolean;
   deviceName?: string;
+  usePreferred?: boolean;
 }
 
 interface NotifyPayload {
@@ -479,6 +480,9 @@ const api = {
 
   /** Imprime el documento actualmente cargado en la ventana. */
   print: (options?: PrintOptions) => ipcRenderer.invoke("print:current", options ?? {}),
+
+  /** Imprime directo a la impresora favorita (como F9). */
+  printDirect: () => ipcRenderer.invoke("print:current", { usePreferred: true }),
 
   /** Lista de impresoras del sistema. */
   listPrinters: () => ipcRenderer.invoke("print:list"),

@@ -190,12 +190,15 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("print:current", async (event, opts: unknown) => {
     const window = BrowserWindow.fromWebContents(event.sender) ?? deps.getMainWindow();
     if (!window) return { ok: false, error: "No hay ventana activa." };
-    const options = (opts ?? {}) as { silent?: boolean; deviceName?: string };
+    const options = (opts ?? {}) as { silent?: boolean; deviceName?: string; usePreferred?: boolean };
+    const prefs = getPrintPreferences();
+    const useSilent = options.silent ?? (options.usePreferred && prefs.silentPrint && !!prefs.preferredPrinter);
+    const deviceName = options.deviceName ?? (options.usePreferred && prefs.preferredPrinter ? prefs.preferredPrinter : undefined);
     return new Promise((resolve) => {
       window.webContents.print(
         {
-          silent: Boolean(options.silent),
-          deviceName: options.deviceName,
+          silent: Boolean(useSilent),
+          deviceName,
           printBackground: true,
         },
         (success, failureReason) => {

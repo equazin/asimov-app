@@ -12,11 +12,14 @@ import {
   clearServerUrl,
   getBookmarks,
   getLaunchAtStartup,
+  getPrintPreferences,
   getServerHistory,
   getServerLabel,
   removeBookmark,
+  setPreferredPrinter,
   setServerUrl,
   setShellBackground,
+  setSilentPrint,
   type BookmarkEntry,
   type ShellBackground,
 } from "./config";
@@ -205,6 +208,65 @@ async function chooseBackgroundImage(): Promise<void> {
   setBackground({ type: "image", value: `data:${mime};base64,${data}` });
 }
 
+async function showPrinterSetup(): Promise<void> {
+  const focused = focusedWindow();
+  if (!focused) return;
+
+  let printers: Electron.PrinterInfo[] = [];
+  try {
+    printers = await focused.webContents.getPrintersAsync();
+  } catch {
+    return;
+  }
+
+  if (printers.length === 0) {
+    void dialog.showMessageBox(focused, {
+      type: "info",
+      title: "Impresoras",
+      message: "No se encontraron impresoras instaladas.",
+    });
+    return;
+  }
+
+  const prefs = getPrintPreferences();
+  const currentPrinter = prefs.preferredPrinter;
+
+  const printerNames = printers.map((p) => p.displayName || p.name);
+  const defaultIdx = printerNames.indexOf(currentPrinter);
+
+  const buttons = [
+    ...printerNames.map((name) => (name === currentPrinter ? `${name} [actual]` : name)),
+    "Ninguna (usar diálogo del sistema)",
+    "Cancelar",
+  ];
+
+  const result = await dialog.showMessageBox(focused, {
+    type: "question",
+    title: "Configurar impresora favorita",
+    message: "Elegí la impresora predeterminada para impresión directa (F9):",
+    detail: currentPrinter
+      ? `Impresora actual: ${currentPrinter}\nImpresión silenciosa: ${prefs.silentPrint ? "Sí" : "No"}`
+      : "No hay impresora favorita configurada.",
+    buttons,
+    defaultId: defaultIdx >= 0 ? defaultIdx : buttons.length - 1,
+    cancelId: buttons.length - 1,
+  });
+
+  const idx = result.response;
+  if (idx === buttons.length - 1) return;
+
+  if (idx === buttons.length - 2) {
+    setPreferredPrinter("");
+    setSilentPrint(false);
+  } else {
+    const selected = printerNames[idx];
+    if (selected) {
+      setPreferredPrinter(selected);
+      setSilentPrint(true);
+    }
+  }
+}
+
 export function buildAppMenu(deps: MenuDeps): void {
   const recentServers = getServerHistory();
   const bookmarks = getBookmarks();
@@ -226,6 +288,24 @@ export function buildAppMenu(deps: MenuDeps): void {
           label: "Imprimir...",
           accelerator: "CmdOrCtrl+P",
           click: () => focusedContents()?.print({ printBackground: true }),
+        },
+        {
+          label: "Imprimir directo",
+          accelerator: "F9",
+          enabled: !!getPrintPreferences().preferredPrinter,
+          click: () => {
+            const prefs = getPrintPreferences();
+            if (prefs.preferredPrinter) {
+              focusedContents()?.print(
+                { silent: true, deviceName: prefs.preferredPrinter, printBackground: true },
+                () => {},
+              );
+            }
+          },
+        },
+        {
+          label: "Configurar impresora...",
+          click: () => void showPrinterSetup(),
         },
         { type: "separator" },
         {

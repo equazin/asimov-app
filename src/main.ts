@@ -15,6 +15,7 @@ import {
   getServerLabel,
   getWindowBounds,
   setWindowBounds,
+  getPrintPreferences,
   type WindowBounds,
 } from "./config";
 import { buildAppMenu } from "./menu";
@@ -388,6 +389,7 @@ function registerGlobalShortcuts(): void {
     F3: "search",
     F5: "refresh",
     F8: "save",
+    F9: "print",
   };
 
   for (const [key, action] of Object.entries(shortcuts)) {
@@ -396,6 +398,18 @@ function registerGlobalShortcuts(): void {
       if (!focused) return;
       if (action === "refresh") {
         focused.webContents.reload();
+        return;
+      }
+      if (action === "print") {
+        const prefs = getPrintPreferences();
+        focused.webContents.print(
+          {
+            silent: prefs.silentPrint && !!prefs.preferredPrinter,
+            deviceName: prefs.preferredPrinter || undefined,
+            printBackground: true,
+          },
+          () => {},
+        );
         return;
       }
       focused.webContents.send("shortcut:triggered", action);
