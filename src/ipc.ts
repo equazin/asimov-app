@@ -26,6 +26,9 @@ import {
   getBookmarks,
   addBookmark,
   removeBookmark,
+  getPrintPreferences,
+  setPreferredPrinter,
+  setSilentPrint,
   type ShellBackground,
 } from "./config";
 import { setLaunchAtStartupEnabled } from "./tray";
@@ -210,6 +213,53 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     } catch {
       return [];
     }
+  });
+
+  ipcMain.handle("print:preferred:get", () => getPrintPreferences());
+
+  ipcMain.handle("print:preferred:set", (_event, deviceName: unknown) => {
+    return setPreferredPrinter(String(deviceName ?? ""));
+  });
+
+  ipcMain.handle("print:silent:set", (_event, silent: unknown) => {
+    return setSilentPrint(Boolean(silent));
+  });
+
+  // --- API proxy (pickers fetch real data through main process) ---------------
+  ipcMain.handle("api:fetch", async (_event, endpoint: unknown) => {
+    const serverUrl = getServerUrl();
+    if (!serverUrl) return { ok: false, error: "Sin servidor configurado.", data: [] };
+    const path = String(endpoint ?? "");
+    if (!path.startsWith("/api/")) return { ok: false, error: "Endpoint inválido.", data: [] };
+    const url = `${serverUrl}${path}`;
+    return new Promise((resolve) => {
+      const request = net.request({ method: "GET", url, partition: "persist:bartez" });
+      const timeout = setTimeout(() => {
+        request.abort();
+        resolve({ ok: false, error: "Timeout.", data: [] });
+      }, 10000);
+      let body = "";
+      request.on("response", (response) => {
+        clearTimeout(timeout);
+        response.on("data", (chunk) => { body += chunk.toString(); });
+        response.on("end", () => {
+          if (response.statusCode >= 200 && response.statusCode < 300) {
+            try {
+              resolve({ ok: true, data: JSON.parse(body) });
+            } catch {
+              resolve({ ok: false, error: "Respuesta no es JSON.", data: [] });
+            }
+          } else {
+            resolve({ ok: false, error: `HTTP ${response.statusCode}`, data: [] });
+          }
+        });
+      });
+      request.on("error", () => {
+        clearTimeout(timeout);
+        resolve({ ok: false, error: "Error de conexión.", data: [] });
+      });
+      request.end();
+    });
   });
 
   // --- Notificaciones del SO -----------------------------------------------

@@ -387,6 +387,13 @@
           filterAndRender();
         }
       });
+
+      window.asimovProductSelection.onProductsLoaded((loaded) => {
+        if (loaded && loaded.length > 0) {
+          products = loaded;
+          filterAndRender();
+        }
+      });
     }
 
     function renderTable() {

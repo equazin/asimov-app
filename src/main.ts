@@ -31,6 +31,7 @@ const SHELL_FILE = path.join(__dirname, "shell.html");
 const APP_ICON_FILE = path.join(__dirname, "icon.png");
 const PRODUCT_SELECTION_FILE = path.join(__dirname, "product-selection.html");
 const NEW_ARTICLE_FILE = path.join(__dirname, "new-article.html");
+const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
 
 let mainWindow: BrowserWindow | null = null;
 let pickerWindow: BrowserWindow | null = null;
@@ -558,6 +559,33 @@ if (!gotLock) {
       }
     });
 
+    ipcMain.on("shell:open-client-selection", (event, data: { contextId: string }) => {
+      const senderWindow = BrowserWindow.fromWebContents(event.sender);
+      if (senderWindow) {
+        createClientSelectionWindow(senderWindow, data.contextId || "");
+      }
+    });
+
+    ipcMain.on("shell:client-selected-forward", (_event, data: { client: any; contextId: string }) => {
+      if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
+        const parent = clientSelectionWindow.getParentWindow();
+        if (parent && !parent.isDestroyed()) {
+          parent.webContents.send("shell:client-selected", data);
+        }
+        clientSelectionWindow.close();
+      }
+    });
+
+    ipcMain.on("shell:open-new-client", () => {
+      if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
+        const parent = clientSelectionWindow.getParentWindow();
+        if (parent && !parent.isDestroyed()) {
+          parent.webContents.send("shell:open-module", "/admin/accounts/new");
+        }
+        clientSelectionWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -571,6 +599,7 @@ if (!gotLock) {
 
 let productSelectionWindow: BrowserWindow | null = null;
 let newArticleWindow: BrowserWindow | null = null;
+let clientSelectionWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -599,6 +628,7 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
   productSelectionWindow.once("ready-to-show", () => {
     productSelectionWindow?.show();
     productSelectionWindow?.webContents.send("set-row-id", rowId);
+    loadProductsForPicker();
   });
 
   productSelectionWindow.on("closed", () => {
@@ -607,6 +637,128 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
 
   productSelectionWindow.setMenu(null);
   void productSelectionWindow.loadFile(PRODUCT_SELECTION_FILE);
+}
+
+async function loadProductsForPicker(): Promise<void> {
+  if (!productSelectionWindow || productSelectionWindow.isDestroyed()) return;
+  const serverUrl = getServerUrl();
+  if (!serverUrl) return;
+
+  try {
+    const { net } = require("electron");
+    const url = `${serverUrl}/api/products?limit=500`;
+    const request = net.request({ method: "GET", url, partition: SESSION_PARTITION });
+    let body = "";
+    request.on("response", (response: any) => {
+      response.on("data", (chunk: Buffer) => { body += chunk.toString(); });
+      response.on("end", () => {
+        if (!productSelectionWindow || productSelectionWindow.isDestroyed()) return;
+        try {
+          const parsed = JSON.parse(body);
+          const items = parsed.data || parsed.products || parsed || [];
+          const mapped = Array.isArray(items) ? items.map((p: any) => ({
+            codigo: p.code || p.sku || p.id || "",
+            descripcion: p.name || p.description || "",
+            importe: String(p.price ?? p.salePrice ?? "0.00"),
+            iva: String(p.taxRate ?? "21.00"),
+            st: String(p.stock ?? p.quantity ?? "0"),
+            compro: "0",
+            entr: "0",
+            linea: p.brand || p.line || "",
+            categoria: p.category || "",
+          })) : [];
+          if (mapped.length > 0) {
+            productSelectionWindow.webContents.send("product-selection:loaded", mapped);
+          }
+        } catch {}
+      });
+    });
+    request.on("error", () => {});
+    request.end();
+  } catch {}
+}
+
+function createClientSelectionWindow(parentWindow: BrowserWindow, contextId: string) {
+  if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
+    clientSelectionWindow.focus();
+    return;
+  }
+
+  clientSelectionWindow = new BrowserWindow({
+    width: 860,
+    height: 540,
+    resizable: true,
+    parent: parentWindow,
+    modal: true,
+    show: false,
+    backgroundColor: "#ffffff",
+    title: "Selección de Clientes",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "client-selection-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  clientSelectionWindow.once("ready-to-show", () => {
+    clientSelectionWindow?.show();
+    clientSelectionWindow?.webContents.send("client-selection:init", { contextId });
+    loadClientsForPicker();
+  });
+
+  clientSelectionWindow.on("closed", () => {
+    clientSelectionWindow = null;
+  });
+
+  clientSelectionWindow.setMenu(null);
+  void clientSelectionWindow.loadFile(CLIENT_SELECTION_FILE);
+}
+
+async function loadClientsForPicker(): Promise<void> {
+  if (!clientSelectionWindow || clientSelectionWindow.isDestroyed()) return;
+  const serverUrl = getServerUrl();
+  if (!serverUrl) {
+    clientSelectionWindow.webContents.send("client-selection:loaded", []);
+    return;
+  }
+
+  try {
+    const { net } = require("electron");
+    const url = `${serverUrl}/api/accounts?limit=500&type=customer`;
+    const request = net.request({ method: "GET", url, partition: SESSION_PARTITION });
+    let body = "";
+    request.on("response", (response: any) => {
+      response.on("data", (chunk: Buffer) => { body += chunk.toString(); });
+      response.on("end", () => {
+        if (!clientSelectionWindow || clientSelectionWindow.isDestroyed()) return;
+        try {
+          const parsed = JSON.parse(body);
+          const accounts = parsed.data || parsed.accounts || parsed || [];
+          const mapped = Array.isArray(accounts) ? accounts.map((a: any) => ({
+            id: a.id,
+            codigo: a.code || a.id,
+            razonSocial: a.name || a.razonSocial || "",
+            domicilio: a.address || a.domicilio || "",
+            telefono: a.phone || a.telefono || "",
+            cuit: a.taxId || a.cuit || "",
+          })) : [];
+          clientSelectionWindow.webContents.send("client-selection:loaded", mapped);
+        } catch {
+          clientSelectionWindow.webContents.send("client-selection:loaded", []);
+        }
+      });
+    });
+    request.on("error", () => {
+      if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
+        clientSelectionWindow.webContents.send("client-selection:loaded", []);
+      }
+    });
+    request.end();
+  } catch {
+    clientSelectionWindow.webContents.send("client-selection:loaded", []);
+  }
 }
 
 function createNewArticleWindow(parentWindow: BrowserWindow) {

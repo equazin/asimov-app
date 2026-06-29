@@ -12,7 +12,10 @@ const api = {
   },
   onNewArticleAdded: (callback: (article: any) => void) => {
     ipcRenderer.on("shell:new-article-added", (_event, article: any) => callback(article));
-  }
+  },
+  onProductsLoaded: (callback: (products: any[]) => void) => {
+    ipcRenderer.on("product-selection:loaded", (_event, products: any[]) => callback(products));
+  },
 };
 
 contextBridge.exposeInMainWorld("asimovProductSelection", api);

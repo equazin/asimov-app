@@ -499,6 +499,20 @@ const api = {
   /** Abre un módulo del ERP en una ventana nueva desde el shell. */
   openModule: (path: string) => ipcRenderer.send("shell:open-module", path),
 
+  /** Abre el picker de clientes estilo GESES. */
+  openClientSelection: (contextId?: string) =>
+    ipcRenderer.send("shell:open-client-selection", { contextId: contextId || "" }),
+
+  /** Preferencias de impresión. */
+  printPreferences: {
+    get: () => ipcRenderer.invoke("print:preferred:get"),
+    setPreferredPrinter: (name: string) => ipcRenderer.invoke("print:preferred:set", name),
+    setSilentPrint: (silent: boolean) => ipcRenderer.invoke("print:silent:set", silent),
+  },
+
+  /** Proxy para llamadas API al servidor ERP. */
+  apiFetch: (endpoint: string) => ipcRenderer.invoke("api:fetch", endpoint),
+
   /** Shell de operador GESES: preferencias locales y favoritos. */
   shell: {
     getPreferences: () => ipcRenderer.invoke("shell:prefs:get"),
@@ -654,6 +668,12 @@ ipcRenderer.on("shell:product-selected", (_event, data: { product: any; rowId: s
   }
 
   row.removeAttribute("data-asimov-row-id");
+});
+
+ipcRenderer.on("shell:client-selected", (_event, data: { client: any; contextId: string }) => {
+  if (isAdminModule()) {
+    window.dispatchEvent(new CustomEvent("asimov:client-selected", { detail: data }));
+  }
 });
 
 window.addEventListener("DOMContentLoaded", () => {

@@ -38,12 +38,18 @@ export interface ShellPreferences {
   bookmarks: BookmarkEntry[];
 }
 
+export interface PrintPreferences {
+  preferredPrinter: string;
+  silentPrint: boolean;
+}
+
 export interface DesktopConfig {
   serverUrl: string;
   windowBounds: WindowBounds;
   launchAtStartup: boolean;
   serverHistory: ServerEntry[];
   shell: ShellPreferences;
+  print: PrintPreferences;
 }
 
 const DEFAULTS: DesktopConfig = {
@@ -54,6 +60,10 @@ const DEFAULTS: DesktopConfig = {
   shell: {
     background: { type: "default", value: "" },
     bookmarks: [],
+  },
+  print: {
+    preferredPrinter: "",
+    silentPrint: false,
   },
 };
 
@@ -200,6 +210,26 @@ export function removeBookmark(id: string): BookmarkEntry[] {
   const bookmarks = getBookmarks().filter((entry) => entry.id !== id);
   store.set("shell", { ...getShell(), bookmarks });
   return bookmarks;
+}
+
+// --- Print preferences ----------------------------------------------------
+
+export function getPrintPreferences(): PrintPreferences {
+  return store.get("print", DEFAULTS.print);
+}
+
+export function setPreferredPrinter(deviceName: string): PrintPreferences {
+  const current = getPrintPreferences();
+  const next: PrintPreferences = { ...current, preferredPrinter: deviceName.trim() };
+  store.set("print", next);
+  return next;
+}
+
+export function setSilentPrint(silent: boolean): PrintPreferences {
+  const current = getPrintPreferences();
+  const next: PrintPreferences = { ...current, silentPrint: silent };
+  store.set("print", next);
+  return next;
 }
 
 /**
