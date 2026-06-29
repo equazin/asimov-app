@@ -8,7 +8,7 @@
  *  - Sin servidor configurado -> ventana "picker" para elegir servidor.
  *  - Con servidor -> splash screen -> carga web -> ventana principal o pantalla offline.
  */
-import { app, BrowserWindow, session, shell } from "electron";
+import { app, BrowserWindow, session, shell, ipcMain } from "electron";
 import * as path from "node:path";
 import {
   getServerUrl,
@@ -29,6 +29,8 @@ const SPLASH_FILE = path.join(__dirname, "splash.html");
 const OFFLINE_FILE = path.join(__dirname, "offline.html");
 const SHELL_FILE = path.join(__dirname, "shell.html");
 const APP_ICON_FILE = path.join(__dirname, "icon.png");
+const PRODUCT_SELECTION_FILE = path.join(__dirname, "product-selection.html");
+const NEW_ARTICLE_FILE = path.join(__dirname, "new-article.html");
 
 let mainWindow: BrowserWindow | null = null;
 let pickerWindow: BrowserWindow | null = null;
@@ -490,6 +492,38 @@ if (!gotLock) {
 
     if (!isDev()) initAutoUpdater();
 
+    ipcMain.on("shell:open-product-selection", (event, data: { rowId: string }) => {
+      const senderWindow = BrowserWindow.fromWebContents(event.sender);
+      if (senderWindow) {
+        createProductSelectionWindow(senderWindow, data.rowId);
+      }
+    });
+
+    ipcMain.on("shell:product-selected-forward", (_event, data: { product: any; rowId: string }) => {
+      if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
+        const parent = productSelectionWindow.getParentWindow();
+        if (parent && !parent.isDestroyed()) {
+          parent.webContents.send("shell:product-selected", data);
+        }
+        productSelectionWindow.close();
+      }
+    });
+
+    ipcMain.on("shell:open-new-article", () => {
+      if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
+        createNewArticleWindow(productSelectionWindow);
+      }
+    });
+
+    ipcMain.on("shell:article-created", (_event, data: { article: any }) => {
+      if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
+        productSelectionWindow.webContents.send("shell:new-article-added", data.article);
+      }
+      if (newArticleWindow && !newArticleWindow.isDestroyed()) {
+        newArticleWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -500,3 +534,78 @@ if (!gotLock) {
   });
 }
 
+let productSelectionWindow: BrowserWindow | null = null;
+let newArticleWindow: BrowserWindow | null = null;
+
+function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
+  if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
+    productSelectionWindow.focus();
+    return;
+  }
+
+  productSelectionWindow = new BrowserWindow({
+    width: 820,
+    height: 520,
+    resizable: true,
+    parent: parentWindow,
+    modal: true,
+    show: false,
+    backgroundColor: "#ffffff",
+    title: "Selección de Artículos de Compra-Venta",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "product-selection-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  productSelectionWindow.once("ready-to-show", () => {
+    productSelectionWindow?.show();
+    productSelectionWindow?.webContents.send("set-row-id", rowId);
+  });
+
+  productSelectionWindow.on("closed", () => {
+    productSelectionWindow = null;
+  });
+
+  productSelectionWindow.setMenu(null);
+  void productSelectionWindow.loadFile(PRODUCT_SELECTION_FILE);
+}
+
+function createNewArticleWindow(parentWindow: BrowserWindow) {
+  if (newArticleWindow && !newArticleWindow.isDestroyed()) {
+    newArticleWindow.focus();
+    return;
+  }
+
+  newArticleWindow = new BrowserWindow({
+    width: 900,
+    height: 600,
+    resizable: true,
+    parent: parentWindow,
+    modal: true,
+    show: false,
+    backgroundColor: "#f0f0f0",
+    title: "Artículos de Compra-Venta. Artículo: NUEVO",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "new-article-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newArticleWindow.once("ready-to-show", () => {
+    newArticleWindow?.show();
+  });
+
+  newArticleWindow.on("closed", () => {
+    newArticleWindow = null;
+  });
+
+  newArticleWindow.setMenu(null);
+  void newArticleWindow.loadFile(NEW_ARTICLE_FILE);
+}

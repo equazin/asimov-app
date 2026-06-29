@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Artículo: NUEVO</title>
+  <style>
+    :root {
+      --win-bg: #ece9d8;
+      --win-btn-bg: #f0f0f0;
+      --win-border-light: #ffffff;
+      --win-border-dark: #808080;
+      --purple-title: #7a157a;
+      --teal-header: #008080;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--win-bg);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 11px;
+      color: #000000;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border: 3px solid var(--win-bg);
+    }
+
+    /* Windows 98 Bevel borders */
+    .window-inset {
+      border: 2px solid;
+      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+      background-color: #ffffff;
+    }
+
+    .window-outset {
+      border: 2px solid;
+      border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+    }
+
+    /* Bevel buttons */
+    .classic-btn {
+      background-color: var(--win-btn-bg);
+      border: 2px solid;
+      border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+      padding: 2px 14px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000000;
+      cursor: pointer;
+      outline: none;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .classic-btn:active {
+      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+      padding: 3px 13px 1px 15px;
+    }
+
+    /* Title bar */
+    .title-bar {
+      height: 26px;
+      background: linear-gradient(90deg, var(--purple-title), #b85bb8);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      font-weight: bold;
+      font-size: 12px;
+      border-bottom: 1px solid var(--win-border-dark);
+    }
+
+    .title-bar-close {
+      width: 16px;
+      height: 14px;
+      background-color: var(--win-bg);
+      border: 1px solid;
+      border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
+      color: #000;
+      font-weight: bold;
+      font-size: 9px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .title-bar-close:active {
+      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+    }
+
+    /* Tabs */
+    .tabs-header {
+      display: flex;
+      padding: 6px 10px 0 10px;
+      background-color: var(--win-bg);
+      gap: 2px;
+      border-bottom: 1px solid var(--win-border-dark);
+    }
+
+    .tab-item {
+      background-color: var(--win-bg);
+      border: 1px solid var(--win-border-dark);
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #555555;
+    }
+
+    .tab-item.active {
+      background-color: var(--win-bg);
+      color: #000000;
+      padding-top: 5px;
+      margin-bottom: -1px;
+      border-bottom: 1px solid var(--win-bg);
+      z-index: 2;
+    }
+
+    /* Form Container */
+    .form-body {
+      flex: 1;
+      padding: 10px;
+      background-color: var(--win-bg);
+      display: flex;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .form-fields {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      align-content: start;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .field-group.span-2 { grid-column: span 2; }
+    .field-group.span-3 { grid-column: span 3; }
+    .field-group.span-4 { grid-column: span 4; }
+
+    .field-label {
+      font-weight: bold;
+      color: #2b2b2b;
+    }
+
+    .field-input {
+      height: 22px;
+      border: 2px solid;
+      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+      background-color: #ffffff;
+      padding: 0 4px;
+      font-family: inherit;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .field-input:focus {
+      border-color: #000000;
+    }
+
+    .field-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 22px;
+      font-weight: bold;
+    }
+
+    /* Image side panel */
+    .image-panel {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .image-box-container {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #808080;
+    }
+
+    .image-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .image-actions button {
+      flex: 1;
+    }
+
+    /* Footer actions */
+    .footer-panel {
+      padding: 10px;
+      background-color: var(--win-bg);
+      border-top: 1px solid var(--win-border-dark);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Title bar -->
+  <div class="title-bar">
+    <div>
+      <span>Artículos de Compra-Venta. Artículo: NUEVO</span>
+    </div>
+    <div class="title-bar-close" id="btnCloseWindow">×</div>
+  </div>
+
+  <!-- Tabs Header -->
+  <div class="tabs-header">
+    <div class="tab-item active" data-tab="general">General</div>
+    <div class="tab-item" data-tab="venta">Venta</div>
+    <div class="tab-item" data-tab="categorias">Categorías</div>
+    <div class="tab-item" data-tab="esquema">Esquema</div>
+    <div class="tab-item" data-tab="contabilidad">Contabilidad</div>
+    <div class="tab-item" data-tab="varios">Varios</div>
+    <div class="tab-item" data-tab="atributos">Atributos</div>
+    <div class="tab-item" data-tab="formulas">Fórmulas</div>
+  </div>
+
+  <!-- Form Body -->
+  <div class="form-body">
+    <!-- General Tab Content -->
+    <div class="form-fields" id="tabContent">
+      <div class="field-group">
+        <span class="field-label">Código</span>
+        <input type="text" class="field-input" id="txtCodigo" placeholder="Escriba código..." required />
+      </div>
+      <div class="field-group span-3">
+        <span class="field-label">Descripción</span>
+        <input type="text" class="field-input" id="txtDescripcion" placeholder="Escriba descripción..." required />
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">Línea</span>
+        <input type="text" class="field-input" id="txtLinea" placeholder="Ej: GENERICO" />
+      </div>
+      <div class="field-group">
+        <span class="field-label">Orden en Lista</span>
+        <input type="text" class="field-input" value="0" />
+      </div>
+      <div class="field-group">
+        <span class="field-label">Unidad</span>
+        <input type="text" class="field-input" value="U" />
+      </div>
+      <div class="field-group">
+        <span class="field-label">Despacho</span>
+        <input type="text" class="field-input" />
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">% IVA</span>
+        <select class="field-input" id="selIva">
+          <option value="21.00">21.00%</option>
+          <option value="10.50">10.50%</option>
+          <option value="0.00">0.00%</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-checkbox">
+          <input type="checkbox" id="chkGravado" checked />
+          <label for="chkGravado">Gravado</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field-checkbox">
+          <input type="checkbox" id="chkIva100" />
+          <label for="chkIva100">100% I.V.A.</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <span class="field-label">Facturable</span>
+        <select class="field-input"><option>S</option><option>N</option></select>
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">$ Imp. Inter.</span>
+        <input type="text" class="field-input" value="0.00" />
+      </div>
+      <div class="field-group">
+        <span class="field-label">% Comisión</span>
+        <input type="text" class="field-input" value="0.00" />
+      </div>
+      <div class="field-group span-2">
+        <div class="field-checkbox">
+          <input type="checkbox" id="chkIncluirLista" checked />
+          <label for="chkIncluirLista">Incluir en Lista</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">Ing. Bruto</span>
+        <input type="text" class="field-input" />
+      </div>
+      <div class="field-group span-2">
+        <span class="field-label">Part Number</span>
+        <input type="text" class="field-input" />
+      </div>
+      <div class="field-group">
+        <div class="field-checkbox">
+          <input type="checkbox" id="chkMostrarWeb" />
+          <label for="chkMostrarWeb">Mostrar Web</label>
+        </div>
+      </div>
+
+      <div class="field-group span-2">
+        <span class="field-label">C. de Costo</span>
+        <input type="text" class="field-input" />
+      </div>
+      <div class="field-group">
+        <span class="field-label">Id Web</span>
+        <input type="text" class="field-input" value="0" />
+      </div>
+      <div class="field-group">
+        <span class="field-label">Categoría</span>
+        <input type="text" class="field-input" id="txtCategoria" value="ACCESORIOS PC" />
+      </div>
+
+      <div class="field-group span-4">
+        <span class="field-label">Observaciones</span>
+        <input type="text" class="field-input" style="height: 34px;" />
+      </div>
+    </div>
+
+    <!-- Image panel -->
+    <div class="image-panel">
+      <span class="field-label">Imagen</span>
+      <div class="image-box-container window-inset">
+        <span>Sin Imagen</span>
+      </div>
+      <div class="image-actions">
+        <button class="classic-btn" type="button">WWW...</button>
+        <button class="classic-btn" type="button">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="footer-panel">
+    <button class="classic-btn" id="btnNew">Nuevo</button>
+    <button class="classic-btn" id="btnSave">Guardar</button>
+    <button class="classic-btn" id="btnSaveAs" disabled>Guardar Como...</button>
+    <button class="classic-btn" id="btnDelete" disabled>Eliminar</button>
+    <button class="classic-btn" id="btnExit">Salir</button>
+  </div>
+
+  <script>
+    const btnNew = document.getElementById("btnNew");
+    const btnSave = document.getElementById("btnSave");
+    const btnExit = document.getElementById("btnExit");
+    const btnCloseWindow = document.getElementById("btnCloseWindow");
+
+    const txtCodigo = document.getElementById("txtCodigo");
+    const txtDescripcion = document.getElementById("txtDescripcion");
+    const txtLinea = document.getElementById("txtLinea");
+    const txtCategoria = document.getElementById("txtCategoria");
+    const selIva = document.getElementById("selIva");
+
+    // Generate random code for convenience
+    txtCodigo.value = Math.floor(100000 + Math.random() * 900000);
+
+    btnNew.addEventListener("click", () => {
+      txtCodigo.value = Math.floor(100000 + Math.random() * 900000);
+      txtDescripcion.value = "";
+      txtLinea.value = "";
+      txtCategoria.value = "ACCESORIOS PC";
+      selIva.selectedIndex = 0;
+      txtDescripcion.focus();
+    });
+
+    btnSave.addEventListener("click", () => {
+      if (!txtCodigo.value || !txtDescripcion.value) {
+        alert("Por favor complete Código y Descripción.");
+        return;
+      }
+
+      const article = {
+        codigo: txtCodigo.value.trim(),
+        descripcion: txtDescripcion.value.trim().toUpperCase(),
+        importe: (10 + Math.random() * 100).toFixed(2), // Random price
+        iva: selIva.value,
+        st: "0",
+        compro: "0",
+        entr: "0",
+        linea: (txtLinea.value.trim() || "GENERICO").toUpperCase(),
+        categoria: (txtCategoria.value.trim() || "VARIOS").toUpperCase()
+      };
+
+      if (window.asimovNewArticle) {
+        window.asimovNewArticle.createArticle(article);
+      }
+    });
+
+    const closeHandler = () => {
+      if (window.asimovNewArticle) {
+        window.asimovNewArticle.cancel();
+      }
+    };
+    btnExit.addEventListener("click", closeHandler);
+    btnCloseWindow.addEventListener("click", closeHandler);
+
+    // Simple tab switching visual
+    document.querySelectorAll(".tab-item").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab-item").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>

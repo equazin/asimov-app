@@ -254,6 +254,111 @@ function ensureModuleStyles(): void {
     html.asimov-desktop-module [class*="shadow-2xl"] {
       box-shadow: 0 16px 42px rgba(6,43,25,0.12) !important;
     }
+
+    /* Estilos ultra compactos de alta densidad para formularios y grillas */
+    html.asimov-desktop-module.asimov-compact-form main > div,
+    html.asimov-desktop-module.asimov-compact-form .container,
+    html.asimov-desktop-module.asimov-compact-form [class*="max-w-"] {
+      max-width: none !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form .grid,
+    html.asimov-desktop-module.asimov-compact-form [class*="grid-cols-"] {
+      gap: 6px !important;
+      row-gap: 6px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form .space-y-6 > * + *,
+    html.asimov-desktop-module.asimov-compact-form .space-y-4 > * + * {
+      margin-top: 6px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form input,
+    html.asimov-desktop-module.asimov-compact-form select,
+    html.asimov-desktop-module.asimov-compact-form textarea {
+      height: 28px !important;
+      min-height: 28px !important;
+      padding-top: 1px !important;
+      padding-bottom: 1px !important;
+      padding-left: 6px !important;
+      padding-right: 6px !important;
+      font-size: 12px !important;
+      border-radius: 4px !important;
+      border: 1px solid #c9c6b8 !important;
+      background-color: #ffffff !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form textarea {
+      height: 52px !important;
+      min-height: 52px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form label,
+    html.asimov-desktop-module.asimov-compact-form [class*="text-sm"] {
+      font-size: 11px !important;
+      margin-bottom: 1px !important;
+      font-weight: 700 !important;
+      color: #2f312e !important;
+      text-transform: none !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form button,
+    html.asimov-desktop-module.asimov-compact-form .btn,
+    html.asimov-desktop-module.asimov-compact-form [class*="btn-"] {
+      height: 28px !important;
+      min-height: 28px !important;
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+      font-size: 12px !important;
+      border-radius: 4px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form h1,
+    html.asimov-desktop-module.asimov-compact-form h2 {
+      font-size: 18px !important;
+      margin-top: 2px !important;
+      margin-bottom: 2px !important;
+      font-weight: 800 !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form header,
+    html.asimov-desktop-module.asimov-compact-form .flex.justify-between.items-center {
+      padding-top: 2px !important;
+      padding-bottom: 2px !important;
+      margin-bottom: 6px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form table th {
+      height: 26px !important;
+      padding: 1px 4px !important;
+      font-size: 11px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form table td {
+      height: 28px !important;
+      padding: 1px 4px !important;
+      font-size: 12px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form table input,
+    html.asimov-desktop-module.asimov-compact-form table select {
+      height: 24px !important;
+      min-height: 24px !important;
+      font-size: 11px !important;
+      padding: 0px 4px !important;
+    }
+    
+    html.asimov-desktop-module.asimov-compact-form .summary,
+    html.asimov-desktop-module.asimov-compact-form [class*="bg-zinc-50"],
+    html.asimov-desktop-module.asimov-compact-form [class*="bg-slate-50"] {
+      padding: 6px !important;
+      margin-top: 6px !important;
+      border-radius: 6px !important;
+    }
   `;
   document.head.appendChild(style);
   document.documentElement.classList.add("asimov-desktop-module");
@@ -420,11 +525,137 @@ ipcRenderer.on("shell:background:changed", (_event, background: ShellBackground)
   applyBackground(background);
 });
 
+function isFormPage(): boolean {
+  const path = window.location.pathname.toLowerCase();
+  return (
+    path.includes("/new") ||
+    path.includes("/edit") ||
+    path.includes("/orders/new") ||
+    path.includes("/quotes/new") ||
+    path.includes("/purchase-orders/new") ||
+    path.includes("/invoices/new") ||
+    path.includes("/delivery-notes/new")
+  );
+}
+
+function setupFormKeyboardListeners(): void {
+  window.addEventListener("keydown", (event) => {
+    // Escucha la tecla '+' (numpad o estándar)
+    if (event.key === "+" || event.key === "NumpadAdd") {
+      const activeElement = document.activeElement;
+      if (!activeElement) return;
+
+      const isInput = activeElement.tagName === "INPUT" || activeElement.tagName === "SELECT" || activeElement.tagName === "TEXTAREA";
+      const row = activeElement.closest("tr");
+      
+      if (isInput && row) {
+        event.preventDefault();
+
+        // Asignamos ID temporal a la fila activa
+        const rowId = `row-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+        row.setAttribute("data-asimov-row-id", rowId);
+
+        // Envía el mensaje para abrir la ventana de selección
+        ipcRenderer.send("shell:open-product-selection", { rowId });
+      }
+    }
+  });
+}
+
+ipcRenderer.on("shell:product-selected", (_event, data: { product: any; rowId: string }) => {
+  const { product, rowId } = data;
+  const row = document.querySelector(`tr[data-asimov-row-id="${rowId}"]`);
+  if (!row) return;
+
+  const inputs = Array.from(row.querySelectorAll("input, select, textarea")) as (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[];
+  if (inputs.length === 0) return;
+
+  let productInput: any = null;
+  let descInput: any = null;
+  let cantInput: any = null;
+  let precioInput: any = null;
+  let descPercentInput: any = null;
+  let ivaSelect: any = null;
+
+  // Intentamos identificar los inputs por sus atributos
+  inputs.forEach((input) => {
+    const tagName = input.tagName.toLowerCase();
+    const type = input.getAttribute("type") || "";
+    const placeholder = (input.getAttribute("placeholder") || "").toLowerCase();
+    const name = (input.getAttribute("name") || "").toLowerCase();
+    const className = (input.className || "").toLowerCase();
+
+    if (type === "number" || name.includes("cant") || name.includes("quantity") || placeholder.includes("cant") || className.includes("cant")) {
+      cantInput = input;
+    } else if (name.includes("precio") || name.includes("price") || name.includes("importe") || placeholder.includes("precio") || className.includes("precio") || className.includes("price")) {
+      precioInput = input;
+    } else if (name.includes("desc") || name.includes("discount") || placeholder.includes("desc") || className.includes("desc")) {
+      descPercentInput = input;
+    } else if (tagName === "textarea" || name.includes("description") || name.includes("detalle") || placeholder.includes("desc") || placeholder.includes("detal")) {
+      descInput = input;
+    } else if (tagName === "select" && (name.includes("iva") || className.includes("iva"))) {
+      ivaSelect = input;
+    }
+  });
+
+  // Fallback por índice de columna: [Producto, Descripción, Cantidad, Precio, Desc %, IVA %]
+  if (inputs.length >= 1 && !productInput) productInput = inputs[0];
+  if (inputs.length >= 2 && !descInput) descInput = inputs[1];
+  if (inputs.length >= 3 && !cantInput) cantInput = inputs[2];
+  if (inputs.length >= 4 && !precioInput) precioInput = inputs[3];
+  if (inputs.length >= 5 && !descPercentInput) descPercentInput = inputs[4];
+  if (inputs.length >= 6 && !ivaSelect) ivaSelect = inputs[5];
+
+  const setVal = (el: HTMLElement | null, val: any) => {
+    if (!el) return;
+    const inputEl = el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+    
+    if (inputEl.tagName.toLowerCase() === "select") {
+      const selectEl = inputEl as HTMLSelectElement;
+      let hasOption = false;
+      for (let i = 0; i < selectEl.options.length; i++) {
+        if (selectEl.options[i].value === val || selectEl.options[i].text === val) {
+          selectEl.selectedIndex = i;
+          hasOption = true;
+          break;
+        }
+      }
+      if (!hasOption) {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.text = val;
+        selectEl.appendChild(opt);
+        selectEl.value = val;
+      }
+    } else {
+      inputEl.value = String(val);
+    }
+
+    inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+    inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    inputEl.dispatchEvent(new Event("blur", { bubbles: true }));
+  };
+
+  if (productInput) setVal(productInput, product.codigo);
+  if (descInput) setVal(descInput, product.descripcion);
+  if (precioInput) setVal(precioInput, product.importe);
+  if (ivaSelect) setVal(ivaSelect, product.iva);
+  if (cantInput && (!cantInput.value || cantInput.value === "0")) {
+    setVal(cantInput, 1);
+  }
+
+  row.removeAttribute("data-asimov-row-id");
+});
+
 window.addEventListener("DOMContentLoaded", () => {
   if (isShellDesktop()) {
     void initShellChrome();
   } else if (isAdminModule()) {
     ensureModuleStyles();
+    if (isFormPage()) {
+      document.documentElement.classList.add("asimov-compact-form");
+    }
+    setupFormKeyboardListeners();
   }
 });
 
