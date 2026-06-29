@@ -62,7 +62,7 @@ export function initTray(deps: TrayDeps): void {
   }
 
   tray = new Tray(createTrayIcon());
-  tray.setToolTip(`Bartez Hub - ${getServerLabel()}`);
+  tray.setToolTip(`Asimov - ${getServerLabel()}`);
   tray.on("click", () => showWindow(deps.getMainWindow()));
   rebuildTrayMenu();
 
@@ -73,10 +73,10 @@ export function initTray(deps: TrayDeps): void {
 
 export function rebuildTrayMenu(): void {
   if (!tray || !depsRef) return;
-  tray.setToolTip(`Bartez Hub - ${getServerLabel()}`);
+  tray.setToolTip(`Asimov - ${getServerLabel()}`);
   tray.setContextMenu(Menu.buildFromTemplate([
     {
-      label: "Abrir Bartez Hub",
+      label: "Abrir Asimov",
       click: () => {
         const window = depsRef?.getMainWindow() ?? null;
         if (window) showWindow(window);
@@ -131,10 +131,10 @@ export function rebuildTrayMenu(): void {
 export function notifyUpdateAvailable(version: string): void {
   updateAvailable = version;
   rebuildTrayMenu();
-  if (tray) tray.setToolTip(`Bartez Hub - Actualización ${version} lista`);
+  if (tray) tray.setToolTip(`Asimov - Actualización ${version} lista`);
   if (Notification.isSupported()) {
     const notification = new Notification({
-      title: "Bartez Hub",
+      title: "Asimov",
       body: `Versión ${version} lista para instalar. Reiniciá para actualizar.`,
     });
     notification.show();

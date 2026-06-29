@@ -1,5 +1,5 @@
 /**
- * Proceso principal de Bartez Hub Desktop.
+ * Proceso principal de Asimov Desktop.
  *
  * Estrategia: la app NO empaqueta el frontend. Carga la web remota del ERP
  * (`${serverUrl}/admin`) dentro de una ventana nativa con sesión persistente.
@@ -131,7 +131,7 @@ function createSplashWindow(): BrowserWindow {
     transparent: false,
     show: false,
     backgroundColor: "#070a16",
-    title: `Bartez Hub - ${getServerLabel()}`,
+    title: `Asimov - ${getServerLabel()}`,
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "splash-preload.js"),
@@ -186,7 +186,7 @@ function createMainWindow(): BrowserWindow {
     minHeight: 640,
     show: false,
     backgroundColor: "#070a16",
-    title: "Bartez Hub",
+    title: "Asimov",
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -241,7 +241,7 @@ async function loadWithSplash(): Promise<void> {
   sendSplashProgress(40, "Servidor encontrado");
 
   if (!mainWindow) mainWindow = createMainWindow();
-  mainWindow.setTitle(`Bartez Hub - ${getServerLabel(serverUrl)}`);
+  mainWindow.setTitle(`Asimov - ${getServerLabel(serverUrl)}`);
 
   if (probe.ok) {
     const targetUrl = adminUrl(consumePendingAdminPath()) ?? `${serverUrl}/admin`;
@@ -276,7 +276,7 @@ function showOffline(): void {
     resizable: false,
     show: false,
     backgroundColor: "#070a16",
-    title: "Bartez Hub — Sin conexión",
+    title: "Asimov — Sin conexión",
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: offlinePreload,
@@ -313,7 +313,7 @@ function createPickerWindow(): BrowserWindow {
     resizable: false,
     show: false,
     backgroundColor: "#070a16",
-    title: "Bartez Hub — Configuración",
+    title: "Asimov — Configuración",
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "picker-preload.js"),

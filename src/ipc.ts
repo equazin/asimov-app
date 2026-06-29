@@ -170,7 +170,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     if (!Notification.isSupported()) return { ok: false };
     const data = (payload ?? {}) as { title?: string; body?: string };
     const notification = new Notification({
-      title: data.title ?? "Bartez Hub",
+      title: data.title ?? "Asimov",
       body: data.body ?? "",
     });
     notification.on("click", () => {

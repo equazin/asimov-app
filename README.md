@@ -1,17 +1,17 @@
-# Bartez Hub
+# Asimov
 
 App de escritorio para Windows del ERP [Bartez Tecnología](https://bartez.com.ar).
 Gestión comercial nativa: impresión directa, notificaciones, multi-servidor y
 actualización automática.
 
-> **Arquitectura:** Bartez Hub **no** empaqueta el frontend. Carga la web remota
+> **Arquitectura:** Asimov **no** empaqueta el frontend. Carga la web remota
 > del ERP y comparte backend y base de datos con la versión web. Cada deploy de
 > la web actualiza la app al instante.
 
 ## Instalación
 
-Descargar el último instalador desde [Releases](https://github.com/equazin/bartez-hub/releases/latest)
-y ejecutar **Bartez.Hub-Setup-x.x.x.exe**.
+Descargar el último instalador desde [Releases](https://github.com/equazin/asimov-app/releases/latest)
+y ejecutar **Asimov-Setup-x.x.x.exe**.
 
 Al abrir por primera vez aparece la pantalla de bienvenida y el selector de servidor.
 Ingresá la URL del ERP (ej: `https://bartez.com.ar`) y opcionalmente un nombre.
@@ -99,4 +99,4 @@ Y descomentar las líneas de signing en `electron-builder.yml` y `.github/workfl
 
 ---
 
-Desarrollado por [Bartez Tecnología](https://bartez.com.ar)
+**Asimov** by [Bartez Tecnología](https://bartez.com.ar)

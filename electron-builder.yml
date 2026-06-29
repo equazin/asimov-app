@@ -1,5 +1,5 @@
-appId: ar.com.bartez.hub
-productName: Bartez Hub
+appId: ar.com.bartez.asimov
+productName: Asimov
 copyright: © Bartez Tecnología
 
 directories:
@@ -15,7 +15,7 @@ extraResources:
     to: icon.png
 
 protocols:
-  - name: Bartez Hub
+  - name: Asimov
     schemes:
       - bartez
 
@@ -37,7 +37,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: Bartez Hub
+  shortcutName: Asimov
   menuCategory: true
   deleteAppDataOnUninstall: false
 
@@ -45,5 +45,5 @@ nsis:
 publish:
   provider: github
   owner: equazin
-  repo: bartez-hub
+  repo: asimov-app
   releaseType: release

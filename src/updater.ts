@@ -32,7 +32,7 @@ export function initAutoUpdater(): void {
         buttons: ["Reiniciar ahora", "Más tarde"],
         defaultId: 0,
         title: "Actualización disponible",
-        message: `Bartez Hub ${info.version} está listo para instalarse.`,
+        message: `Asimov ${info.version} está listo para instalarse.`,
         detail: "La nueva versión se aplicará al reiniciar la aplicación.",
       })
       .then((result) => {

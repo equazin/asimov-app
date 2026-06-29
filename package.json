@@ -1,11 +1,11 @@
 {
-  "name": "bartez-hub",
-  "productName": "Bartez Hub",
-  "version": "1.0.0",
-  "description": "Bartez Hub — App de escritorio del ERP Bartez Tecnología.",
+  "name": "asimov-app",
+  "productName": "Asimov",
+  "version": "1.1.0",
+  "description": "Asimov — App de escritorio del ERP Bartez Tecnología.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/equazin/bartez-hub.git"
+    "url": "https://github.com/equazin/asimov-app.git"
   },
   "author": {
     "name": "Bartez Tecnología",
