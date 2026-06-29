@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asimov ERP - Mockup alta fidelidad</title>
+  <style>
+    :root {
+      --green-950: #062b19;
+      --green-900: #0b3b22;
+      --green-800: #14532d;
+      --green-700: #17613a;
+      --cream: #f5f5f0;
+      --cream-2: #fbfaf4;
+      --ink: #333333;
+      --muted: #72746f;
+      --line: #dddcd2;
+      --gold: #d4af37;
+      --gold-dark: #b88f16;
+      --red: #e74c3c;
+      --ok: #23884c;
+      --shadow: 0 18px 50px rgba(20, 83, 45, 0.12);
+      --mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      --body: Inter, "Segoe UI", system-ui, sans-serif;
+      --display: Poppins, Inter, "Segoe UI", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(212, 175, 55, 0.08), transparent 28rem),
+        linear-gradient(135deg, #f9f8f1 0%, var(--cream) 48%, #efeee7 100%);
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 14px;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 268px 1fr 520px;
+      grid-template-rows: 76px 1fr 44px;
+      position: relative;
+    }
+
+    .sidebar {
+      grid-row: 1 / 4;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.04), transparent 25%),
+        linear-gradient(160deg, var(--green-950), var(--green-800));
+      color: white;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .brand {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .brand-mark {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: var(--cream);
+    }
+
+    .brand-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+    .brand span {
+      font-family: var(--display);
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .collapse {
+      margin-left: auto;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 9px;
+      color: white;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .nav {
+      padding: 20px 0;
+      display: grid;
+      gap: 5px;
+    }
+
+    .nav a {
+      position: relative;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 0 22px;
+      color: rgba(255,255,255,0.88);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .nav a.active {
+      color: #ffe9a1;
+      background: rgba(255,255,255,0.09);
+    }
+
+    .nav a.active::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--gold);
+    }
+
+    .icon {
+      width: 22px;
+      height: 22px;
+      color: currentColor;
+      flex: none;
+    }
+
+    .tenant {
+      margin-top: auto;
+      padding: 20px 22px 28px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .tenant small {
+      display: block;
+      color: rgba(255,255,255,0.54);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .tenant strong {
+      display: block;
+      margin-top: 8px;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .tenant button {
+      width: 100%;
+      height: 40px;
+      margin-top: 14px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      color: white;
+      background: rgba(255,255,255,0.06);
+      font-weight: 700;
+    }
+
+    .topbar {
+      grid-column: 2 / 4;
+      background: linear-gradient(90deg, var(--green-950), var(--green-800));
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 0 28px;
+      box-shadow: 0 8px 24px rgba(6, 43, 25, 0.18);
+      z-index: 5;
+    }
+
+    .search {
+      width: min(760px, 48vw);
+      height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      padding: 0 14px;
+    }
+
+    .search input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      color: white;
+      background: transparent;
+    }
+
+    .search input::placeholder { color: rgba(255,255,255,0.72); }
+    .kbd {
+      min-width: 32px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.88);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .top-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .bell {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      color: white;
+      background: transparent;
+    }
+
+    .badge {
+      position: absolute;
+      right: 3px;
+      top: 2px;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: #2b2307;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 20px;
+    }
+
+    .sync {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-left: 16px;
+      border-left: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.9);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .sync b { color: white; }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e8d9c3, #f7f0e4);
+      border: 2px solid rgba(255,255,255,0.75);
+      display: grid;
+      place-items: center;
+      color: var(--green-800);
+      font-weight: 900;
+    }
+
+    .main {
+      grid-column: 2;
+      grid-row: 2;
+      padding: 28px;
+      overflow: auto;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kpi, .panel, .drawer {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.78);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.85), 0 12px 26px rgba(51,51,51,0.05);
+    }
+
+    .kpi {
+      min-height: 130px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .kpi p {
+      margin: 0;
+      color: #50524d;
+      font-weight: 700;
+    }
+
+    .kpi strong {
+      display: block;
+      margin-top: 18px;
+      font-family: var(--mono);
+      font-size: 25px;
+      color: #242621;
+      letter-spacing: -0.04em;
+    }
+
+    .kpi small {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .kpi .corner {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      color: var(--ok);
+    }
+
+    .kpi.danger .corner, .kpi.danger small { color: var(--red); }
+    .kpi.warn .corner { color: var(--gold-dark); }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      margin: 24px 0 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      color: #20221e;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .control, .select, .btn {
+      height: 44px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .control {
+      min-width: 380px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+    }
+
+    .control input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+    }
+
+    .control:focus-within, .field input:focus, .field select:focus, textarea:focus {
+      outline: 3px solid rgba(212,175,55,0.28);
+      border-color: var(--gold);
+    }
+
+    .btn {
+      padding: 0 16px;
+      cursor: pointer;
+    }
+
+    .btn.primary {
+      border-color: var(--gold);
+      background: linear-gradient(180deg, #e3c14b, var(--gold));
+      color: #332805;
+      box-shadow: 0 8px 18px rgba(212,175,55,0.24);
+    }
+
+    .btn.green {
+      border-color: var(--green-800);
+      background: var(--green-800);
+      color: white;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .select {
+      min-width: 150px;
+      padding: 0 12px;
+      color: #555850;
+    }
+
+    .panel {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      height: 46px;
+      padding: 0 14px;
+      background: #f0efe7;
+      border-bottom: 1px solid var(--line);
+      color: #4d5049;
+      font-size: 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    td {
+      height: 52px;
+      padding: 0 14px;
+      border-bottom: 1px solid #ebe9de;
+      color: #2f312e;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) { background: rgba(245,245,240,0.62); }
+    tbody tr:hover { background: rgba(212,175,55,0.09); }
+    tr.selected { background: rgba(212,175,55,0.16) !important; }
+
+    .check {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #c9c6b8;
+      border-radius: 4px;
+      display: inline-grid;
+      place-items: center;
+      color: white;
+    }
+
+    .check.on {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .mono { font-family: var(--mono); font-size: 13px; }
+    .stock-ok { color: var(--ok); font-weight: 800; }
+    .stock-bad { color: var(--red); font-weight: 900; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-width: 58px;
+      justify-content: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .pill.ok { background: #dff2e5; color: #166637; }
+    .pill.critical { background: #ffdcd8; color: #bc2b1f; }
+    .pill.empty { background: #f5d5d1; color: var(--red); }
+
+    .skeleton {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e7e5db, #f6f5ee, #e7e5db);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s infinite linear;
+    }
+
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    .pagination {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #696b65;
+      font-size: 13px;
+    }
+
+    .pages {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page {
+      min-width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-weight: 800;
+    }
+
+    .page.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #302605;
+    }
+
+    .drawer {
+      grid-column: 3;
+      grid-row: 2 / 4;
+      border-radius: 0;
+      border-top: 0;
+      border-right: 0;
+      border-bottom: 0;
+      background: #fff;
+      box-shadow: -26px 0 54px rgba(6,43,25,0.14);
+      padding: 28px;
+      overflow: auto;
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .drawer h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+
+    .close {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #575a54;
+      font-size: 22px;
+    }
+
+    .form {
+      display: grid;
+      gap: 18px;
+      padding-top: 20px;
+    }
+
+    .field label, .products-title {
+      display: block;
+      margin-bottom: 8px;
+      color: #2f312e;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .field input, .field select, textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      padding: 0 12px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 92px;
+      padding: 12px;
+      resize: vertical;
+    }
+
+    .product-row {
+      display: grid;
+      grid-template-columns: 1fr 68px 96px 96px 28px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .product-select {
+      min-height: 54px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: white;
+    }
+
+    .product-select strong {
+      display: block;
+      font-size: 12px;
+      color: #2e302b;
+    }
+
+    .product-select small {
+      display: block;
+      margin-top: 3px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #85877f;
+    }
+
+    .mini-input {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .price {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .remove {
+      border: 0;
+      background: transparent;
+      color: #73766f;
+      font-size: 20px;
+    }
+
+    .add-link {
+      border: 0;
+      background: transparent;
+      color: var(--green-800);
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .summary {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .summary div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 12px;
+      border-bottom: 1px solid #eeeee7;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .summary div:last-child {
+      border-bottom: 0;
+      background: #f7f6ee;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .drawer-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .footer {
+      grid-column: 2 / 4;
+      grid-row: 3;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 28px;
+      background: var(--green-950);
+      color: rgba(255,255,255,0.86);
+      font-size: 12px;
+      z-index: 6;
+    }
+
+    .footer .sep {
+      width: 1px;
+      height: 18px;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 58px;
+      width: 380px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: white;
+      box-shadow: var(--shadow);
+      z-index: 8;
+    }
+
+    .toast-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--ok);
+      color: white;
+      font-weight: 900;
+    }
+
+    .toast strong { display: block; margin-bottom: 4px; }
+    .toast span { color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 1180px) {
+      body::before {
+        content: "";
+        position: fixed;
+        top: 70px;
+        right: 0;
+        bottom: 44px;
+        left: 86px;
+        background: rgba(6, 43, 25, 0.2);
+        z-index: 6;
+        pointer-events: none;
+      }
+
+      .app {
+        grid-template-columns: 86px 1fr;
+        grid-template-rows: 70px 1fr 44px;
+      }
+      .sidebar { grid-row: 1 / 4; }
+      .brand span, .nav a span, .tenant { display: none; }
+      .brand { justify-content: center; padding: 0; }
+      .collapse { display: none; }
+      .nav a { justify-content: center; padding: 0; }
+      .topbar { grid-column: 2; }
+      .main { grid-column: 2; }
+      .drawer {
+        position: fixed;
+        right: 0;
+        top: 70px;
+        bottom: 44px;
+        width: min(560px, calc(100vw - 86px));
+        z-index: 7;
+      }
+      .footer { grid-column: 2; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      body::before {
+        left: 0;
+        top: 96px;
+      }
+
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .topbar, .main, .footer { grid-column: 1; }
+      .search { width: 100%; }
+      .sync, .avatar { display: none; }
+      .main { padding: 18px; }
+      .kpis { grid-template-columns: 1fr; }
+      .actions, .filters { overflow-x: auto; flex-wrap: nowrap; }
+      .control { min-width: 280px; }
+      .drawer {
+        inset: auto 0 44px 0;
+        top: 96px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegacion principal">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><img src="asimov-logo.png" alt="" /></div>
+        <button class="collapse" aria-label="Colapsar navegacion">☰</button>
+      </div>
+      <nav class="nav">
+        <a href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.8 12 3l9 7.8V21H5v-8h14"/></svg><span>Dashboard</span></a>
+        <a class="active" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 8 9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg><span>Inventario</span></a>
+        <a href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h10v18l-2-1-2 1-2-1-2 1-2-1V3Z"/><path d="M9 8h6M9 12h6"/></svg><span>Facturacion</span></a>
+        <a href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-2 8H8L6 3H3"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg><span>Compras</span></a>
+        <a href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3h14v18H5z"/><path d="M9 7h6M9 11h6M9 15h3"/></svg><span>Contabilidad</span></a>
+        <a href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M9 19V9M14 19V7M19 19v-5"/><path d="M3 19h18"/></svg><span>Reporteria</span></a>
+        <a href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.1 2.1-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-3v-.8a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L6.6 17l.1-.1A1.7 1.7 0 0 0 7 15a1.7 1.7 0 0 0-1.5-1H4v-3h1.5A1.7 1.7 0 0 0 7 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1L8.7 5.9l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V4h3v.8a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 8l-.1.1A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.5 1H22v3h-1.1a1.7 1.7 0 0 0-1.5 1Z"/></svg><span>Configuracion</span></a>
+      </nav>
+      <div class="tenant">
+        <small>Empresa activa</small>
+        <strong>Industrias Reunidas S.A.</strong>
+        <button>Cambiar empresa</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div class="search" role="search">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input aria-label="Busqueda global" placeholder="Buscar en Asimov..." />
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="top-actions">
+        <button class="bell" aria-label="4 notificaciones"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="badge">4</span></button>
+        <div class="sync"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="#45d06f" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><span><b>Sincronizado</b><br>Hace 2 min</span></div>
+        <div class="avatar">CM</div>
+        <div><b>Carlos Mendoza</b><br><span style="color:rgba(255,255,255,.7);font-size:12px">Administrador</span></div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="kpis" aria-label="Indicadores principales">
+        <article class="kpi"><p>Ventas mensuales</p><strong>$ 2.450.890</strong><small style="color:var(--ok)">+12.4% vs. mes anterior</small><svg class="icon corner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 17 6-6 4 4 6-9"/></svg></article>
+        <article class="kpi danger"><p>Inventario critico</p><strong>18</strong><small>Productos por debajo del minimo</small><svg class="icon corner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg></article>
+        <article class="kpi warn"><p>Ordenes pendientes</p><strong>27</strong><small>Ordenes por recibir</small><svg class="icon corner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h10v18H7z"/><path d="M9 8h6M9 12h6"/></svg></article>
+        <article class="kpi"><p>Margen operativo</p><strong>23.7%</strong><small style="color:var(--ok)">+2.1% vs. mes anterior</small><svg class="icon corner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9v9h9Z"/><path d="M16 3.8A9 9 0 0 1 20.2 8H16Z"/></svg></article>
+      </section>
+
+      <div class="section-title">
+        <h1>Inventario</h1>
+        <div class="actions">
+          <button class="btn green">Exportar Excel</button>
+          <button class="btn primary">Crear orden de compra</button>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-bottom:12px">
+        <div class="control"><input aria-label="Buscar producto" placeholder="Buscar producto, SKU o codigo de barras..." /><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+        <button class="btn">Filtros</button>
+        <button class="btn">Columnas</button>
+        <button class="btn" aria-label="Descargar">⇩</button>
+      </div>
+
+      <div class="filters">
+        <select class="select" aria-label="Categoria"><option>Categoria: Todas</option></select>
+        <select class="select" aria-label="Deposito"><option>Deposito: Todos</option></select>
+        <select class="select" aria-label="Estado"><option>Estado: Todos</option></select>
+        <button class="btn" style="border:0;background:transparent">× Limpiar filtros</button>
+      </div>
+
+      <section class="panel" aria-label="Tabla de stock">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="check"></span></th><th>SKU</th><th>Producto</th><th>Stock</th><th>Punto reorden</th><th>Deposito</th><th>Ultimo movimiento</th><th>Estado</th><th>⚙</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-001245</td><td>Motor electrico 5HP</td><td class="stock-ok">23</td><td>15</td><td>Deposito Central</td><td>24/05/2025 14:32</td><td><span class="pill ok">OK</span></td><td></td></tr>
+            <tr class="selected"><td><span class="check on">✓</span></td><td class="mono">PRD-000874</td><td>Banda transportadora 2m</td><td class="stock-bad">8</td><td>10</td><td>Deposito Central</td><td>24/05/2025 09:15</td><td><span class="pill critical">Critico</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-002156</td><td>Rodamiento 6205-2RS</td><td class="stock-ok">152</td><td>50</td><td>Deposito Norte</td><td>23/05/2025 16:45</td><td><span class="pill ok">OK</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-001564</td><td>Sensor inductivo M12</td><td class="stock-bad">5</td><td>10</td><td>Deposito Norte</td><td>23/05/2025 11:20</td><td><span class="pill critical">Critico</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-000332</td><td>PLC Siemens S7-1200</td><td class="stock-ok">12</td><td>5</td><td>Deposito Central</td><td>22/05/2025 08:10</td><td><span class="pill ok">OK</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-001998</td><td>Variador de frecuencia 2HP</td><td class="stock-bad">0</td><td>3</td><td>Deposito Sur</td><td>21/05/2025 17:05</td><td><span class="pill empty">Agotado</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-000921</td><td>Cable THHN 12 AWG (metro)</td><td class="stock-ok">245</td><td>100</td><td>Deposito Sur</td><td>21/05/2025 10:30</td><td><span class="pill ok">OK</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td class="mono">PRD-001110</td><td>Interruptor termomagnetico 3P</td><td class="stock-bad">7</td><td>10</td><td>Deposito Central</td><td>20/05/2025 15:22</td><td><span class="pill critical">Critico</span></td><td></td></tr>
+            <tr><td><span class="check"></span></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td><div class="skeleton"></div></td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+      <div class="pagination">
+        <span>Mostrando 1 a 8 de 248 productos</span>
+        <div class="pages"><button class="page">‹</button><button class="page active">1</button><button class="page">2</button><button class="page">3</button><button class="page">4</button><span>...</span><button class="page">31</button><button class="page">›</button></div>
+        <span><button class="page active">25</button> <button class="page">50</button> por pagina</span>
+      </div>
+    </main>
+
+    <aside class="drawer" aria-label="Crear orden de compra">
+      <div class="drawer-head"><h2>Crear orden de compra</h2><button class="close" aria-label="Cerrar">×</button></div>
+      <form class="form">
+        <div class="field"><label for="supplier">Proveedor</label><select id="supplier"><option>Buscar y seleccionar proveedor...</option></select></div>
+        <div>
+          <span class="products-title">Productos</span>
+          <div class="product-row" style="font-size:11px;font-weight:900;color:#656860"><span>Producto</span><span>Cant.</span><span style="text-align:right">Precio</span><span style="text-align:right">Subtotal</span><span></span></div>
+          <div class="product-row"><div class="product-select"><strong>Banda transportadora 2m</strong><small>PRD-000874</small></div><input class="mini-input" value="10"><div class="price">$ 120.00</div><div class="price">$ 1.200.00</div><button class="remove">×</button></div>
+          <div class="product-row"><div class="product-select"><strong>Rodamiento 6205-2RS</strong><small>PRD-002156</small></div><input class="mini-input" value="20"><div class="price">$ 15.50</div><div class="price">$ 310.00</div><button class="remove">×</button></div>
+          <div class="product-row"><div class="product-select"><strong>Sensor inductivo M12</strong><small>PRD-001564</small></div><input class="mini-input" value="15"><div class="price">$ 28.75</div><div class="price">$ 431.25</div><button class="remove">×</button></div>
+          <button type="button" class="add-link">+ Agregar producto</button>
+        </div>
+        <div class="summary">
+          <div><span>Subtotal</span><b>$ 1.941.25</b></div>
+          <div><span>Impuestos (16%)</span><b>$ 310.60</b></div>
+          <div><span>Total estimado</span><b>$ 2.251.85</b></div>
+        </div>
+        <div class="field"><label for="date">Entrega esperada</label><input id="date" value="31/05/2025"></div>
+        <div class="field"><label for="notes">Notas</label><textarea id="notes" placeholder="Notas adicionales para el proveedor..."></textarea></div>
+        <div class="drawer-actions"><button type="button" class="btn">Guardar borrador</button><button type="button" class="btn primary">Enviar orden</button></div>
+      </form>
+    </aside>
+
+    <footer class="footer">
+      <strong>Asimov ERP v1.1.0</strong><span class="sep"></span><span>✓ Sincronizacion OK</span><span class="sep"></span><span>Ultima: 24/05/2025 16:45</span><span class="sep"></span><span>Centro de ayuda</span>
+    </footer>
+
+    <div class="toast" role="status">
+      <div class="toast-icon">✓</div>
+      <div><strong>Orden de compra guardada</strong><span>La orden OC-000125 ha sido guardada como borrador.</span></div>
+      <button class="close" style="margin-left:auto;width:24px;height:24px;font-size:18px">×</button>
+    </div>
+  </div>
+</body>
+</html>

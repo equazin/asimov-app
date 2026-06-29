@@ -21,11 +21,29 @@ export interface ServerEntry {
   lastUsed: number;
 }
 
+export interface ShellBackground {
+  type: "default" | "color" | "image";
+  value: string;
+}
+
+export interface BookmarkEntry {
+  id: string;
+  title: string;
+  path: string;
+  createdAt: number;
+}
+
+export interface ShellPreferences {
+  background: ShellBackground;
+  bookmarks: BookmarkEntry[];
+}
+
 export interface DesktopConfig {
   serverUrl: string;
   windowBounds: WindowBounds;
   launchAtStartup: boolean;
   serverHistory: ServerEntry[];
+  shell: ShellPreferences;
 }
 
 const DEFAULTS: DesktopConfig = {
@@ -33,9 +51,14 @@ const DEFAULTS: DesktopConfig = {
   windowBounds: { width: 1440, height: 900, maximized: false },
   launchAtStartup: false,
   serverHistory: [],
+  shell: {
+    background: { type: "default", value: "" },
+    bookmarks: [],
+  },
 };
 
 const MAX_HISTORY = 5;
+const MAX_BOOKMARKS = 20;
 
 const store = new Store<DesktopConfig>({
   name: "bartez-desktop",
@@ -112,6 +135,71 @@ export function hasCompletedOnboarding(): boolean {
 
 export function setOnboardingDone(): void {
   (store as unknown as { set(key: string, val: boolean): void }).set("onboardingDone", true);
+}
+
+// --- Shell preferences -----------------------------------------------------
+
+function getShell(): ShellPreferences {
+  return store.get("shell", DEFAULTS.shell);
+}
+
+function normalizeBookmarkPath(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "/admin";
+  try {
+    const parsed = new URL(trimmed);
+    return normalizeBookmarkPath(`${parsed.pathname}${parsed.search}${parsed.hash}`);
+  } catch {}
+  const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return withSlash.startsWith("/admin") ? withSlash : "/admin";
+}
+
+function cleanBookmarkTitle(raw: string, path: string): string {
+  const title = raw.replace(/\s+/g, " ").trim();
+  if (title && title !== "Asimov") return title.slice(0, 80);
+  const segment = path.split("?")[0]?.split("/").filter(Boolean).pop();
+  return segment ? segment.replace(/-/g, " ").slice(0, 80) : "Inicio";
+}
+
+export function getShellPreferences(): ShellPreferences {
+  return getShell();
+}
+
+export function setShellBackground(background: ShellBackground): ShellPreferences {
+  const current = getShell();
+  const next: ShellBackground =
+    background.type === "color" && background.value
+      ? { type: "color", value: background.value }
+      : background.type === "image" && background.value
+        ? { type: "image", value: background.value }
+        : { type: "default", value: "" };
+  const shell = { ...current, background: next };
+  store.set("shell", shell);
+  return shell;
+}
+
+export function getBookmarks(): BookmarkEntry[] {
+  return getShell().bookmarks ?? [];
+}
+
+export function addBookmark(input: { title: string; path: string }): BookmarkEntry[] {
+  const path = normalizeBookmarkPath(input.path);
+  const current = getBookmarks().filter((entry) => entry.path !== path);
+  const next: BookmarkEntry = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    title: cleanBookmarkTitle(input.title, path),
+    path,
+    createdAt: Date.now(),
+  };
+  const bookmarks = [next, ...current].slice(0, MAX_BOOKMARKS);
+  store.set("shell", { ...getShell(), bookmarks });
+  return bookmarks;
+}
+
+export function removeBookmark(id: string): BookmarkEntry[] {
+  const bookmarks = getBookmarks().filter((entry) => entry.id !== id);
+  store.set("shell", { ...getShell(), bookmarks });
+  return bookmarks;
 }
 
 /**

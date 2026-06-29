@@ -2,11 +2,11 @@
  * Proceso principal de Asimov Desktop.
  *
  * Estrategia: la app NO empaqueta el frontend. Carga la web remota del ERP
- * (`${serverUrl}/admin`) dentro de una ventana nativa con sesión persistente.
+ * (`${serverUrl}/admin`) dentro de una ventana nativa con sesion persistente.
  *
  * Flujo de ventanas:
- *  - Sin servidor configurado → ventana "picker" para elegir servidor.
- *  - Con servidor → splash screen → carga web → ventana principal o pantalla offline.
+ *  - Sin servidor configurado -> ventana "picker" para elegir servidor.
+ *  - Con servidor -> splash screen -> carga web -> ventana principal o pantalla offline.
  */
 import { app, BrowserWindow, session, shell } from "electron";
 import * as path from "node:path";
@@ -27,6 +27,7 @@ const SESSION_PARTITION = "persist:bartez";
 const PICKER_FILE = path.join(__dirname, "picker.html");
 const SPLASH_FILE = path.join(__dirname, "splash.html");
 const OFFLINE_FILE = path.join(__dirname, "offline.html");
+const SHELL_FILE = path.join(__dirname, "shell.html");
 const APP_ICON_FILE = path.join(__dirname, "icon.png");
 
 let mainWindow: BrowserWindow | null = null;
@@ -130,7 +131,7 @@ function createSplashWindow(): BrowserWindow {
     frame: false,
     transparent: false,
     show: false,
-    backgroundColor: "#070a16",
+    backgroundColor: "#062b19",
     title: `Asimov - ${getServerLabel()}`,
     icon: APP_ICON_FILE,
     webPreferences: {
@@ -174,7 +175,7 @@ function destroyMainWindow(): void {
 // Main window
 // ---------------------------------------------------------------------------
 
-function createMainWindow(): BrowserWindow {
+function createMainWindow(primary = true): BrowserWindow {
   const saved = getWindowBounds();
 
   const window = new BrowserWindow({
@@ -185,7 +186,7 @@ function createMainWindow(): BrowserWindow {
     minWidth: 1024,
     minHeight: 640,
     show: false,
-    backgroundColor: "#070a16",
+    backgroundColor: "#062b19",
     title: "Asimov",
     icon: APP_ICON_FILE,
     webPreferences: {
@@ -209,7 +210,7 @@ function createMainWindow(): BrowserWindow {
   window.on("move", scheduleSave);
   window.on("close", (event) => {
     persistBounds(window);
-    if (!isQuitting()) {
+    if (primary && !isQuitting()) {
       event.preventDefault();
       window.hide();
     }
@@ -217,9 +218,45 @@ function createMainWindow(): BrowserWindow {
 
   hardenNavigation(window);
   window.on("closed", () => {
-    mainWindow = null;
+    if (primary) mainWindow = null;
   });
 
+  return window;
+}
+
+function createModuleWindow(pathname: string): BrowserWindow | null {
+  const targetUrl = adminUrl(pathname);
+  if (!targetUrl) return null;
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.show();
+  }
+
+  const window = new BrowserWindow({
+    width: 980,
+    height: 680,
+    minWidth: 760,
+    minHeight: 520,
+    show: false,
+    parent: mainWindow ?? undefined,
+    modal: false,
+    backgroundColor: "#f5f5f0",
+    title: `Asimov - ${getServerLabel()} - ${normalizeAdminPath(pathname)}`,
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      partition: SESSION_PARTITION,
+      spellcheck: true,
+    },
+  });
+
+  hardenNavigation(window);
+  window.webContents.once("did-finish-load", () => window.show());
+  window.webContents.once("did-fail-load", () => window.show());
+  void window.loadURL(targetUrl);
   return window;
 }
 
@@ -227,15 +264,16 @@ function createMainWindow(): BrowserWindow {
  * Loads the ERP with splash screen flow:
  * 1. Show splash
  * 2. Probe server
- * 3. If OK → load ERP in main window, close splash when ready
- * 4. If fail → show offline screen in main window, close splash
+ * 3. If OK -> load desktop shell, close splash when ready
+ * 4. If fail -> show offline screen, close splash
  */
 async function loadWithSplash(): Promise<void> {
   const serverUrl = getServerUrl();
   if (!serverUrl) return;
+  const targetPath = pendingAdminPath ? consumePendingAdminPath() : null;
 
   splashWindow = createSplashWindow();
-  sendSplashProgress(10, "Verificando servidor…");
+  sendSplashProgress(10, "Verificando servidor...");
 
   const probe = await probeServer(serverUrl);
   sendSplashProgress(40, "Servidor encontrado");
@@ -244,13 +282,16 @@ async function loadWithSplash(): Promise<void> {
   mainWindow.setTitle(`Asimov - ${getServerLabel(serverUrl)}`);
 
   if (probe.ok) {
-    const targetUrl = adminUrl(consumePendingAdminPath()) ?? `${serverUrl}/admin`;
-    sendSplashProgress(60, "Cargando el ERP…");
+    const targetPathToOpen = targetPath;
+    sendSplashProgress(60, "Cargando escritorio...");
 
     mainWindow.webContents.once("did-finish-load", () => {
       sendSplashProgress(100, "Listo");
       setTimeout(() => {
-        if (mainWindow && !mainWindow.isDestroyed()) mainWindow.show();
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.show();
+          if (targetPathToOpen) createModuleWindow(targetPathToOpen);
+        }
         closeSplash();
       }, 300);
     });
@@ -259,7 +300,7 @@ async function loadWithSplash(): Promise<void> {
       showOffline();
     });
 
-    void mainWindow.loadURL(targetUrl);
+    void mainWindow.loadFile(SHELL_FILE);
   } else {
     showOffline();
   }
@@ -275,8 +316,8 @@ function showOffline(): void {
     height: 480,
     resizable: false,
     show: false,
-    backgroundColor: "#070a16",
-    title: "Asimov — Sin conexión",
+    backgroundColor: "#062b19",
+    title: "Asimov - Sin conexion",
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: offlinePreload,
@@ -312,8 +353,8 @@ function createPickerWindow(): BrowserWindow {
     height: 620,
     resizable: false,
     show: false,
-    backgroundColor: "#070a16",
-    title: "Asimov — Configuración",
+    backgroundColor: "#062b19",
+    title: "Asimov - Configuracion",
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "picker-preload.js"),
@@ -346,7 +387,7 @@ function openAppropriateWindow(): void {
 }
 
 function onServerChanged(): void {
-  buildAppMenu({ isDev: isDev(), onServerChanged, openApp });
+  buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow });
   rebuildTrayMenu();
   if (getServerUrl()) {
     if (pickerWindow) {
@@ -375,18 +416,32 @@ function onRetry(): void {
 }
 
 function openApp(pathname?: string): void {
-  if (pathname) pendingAdminPath = normalizeAdminPath(pathname);
-
-  const targetUrl = adminUrl(pendingAdminPath ?? "/admin");
-  if (mainWindow && !mainWindow.isDestroyed() && targetUrl) {
-    mainWindow.show();
-    mainWindow.focus();
-    void mainWindow.loadURL(targetUrl);
-    pendingAdminPath = null;
+  const nextPath = normalizeAdminPath(pathname ?? "/admin");
+  if (!getServerUrl()) {
+    pendingAdminPath = nextPath;
+    openAppropriateWindow();
     return;
   }
 
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.show();
+    mainWindow.focus();
+    createModuleWindow(nextPath);
+    return;
+  }
+
+  pendingAdminPath = nextPath;
   openAppropriateWindow();
+}
+
+function openNewWindow(pathname = "/admin"): void {
+  if (!getServerUrl()) {
+    pendingAdminPath = normalizeAdminPath(pathname);
+    openAppropriateWindow();
+    return;
+  }
+
+  createModuleWindow(pathname);
 }
 
 export function getMainWindow(): BrowserWindow | null {
@@ -427,7 +482,7 @@ if (!gotLock) {
     );
 
     registerIpcHandlers({ onServerChanged, getMainWindow, onRetry });
-    buildAppMenu({ isDev: isDev(), onServerChanged, openApp });
+    buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow });
     syncLaunchAtStartup();
     initTray({ getMainWindow, openApp, onServerChanged });
 
@@ -444,3 +499,4 @@ if (!gotLock) {
     if (process.platform !== "darwin") app.quit();
   });
 }
+

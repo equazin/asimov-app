@@ -1,25 +1,213 @@
 /**
- * Menú nativo de la aplicación.
+ * Menu nativo de Asimov.
  *
- * Minimalista y orientado al operador del ERP: recargar, zoom, impresión,
- * cambio de servidor y accesos de ayuda. DevTools sólo en modo desarrollo.
+ * La Fase 1 GESES prioriza navegacion por modulo, atajos, favoritos,
+ * multi-ventana y preferencias locales sin depender del frontend remoto.
  */
-import { app, BrowserWindow, Menu, shell, type MenuItemConstructorOptions } from "electron";
-import { clearServerUrl, getLaunchAtStartup, getServerHistory, getServerLabel, setServerUrl } from "./config";
+import { app, BrowserWindow, dialog, Menu, shell, type MenuItemConstructorOptions } from "electron";
+import * as fs from "node:fs";
+import * as nodePath from "node:path";
+import {
+  addBookmark,
+  clearServerUrl,
+  getBookmarks,
+  getLaunchAtStartup,
+  getServerHistory,
+  getServerLabel,
+  removeBookmark,
+  setServerUrl,
+  setShellBackground,
+  type BookmarkEntry,
+  type ShellBackground,
+} from "./config";
 import { setLaunchAtStartupEnabled } from "./tray";
-
-function focusedContents() {
-  return BrowserWindow.getFocusedWindow()?.webContents;
-}
 
 interface MenuDeps {
   isDev: boolean;
   onServerChanged: () => void;
   openApp: (pathname?: string) => void;
+  openNewWindow: (pathname?: string) => void;
+}
+
+interface ModuleItem {
+  label: string;
+  path: string;
+  accelerator?: string;
+}
+
+interface ModuleGroup {
+  label: string;
+  items: ModuleItem[];
+}
+
+const MODULE_GROUPS: ModuleGroup[] = [
+  {
+    label: "Ventas",
+    items: [
+      { label: "Pedidos", path: "/admin/orders", accelerator: "CmdOrCtrl+2" },
+      { label: "Nuevo pedido", path: "/admin/orders/new" },
+      { label: "Cotizaciones", path: "/admin/quotes" },
+      { label: "Nueva cotizacion", path: "/admin/quotes/new" },
+      { label: "Clientes", path: "/admin/clients" },
+      { label: "Cuentas", path: "/admin/accounts" },
+      { label: "Oportunidades", path: "/admin/opportunities" },
+    ],
+  },
+  {
+    label: "Compras",
+    items: [
+      { label: "Ordenes de compra", path: "/admin/purchase-orders" },
+      { label: "Nueva orden de compra", path: "/admin/purchase-orders/new" },
+      { label: "Proveedores", path: "/admin/suppliers" },
+      { label: "Recepciones", path: "/admin/goods-receipts" },
+      { label: "Cuenta proveedores", path: "/admin/supplier-accounts" },
+    ],
+  },
+  {
+    label: "Stock",
+    items: [
+      { label: "Stock", path: "/admin/stock", accelerator: "CmdOrCtrl+3" },
+      { label: "Productos", path: "/admin/products" },
+      { label: "Movimientos", path: "/admin/stock-movements" },
+      { label: "Depositos", path: "/admin/warehouses" },
+      { label: "Numeros de serie", path: "/admin/serial-numbers" },
+      { label: "Alertas", path: "/admin/alerts" },
+    ],
+  },
+  {
+    label: "Facturacion",
+    items: [
+      { label: "Facturas", path: "/admin/invoices" },
+      { label: "Nueva factura", path: "/admin/invoices/new" },
+      { label: "Remitos", path: "/admin/delivery-notes" },
+      { label: "Nuevo remito", path: "/admin/delivery-notes/new" },
+      { label: "Recibos", path: "/admin/receipts" },
+      { label: "Listas de precios", path: "/admin/price-lists" },
+    ],
+  },
+  {
+    label: "Tesoreria",
+    items: [
+      { label: "Caja", path: "/admin/cash-accounts", accelerator: "CmdOrCtrl+4" },
+      { label: "Cuenta corriente clientes", path: "/admin/customer-accounts" },
+      { label: "Cuenta corriente proveedores", path: "/admin/supplier-accounts" },
+      { label: "Reportes", path: "/admin/reports" },
+    ],
+  },
+  {
+    label: "Contabilidad",
+    items: [
+      { label: "Contabilidad", path: "/admin/accounting" },
+      { label: "Export contable", path: "/admin/accounting-export" },
+      { label: "Auditoria", path: "/admin/audit" },
+    ],
+  },
+  {
+    label: "RMA",
+    items: [
+      { label: "Tickets", path: "/admin/tickets" },
+      { label: "Ordenes de trabajo", path: "/admin/work-orders" },
+      { label: "Garantias", path: "/admin/warranty-terms" },
+    ],
+  },
+  {
+    label: "Config",
+    items: [
+      { label: "Sistema", path: "/admin/sistema" },
+      { label: "Usuarios y roles", path: "/admin/team" },
+      { label: "Base de conocimiento", path: "/admin/knowledge" },
+      { label: "Conversaciones", path: "/admin/conversations" },
+    ],
+  },
+];
+
+function focusedWindow(): BrowserWindow | null {
+  return BrowserWindow.getFocusedWindow();
+}
+
+function focusedContents() {
+  return focusedWindow()?.webContents;
+}
+
+function broadcast(channel: string, payload: unknown): void {
+  BrowserWindow.getAllWindows().forEach((window) => {
+    if (!window.isDestroyed()) window.webContents.send(channel, payload);
+  });
+}
+
+function currentAdminPath(): string {
+  const current = focusedContents()?.getURL() ?? "";
+  try {
+    const parsed = new URL(current);
+    const path = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    return path.startsWith("/admin") ? path : "/admin";
+  } catch {
+    return "/admin";
+  }
+}
+
+function currentTitle(): string {
+  return focusedWindow()?.getTitle().replace(/^Asimov\s+-\s+/, "") ?? "Pantalla";
+}
+
+function moduleMenu(group: ModuleGroup, deps: MenuDeps): MenuItemConstructorOptions {
+  return {
+    label: group.label,
+    submenu: group.items.map((item) => ({
+      label: item.label,
+      accelerator: item.accelerator,
+      click: () => deps.openApp(item.path),
+    })),
+  };
+}
+
+function bookmarkMenuItems(deps: MenuDeps, bookmarks: BookmarkEntry[]): MenuItemConstructorOptions[] {
+  if (!bookmarks.length) return [{ label: "Sin favoritos guardados", enabled: false }];
+  return bookmarks.map((entry) => ({
+    label: entry.title,
+    submenu: [
+      {
+        label: "Abrir",
+        click: () => deps.openApp(entry.path),
+      },
+      {
+        label: "Abrir en nueva ventana",
+        click: () => deps.openNewWindow(entry.path),
+      },
+      {
+        label: "Eliminar favorito",
+        click: () => {
+          const next = removeBookmark(entry.id);
+          broadcast("shell:bookmarks:changed", next);
+          buildAppMenu(deps);
+        },
+      },
+    ],
+  }));
+}
+
+function setBackground(background: ShellBackground): void {
+  const next = setShellBackground(background).background;
+  broadcast("shell:background:changed", next);
+}
+
+async function chooseBackgroundImage(): Promise<void> {
+  const result = await dialog.showOpenDialog({
+    title: "Elegir imagen de fondo",
+    properties: ["openFile"],
+    filters: [{ name: "Imagenes", extensions: ["png", "jpg", "jpeg", "webp"] }],
+  });
+  const file = result.filePaths[0];
+  if (!file) return;
+  const ext = nodePath.extname(file).toLowerCase();
+  const mime = ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : ext === ".webp" ? "image/webp" : "image/png";
+  const data = fs.readFileSync(file).toString("base64");
+  setBackground({ type: "image", value: `data:${mime};base64,${data}` });
 }
 
 export function buildAppMenu(deps: MenuDeps): void {
   const recentServers = getServerHistory();
+  const bookmarks = getBookmarks();
   const template: MenuItemConstructorOptions[] = [
     {
       label: "Archivo",
@@ -30,7 +218,12 @@ export function buildAppMenu(deps: MenuDeps): void {
           click: () => deps.openApp("/admin"),
         },
         {
-          label: "Imprimir…",
+          label: "Nueva ventana",
+          accelerator: "CmdOrCtrl+N",
+          click: () => deps.openNewWindow(currentAdminPath()),
+        },
+        {
+          label: "Imprimir...",
           accelerator: "CmdOrCtrl+P",
           click: () => focusedContents()?.print({ printBackground: true }),
         },
@@ -47,7 +240,7 @@ export function buildAppMenu(deps: MenuDeps): void {
           })),
         },
         {
-          label: "Cambiar de servidor…",
+          label: "Cambiar de servidor...",
           click: () => {
             clearServerUrl();
             deps.onServerChanged();
@@ -61,6 +254,49 @@ export function buildAppMenu(deps: MenuDeps): void {
         },
         { type: "separator" },
         { role: "quit", label: "Salir" },
+      ],
+    },
+    ...MODULE_GROUPS.map((group) => moduleMenu(group, deps)),
+    {
+      label: "Favoritos",
+      submenu: [
+        {
+          label: "Mostrar/ocultar panel",
+          accelerator: "CmdOrCtrl+B",
+          click: () => broadcast("shell:toggle-bookmarks", null),
+        },
+        {
+          label: "Agregar pantalla actual",
+          accelerator: "CmdOrCtrl+D",
+          click: () => {
+            const next = addBookmark({ title: currentTitle(), path: currentAdminPath() });
+            broadcast("shell:bookmarks:changed", next);
+            buildAppMenu(deps);
+          },
+        },
+        { type: "separator" },
+        ...bookmarkMenuItems(deps, bookmarks),
+      ],
+    },
+    {
+      label: "Apariencia",
+      submenu: [
+        {
+          label: "Fondo predeterminado",
+          click: () => setBackground({ type: "default", value: "" }),
+        },
+        {
+          label: "Fondo verde oscuro",
+          click: () => setBackground({ type: "color", value: "#062b19" }),
+        },
+        {
+          label: "Fondo crema",
+          click: () => setBackground({ type: "color", value: "#f5f5f0" }),
+        },
+        {
+          label: "Elegir imagen de fondo...",
+          click: () => void chooseBackgroundImage(),
+        },
       ],
     },
     {
@@ -111,7 +347,7 @@ export function buildAppMenu(deps: MenuDeps): void {
           click: () => void shell.openExternal("https://wa.me/5493416684350"),
         },
         { type: "separator" },
-        { label: `Versión ${app.getVersion()}`, enabled: false },
+        { label: `Version ${app.getVersion()}`, enabled: false },
       ],
     },
   ];

@@ -2,14 +2,19 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:;" />
   <title>Asimov — Configuración</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-      background: #070a16;
-      color: #e2e8f0;
+      background:
+        linear-gradient(90deg, rgba(212,175,55,0.12) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(212,175,55,0.08) 1px, transparent 1px),
+        radial-gradient(circle at 50% 115%, rgba(212,175,55,0.18), transparent 20rem),
+        linear-gradient(180deg, #14532d 0%, #062b19 100%);
+      background-size: 44px 44px, 44px 44px, auto, auto;
+      color: #f5f5f0;
       height: 100vh;
       display: flex;
       align-items: center;
@@ -23,29 +28,30 @@
     .welcome.visible { display: block; }
     .welcome-icon {
       width: 64px; height: 64px; margin: 0 auto 20px;
-      background: linear-gradient(135deg, #1236d8, #38bdf8);
       border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; color: #fff;
+      overflow: hidden;
+      border: 1px solid rgba(245,245,240,0.22);
+      box-shadow: 0 16px 38px rgba(0,0,0,0.24);
     }
-    .welcome h1 { font-size: 22px; font-weight: 800; color: #fff; }
-    .welcome p { margin-top: 12px; font-size: 14px; line-height: 1.6; color: #94a3b8; max-width: 360px; margin-left: auto; margin-right: auto; }
+    .welcome-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .welcome h1 { font-size: 22px; font-weight: 800; color: #f5f5f0; }
+    .welcome p { margin-top: 12px; font-size: 14px; line-height: 1.6; color: rgba(245,245,240,0.72); max-width: 360px; margin-left: auto; margin-right: auto; }
     .welcome-features { margin-top: 28px; text-align: left; display: flex; flex-direction: column; gap: 12px; }
     .feature-row { display: flex; align-items: center; gap: 12px; }
     .feature-icon {
-      width: 36px; height: 36px; border-radius: 10px; background: #0f1424;
-      border: 1px solid #1e293b; display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 10px; background: rgba(6,43,25,0.58);
+      border: 1px solid rgba(245,245,240,0.15); display: flex; align-items: center; justify-content: center;
       font-size: 16px; flex-shrink: 0;
     }
-    .feature-text { font-size: 13px; color: #cbd5e1; }
-    .feature-text strong { color: #f1f5f9; font-weight: 600; }
+    .feature-text { font-size: 13px; color: rgba(245,245,240,0.78); }
+    .feature-text strong { color: #f5f5f0; font-weight: 600; }
     .btn-start {
       width: 100%; height: 48px; margin-top: 32px;
-      font-size: 15px; font-weight: 700; color: #03131f; background: #38bdf8;
+      font-size: 15px; font-weight: 700; color: #f5f5f0; background: #14532d;
       border: none; border-radius: 12px; cursor: pointer;
       transition: background 0.15s, transform 0.05s;
     }
-    .btn-start:hover { background: #7dd3fc; }
+    .btn-start:hover { background: #17613a; }
     .btn-start:active { transform: scale(0.99); }
 
     /* --- Main card --- */
@@ -55,35 +61,35 @@
       display: none;
     }
     .card.visible { display: block; }
-    .logo { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
-    .logo span { color: #38bdf8; }
-    .tagline { margin-top: 6px; font-size: 13px; color: #64748b; }
+    .logo { width: 118px; height: 118px; margin: 0 auto; border-radius: 22px; overflow: hidden; border: 1px solid rgba(245,245,240,0.22); box-shadow: 0 22px 60px rgba(0,0,0,0.28), 0 0 0 8px rgba(245,245,240,0.05); }
+    .logo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .tagline { margin-top: 6px; font-size: 13px; color: rgba(245,245,240,0.66); }
 
     /* --- History section --- */
     .history { margin-top: 28px; text-align: left; display: none; }
     .history.visible { display: block; }
-    .history-label { font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; }
+    .history-label { font-size: 12px; font-weight: 600; color: rgba(245,245,240,0.78); margin-bottom: 10px; }
     .history-list { display: flex; flex-direction: column; gap: 6px; }
     .server-card {
       display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; background: #0f1424;
-      border: 1px solid #1e293b; border-radius: 10px;
+      padding: 12px 14px; background: rgba(245,245,240,0.95);
+      border: 1px solid rgba(212,175,55,0.22); border-radius: 10px;
       cursor: pointer; transition: border-color 0.15s, background 0.15s;
     }
-    .server-card:hover { border-color: #38bdf8; background: #111827; }
-    .server-card:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
-    .server-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; flex-shrink: 0; }
+    .server-card:hover { border-color: #d4af37; background: #fff; }
+    .server-card:focus-visible { outline: 2px solid #d4af37; outline-offset: 2px; }
+    .server-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(20,83,45,0.32); flex-shrink: 0; }
     .server-dot.online { background: #22c55e; }
     .server-info { flex: 1; min-width: 0; }
     .server-name {
-      font-size: 13px; font-weight: 600; color: #f1f5f9;
+      font-size: 13px; font-weight: 600; color: #333333;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .server-meta {
-      font-size: 11px; color: #64748b; margin-top: 2px;
+      font-size: 11px; color: #72746f; margin-top: 2px;
       display: flex; align-items: center; gap: 6px;
     }
-    .server-meta .sep { color: #334155; }
+    .server-meta .sep { color: rgba(51,51,51,0.35); }
     .server-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
     .server-btn {
       width: 28px; height: 28px; border: none; background: transparent;
@@ -91,69 +97,69 @@
       display: flex; align-items: center; justify-content: center;
       transition: color 0.15s, background 0.15s;
     }
-    .server-btn:hover { background: #1e293b; }
-    .server-btn.edit:hover { color: #38bdf8; }
+    .server-btn:hover { background: rgba(20,83,45,0.08); }
+    .server-btn.edit:hover { color: #d4af37; }
     .server-btn.remove:hover { color: #f87171; }
 
     /* Label edit inline */
     .label-edit {
       display: none; align-items: center; gap: 6px;
-      padding: 8px 14px; background: #0f1424;
-      border: 1px solid #38bdf8; border-radius: 10px; margin-top: -1px;
+      padding: 8px 14px; background: rgba(245,245,240,0.98);
+      border: 1px solid #d4af37; border-radius: 10px; margin-top: -1px;
     }
     .label-edit.visible { display: flex; }
     .label-edit input {
       flex: 1; height: 32px; padding: 0 10px; font-size: 13px;
-      color: #f8fafc; background: #1e293b; border: 1px solid #334155;
+      color: #333333; background: #fff; border: 1px solid rgba(20,83,45,0.18);
       border-radius: 8px; outline: none;
     }
-    .label-edit input:focus { border-color: #38bdf8; }
+    .label-edit input:focus { border-color: #d4af37; }
     .label-edit .save-btn {
       height: 32px; padding: 0 14px; font-size: 12px; font-weight: 700;
-      color: #03131f; background: #38bdf8; border: none; border-radius: 8px;
+      color: #302605; background: #d4af37; border: none; border-radius: 8px;
       cursor: pointer; white-space: nowrap;
     }
-    .label-edit .save-btn:hover { background: #7dd3fc; }
+    .label-edit .save-btn:hover { background: #e2c760; }
 
     .divider {
       margin: 24px 0 20px; display: flex; align-items: center; gap: 12px;
     }
-    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #1e293b; }
-    .divider-text { font-size: 11px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(245,245,240,0.18); }
+    .divider-text { font-size: 11px; color: rgba(245,245,240,0.58); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
     /* --- Manual entry --- */
-    .title { margin-top: 28px; font-size: 16px; font-weight: 600; color: #f1f5f9; }
-    .subtitle { margin-top: 8px; font-size: 13px; line-height: 1.5; color: #94a3b8; }
+    .title { margin-top: 28px; font-size: 16px; font-weight: 600; color: #f5f5f0; }
+    .subtitle { margin-top: 8px; font-size: 13px; line-height: 1.5; color: rgba(245,245,240,0.72); }
     .field { margin-top: 16px; text-align: left; }
-    label { display: block; font-size: 12px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: rgba(245,245,240,0.8); margin-bottom: 8px; }
     input {
       width: 100%; height: 44px; padding: 0 14px; font-size: 14px;
-      color: #f8fafc; background: #0f1424; border: 1px solid #1e293b;
+      color: #333333; background: #f5f5f0; border: 1px solid rgba(212,175,55,0.24);
       border-radius: 10px; outline: none;
       transition: border-color 0.15s, box-shadow 0.15s; user-select: text;
     }
-    input:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
-    .optional-hint { font-size: 11px; color: #475569; font-weight: 400; margin-left: 4px; }
+    input:focus { border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.16); }
+    .optional-hint { font-size: 11px; color: rgba(245,245,240,0.55); font-weight: 400; margin-left: 4px; }
     button.btn-connect {
       width: 100%; height: 44px; margin-top: 16px;
-      font-size: 14px; font-weight: 700; color: #03131f; background: #38bdf8;
+      font-size: 14px; font-weight: 700; color: #f5f5f0; background: #14532d;
       border: none; border-radius: 10px; cursor: pointer;
       transition: background 0.15s, transform 0.05s;
     }
-    button.btn-connect:hover:not(:disabled) { background: #7dd3fc; }
+    button.btn-connect:hover:not(:disabled) { background: #17613a; }
     button.btn-connect:active:not(:disabled) { transform: scale(0.99); }
     button.btn-connect:disabled { opacity: 0.55; cursor: default; }
     .status { margin-top: 14px; font-size: 12.5px; min-height: 18px; line-height: 1.4; }
     .status.error { color: #f87171; }
     .status.ok { color: #34d399; }
-    .status.loading { color: #94a3b8; }
-    .hint { margin-top: 18px; font-size: 11.5px; color: #475569; }
+    .status.loading { color: rgba(245,245,240,0.7); }
+    .hint { margin-top: 18px; font-size: 11.5px; color: rgba(245,245,240,0.55); }
   </style>
 </head>
 <body>
   <!-- Onboarding welcome (first run only) -->
   <div class="welcome" id="welcomeScreen">
-    <div class="welcome-icon">A</div>
+    <div class="welcome-icon"><img src="icon.png" alt="Asimov" /></div>
     <h1>Bienvenido a Asimov</h1>
     <p>Tu escritorio de gestión comercial, directo desde Windows. Conectá con el servidor de tu empresa para empezar.</p>
     <div class="welcome-features">
@@ -179,7 +185,7 @@
 
   <!-- Main picker card -->
   <div class="card" id="mainCard">
-    <div class="logo">Asimov</div>
+    <div class="logo"><img src="icon.png" alt="Asimov" /></div>
     <div class="tagline">by Bartez Tecnología</div>
 
     <!-- Server history -->

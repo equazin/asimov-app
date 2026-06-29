@@ -39,6 +39,7 @@ child.stdout.on("data", (chunk) => {
 });
 
 let exited = false;
+let requestedShutdown = false;
 child.on("exit", (code, signal) => {
   exited = true;
   if (code !== null && code !== 0) {
@@ -46,7 +47,7 @@ child.on("exit", (code, signal) => {
     if (stderr) console.error("[smoke-test] stderr:", stderr.slice(0, 2000));
     process.exit(1);
   }
-  if (signal) {
+  if (signal && !requestedShutdown) {
     console.error(`[smoke-test] FALLO: la app fue terminada por señal ${signal}`);
     process.exit(1);
   }
@@ -56,6 +57,7 @@ child.on("exit", (code, signal) => {
 setTimeout(() => {
   if (exited) return;
   console.log(`[smoke-test] App estable después de ${SETTLE_MS}ms. Cerrando...`);
+  requestedShutdown = true;
   child.kill("SIGTERM");
   setTimeout(() => {
     if (!exited) {

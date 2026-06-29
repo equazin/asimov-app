@@ -65,6 +65,11 @@ src/
 - Deeplinks `bartez://open?path=/admin/...`
 - Inicio automático con Windows
 - Auto-actualización vía GitHub Releases
+- Menu nativo por modulos GESES: Ventas, Compras, Stock, Facturacion, Tesoreria, Contabilidad, RMA y Config
+- Multi-ventana (`Ctrl+N`) para operar dos pantallas del ERP en paralelo
+- Favoritos locales (`Ctrl+B` panel, `Ctrl+D` guardar pantalla actual)
+- Barra de estado inyectada: servidor, version, conexion y hora
+- Fondo de operador personalizable desde el menu Apariencia
 
 ## API nativa expuesta a la web
 
@@ -74,6 +79,8 @@ if (window.bartezDesktop?.isDesktop) {
   await window.bartezDesktop.notify({ title, body });
   const printers = await window.bartezDesktop.listPrinters();
   await window.bartezDesktop.setLaunchAtStartup(true);
+  await window.bartezDesktop.shell.addBookmark(document.title);
+  window.bartezDesktop.shell.toggleBookmarks();
 }
 ```
 

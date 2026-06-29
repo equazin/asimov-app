@@ -21,6 +21,12 @@ import {
   updateHistoryLabel,
   hasCompletedOnboarding,
   setOnboardingDone,
+  getShellPreferences,
+  setShellBackground,
+  getBookmarks,
+  addBookmark,
+  removeBookmark,
+  type ShellBackground,
 } from "./config";
 import { setLaunchAtStartupEnabled } from "./tray";
 
@@ -34,6 +40,26 @@ export interface ServerValidationResult {
   ok: boolean;
   url?: string;
   error?: string;
+}
+
+function normalizeAdminPath(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "/admin";
+  try {
+    const parsed = new URL(trimmed);
+    return normalizeAdminPath(`${parsed.pathname}${parsed.search}${parsed.hash}`);
+  } catch {}
+  const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return withSlash.startsWith("/admin") ? withSlash : "/admin";
+}
+
+function normalizeShellBackground(raw: unknown): ShellBackground {
+  const data = (raw ?? {}) as { type?: unknown; value?: unknown };
+  const type = String(data.type ?? "default");
+  const value = String(data.value ?? "").trim();
+  if (type === "color" && /^#[0-9a-f]{6}$/i.test(value)) return { type: "color", value };
+  if (type === "image" && value) return { type: "image", value };
+  return { type: "default", value: "" };
 }
 
 /**
@@ -127,6 +153,27 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     return { ok: true };
   });
 
+  // --- Shell GESES ----------------------------------------------------------
+  ipcMain.handle("shell:prefs:get", () => getShellPreferences());
+
+  ipcMain.handle("shell:background:set", (_event, raw: unknown) => {
+    return setShellBackground(normalizeShellBackground(raw));
+  });
+
+  ipcMain.handle("shell:bookmark:list", () => getBookmarks());
+
+  ipcMain.handle("shell:bookmark:add", (_event, raw: unknown) => {
+    const data = (raw ?? {}) as { title?: unknown; path?: unknown };
+    return addBookmark({
+      title: String(data.title ?? ""),
+      path: normalizeAdminPath(String(data.path ?? "")),
+    });
+  });
+
+  ipcMain.handle("shell:bookmark:remove", (_event, id: unknown) => {
+    return removeBookmark(String(id ?? ""));
+  });
+
   // --- Retry (offline screen) ----------------------------------------------
   ipcMain.handle("offline:retry", async () => {
     const url = getServerUrl();
@@ -137,8 +184,8 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
 
   // --- Impresión nativa ----------------------------------------------------
-  ipcMain.handle("print:current", async (_event, opts: unknown) => {
-    const window = deps.getMainWindow();
+  ipcMain.handle("print:current", async (event, opts: unknown) => {
+    const window = BrowserWindow.fromWebContents(event.sender) ?? deps.getMainWindow();
     if (!window) return { ok: false, error: "No hay ventana activa." };
     const options = (opts ?? {}) as { silent?: boolean; deviceName?: string };
     return new Promise((resolve) => {
@@ -155,8 +202,8 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     });
   });
 
-  ipcMain.handle("print:list", async () => {
-    const window = deps.getMainWindow();
+  ipcMain.handle("print:list", async (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender) ?? deps.getMainWindow();
     if (!window) return [];
     try {
       return await window.webContents.getPrintersAsync();
