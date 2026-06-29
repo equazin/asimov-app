@@ -23,7 +23,7 @@ protocols:
 win:
   target:
     - nsis
-  artifactName: ${productName}-Setup-${version}.${ext}
+  artifactName: asimov-erp-by-bartez-Setup-${version}.${ext}
   icon: build/icon.ico
   # Firma de código: requiere certificado EV/OV.
   # Descomentar cuando se tenga certificado:
