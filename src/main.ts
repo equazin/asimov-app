@@ -518,6 +518,12 @@ if (!gotLock) {
 
     if (!isDev()) initAutoUpdater();
 
+    ipcMain.on("shell:open-module", (_event, path: string) => {
+      if (typeof path === "string" && path.startsWith("/admin")) {
+        createModuleWindow(path);
+      }
+    });
+
     ipcMain.on("shell:open-product-selection", (event, data: { rowId: string }) => {
       const senderWindow = BrowserWindow.fromWebContents(event.sender);
       if (senderWindow) {

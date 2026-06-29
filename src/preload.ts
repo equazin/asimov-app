@@ -496,6 +496,9 @@ const api = {
   getLaunchAtStartup: () => ipcRenderer.invoke("app:launch-at-startup:get"),
   setLaunchAtStartup: (enabled: boolean) => ipcRenderer.invoke("app:launch-at-startup:set", enabled),
 
+  /** Abre un módulo del ERP en una ventana nueva desde el shell. */
+  openModule: (path: string) => ipcRenderer.send("shell:open-module", path),
+
   /** Shell de operador GESES: preferencias locales y favoritos. */
   shell: {
     getPreferences: () => ipcRenderer.invoke("shell:prefs:get"),
