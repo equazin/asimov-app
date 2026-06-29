@@ -33,6 +33,8 @@ const APP_ICON_FILE = path.join(__dirname, "icon.png");
 const PRODUCT_SELECTION_FILE = path.join(__dirname, "product-selection.html");
 const NEW_ARTICLE_FILE = path.join(__dirname, "new-article.html");
 const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
+const NEW_CLIENT_FILE = path.join(__dirname, "new-client.html");
+const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
 
 let mainWindow: BrowserWindow | null = null;
 let pickerWindow: BrowserWindow | null = null;
@@ -591,12 +593,35 @@ if (!gotLock) {
     });
 
     ipcMain.on("shell:open-new-client", () => {
-      if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
-        const parent = clientSelectionWindow.getParentWindow();
-        if (parent && !parent.isDestroyed()) {
-          parent.webContents.send("shell:open-module", "/admin/accounts/new");
+      const parent = clientSelectionWindow ?? mainWindow;
+      if (parent && !parent.isDestroyed()) {
+        createNewClientWindow(parent);
+      }
+    });
+
+    ipcMain.on("shell:client-created", (_event, data: { client: any }) => {
+      if (data.client && clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
+        clientSelectionWindow.webContents.send("shell:new-client-added", data.client);
+      }
+      if (newClientWindow && !newClientWindow.isDestroyed()) {
+        newClientWindow.close();
+      }
+    });
+
+    ipcMain.on("shell:open-new-supplier", (event) => {
+      const senderWindow = BrowserWindow.fromWebContents(event.sender) ?? mainWindow;
+      if (senderWindow && !senderWindow.isDestroyed()) {
+        createNewSupplierWindow(senderWindow);
+      }
+    });
+
+    ipcMain.on("shell:supplier-created", (_event, data: { supplier: any }) => {
+      if (newSupplierWindow && !newSupplierWindow.isDestroyed()) {
+        const parent = newSupplierWindow.getParentWindow();
+        if (parent && !parent.isDestroyed() && data.supplier) {
+          parent.webContents.send("shell:new-supplier-added", data.supplier);
         }
-        clientSelectionWindow.close();
+        newSupplierWindow.close();
       }
     });
 
@@ -614,6 +639,8 @@ if (!gotLock) {
 let productSelectionWindow: BrowserWindow | null = null;
 let newArticleWindow: BrowserWindow | null = null;
 let clientSelectionWindow: BrowserWindow | null = null;
+let newClientWindow: BrowserWindow | null = null;
+let newSupplierWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -773,6 +800,66 @@ async function loadClientsForPicker(): Promise<void> {
   } catch {
     clientSelectionWindow.webContents.send("client-selection:loaded", []);
   }
+}
+
+function createNewClientWindow(parentWindow: BrowserWindow) {
+  if (newClientWindow && !newClientWindow.isDestroyed()) {
+    newClientWindow.focus();
+    return;
+  }
+
+  newClientWindow = new BrowserWindow({
+    width: 920,
+    height: 640,
+    resizable: true,
+    parent: parentWindow,
+    modal: true,
+    show: false,
+    backgroundColor: "#f0f0f0",
+    title: "Clientes — NUEVO",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "new-client-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newClientWindow.once("ready-to-show", () => newClientWindow?.show());
+  newClientWindow.on("closed", () => { newClientWindow = null; });
+  newClientWindow.setMenu(null);
+  void newClientWindow.loadFile(NEW_CLIENT_FILE);
+}
+
+function createNewSupplierWindow(parentWindow: BrowserWindow) {
+  if (newSupplierWindow && !newSupplierWindow.isDestroyed()) {
+    newSupplierWindow.focus();
+    return;
+  }
+
+  newSupplierWindow = new BrowserWindow({
+    width: 920,
+    height: 640,
+    resizable: true,
+    parent: parentWindow,
+    modal: true,
+    show: false,
+    backgroundColor: "#f0f0f0",
+    title: "Proveedores — NUEVO",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "new-supplier-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newSupplierWindow.once("ready-to-show", () => newSupplierWindow?.show());
+  newSupplierWindow.on("closed", () => { newSupplierWindow = null; });
+  newSupplierWindow.setMenu(null);
+  void newSupplierWindow.loadFile(NEW_SUPPLIER_FILE);
 }
 
 function createNewArticleWindow(parentWindow: BrowserWindow) {

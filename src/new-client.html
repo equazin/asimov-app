@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cliente: NUEVO</title>
+  <style>
+    :root {
+      --bg: #f0efe8;
+      --panel: #ffffff;
+      --accent: #1a5a8c;
+      --accent-light: #e4f0fa;
+      --border: #c4c0b4;
+      --border-dark: #8a8680;
+      --text: #1a1a1a;
+      --text-muted: #6b6560;
+      --input-bg: #fffff8;
+      --input-focus: #1a5a8c;
+      --header-bg: #0d3a5c;
+      --tab-active: #ffffff;
+      --tab-inactive: #e0ddd4;
+      --danger: #c62828;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--header-bg), #2a7ab8);
+      color: #fff;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
+    .header-close {
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 4px;
+      color: #fff; font-size: 14px;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .header-close:hover { background: rgba(255,255,255,0.3); }
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      padding: 8px 12px 0;
+      gap: 2px;
+      border-bottom: 2px solid var(--accent);
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 6px 12px;
+      background: var(--tab-inactive);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tab:hover { background: #eae7de; }
+    .tab.active {
+      background: var(--tab-active);
+      color: var(--accent);
+      border-color: var(--accent);
+      border-bottom: 2px solid var(--tab-active);
+      margin-bottom: -2px;
+      z-index: 2;
+    }
+    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
+    .tab-panel.active { display: block; }
+    .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px 12px;
+      align-content: start;
+    }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .field label {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 8px;
+      font-family: inherit; font-size: 12px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(26,90,140,0.12);
+    }
+    .field textarea { height: 48px; padding: 6px 8px; resize: vertical; }
+    .field-check {
+      display: flex; align-items: center; gap: 6px;
+      height: 28px; font-weight: 600; font-size: 11px;
+    }
+    .field-check input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); }
+    .section-title {
+      grid-column: span 4;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 6px 0 2px;
+      border-bottom: 1px solid var(--accent-light);
+      margin-top: 4px;
+    }
+    .section-title:first-child { margin-top: 0; }
+    .mini-table { grid-column: span 4; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .mini-table table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .mini-table th { background: var(--accent); color: #fff; text-align: left; padding: 5px 8px; font-weight: 600; font-size: 10px; text-transform: uppercase; }
+    .mini-table td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; }
+    .mini-table tr:nth-child(even) { background: #fafaf6; }
+    .mini-table .empty-row td { text-align: center; color: var(--text-muted); font-style: italic; padding: 16px; }
+    .add-row-btn {
+      grid-column: span 4;
+      background: var(--accent-light); border: 1px dashed var(--accent);
+      border-radius: 4px; padding: 6px; text-align: center;
+      color: var(--accent); font-weight: 600; font-size: 11px; cursor: pointer;
+    }
+    .add-row-btn:hover { background: #d0e4f4; }
+    .footer {
+      padding: 10px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .btn {
+      height: 30px; padding: 0 18px;
+      border: 1px solid var(--border); border-radius: 5px;
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-default { background: var(--panel); color: var(--text); }
+    .btn-default:hover { background: #f0f0f0; }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: #134a72; }
+    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: #fde8e8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .required-star::after { content: " *"; color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Clientes &mdash; NUEVO</h1>
+    <button class="header-close" id="btnClose">&times;</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="datos">Datos Cliente</div>
+    <div class="tab" data-tab="ventas">Ventas</div>
+    <div class="tab" data-tab="varios">Datos Varios</div>
+    <div class="tab" data-tab="transportes">Transportes</div>
+    <div class="tab" data-tab="ctacte">Cta. Cte.</div>
+    <div class="tab" data-tab="percepciones">Percepciones</div>
+    <div class="tab" data-tab="categorias">Categorías</div>
+    <div class="tab" data-tab="adherentes">Adherentes</div>
+    <div class="tab" data-tab="electronica">Factura Electr.</div>
+  </div>
+
+  <div class="content-area">
+    <!-- ═══════════════ DATOS CLIENTE ═══════════════ -->
+    <div class="tab-panel active" id="tab-datos">
+      <div class="form-grid">
+        <div class="section-title">Identificación</div>
+        <div class="field"><label>Código</label><input type="text" id="txtCodigo" /></div>
+        <div class="field span-3"><label class="required-star">Razón Social</label><input type="text" id="txtRazonSocial" placeholder="Nombre o razón social..." /></div>
+
+        <div class="field"><label>Titular</label><input type="text" /></div>
+        <div class="field"><label class="required-star">C.U.I.T.</label><input type="text" id="txtCuit" placeholder="XX-XXXXXXXX-X" /></div>
+        <div class="field"><label>Condición IVA</label>
+          <select id="selIva">
+            <option>Responsable Inscripto</option>
+            <option>Monotributista</option>
+            <option>Exento</option>
+            <option>Consumidor Final</option>
+            <option>No Responsable</option>
+          </select>
+        </div>
+        <div class="field"><label>Ing. Brutos</label><input type="text" /></div>
+
+        <div class="section-title">Contacto</div>
+        <div class="field"><label>Teléfono</label><input type="tel" id="txtTelefono" /></div>
+        <div class="field"><label>Celular</label><input type="tel" /></div>
+        <div class="field"><label>E-Mail</label><input type="email" id="txtEmail" /></div>
+        <div class="field"><label>Web</label><input type="url" placeholder="www..." /></div>
+
+        <div class="section-title">Domicilio</div>
+        <div class="field span-2"><label>Dirección</label><input type="text" id="txtDomicilio" /></div>
+        <div class="field"><label>Localidad</label><input type="text" /></div>
+        <div class="field"><label>C. Postal</label><input type="text" /></div>
+
+        <div class="field"><label>Provincia</label>
+          <select>
+            <option>Buenos Aires</option><option>CABA</option><option>Catamarca</option>
+            <option>Chaco</option><option>Chubut</option><option>Córdoba</option>
+            <option>Corrientes</option><option>Entre Ríos</option><option>Formosa</option>
+            <option>Jujuy</option><option>La Pampa</option><option>La Rioja</option>
+            <option>Mendoza</option><option>Misiones</option><option>Neuquén</option>
+            <option>Río Negro</option><option>Salta</option><option>San Juan</option>
+            <option>San Luis</option><option>Santa Cruz</option><option>Santa Fe</option>
+            <option>Sgo. del Estero</option><option>Tierra del Fuego</option><option>Tucumán</option>
+          </select>
+        </div>
+        <div class="field"><label>País</label><select><option>Argentina</option><option>Uruguay</option><option>Brasil</option><option>Chile</option><option>Paraguay</option><option>Otro</option></select></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" id="chkMayorista" /><label for="chkMayorista">Mayorista</label></div></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" /><label>Bloqueado</label></div></div>
+
+        <div class="section-title">Sucursal</div>
+        <div class="field"><label>Cód. Sucursal</label><input type="text" value="1" /></div>
+        <div class="field span-3"><label>Sucursal</label><input type="text" value="01 PRINCIPAL" readonly style="background:#f0f0f0;" /></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ VENTAS ═══════════════ -->
+    <div class="tab-panel" id="tab-ventas">
+      <div class="form-grid">
+        <div class="section-title">Condiciones comerciales</div>
+        <div class="field span-2"><label>Condición de venta</label>
+          <select><option>Contado</option><option>Cta. Cte. 30 días</option><option>Cta. Cte. 60 días</option><option>Cta. Cte. 90 días</option><option>Cheque 30 días</option><option>Tarjeta de crédito</option></select>
+        </div>
+        <div class="field"><label>Lista de precios</label><select><option>LISTA GENERAL</option><option>LISTA MAYORISTA</option><option>LISTA USD</option></select></div>
+        <div class="field"><label>Moneda</label><select><option>ARS</option><option>USD</option></select></div>
+
+        <div class="field"><label>% Descuento</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>% Bonificación</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>% Comisión vendedor</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>Vendedor asignado</label><input type="text" /></div>
+
+        <div class="section-title">Crédito</div>
+        <div class="field"><label>Límite de crédito ($)</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>Saldo actual</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>Disponible</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" /><label>Factura de crédito</label></div></div>
+
+        <div class="section-title">Facturación</div>
+        <div class="field"><label>Tipo comprobante</label><select><option>Factura A</option><option>Factura B</option><option>Factura C</option></select></div>
+        <div class="field"><label>Copias factura</label><input type="number" value="1" /></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" /><label>Enviar factura por email</label></div></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" checked /><label>Imprime remito</label></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ DATOS VARIOS ═══════════════ -->
+    <div class="tab-panel" id="tab-varios">
+      <div class="form-grid">
+        <div class="section-title">Información adicional</div>
+        <div class="field"><label>Fecha de alta</label><input type="date" /></div>
+        <div class="field"><label>Fecha nacimiento</label><input type="date" /></div>
+        <div class="field"><label>Actividad</label><input type="text" /></div>
+        <div class="field"><label>Categoría</label><input type="text" /></div>
+
+        <div class="field"><label>Código categoría</label><input type="text" /></div>
+        <div class="field"><label>Orden</label><input type="number" value="0" /></div>
+        <div class="field"><label>Conv. multilateral</label><input type="text" /></div>
+        <div class="field"><label>Desde $</label><input type="text" value="0" /></div>
+
+        <div class="section-title">Contactos adicionales</div>
+        <div class="mini-table">
+          <table>
+            <thead><tr><th>Nombre</th><th>Cargo</th><th>Teléfono</th><th>Email</th></tr></thead>
+            <tbody>
+              <tr class="empty-row"><td colspan="4">Sin contactos adicionales</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="add-row-btn">+ Agregar contacto</div>
+
+        <div class="section-title">Observaciones</div>
+        <div class="field span-4"><label>Notas internas</label><textarea placeholder="Observaciones sobre el cliente..."></textarea></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ TRANSPORTES ═══════════════ -->
+    <div class="tab-panel" id="tab-transportes">
+      <div class="form-grid">
+        <div class="section-title">Transporte habitual</div>
+        <div class="field span-2"><label>Empresa de transporte</label><input type="text" /></div>
+        <div class="field"><label>Código transporte</label><input type="text" /></div>
+        <div class="field"><label>Tipo flete</label><select><option>A cargo del cliente</option><option>A cargo del vendedor</option><option>Sin flete</option></select></div>
+
+        <div class="section-title">Domicilios de entrega</div>
+        <div class="mini-table">
+          <table>
+            <thead><tr><th>Descripción</th><th>Dirección</th><th>Localidad</th><th>C. Postal</th><th>Provincia</th><th>Principal</th></tr></thead>
+            <tbody>
+              <tr class="empty-row"><td colspan="6">Sin domicilios de entrega configurados</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="add-row-btn">+ Agregar domicilio de entrega</div>
+
+        <div class="section-title">Instrucciones de envío</div>
+        <div class="field span-4"><label>Notas para el transporte</label><textarea placeholder="Horario de recepción, indicaciones especiales..."></textarea></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ CTA. CTE. ═══════════════ -->
+    <div class="tab-panel" id="tab-ctacte">
+      <div class="form-grid">
+        <div class="section-title">Resumen de cuenta corriente</div>
+        <div class="field"><label>Saldo actual</label><input type="text" value="$ 0.00" readonly style="background:#f0f0f0;font-weight:700;font-size:14px;" /></div>
+        <div class="field"><label>Saldo en USD</label><input type="text" value="USD 0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>Cheques en cartera</label><input type="text" value="0" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>Última operación</label><input type="text" value="-" readonly style="background:#f0f0f0;" /></div>
+
+        <div class="section-title">Últimos movimientos</div>
+        <div class="mini-table">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Comprobante</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead>
+            <tbody>
+              <tr class="empty-row"><td colspan="6">Sin movimientos registrados — el cliente es nuevo</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section-title">Antigüedad de saldos</div>
+        <div class="field"><label>0-30 días</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>31-60 días</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>61-90 días</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>+90 días</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ PERCEPCIONES ═══════════════ -->
+    <div class="tab-panel" id="tab-percepciones">
+      <div class="form-grid">
+        <div class="section-title">Percepciones de Ingresos Brutos</div>
+        <div class="field span-2"><label>Régimen IIBB</label>
+          <select><option>Sin percepción</option><option>Convenio Multilateral</option><option>Régimen Local</option></select>
+        </div>
+        <div class="field"><label>Nro. inscripción IIBB</label><input type="text" /></div>
+        <div class="field"><label>% Alícuota IIBB</label><input type="text" value="0.00" /></div>
+
+        <div class="section-title">Percepciones por jurisdicción</div>
+        <div class="mini-table">
+          <table>
+            <thead><tr><th>Jurisdicción</th><th>Alícuota %</th><th>Desde</th><th>Hasta</th><th>Activa</th></tr></thead>
+            <tbody>
+              <tr class="empty-row"><td colspan="5">Sin percepciones configuradas</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="add-row-btn">+ Agregar percepción</div>
+
+        <div class="section-title">Retenciones</div>
+        <div class="field"><label>% Ret. Ganancias</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>% Ret. IVA</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>% Ret. SUSS</label><input type="text" value="0.00" /></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" /><label>Agente de retención</label></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ CATEGORÍAS ═══════════════ -->
+    <div class="tab-panel" id="tab-categorias">
+      <div class="form-grid">
+        <div class="section-title">Clasificación del cliente</div>
+        <div class="field span-2"><label>Categoría principal</label>
+          <select><option>A - Premium</option><option>B - Regular</option><option>C - Esporádico</option><option>D - Inactivo</option></select>
+        </div>
+        <div class="field span-2"><label>Segmento</label>
+          <select><option>Empresa</option><option>Comercio</option><option>Profesional</option><option>Particular</option><option>Estado / Gobierno</option></select>
+        </div>
+
+        <div class="field span-2"><label>Zona geográfica</label><input type="text" /></div>
+        <div class="field span-2"><label>Ruta de reparto</label><input type="text" /></div>
+
+        <div class="section-title">Categorías adicionales</div>
+        <div class="mini-table">
+          <table>
+            <thead><tr><th>Tipo</th><th>Categoría</th><th>Desde</th></tr></thead>
+            <tbody>
+              <tr class="empty-row"><td colspan="3">Sin categorías adicionales</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="add-row-btn">+ Agregar categoría</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ ADHERENTES ═══════════════ -->
+    <div class="tab-panel" id="tab-adherentes">
+      <div class="form-grid">
+        <div class="section-title">Adherentes / Usuarios autorizados</div>
+        <div class="mini-table">
+          <table>
+            <thead><tr><th>Nombre</th><th>DNI</th><th>Parentesco / Relación</th><th>Teléfono</th><th>Autorizado compra</th></tr></thead>
+            <tbody>
+              <tr class="empty-row"><td colspan="5">Sin adherentes registrados</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="add-row-btn">+ Agregar adherente</div>
+
+        <div class="section-title">Notas</div>
+        <div class="field span-4"><label>Observaciones sobre adherentes</label><textarea placeholder="Límites de compra, restricciones, etc."></textarea></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ FACTURA ELECTRÓNICA ═══════════════ -->
+    <div class="tab-panel" id="tab-electronica">
+      <div class="form-grid">
+        <div class="section-title">Datos de facturación electrónica</div>
+        <div class="field span-2"><label>CBU / Alias</label><input type="text" placeholder="CBU o alias para transferencias" /></div>
+        <div class="field span-2"><label>Email fiscal</label><input type="email" placeholder="Email para recibir facturas electrónicas" /></div>
+
+        <div class="field span-2"><label>Tipo documento</label>
+          <select><option>CUIT</option><option>CUIL</option><option>CDI</option><option>DNI</option><option>Pasaporte</option></select>
+        </div>
+        <div class="field span-2"><label>Nro. documento</label><input type="text" /></div>
+
+        <div class="section-title">Configuración AFIP</div>
+        <div class="field span-2"><label>Condición frente al IVA (AFIP)</label>
+          <select>
+            <option>1 - IVA Responsable Inscripto</option>
+            <option>4 - IVA Sujeto Exento</option>
+            <option>5 - Consumidor Final</option>
+            <option>6 - Responsable Monotributo</option>
+            <option>8 - Proveedor del Exterior</option>
+            <option>9 - Cliente del Exterior</option>
+            <option>10 - IVA Liberado</option>
+          </select>
+        </div>
+        <div class="field"><label>Código actividad AFIP</label><input type="text" /></div>
+        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" checked /><label>Envío automático</label></div></div>
+
+        <div class="section-title">Medio de pago electrónico</div>
+        <div class="field span-2"><label>Sistema de circulación</label>
+          <select><option>TRANSF. AL SIST. DE CIRCULACIÓN</option><option>TRANSFERENCIA BANCARIA</option><option>CHEQUE</option><option>EFECTIVO</option><option>TARJETA DE CRÉDITO</option><option>MERCADO PAGO</option></select>
+        </div>
+        <div class="field span-2"><label>Referencia de pago</label><input type="text" /></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn btn-default" id="btnNew">Nuevo</button>
+    <button class="btn btn-primary" id="btnSave">Guardar</button>
+    <button class="btn btn-default" disabled>Guardar como...</button>
+    <button class="btn btn-danger" disabled>Eliminar</button>
+    <button class="btn btn-default" id="btnExit">Salir</button>
+  </div>
+
+  <script>
+    const txtCodigo = document.getElementById("txtCodigo");
+    const txtRazonSocial = document.getElementById("txtRazonSocial");
+    const txtCuit = document.getElementById("txtCuit");
+
+    txtCodigo.value = Math.floor(10000 + Math.random() * 90000);
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    document.getElementById("btnNew").addEventListener("click", () => {
+      txtCodigo.value = Math.floor(10000 + Math.random() * 90000);
+      txtRazonSocial.value = "";
+      txtCuit.value = "";
+      txtRazonSocial.focus();
+    });
+
+    document.getElementById("btnSave").addEventListener("click", () => {
+      if (!txtRazonSocial.value.trim()) { alert("Ingrese la Razón Social."); return; }
+      const client = {
+        codigo: txtCodigo.value.trim(),
+        razonSocial: txtRazonSocial.value.trim().toUpperCase(),
+        cuit: txtCuit.value.trim(),
+        domicilio: document.getElementById("txtDomicilio")?.value || "",
+        telefono: document.getElementById("txtTelefono")?.value || "",
+        email: document.getElementById("txtEmail")?.value || "",
+        condicionIva: document.getElementById("selIva")?.value || "",
+        mayorista: document.getElementById("chkMayorista")?.checked || false,
+      };
+      if (window.asimovNewClient) window.asimovNewClient.createClient(client);
+    });
+
+    const closeHandler = () => { if (window.asimovNewClient) window.asimovNewClient.cancel(); };
+    document.getElementById("btnExit").addEventListener("click", closeHandler);
+    document.getElementById("btnClose").addEventListener("click", closeHandler);
+  </script>
+</body>
+</html>
