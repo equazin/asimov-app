@@ -510,6 +510,12 @@ const api = {
 
 contextBridge.exposeInMainWorld("bartezDesktop", api);
 
+ipcRenderer.on("shortcut:triggered", (_event, action: string) => {
+  if (isAdminModule()) {
+    window.dispatchEvent(new CustomEvent("asimov:shortcut", { detail: { action } }));
+  }
+});
+
 ipcRenderer.on("shell:toggle-bookmarks", () => {
   if (!isShellDesktop()) return;
   document.getElementById(BOOKMARKS_ID)?.classList.toggle("visible");

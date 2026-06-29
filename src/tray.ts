@@ -9,7 +9,7 @@ let quitting = false;
 
 interface TrayDeps {
   getMainWindow: () => BrowserWindow | null;
-  openApp: () => void;
+  openApp: (pathname?: string) => void;
   onServerChanged: () => void;
 }
 
@@ -83,6 +83,12 @@ export function rebuildTrayMenu(): void {
         else depsRef?.openApp();
       },
     },
+    { type: "separator" },
+    { label: "Ventas", click: () => depsRef?.openApp("/admin/orders") },
+    { label: "Stock", click: () => depsRef?.openApp("/admin/stock") },
+    { label: "Caja", click: () => depsRef?.openApp("/admin/cash-accounts") },
+    { label: "Facturas", click: () => depsRef?.openApp("/admin/invoices") },
+    { label: "Tickets", click: () => depsRef?.openApp("/admin/tickets") },
     { type: "separator" },
     {
       label: `Servidor: ${getServerLabel()}`,

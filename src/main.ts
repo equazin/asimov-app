@@ -8,7 +8,7 @@
  *  - Sin servidor configurado -> ventana "picker" para elegir servidor.
  *  - Con servidor -> splash screen -> carga web -> ventana principal o pantalla offline.
  */
-import { app, BrowserWindow, session, shell, ipcMain } from "electron";
+import { app, BrowserWindow, globalShortcut, session, shell, ipcMain } from "electron";
 import * as path from "node:path";
 import {
   getServerUrl,
@@ -376,6 +376,31 @@ function createPickerWindow(): BrowserWindow {
 }
 
 // ---------------------------------------------------------------------------
+// Global shortcuts (atajos estilo GESES: F2=nuevo, F3=buscar, F5=refrescar, F8=guardar)
+// ---------------------------------------------------------------------------
+
+function registerGlobalShortcuts(): void {
+  const shortcuts: Record<string, string> = {
+    F2: "new",
+    F3: "search",
+    F5: "refresh",
+    F8: "save",
+  };
+
+  for (const [key, action] of Object.entries(shortcuts)) {
+    globalShortcut.register(key, () => {
+      const focused = BrowserWindow.getFocusedWindow();
+      if (!focused) return;
+      if (action === "refresh") {
+        focused.webContents.reload();
+        return;
+      }
+      focused.webContents.send("shortcut:triggered", action);
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Window orchestration
 // ---------------------------------------------------------------------------
 
@@ -485,6 +510,7 @@ if (!gotLock) {
 
     registerIpcHandlers({ onServerChanged, getMainWindow, onRetry });
     buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow });
+    registerGlobalShortcuts();
     syncLaunchAtStartup();
     initTray({ getMainWindow, openApp, onServerChanged });
 
@@ -530,6 +556,7 @@ if (!gotLock) {
   });
 
   app.on("window-all-closed", () => {
+    globalShortcut.unregisterAll();
     if (process.platform !== "darwin") app.quit();
   });
 }
