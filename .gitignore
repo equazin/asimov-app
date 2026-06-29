@@ -1,0 +1,8 @@
+node_modules/
+dist/
+release/
+# build/*.ico — tracked: needed for electron-builder
+*.log
+.DS_Store
+.env
+.env.*

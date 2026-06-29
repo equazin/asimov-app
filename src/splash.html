@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';" />
+  <title>Bartez Hub</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: #070a16;
+      color: #e2e8f0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      overflow: hidden;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s forwards;
+    }
+    .logo span { color: #38bdf8; }
+    .tagline {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #64748b;
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s forwards;
+    }
+    .progress-wrap {
+      margin-top: 36px;
+      width: 200px;
+      height: 3px;
+      background: #1e293b;
+      border-radius: 4px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.5s forwards;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #1236d8, #38bdf8);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    .status {
+      margin-top: 14px;
+      font-size: 11.5px;
+      color: #475569;
+      opacity: 0;
+      animation: fadeUp 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.5s forwards;
+    }
+    .version {
+      position: absolute;
+      bottom: 18px;
+      font-size: 10.5px;
+      color: #334155;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">Bartez<span> ERP</span></div>
+  <div class="tagline">Distribución IT para empresas</div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress"></div>
+  </div>
+  <div class="status" id="status">Conectando con el servidor…</div>
+  <div class="version" id="version"></div>
+
+  <script>
+    const progress = document.getElementById("progress");
+    const status = document.getElementById("status");
+    const version = document.getElementById("version");
+
+    if (window.bartezSplash) {
+      window.bartezSplash.getVersion().then((v) => {
+        version.textContent = v ? `v${v}` : "";
+      });
+
+      window.bartezSplash.onProgress((pct, msg) => {
+        progress.style.width = pct + "%";
+        if (msg) status.textContent = msg;
+      });
+    }
+  </script>
+</body>
+</html>

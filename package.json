@@ -1,0 +1,38 @@
+{
+  "name": "bartez-hub",
+  "productName": "Bartez Hub",
+  "version": "1.0.0",
+  "description": "Bartez Hub — App de escritorio del ERP Bartez Tecnología.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/equazin/bartez-hub.git"
+  },
+  "author": {
+    "name": "Bartez Tecnología",
+    "email": "ventas@bartez.com.ar"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.js",
+    "dev": "npm run build && cross-env BARTEZ_DEV=1 electron .",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
+    "dist:dir": "npm run build && electron-builder --dir",
+    "smoke-test": "npm run build && node scripts/smoke-test.js",
+    "release": "npm run build && electron-builder --publish always",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.2"
+  }
+}

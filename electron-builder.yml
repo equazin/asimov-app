@@ -1,0 +1,49 @@
+appId: ar.com.bartez.hub
+productName: Bartez Hub
+copyright: © Bartez Tecnología
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - dist/**/*
+  - package.json
+
+extraResources:
+  - from: build/icon.png
+    to: icon.png
+
+protocols:
+  - name: Bartez Hub
+    schemes:
+      - bartez
+
+# --- Windows: instalador NSIS (.exe) ---
+win:
+  target:
+    - nsis
+  artifactName: ${productName}-Setup-${version}.${ext}
+  icon: build/icon.ico
+  # Firma de código: requiere certificado EV/OV.
+  # Descomentar cuando se tenga certificado:
+  # signingHashAlgorithms:
+  #   - sha256
+  # certificateSubjectName: "Bartez Tecnología SRL"
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Bartez Hub
+  menuCategory: true
+  deleteAppDataOnUninstall: false
+
+# --- Auto-update vía GitHub Releases ---
+publish:
+  provider: github
+  owner: equazin
+  repo: bartez-hub
+  releaseType: release
