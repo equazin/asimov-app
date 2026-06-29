@@ -473,10 +473,13 @@ async function initShellChrome(): Promise<void> {
   await renderBookmarks(prefs.bookmarks);
 }
 
+let resolvedVersion = "";
+ipcRenderer.invoke("app:version").then((v: string) => { resolvedVersion = v; }).catch(() => {});
+
 const api = {
   /** Marca de plataforma para feature-detection desde la web. */
   isDesktop: true,
-  version: process.env.npm_package_version ?? "",
+  get version() { return resolvedVersion || process.env.npm_package_version || ""; },
 
   /** Imprime el documento actualmente cargado en la ventana. */
   print: (options?: PrintOptions) => ipcRenderer.invoke("print:current", options ?? {}),
