@@ -256,6 +256,8 @@ function createModuleWindow(pathname: string): BrowserWindow | null {
   });
 
   hardenNavigation(window);
+  window.setMenu(null);
+  window.setMenuBarVisibility(false);
   window.webContents.once("did-finish-load", () => window.show());
   window.webContents.once("did-fail-load", () => window.show());
   void window.loadURL(targetUrl);
