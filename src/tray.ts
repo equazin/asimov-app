@@ -1,16 +1,13 @@
 import { app, Menu, nativeImage, Notification, shell, Tray, type BrowserWindow } from "electron";
 import * as path from "node:path";
-import { clearServerUrl, getLaunchAtStartup, getServerLabel, setLaunchAtStartup } from "./config";
+import { getLaunchAtStartup, setLaunchAtStartup } from "./config";
 
 let updateAvailable: string | null = null;
-
 let tray: Tray | null = null;
 let quitting = false;
 
 interface TrayDeps {
   getMainWindow: () => BrowserWindow | null;
-  openApp: (pathname?: string) => void;
-  onServerChanged: () => void;
 }
 
 function iconPath(): string {
@@ -32,10 +29,7 @@ function showWindow(window: BrowserWindow | null): void {
 
 function applyLaunchAtStartup(enabled: boolean): void {
   if (process.platform !== "win32" && process.platform !== "darwin") return;
-  app.setLoginItemSettings({
-    openAtLogin: enabled,
-    openAsHidden: true,
-  });
+  app.setLoginItemSettings({ openAtLogin: enabled, openAsHidden: true });
 }
 
 export function isQuitting(): boolean {
@@ -62,7 +56,7 @@ export function initTray(deps: TrayDeps): void {
   }
 
   tray = new Tray(createTrayIcon());
-  tray.setToolTip(`Asimov - ${getServerLabel()}`);
+  tray.setToolTip("Asimov ERP");
   tray.on("click", () => showWindow(deps.getMainWindow()));
   rebuildTrayMenu();
 
@@ -73,34 +67,12 @@ export function initTray(deps: TrayDeps): void {
 
 export function rebuildTrayMenu(): void {
   if (!tray || !depsRef) return;
-  tray.setToolTip(`Asimov - ${getServerLabel()}`);
   tray.setContextMenu(Menu.buildFromTemplate([
     {
       label: "Abrir Asimov",
-      click: () => {
-        const window = depsRef?.getMainWindow() ?? null;
-        if (window) showWindow(window);
-        else depsRef?.openApp();
-      },
+      click: () => showWindow(depsRef?.getMainWindow() ?? null),
     },
     { type: "separator" },
-    { label: "Ventas", click: () => depsRef?.openApp("/admin/orders") },
-    { label: "Stock", click: () => depsRef?.openApp("/admin/stock") },
-    { label: "Caja", click: () => depsRef?.openApp("/admin/cash-accounts") },
-    { label: "Facturas", click: () => depsRef?.openApp("/admin/invoices") },
-    { label: "Tickets", click: () => depsRef?.openApp("/admin/tickets") },
-    { type: "separator" },
-    {
-      label: `Servidor: ${getServerLabel()}`,
-      enabled: false,
-    },
-    {
-      label: "Cambiar servidor...",
-      click: () => {
-        clearServerUrl();
-        depsRef?.onServerChanged();
-      },
-    },
     {
       label: "Soporte por WhatsApp",
       click: () => void shell.openExternal("https://wa.me/5493416684350"),

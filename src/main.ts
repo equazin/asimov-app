@@ -1,134 +1,74 @@
 /**
- * Proceso principal de Asimov Desktop.
+ * Proceso principal de Asimov ERP.
  *
- * Estrategia: la app NO empaqueta el frontend. Carga la web remota del ERP
- * (`${serverUrl}/admin`) dentro de una ventana nativa con sesion persistente.
- *
- * Flujo de ventanas:
- *  - Sin servidor configurado -> ventana "picker" para elegir servidor.
- *  - Con servidor -> splash screen -> carga web -> ventana principal o pantalla offline.
+ * App completamente nativa: todas las pantallas son HTML local con SQLite.
+ * No hay carga de servidores remotos, sin partición de sesión web.
  */
-import { app, BrowserWindow, globalShortcut, session, shell, ipcMain } from "electron";
+import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
 import * as path from "node:path";
 import {
-  getServerUrl,
-  getServerLabel,
   getWindowBounds,
   setWindowBounds,
   getPrintPreferences,
   type WindowBounds,
 } from "./config";
 import { buildAppMenu } from "./menu";
-import { registerIpcHandlers, probeServer } from "./ipc";
+import { registerIpcHandlers } from "./ipc";
 import { initAutoUpdater } from "./updater";
-import { initTray, isQuitting, rebuildTrayMenu, syncLaunchAtStartup } from "./tray";
+import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
+import { initDb, dbAll } from "./db";
 
-const SESSION_PARTITION = "persist:bartez";
-
-const PICKER_FILE = path.join(__dirname, "picker.html");
-const SPLASH_FILE = path.join(__dirname, "splash.html");
-const OFFLINE_FILE = path.join(__dirname, "offline.html");
-const SHELL_FILE = path.join(__dirname, "shell.html");
-const APP_ICON_FILE = path.join(__dirname, "icon.png");
+// ---------------------------------------------------------------------------
+// File paths
+// ---------------------------------------------------------------------------
+const SHELL_FILE            = path.join(__dirname, "shell.html");
+const APP_ICON_FILE         = path.join(__dirname, "icon.png");
 const PRODUCT_SELECTION_FILE = path.join(__dirname, "product-selection.html");
-const NEW_ARTICLE_FILE = path.join(__dirname, "new-article.html");
+const NEW_ARTICLE_FILE      = path.join(__dirname, "new-article.html");
 const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
-const NEW_CLIENT_FILE = path.join(__dirname, "new-client.html");
-const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
-const NEW_SALE_ORDER_FILE = path.join(__dirname, "new-sale-order.html");
-const NEW_QUOTE_FILE = path.join(__dirname, "new-quote.html");
-const NEW_INVOICE_FILE = path.join(__dirname, "new-invoice.html");
+const NEW_CLIENT_FILE       = path.join(__dirname, "new-client.html");
+const NEW_SUPPLIER_FILE     = path.join(__dirname, "new-supplier.html");
+const NEW_SALE_ORDER_FILE   = path.join(__dirname, "new-sale-order.html");
+const NEW_QUOTE_FILE        = path.join(__dirname, "new-quote.html");
+const NEW_INVOICE_FILE      = path.join(__dirname, "new-invoice.html");
 const NEW_DELIVERY_NOTE_FILE = path.join(__dirname, "new-delivery-note.html");
-const NEW_RECEIPT_FILE = path.join(__dirname, "new-receipt.html");
-const NEW_PURCHASE_ORDER_FILE = path.join(__dirname, "new-purchase-order.html");
-const NEW_GOODS_RECEIPT_FILE = path.join(__dirname, "new-goods-receipt.html");
+const NEW_RECEIPT_FILE      = path.join(__dirname, "new-receipt.html");
+const NEW_PURCHASE_ORDER_FILE   = path.join(__dirname, "new-purchase-order.html");
+const NEW_GOODS_RECEIPT_FILE    = path.join(__dirname, "new-goods-receipt.html");
 const NEW_PURCHASE_INVOICE_FILE = path.join(__dirname, "new-purchase-invoice.html");
-const NEW_PAYMENT_ORDER_FILE = path.join(__dirname, "new-payment-order.html");
+const NEW_PAYMENT_ORDER_FILE    = path.join(__dirname, "new-payment-order.html");
 
-// Title bar custom estilo GESES: barra crema, texto y botones oscuros.
-// Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
-const TITLE_BAR_OVERLAY = {
-  color: "#e8e5da",
-  symbolColor: "#1f2937",
-  height: 32,
-} as const;
-
+// Custom title bar para ventanas de formularios nativos (estilo GESES)
+const TITLE_BAR_OVERLAY = { color: "#e8e5da", symbolColor: "#1f2937", height: 32 } as const;
 const TITLE_BAR_STYLE = "hidden" as const;
 
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
 let mainWindow: BrowserWindow | null = null;
-let pickerWindow: BrowserWindow | null = null;
-let splashWindow: BrowserWindow | null = null;
-let pendingAdminPath: string | null = null;
+
+type NativeFormType =
+  | "article" | "client" | "supplier"
+  | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt"
+  | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order";
+
+let productSelectionWindow: BrowserWindow | null = null;
+let newArticleWindow: BrowserWindow | null = null;
+let clientSelectionWindow: BrowserWindow | null = null;
+let newClientWindow: BrowserWindow | null = null;
+let newSupplierWindow: BrowserWindow | null = null;
+let newSaleOrderWindow: BrowserWindow | null = null;
+let newQuoteWindow: BrowserWindow | null = null;
+let newInvoiceWindow: BrowserWindow | null = null;
+let newDeliveryNoteWindow: BrowserWindow | null = null;
+let newReceiptWindow: BrowserWindow | null = null;
+let newPurchaseOrderWindow: BrowserWindow | null = null;
+let newGoodsReceiptWindow: BrowserWindow | null = null;
+let newPurchaseInvoiceWindow: BrowserWindow | null = null;
+let newPaymentOrderWindow: BrowserWindow | null = null;
 
 function isDev(): boolean {
   return process.env.BARTEZ_DEV === "1" || !app.isPackaged;
-}
-
-function currentOrigin(): string | null {
-  const url = getServerUrl();
-  if (!url) return null;
-  try {
-    return new URL(url).origin;
-  } catch {
-    return null;
-  }
-}
-
-function normalizeAdminPath(input: string | null): string {
-  if (!input) return "/admin";
-  const raw = input.startsWith("/") ? input : `/${input}`;
-  if (!raw.startsWith("/admin")) return "/admin";
-  return raw;
-}
-
-function adminUrl(pathname = "/admin"): string | null {
-  const serverUrl = getServerUrl();
-  if (!serverUrl) return null;
-  const url = new URL(normalizeAdminPath(pathname), serverUrl);
-  return url.toString();
-}
-
-function consumePendingAdminPath(): string {
-  const next = pendingAdminPath ?? "/admin";
-  pendingAdminPath = null;
-  return normalizeAdminPath(next);
-}
-
-function readDeepLink(argv: string[]): string | null {
-  const raw = argv.find((arg) => arg.startsWith("bartez://"));
-  if (!raw) return null;
-  try {
-    const url = new URL(raw);
-    const pathParam = url.searchParams.get("path");
-    if (pathParam) return normalizeAdminPath(pathParam);
-    const combined = `${url.hostname}${url.pathname}`.replace(/^open\/?/, "");
-    return normalizeAdminPath(combined || "/admin");
-  } catch {
-    return null;
-  }
-}
-
-function registerProtocolHandler(): void {
-  if (process.defaultApp) {
-    const script = process.argv[1];
-    if (script) app.setAsDefaultProtocolClient("bartez", process.execPath, [script]);
-    return;
-  }
-  app.setAsDefaultProtocolClient("bartez");
-}
-
-function hardenNavigation(window: BrowserWindow): void {
-  window.webContents.on("will-navigate", (event, navUrl) => {
-    const allowedOrigin = currentOrigin();
-    if (allowedOrigin && navUrl.startsWith(allowedOrigin)) return;
-    event.preventDefault();
-    void shell.openExternal(navUrl);
-  });
-
-  window.webContents.setWindowOpenHandler(({ url }) => {
-    void shell.openExternal(url);
-    return { action: "deny" };
-  });
 }
 
 function persistBounds(window: BrowserWindow): void {
@@ -145,62 +85,10 @@ function persistBounds(window: BrowserWindow): void {
 }
 
 // ---------------------------------------------------------------------------
-// Splash screen
-// ---------------------------------------------------------------------------
-
-function createSplashWindow(): BrowserWindow {
-  const window = new BrowserWindow({
-    width: 420,
-    height: 320,
-    resizable: false,
-    frame: false,
-    transparent: false,
-    show: false,
-    backgroundColor: "#062b19",
-    title: `Asimov - ${getServerLabel()}`,
-    icon: APP_ICON_FILE,
-    webPreferences: {
-      preload: path.join(__dirname, "splash-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  window.once("ready-to-show", () => window.show());
-  window.on("closed", () => {
-    splashWindow = null;
-  });
-
-  void window.loadFile(SPLASH_FILE);
-  return window;
-}
-
-function sendSplashProgress(pct: number, msg: string): void {
-  if (splashWindow && !splashWindow.isDestroyed()) {
-    splashWindow.webContents.send("splash:progress", pct, msg);
-  }
-}
-
-function closeSplash(): void {
-  if (splashWindow && !splashWindow.isDestroyed()) {
-    splashWindow.close();
-    splashWindow = null;
-  }
-}
-
-function destroyMainWindow(): void {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.destroy();
-  }
-  mainWindow = null;
-}
-
-// ---------------------------------------------------------------------------
 // Main window
 // ---------------------------------------------------------------------------
 
-function createMainWindow(primary = true): BrowserWindow {
+function createMainWindow(): BrowserWindow {
   const saved = getWindowBounds();
 
   const window = new BrowserWindow({
@@ -212,15 +100,14 @@ function createMainWindow(primary = true): BrowserWindow {
     minHeight: 640,
     show: false,
     backgroundColor: "#062b19",
-    title: "Asimov",
+    title: "Asimov ERP",
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
-      partition: SESSION_PARTITION,
-      spellcheck: true,
+      spellcheck: false,
     },
   });
 
@@ -231,179 +118,35 @@ function createMainWindow(primary = true): BrowserWindow {
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => persistBounds(window), 400);
   };
+
   window.on("resize", scheduleSave);
   window.on("move", scheduleSave);
   window.on("close", (event) => {
     persistBounds(window);
-    if (primary && !isQuitting()) {
+    if (!isQuitting()) {
       event.preventDefault();
       window.hide();
     }
   });
 
-  hardenNavigation(window);
+  window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+
   window.on("closed", () => {
-    if (primary) mainWindow = null;
+    mainWindow = null;
   });
 
-  return window;
-}
-
-function createModuleWindow(pathname: string): BrowserWindow | null {
-  const targetUrl = adminUrl(pathname);
-  if (!targetUrl) return null;
-
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.show();
-  }
-
-  const window = new BrowserWindow({
-    width: 980,
-    height: 680,
-    minWidth: 760,
-    minHeight: 520,
-    show: false,
-    parent: mainWindow ?? undefined,
-    modal: false,
-    backgroundColor: "#f5f5f0",
-    title: `Asimov - ${getServerLabel()} - ${normalizeAdminPath(pathname)}`,
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-      partition: SESSION_PARTITION,
-      spellcheck: true,
-    },
-  });
-
-  hardenNavigation(window);
-  window.setMenu(null);
-  window.setMenuBarVisibility(false);
   window.webContents.once("did-finish-load", () => window.show());
-  window.webContents.once("did-fail-load", () => window.show());
-  void window.loadURL(targetUrl);
+  void window.loadFile(SHELL_FILE);
+
   return window;
 }
 
-/**
- * Loads the ERP with splash screen flow:
- * 1. Show splash
- * 2. Probe server
- * 3. If OK -> load desktop shell, close splash when ready
- * 4. If fail -> show offline screen, close splash
- */
-async function loadWithSplash(): Promise<void> {
-  const serverUrl = getServerUrl();
-  if (!serverUrl) return;
-  const targetPath = pendingAdminPath ? consumePendingAdminPath() : null;
-
-  splashWindow = createSplashWindow();
-  sendSplashProgress(10, "Verificando servidor...");
-
-  const probe = await probeServer(serverUrl);
-  sendSplashProgress(40, "Servidor encontrado");
-
-  if (!mainWindow) mainWindow = createMainWindow();
-  mainWindow.setTitle(`Asimov - ${getServerLabel(serverUrl)}`);
-
-  if (probe.ok) {
-    const targetPathToOpen = targetPath;
-    sendSplashProgress(60, "Cargando escritorio...");
-
-    mainWindow.webContents.once("did-finish-load", () => {
-      sendSplashProgress(100, "Listo");
-      setTimeout(() => {
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.show();
-          if (targetPathToOpen) createModuleWindow(targetPathToOpen);
-        }
-        closeSplash();
-      }, 300);
-    });
-
-    mainWindow.webContents.once("did-fail-load", () => {
-      showOffline();
-    });
-
-    void mainWindow.loadFile(SHELL_FILE);
-  } else {
-    showOffline();
-  }
-}
-
-function showOffline(): void {
-  closeSplash();
-  if (!mainWindow) mainWindow = createMainWindow();
-
-  const offlinePreload = path.join(__dirname, "offline-preload.js");
-  const offlineWindow = new BrowserWindow({
-    width: 520,
-    height: 480,
-    resizable: false,
-    show: false,
-    backgroundColor: "#062b19",
-    title: "Asimov - Sin conexion",
-    icon: APP_ICON_FILE,
-    webPreferences: {
-      preload: offlinePreload,
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  offlineWindow.once("ready-to-show", () => offlineWindow.show());
-  void offlineWindow.loadFile(OFFLINE_FILE);
-
-  // Hide main window while offline is shown
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.hide();
-  }
-
-  offlineWindow.on("closed", () => {
-    // If main window still has no content, close it too
-    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
-      destroyMainWindow();
-    }
-  });
+export function getMainWindow(): BrowserWindow | null {
+  return mainWindow;
 }
 
 // ---------------------------------------------------------------------------
-// Picker (server selection)
-// ---------------------------------------------------------------------------
-
-function createPickerWindow(): BrowserWindow {
-  const window = new BrowserWindow({
-    width: 520,
-    height: 620,
-    resizable: false,
-    show: false,
-    backgroundColor: "#062b19",
-    title: "Asimov - Configuracion",
-    icon: APP_ICON_FILE,
-    webPreferences: {
-      preload: path.join(__dirname, "picker-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  window.once("ready-to-show", () => window.show());
-  window.on("closed", () => {
-    pickerWindow = null;
-  });
-
-  void window.loadFile(PICKER_FILE);
-  return window;
-}
-
-// ---------------------------------------------------------------------------
-// Global shortcuts (atajos estilo GESES: F2=nuevo, F3=buscar, F5=refrescar, F8=guardar)
+// Global shortcuts (F2=nuevo, F3=buscar, F5=refrescar, F8=guardar, F9=imprimir)
 // ---------------------------------------------------------------------------
 
 function registerGlobalShortcuts(): void {
@@ -426,11 +169,7 @@ function registerGlobalShortcuts(): void {
       if (action === "print") {
         const prefs = getPrintPreferences();
         focused.webContents.print(
-          {
-            silent: prefs.silentPrint && !!prefs.preferredPrinter,
-            deviceName: prefs.preferredPrinter || undefined,
-            printBackground: true,
-          },
+          { silent: prefs.silentPrint && !!prefs.preferredPrinter, deviceName: prefs.preferredPrinter || undefined, printBackground: true },
           () => {},
         );
         return;
@@ -441,120 +180,25 @@ function registerGlobalShortcuts(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Window orchestration
+// Native form orchestration
 // ---------------------------------------------------------------------------
 
-function openAppropriateWindow(): void {
-  if (getServerUrl()) {
-    void loadWithSplash();
-  } else {
-    if (!pickerWindow) pickerWindow = createPickerWindow();
-    else pickerWindow.focus();
-  }
-}
-
-function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt" | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order"): void {
+function openNativeForm(type: NativeFormType): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
-    case "article":
-      createNewArticleWindowStandalone(parent);
-      break;
-    case "client":
-      createNewClientWindowStandalone(parent);
-      break;
-    case "supplier":
-      createNewSupplierWindowStandalone(parent);
-      break;
-    case "sale-order":
-      createNewSaleOrderWindowStandalone(parent);
-      break;
-    case "quote":
-      createNewQuoteWindowStandalone(parent);
-      break;
-    case "invoice":
-      createNewInvoiceWindowStandalone(parent);
-      break;
-    case "delivery-note":
-      createNewDeliveryNoteWindowStandalone(parent);
-      break;
-    case "receipt":
-      createNewReceiptWindowStandalone(parent);
-      break;
-    case "purchase-order":
-      createNewPurchaseOrderWindowStandalone(parent);
-      break;
-    case "goods-receipt":
-      createNewGoodsReceiptWindowStandalone(parent);
-      break;
-    case "purchase-invoice":
-      createNewPurchaseInvoiceWindowStandalone(parent);
-      break;
-    case "payment-order":
-      createNewPaymentOrderWindowStandalone(parent);
-      break;
+    case "article":     createNewArticleWindowStandalone(parent); break;
+    case "client":      createNewClientWindowStandalone(parent); break;
+    case "supplier":    createNewSupplierWindowStandalone(parent); break;
+    case "sale-order":  createNewSaleOrderWindowStandalone(parent); break;
+    case "quote":       createNewQuoteWindowStandalone(parent); break;
+    case "invoice":     createNewInvoiceWindowStandalone(parent); break;
+    case "delivery-note": createNewDeliveryNoteWindowStandalone(parent); break;
+    case "receipt":     createNewReceiptWindowStandalone(parent); break;
+    case "purchase-order":   createNewPurchaseOrderWindowStandalone(parent); break;
+    case "goods-receipt":    createNewGoodsReceiptWindowStandalone(parent); break;
+    case "purchase-invoice": createNewPurchaseInvoiceWindowStandalone(parent); break;
+    case "payment-order":    createNewPaymentOrderWindowStandalone(parent); break;
   }
-}
-
-function onServerChanged(): void {
-  buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow, openNativeForm });
-  rebuildTrayMenu();
-  if (getServerUrl()) {
-    if (pickerWindow) {
-      pickerWindow.close();
-      pickerWindow = null;
-    }
-    void loadWithSplash();
-  } else {
-    closeSplash();
-    if (mainWindow) {
-      destroyMainWindow();
-    }
-    if (!pickerWindow) pickerWindow = createPickerWindow();
-  }
-}
-
-function onRetry(): void {
-  // Close all windows and restart the splash flow
-  BrowserWindow.getAllWindows().forEach((w) => {
-    if (w !== mainWindow) w.close();
-  });
-  if (mainWindow) {
-    destroyMainWindow();
-  }
-  void loadWithSplash();
-}
-
-function openApp(pathname?: string): void {
-  const nextPath = normalizeAdminPath(pathname ?? "/admin");
-  if (!getServerUrl()) {
-    pendingAdminPath = nextPath;
-    openAppropriateWindow();
-    return;
-  }
-
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.show();
-    mainWindow.focus();
-    createModuleWindow(nextPath);
-    return;
-  }
-
-  pendingAdminPath = nextPath;
-  openAppropriateWindow();
-}
-
-function openNewWindow(pathname = "/admin"): void {
-  if (!getServerUrl()) {
-    pendingAdminPath = normalizeAdminPath(pathname);
-    openAppropriateWindow();
-    return;
-  }
-
-  createModuleWindow(pathname);
-}
-
-export function getMainWindow(): BrowserWindow | null {
-  return mainWindow;
 }
 
 // ---------------------------------------------------------------------------
@@ -564,61 +208,37 @@ const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
 } else {
-  pendingAdminPath = readDeepLink(process.argv);
-  registerProtocolHandler();
-
-  app.on("open-url", (event, url) => {
-    event.preventDefault();
-    const linkPath = readDeepLink([url]);
-    if (linkPath) openApp(linkPath);
-  });
-
-  app.on("second-instance", (_event, argv) => {
-    const linkPath = readDeepLink(argv);
-    if (linkPath) openApp(linkPath);
-    const target = mainWindow ?? pickerWindow;
-    if (target) {
-      if (target.isMinimized()) target.restore();
-      target.show();
-      target.focus();
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
     }
   });
 
   app.whenReady().then(() => {
-    const persistentSession = session.fromPartition(SESSION_PARTITION);
-    persistentSession.setUserAgent(
-      `${persistentSession.getUserAgent()} BartezDesktop/${app.getVersion()}`,
-    );
+    initDb();
 
-    registerIpcHandlers({ onServerChanged, getMainWindow, onRetry });
-    buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow, openNativeForm });
+    registerIpcHandlers({ getMainWindow });
+    buildAppMenu({ isDev: isDev(), openNativeForm });
     registerGlobalShortcuts();
     syncLaunchAtStartup();
-    initTray({ getMainWindow, openApp, onServerChanged });
+    initTray({ getMainWindow });
 
-    openAppropriateWindow();
+    mainWindow = createMainWindow();
 
     if (!isDev()) initAutoUpdater();
 
-    ipcMain.on("shell:open-module", (_event, path: string) => {
-      if (typeof path === "string" && path.startsWith("/admin")) {
-        createModuleWindow(path);
-      }
-    });
-
+    // --- Product picker IPC ---
     ipcMain.on("shell:open-product-selection", (event, data: { rowId: string }) => {
-      const senderWindow = BrowserWindow.fromWebContents(event.sender);
-      if (senderWindow) {
-        createProductSelectionWindow(senderWindow, data.rowId);
-      }
+      const sender = BrowserWindow.fromWebContents(event.sender);
+      if (sender) createProductSelectionWindow(sender, data.rowId);
     });
 
-    ipcMain.on("shell:product-selected-forward", (_event, data: { product: any; rowId: string }) => {
+    ipcMain.on("shell:product-selected-forward", (_event, data: { product: unknown; rowId: string }) => {
       if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
         const parent = productSelectionWindow.getParentWindow();
-        if (parent && !parent.isDestroyed()) {
-          parent.webContents.send("shell:product-selected", data);
-        }
+        if (parent && !parent.isDestroyed()) parent.webContents.send("shell:product-selected", data);
         productSelectionWindow.close();
       }
     });
@@ -629,56 +249,46 @@ if (!gotLock) {
       }
     });
 
-    ipcMain.on("shell:article-created", (_event, data: { article: any }) => {
+    ipcMain.on("shell:article-created", (_event, data: { article: unknown }) => {
       if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
         productSelectionWindow.webContents.send("shell:new-article-added", data.article);
       }
-      if (newArticleWindow && !newArticleWindow.isDestroyed()) {
-        newArticleWindow.close();
-      }
+      if (newArticleWindow && !newArticleWindow.isDestroyed()) newArticleWindow.close();
     });
 
+    // --- Client picker IPC ---
     ipcMain.on("shell:open-client-selection", (event, data: { contextId: string }) => {
-      const senderWindow = BrowserWindow.fromWebContents(event.sender);
-      if (senderWindow) {
-        createClientSelectionWindow(senderWindow, data.contextId || "");
-      }
+      const sender = BrowserWindow.fromWebContents(event.sender);
+      if (sender) createClientSelectionWindow(sender, data.contextId || "");
     });
 
-    ipcMain.on("shell:client-selected-forward", (_event, data: { client: any; contextId: string }) => {
+    ipcMain.on("shell:client-selected-forward", (_event, data: { client: unknown; contextId: string }) => {
       if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
         const parent = clientSelectionWindow.getParentWindow();
-        if (parent && !parent.isDestroyed()) {
-          parent.webContents.send("shell:client-selected", data);
-        }
+        if (parent && !parent.isDestroyed()) parent.webContents.send("shell:client-selected", data);
         clientSelectionWindow.close();
       }
     });
 
     ipcMain.on("shell:open-new-client", () => {
       const parent = clientSelectionWindow ?? mainWindow;
-      if (parent && !parent.isDestroyed()) {
-        createNewClientWindow(parent);
-      }
+      if (parent && !parent.isDestroyed()) createNewClientWindow(parent);
     });
 
-    ipcMain.on("shell:client-created", (_event, data: { client: any }) => {
+    ipcMain.on("shell:client-created", (_event, data: { client: unknown }) => {
       if (data.client && clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
         clientSelectionWindow.webContents.send("shell:new-client-added", data.client);
       }
-      if (newClientWindow && !newClientWindow.isDestroyed()) {
-        newClientWindow.close();
-      }
+      if (newClientWindow && !newClientWindow.isDestroyed()) newClientWindow.close();
     });
 
+    // --- Supplier IPC ---
     ipcMain.on("shell:open-new-supplier", (event) => {
-      const senderWindow = BrowserWindow.fromWebContents(event.sender) ?? mainWindow;
-      if (senderWindow && !senderWindow.isDestroyed()) {
-        createNewSupplierWindow(senderWindow);
-      }
+      const sender = BrowserWindow.fromWebContents(event.sender) ?? mainWindow;
+      if (sender && !sender.isDestroyed()) createNewSupplierWindow(sender);
     });
 
-    ipcMain.on("shell:supplier-created", (_event, data: { supplier: any }) => {
+    ipcMain.on("shell:supplier-created", (_event, data: { supplier: unknown }) => {
       if (newSupplierWindow && !newSupplierWindow.isDestroyed()) {
         const parent = newSupplierWindow.getParentWindow();
         if (parent && !parent.isDestroyed() && data.supplier) {
@@ -688,62 +298,20 @@ if (!gotLock) {
       }
     });
 
-    ipcMain.on("shell:sale-order-saved", (_event, _data: { order: any }) => {
-      if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) {
-        newSaleOrderWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:quote-saved", (_event, _data: { quote: any }) => {
-      if (newQuoteWindow && !newQuoteWindow.isDestroyed()) {
-        newQuoteWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:invoice-saved", (_event, _data: { invoice: any }) => {
-      if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) {
-        newInvoiceWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:delivery-note-saved", (_event, _data: { delivery: any }) => {
-      if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) {
-        newDeliveryNoteWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:receipt-saved", (_event, _data: { receipt: any }) => {
-      if (newReceiptWindow && !newReceiptWindow.isDestroyed()) {
-        newReceiptWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:purchase-order-saved", (_event, _data: { order: any }) => {
-      if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) {
-        newPurchaseOrderWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:goods-receipt-saved", (_event, _data: { receipt: any }) => {
-      if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) {
-        newGoodsReceiptWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:purchase-invoice-saved", (_event, _data: { invoice: any }) => {
-      if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) {
-        newPurchaseInvoiceWindow.close();
-      }
-    });
-
-    ipcMain.on("shell:payment-order-saved", (_event, _data: { order: any }) => {
-      if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) {
-        newPaymentOrderWindow.close();
-      }
-    });
+    // --- Form save IPC (close window on save) ---
+    ipcMain.on("shell:sale-order-saved", () => { if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) newSaleOrderWindow.close(); });
+    ipcMain.on("shell:quote-saved", () => { if (newQuoteWindow && !newQuoteWindow.isDestroyed()) newQuoteWindow.close(); });
+    ipcMain.on("shell:invoice-saved", () => { if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) newInvoiceWindow.close(); });
+    ipcMain.on("shell:delivery-note-saved", () => { if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) newDeliveryNoteWindow.close(); });
+    ipcMain.on("shell:receipt-saved", () => { if (newReceiptWindow && !newReceiptWindow.isDestroyed()) newReceiptWindow.close(); });
+    ipcMain.on("shell:purchase-order-saved", () => { if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) newPurchaseOrderWindow.close(); });
+    ipcMain.on("shell:goods-receipt-saved", () => { if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) newGoodsReceiptWindow.close(); });
+    ipcMain.on("shell:purchase-invoice-saved", () => { if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) newPurchaseInvoiceWindow.close(); });
+    ipcMain.on("shell:payment-order-saved", () => { if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) newPaymentOrderWindow.close(); });
 
     app.on("activate", () => {
-      if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
+      if (!mainWindow || mainWindow.isDestroyed()) mainWindow = createMainWindow();
+      else { mainWindow.show(); mainWindow.focus(); }
     });
   });
 
@@ -753,20 +321,9 @@ if (!gotLock) {
   });
 }
 
-let productSelectionWindow: BrowserWindow | null = null;
-let newArticleWindow: BrowserWindow | null = null;
-let clientSelectionWindow: BrowserWindow | null = null;
-let newClientWindow: BrowserWindow | null = null;
-let newSupplierWindow: BrowserWindow | null = null;
-let newSaleOrderWindow: BrowserWindow | null = null;
-let newQuoteWindow: BrowserWindow | null = null;
-let newInvoiceWindow: BrowserWindow | null = null;
-let newDeliveryNoteWindow: BrowserWindow | null = null;
-let newReceiptWindow: BrowserWindow | null = null;
-let newPurchaseOrderWindow: BrowserWindow | null = null;
-let newGoodsReceiptWindow: BrowserWindow | null = null;
-let newPurchaseInvoiceWindow: BrowserWindow | null = null;
-let newPaymentOrderWindow: BrowserWindow | null = null;
+// ---------------------------------------------------------------------------
+// Product selection (modal — launched from within a form)
+// ---------------------------------------------------------------------------
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -782,7 +339,7 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
     modal: true,
     show: false,
     backgroundColor: "#ffffff",
-    title: "Selección de Artículos de Compra-Venta",
+    title: "Selección de Artículos",
     icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE,
     titleBarOverlay: TITLE_BAR_OVERLAY,
@@ -800,52 +357,36 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
     loadProductsForPicker();
   });
 
-  productSelectionWindow.on("closed", () => {
-    productSelectionWindow = null;
-  });
-
+  productSelectionWindow.on("closed", () => { productSelectionWindow = null; });
   productSelectionWindow.setMenu(null);
   void productSelectionWindow.loadFile(PRODUCT_SELECTION_FILE);
 }
 
-async function loadProductsForPicker(): Promise<void> {
+function loadProductsForPicker(): void {
   if (!productSelectionWindow || productSelectionWindow.isDestroyed()) return;
-  const serverUrl = getServerUrl();
-  if (!serverUrl) return;
-
   try {
-    const { net } = require("electron");
-    const url = `${serverUrl}/api/products?limit=500`;
-    const request = net.request({ method: "GET", url, partition: SESSION_PARTITION });
-    let body = "";
-    request.on("response", (response: any) => {
-      response.on("data", (chunk: Buffer) => { body += chunk.toString(); });
-      response.on("end", () => {
-        if (!productSelectionWindow || productSelectionWindow.isDestroyed()) return;
-        try {
-          const parsed = JSON.parse(body);
-          const items = parsed.data || parsed.products || parsed || [];
-          const mapped = Array.isArray(items) ? items.map((p: any) => ({
-            codigo: p.code || p.sku || p.id || "",
-            descripcion: p.name || p.description || "",
-            importe: String(p.price ?? p.salePrice ?? "0.00"),
-            iva: String(p.taxRate ?? "21.00"),
-            st: String(p.stock ?? p.quantity ?? "0"),
-            compro: "0",
-            entr: "0",
-            linea: p.brand || p.line || "",
-            categoria: p.category || "",
-          })) : [];
-          if (mapped.length > 0) {
-            productSelectionWindow.webContents.send("product-selection:loaded", mapped);
-          }
-        } catch {}
-      });
-    });
-    request.on("error", () => {});
-    request.end();
+    const rows = dbAll(
+      "SELECT id, code, name, unit, sale_price, iva_pct, category FROM articles WHERE active = 1 ORDER BY name LIMIT 1000",
+      [],
+    ) as Array<Record<string, unknown>>;
+    const mapped = rows.map((a) => ({
+      codigo: a.code,
+      descripcion: a.name,
+      importe: String(a.sale_price ?? "0.00"),
+      iva: String(a.iva_pct ?? "21"),
+      st: "0",
+      compro: "0",
+      entr: "0",
+      linea: "",
+      categoria: a.category ?? "",
+    }));
+    productSelectionWindow?.webContents.send("product-selection:loaded", mapped);
   } catch {}
 }
+
+// ---------------------------------------------------------------------------
+// Client selection (modal — launched from within a form)
+// ---------------------------------------------------------------------------
 
 function createClientSelectionWindow(parentWindow: BrowserWindow, contextId: string) {
   if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
@@ -879,85 +420,58 @@ function createClientSelectionWindow(parentWindow: BrowserWindow, contextId: str
     loadClientsForPicker();
   });
 
-  clientSelectionWindow.on("closed", () => {
-    clientSelectionWindow = null;
-  });
-
+  clientSelectionWindow.on("closed", () => { clientSelectionWindow = null; });
   clientSelectionWindow.setMenu(null);
   void clientSelectionWindow.loadFile(CLIENT_SELECTION_FILE);
 }
 
-async function loadClientsForPicker(): Promise<void> {
+function loadClientsForPicker(): void {
   if (!clientSelectionWindow || clientSelectionWindow.isDestroyed()) return;
-  const serverUrl = getServerUrl();
-  if (!serverUrl) {
-    clientSelectionWindow.webContents.send("client-selection:loaded", []);
-    return;
-  }
-
   try {
-    const { net } = require("electron");
-    const url = `${serverUrl}/api/accounts?limit=500&type=customer`;
-    const request = net.request({ method: "GET", url, partition: SESSION_PARTITION });
-    let body = "";
-    request.on("response", (response: any) => {
-      response.on("data", (chunk: Buffer) => { body += chunk.toString(); });
-      response.on("end", () => {
-        if (!clientSelectionWindow || clientSelectionWindow.isDestroyed()) return;
-        try {
-          const parsed = JSON.parse(body);
-          const accounts = parsed.data || parsed.accounts || parsed || [];
-          const mapped = Array.isArray(accounts) ? accounts.map((a: any) => ({
-            id: a.id,
-            codigo: a.code || a.id,
-            razonSocial: a.name || a.razonSocial || "",
-            domicilio: a.address || a.domicilio || "",
-            telefono: a.phone || a.telefono || "",
-            cuit: a.taxId || a.cuit || "",
-          })) : [];
-          clientSelectionWindow.webContents.send("client-selection:loaded", mapped);
-        } catch {
-          clientSelectionWindow.webContents.send("client-selection:loaded", []);
-        }
-      });
-    });
-    request.on("error", () => {
-      if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
-        clientSelectionWindow.webContents.send("client-selection:loaded", []);
-      }
-    });
-    request.end();
+    const rows = dbAll(
+      "SELECT id, code, business_name, cuit, phone, address FROM clients WHERE active = 1 ORDER BY business_name LIMIT 1000",
+      [],
+    ) as Array<Record<string, unknown>>;
+    const mapped = rows.map((c) => ({
+      id: c.id,
+      codigo: c.code ?? c.id,
+      razonSocial: c.business_name ?? "",
+      domicilio: c.address ?? "",
+      telefono: c.phone ?? "",
+      cuit: c.cuit ?? "",
+    }));
+    clientSelectionWindow?.webContents.send("client-selection:loaded", mapped);
   } catch {
-    clientSelectionWindow.webContents.send("client-selection:loaded", []);
+    clientSelectionWindow?.webContents.send("client-selection:loaded", []);
   }
 }
 
-function createNewClientWindow(parentWindow: BrowserWindow) {
-  if (newClientWindow && !newClientWindow.isDestroyed()) {
-    newClientWindow.focus();
-    return;
-  }
+// ---------------------------------------------------------------------------
+// Modal form creators (opened from within other forms)
+// ---------------------------------------------------------------------------
 
-  newClientWindow = new BrowserWindow({
-    width: 920,
-    height: 640,
-    resizable: true,
-    parent: parentWindow,
-    modal: true,
-    show: false,
-    backgroundColor: "#f0f0f0",
-    title: "Clientes — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-client-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
+function createNewArticleWindow(parentWindow: BrowserWindow) {
+  if (newArticleWindow && !newArticleWindow.isDestroyed()) { newArticleWindow.focus(); return; }
+  newArticleWindow = new BrowserWindow({
+    width: 900, height: 600, resizable: true, parent: parentWindow, modal: true,
+    show: false, backgroundColor: "#f0f0f0", title: "Artículos — NUEVO", icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: { preload: path.join(__dirname, "new-article-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
+  newArticleWindow.once("ready-to-show", () => newArticleWindow?.show());
+  newArticleWindow.on("closed", () => { newArticleWindow = null; });
+  newArticleWindow.setMenu(null);
+  void newArticleWindow.loadFile(NEW_ARTICLE_FILE);
+}
 
+function createNewClientWindow(parentWindow: BrowserWindow) {
+  if (newClientWindow && !newClientWindow.isDestroyed()) { newClientWindow.focus(); return; }
+  newClientWindow = new BrowserWindow({
+    width: 920, height: 640, resizable: true, parent: parentWindow, modal: true,
+    show: false, backgroundColor: "#f0f0f0", title: "Clientes — NUEVO", icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: { preload: path.join(__dirname, "new-client-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
+  });
   newClientWindow.once("ready-to-show", () => newClientWindow?.show());
   newClientWindow.on("closed", () => { newClientWindow = null; });
   newClientWindow.setMenu(null);
@@ -965,451 +479,89 @@ function createNewClientWindow(parentWindow: BrowserWindow) {
 }
 
 function createNewSupplierWindow(parentWindow: BrowserWindow) {
-  if (newSupplierWindow && !newSupplierWindow.isDestroyed()) {
-    newSupplierWindow.focus();
-    return;
-  }
-
+  if (newSupplierWindow && !newSupplierWindow.isDestroyed()) { newSupplierWindow.focus(); return; }
   newSupplierWindow = new BrowserWindow({
-    width: 920,
-    height: 640,
-    resizable: true,
-    parent: parentWindow,
-    modal: true,
-    show: false,
-    backgroundColor: "#f0f0f0",
-    title: "Proveedores — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-supplier-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
+    width: 920, height: 640, resizable: true, parent: parentWindow, modal: true,
+    show: false, backgroundColor: "#f0f0f0", title: "Proveedores — NUEVO", icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: { preload: path.join(__dirname, "new-supplier-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
-
   newSupplierWindow.once("ready-to-show", () => newSupplierWindow?.show());
   newSupplierWindow.on("closed", () => { newSupplierWindow = null; });
   newSupplierWindow.setMenu(null);
   void newSupplierWindow.loadFile(NEW_SUPPLIER_FILE);
 }
 
-function createNewArticleWindow(parentWindow: BrowserWindow) {
-  if (newArticleWindow && !newArticleWindow.isDestroyed()) {
-    newArticleWindow.focus();
-    return;
-  }
+// ---------------------------------------------------------------------------
+// Standalone form creators (opened from menu — non-modal)
+// ---------------------------------------------------------------------------
 
-  newArticleWindow = new BrowserWindow({
-    width: 900,
-    height: 600,
-    resizable: true,
-    parent: parentWindow,
-    modal: true,
-    show: false,
-    backgroundColor: "#f0f0f0",
-    title: "Artículos de Compra-Venta. Artículo: NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-article-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
+function makeStandaloneForm(
+  windowRef: BrowserWindow | null,
+  setRef: (w: BrowserWindow | null) => void,
+  opts: { width: number; height: number; minWidth?: number; minHeight?: number; bg: string; title: string; preload: string; file: string },
+  parent: BrowserWindow | null,
+): void {
+  if (windowRef && !windowRef.isDestroyed()) { windowRef.focus(); return; }
+  const win = new BrowserWindow({
+    width: opts.width, height: opts.height,
+    minWidth: opts.minWidth, minHeight: opts.minHeight,
+    resizable: true, parent: parent ?? undefined, modal: false,
+    show: false, backgroundColor: opts.bg, title: opts.title, icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: { preload: path.join(__dirname, opts.preload), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
-
-  newArticleWindow.once("ready-to-show", () => {
-    newArticleWindow?.show();
-  });
-
-  newArticleWindow.on("closed", () => {
-    newArticleWindow = null;
-  });
-
-  newArticleWindow.setMenu(null);
-  void newArticleWindow.loadFile(NEW_ARTICLE_FILE);
+  win.once("ready-to-show", () => win.show());
+  win.on("closed", () => setRef(null));
+  win.setMenu(null);
+  void win.loadFile(opts.file);
+  setRef(win);
 }
 
-// ---------------------------------------------------------------------------
-// Standalone native forms (opened from menu, non-modal)
-// ---------------------------------------------------------------------------
-
 function createNewArticleWindowStandalone(parent: BrowserWindow | null): void {
-  const win = new BrowserWindow({
-    width: 920,
-    height: 640,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0f0f0",
-    title: "Artículos de Compra-Venta — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-article-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  win.once("ready-to-show", () => win.show());
-  win.setMenu(null);
-  void win.loadFile(NEW_ARTICLE_FILE);
+  makeStandaloneForm(newArticleWindow, (w) => { newArticleWindow = w; }, { width: 920, height: 640, bg: "#f0f0f0", title: "Artículos — NUEVO", preload: "new-article-preload.js", file: NEW_ARTICLE_FILE }, parent);
 }
 
 function createNewClientWindowStandalone(parent: BrowserWindow | null): void {
-  const win = new BrowserWindow({
-    width: 920,
-    height: 640,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0f0f0",
-    title: "Clientes — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-client-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  win.once("ready-to-show", () => win.show());
-  win.setMenu(null);
-  void win.loadFile(NEW_CLIENT_FILE);
+  makeStandaloneForm(newClientWindow, (w) => { newClientWindow = w; }, { width: 920, height: 640, bg: "#f0f0f0", title: "Clientes — NUEVO", preload: "new-client-preload.js", file: NEW_CLIENT_FILE }, parent);
 }
 
 function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
-  const win = new BrowserWindow({
-    width: 920,
-    height: 640,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0f0f0",
-    title: "Proveedores — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-supplier-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  win.once("ready-to-show", () => win.show());
-  win.setMenu(null);
-  void win.loadFile(NEW_SUPPLIER_FILE);
-}
-
-function createNewReceiptWindowStandalone(parent: BrowserWindow | null): void {
-  if (newReceiptWindow && !newReceiptWindow.isDestroyed()) {
-    newReceiptWindow.focus();
-    return;
-  }
-
-  newReceiptWindow = new BrowserWindow({
-    width: 1080,
-    height: 720,
-    minWidth: 860,
-    minHeight: 580,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0efe8",
-    title: "Recibos — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-receipt-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  newReceiptWindow.once("ready-to-show", () => newReceiptWindow?.show());
-  newReceiptWindow.on("closed", () => { newReceiptWindow = null; });
-  newReceiptWindow.setMenu(null);
-  void newReceiptWindow.loadFile(NEW_RECEIPT_FILE);
-}
-
-function createNewPurchaseOrderWindowStandalone(parent: BrowserWindow | null): void {
-  if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) {
-    newPurchaseOrderWindow.focus();
-    return;
-  }
-  newPurchaseOrderWindow = new BrowserWindow({
-    width: 1140,
-    height: 760,
-    minWidth: 900,
-    minHeight: 580,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0ede4",
-    title: "Compras — NUEVA ORDEN",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-purchase-order-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-  newPurchaseOrderWindow.once("ready-to-show", () => newPurchaseOrderWindow?.show());
-  newPurchaseOrderWindow.on("closed", () => { newPurchaseOrderWindow = null; });
-  newPurchaseOrderWindow.setMenu(null);
-  void newPurchaseOrderWindow.loadFile(NEW_PURCHASE_ORDER_FILE);
-}
-
-function createNewGoodsReceiptWindowStandalone(parent: BrowserWindow | null): void {
-  if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) {
-    newGoodsReceiptWindow.focus();
-    return;
-  }
-  newGoodsReceiptWindow = new BrowserWindow({
-    width: 1080,
-    height: 720,
-    minWidth: 860,
-    minHeight: 560,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#e4f0ed",
-    title: "Compras — RECEPCIÓN",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-goods-receipt-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-  newGoodsReceiptWindow.once("ready-to-show", () => newGoodsReceiptWindow?.show());
-  newGoodsReceiptWindow.on("closed", () => { newGoodsReceiptWindow = null; });
-  newGoodsReceiptWindow.setMenu(null);
-  void newGoodsReceiptWindow.loadFile(NEW_GOODS_RECEIPT_FILE);
-}
-
-function createNewPurchaseInvoiceWindowStandalone(parent: BrowserWindow | null): void {
-  if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) {
-    newPurchaseInvoiceWindow.focus();
-    return;
-  }
-  newPurchaseInvoiceWindow = new BrowserWindow({
-    width: 1160,
-    height: 780,
-    minWidth: 900,
-    minHeight: 580,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f5e8ea",
-    title: "Compras — FACTURA PROVEEDOR",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-purchase-invoice-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-  newPurchaseInvoiceWindow.once("ready-to-show", () => newPurchaseInvoiceWindow?.show());
-  newPurchaseInvoiceWindow.on("closed", () => { newPurchaseInvoiceWindow = null; });
-  newPurchaseInvoiceWindow.setMenu(null);
-  void newPurchaseInvoiceWindow.loadFile(NEW_PURCHASE_INVOICE_FILE);
-}
-
-function createNewPaymentOrderWindowStandalone(parent: BrowserWindow | null): void {
-  if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) {
-    newPaymentOrderWindow.focus();
-    return;
-  }
-  newPaymentOrderWindow = new BrowserWindow({
-    width: 1080,
-    height: 720,
-    minWidth: 860,
-    minHeight: 560,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f5f0e0",
-    title: "Tesorería — ORDEN DE PAGO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-payment-order-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-  newPaymentOrderWindow.once("ready-to-show", () => newPaymentOrderWindow?.show());
-  newPaymentOrderWindow.on("closed", () => { newPaymentOrderWindow = null; });
-  newPaymentOrderWindow.setMenu(null);
-  void newPaymentOrderWindow.loadFile(NEW_PAYMENT_ORDER_FILE);
-}
-
-function createNewDeliveryNoteWindowStandalone(parent: BrowserWindow | null): void {
-  if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) {
-    newDeliveryNoteWindow.focus();
-    return;
-  }
-
-  newDeliveryNoteWindow = new BrowserWindow({
-    width: 1080,
-    height: 720,
-    minWidth: 880,
-    minHeight: 580,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0efe8",
-    title: "Remitos — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-delivery-note-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  newDeliveryNoteWindow.once("ready-to-show", () => newDeliveryNoteWindow?.show());
-  newDeliveryNoteWindow.on("closed", () => { newDeliveryNoteWindow = null; });
-  newDeliveryNoteWindow.setMenu(null);
-  void newDeliveryNoteWindow.loadFile(NEW_DELIVERY_NOTE_FILE);
-}
-
-function createNewInvoiceWindowStandalone(parent: BrowserWindow | null): void {
-  if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) {
-    newInvoiceWindow.focus();
-    return;
-  }
-
-  newInvoiceWindow = new BrowserWindow({
-    width: 1160,
-    height: 780,
-    minWidth: 960,
-    minHeight: 640,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0efe8",
-    title: "Facturas de Venta — NUEVA",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-invoice-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  newInvoiceWindow.once("ready-to-show", () => newInvoiceWindow?.show());
-  newInvoiceWindow.on("closed", () => { newInvoiceWindow = null; });
-  newInvoiceWindow.setMenu(null);
-  void newInvoiceWindow.loadFile(NEW_INVOICE_FILE);
-}
-
-function createNewQuoteWindowStandalone(parent: BrowserWindow | null): void {
-  if (newQuoteWindow && !newQuoteWindow.isDestroyed()) {
-    newQuoteWindow.focus();
-    return;
-  }
-
-  newQuoteWindow = new BrowserWindow({
-    width: 1120,
-    height: 740,
-    minWidth: 900,
-    minHeight: 600,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0efe8",
-    title: "Cotizaciones — NUEVA",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-quote-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  newQuoteWindow.once("ready-to-show", () => newQuoteWindow?.show());
-  newQuoteWindow.on("closed", () => { newQuoteWindow = null; });
-  newQuoteWindow.setMenu(null);
-  void newQuoteWindow.loadFile(NEW_QUOTE_FILE);
+  makeStandaloneForm(newSupplierWindow, (w) => { newSupplierWindow = w; }, { width: 920, height: 640, bg: "#f0f0f0", title: "Proveedores — NUEVO", preload: "new-supplier-preload.js", file: NEW_SUPPLIER_FILE }, parent);
 }
 
 function createNewSaleOrderWindowStandalone(parent: BrowserWindow | null): void {
-  if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) {
-    newSaleOrderWindow.focus();
-    return;
-  }
+  makeStandaloneForm(newSaleOrderWindow, (w) => { newSaleOrderWindow = w; }, { width: 1120, height: 740, minWidth: 900, minHeight: 600, bg: "#f0efe8", title: "Pedidos de Venta — NUEVO", preload: "new-sale-order-preload.js", file: NEW_SALE_ORDER_FILE }, parent);
+}
 
-  newSaleOrderWindow = new BrowserWindow({
-    width: 1120,
-    height: 740,
-    minWidth: 900,
-    minHeight: 600,
-    resizable: true,
-    parent: parent ?? undefined,
-    modal: false,
-    show: false,
-    backgroundColor: "#f0efe8",
-    title: "Pedidos de Venta — NUEVO",
-    icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
-    webPreferences: {
-      preload: path.join(__dirname, "new-sale-order-preload.js"),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
+function createNewQuoteWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newQuoteWindow, (w) => { newQuoteWindow = w; }, { width: 1120, height: 740, minWidth: 900, minHeight: 600, bg: "#f0efe8", title: "Cotizaciones — NUEVA", preload: "new-quote-preload.js", file: NEW_QUOTE_FILE }, parent);
+}
 
-  newSaleOrderWindow.once("ready-to-show", () => newSaleOrderWindow?.show());
-  newSaleOrderWindow.on("closed", () => { newSaleOrderWindow = null; });
-  newSaleOrderWindow.setMenu(null);
-  void newSaleOrderWindow.loadFile(NEW_SALE_ORDER_FILE);
+function createNewInvoiceWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newInvoiceWindow, (w) => { newInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 960, minHeight: 640, bg: "#f0efe8", title: "Facturas de Venta — NUEVA", preload: "new-invoice-preload.js", file: NEW_INVOICE_FILE }, parent);
+}
+
+function createNewDeliveryNoteWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newDeliveryNoteWindow, (w) => { newDeliveryNoteWindow = w; }, { width: 1080, height: 720, minWidth: 880, minHeight: 580, bg: "#f0efe8", title: "Remitos — NUEVO", preload: "new-delivery-note-preload.js", file: NEW_DELIVERY_NOTE_FILE }, parent);
+}
+
+function createNewReceiptWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newReceiptWindow, (w) => { newReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 580, bg: "#f0efe8", title: "Recibos — NUEVO", preload: "new-receipt-preload.js", file: NEW_RECEIPT_FILE }, parent);
+}
+
+function createNewPurchaseOrderWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newPurchaseOrderWindow, (w) => { newPurchaseOrderWindow = w; }, { width: 1140, height: 760, minWidth: 900, minHeight: 580, bg: "#f0ede4", title: "Compras — NUEVA ORDEN", preload: "new-purchase-order-preload.js", file: NEW_PURCHASE_ORDER_FILE }, parent);
+}
+
+function createNewGoodsReceiptWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newGoodsReceiptWindow, (w) => { newGoodsReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#e4f0ed", title: "Compras — RECEPCIÓN", preload: "new-goods-receipt-preload.js", file: NEW_GOODS_RECEIPT_FILE }, parent);
+}
+
+function createNewPurchaseInvoiceWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newPurchaseInvoiceWindow, (w) => { newPurchaseInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 900, minHeight: 580, bg: "#f5e8ea", title: "Compras — FACTURA PROVEEDOR", preload: "new-purchase-invoice-preload.js", file: NEW_PURCHASE_INVOICE_FILE }, parent);
+}
+
+function createNewPaymentOrderWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newPaymentOrderWindow, (w) => { newPaymentOrderWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#f5f0e0", title: "Tesorería — ORDEN DE PAGO", preload: "new-payment-order-preload.js", file: NEW_PAYMENT_ORDER_FILE }, parent);
 }
