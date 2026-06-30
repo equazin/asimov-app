@@ -36,6 +36,7 @@ const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
 const NEW_CLIENT_FILE = path.join(__dirname, "new-client.html");
 const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
 const NEW_SALE_ORDER_FILE = path.join(__dirname, "new-sale-order.html");
+const NEW_QUOTE_FILE = path.join(__dirname, "new-quote.html");
 
 // Title bar custom estilo GESES: barra crema, texto y botones oscuros.
 // Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
@@ -447,7 +448,7 @@ function openAppropriateWindow(): void {
   }
 }
 
-function openNativeForm(type: "article" | "client" | "supplier" | "sale-order"): void {
+function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote"): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
     case "article":
@@ -461,6 +462,9 @@ function openNativeForm(type: "article" | "client" | "supplier" | "sale-order"):
       break;
     case "sale-order":
       createNewSaleOrderWindowStandalone(parent);
+      break;
+    case "quote":
+      createNewQuoteWindowStandalone(parent);
       break;
   }
 }
@@ -664,6 +668,12 @@ if (!gotLock) {
       }
     });
 
+    ipcMain.on("shell:quote-saved", (_event, _data: { quote: any }) => {
+      if (newQuoteWindow && !newQuoteWindow.isDestroyed()) {
+        newQuoteWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -681,6 +691,7 @@ let clientSelectionWindow: BrowserWindow | null = null;
 let newClientWindow: BrowserWindow | null = null;
 let newSupplierWindow: BrowserWindow | null = null;
 let newSaleOrderWindow: BrowserWindow | null = null;
+let newQuoteWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -1028,6 +1039,40 @@ function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
   win.once("ready-to-show", () => win.show());
   win.setMenu(null);
   void win.loadFile(NEW_SUPPLIER_FILE);
+}
+
+function createNewQuoteWindowStandalone(parent: BrowserWindow | null): void {
+  if (newQuoteWindow && !newQuoteWindow.isDestroyed()) {
+    newQuoteWindow.focus();
+    return;
+  }
+
+  newQuoteWindow = new BrowserWindow({
+    width: 1120,
+    height: 740,
+    minWidth: 900,
+    minHeight: 600,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0efe8",
+    title: "Cotizaciones — NUEVA",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-quote-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newQuoteWindow.once("ready-to-show", () => newQuoteWindow?.show());
+  newQuoteWindow.on("closed", () => { newQuoteWindow = null; });
+  newQuoteWindow.setMenu(null);
+  void newQuoteWindow.loadFile(NEW_QUOTE_FILE);
 }
 
 function createNewSaleOrderWindowStandalone(parent: BrowserWindow | null): void {
