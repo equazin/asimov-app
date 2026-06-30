@@ -3,56 +3,346 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline';" />
-  <title>Asimov</title>
+  <title>Asimov ERP</title>
   <style>
-    * { box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:     #062b19;
+      --green-mid: #14532d;
+      --green-lit: #1a6b38;
+      --cream:     #f5f5f0;
+      --cream-dk:  #e8e5da;
+      --cream-dkr: #d4d0c4;
+      --gold:      #d4af37;
+      --gold-faint:rgba(212,175,55,0.14);
+      --text:      #1a1a17;
+      --muted:     #6b6b64;
+      --danger:    #c0392b;
+      --success:   #1e7c45;
+      --sidebar-w: 200px;
+      --statusbar: 28px;
+      --radius:    6px;
+    }
+    html, body { height: 100%; overflow: hidden; }
     body {
-      font-family: Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
-      color: #f5f5f0;
-      background:
-        linear-gradient(90deg, rgba(212,175,55,0.13) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(212,175,55,0.08) 1px, transparent 1px),
-        radial-gradient(circle at 50% 110%, rgba(212,175,55,0.2), transparent 22rem),
-        linear-gradient(180deg, #14532d 0%, #062b19 64%, #03180e 100%);
-      background-size: 44px 44px, 44px 44px, auto, auto;
+      font: 500 13px/1.4 Inter, "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--green);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    #app {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────────── */
+    #sidebar {
+      width: var(--sidebar-w);
+      background: linear-gradient(180deg, #072f1c 0%, var(--green) 100%);
+      border-right: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    #sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    #sidebar-logo img { width: 28px; height: 28px; border-radius: 6px; }
+    #sidebar-logo .name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+    }
+    .nav-section { padding: 10px 0 4px; }
+    .nav-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245,245,240,0.4);
+      padding: 0 14px 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      cursor: pointer;
+      color: rgba(245,245,240,0.75);
+      font-size: 12.5px;
+      font-weight: 500;
+      border-left: 2px solid transparent;
+      transition: background 100ms, color 100ms, border-color 100ms;
       user-select: none;
     }
-    .desktop {
-      position: fixed;
-      inset: 32px 0 30px;
+    .nav-item:hover {
+      background: rgba(245,245,240,0.07);
+      color: var(--cream);
+    }
+    .nav-item.active {
+      background: rgba(212,175,55,0.12);
+      color: var(--gold);
+      border-left-color: var(--gold);
+      font-weight: 700;
+    }
+    .nav-item .icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
+
+    /* ── Content ─────────────────────────────────────────────── */
+    #content {
+      flex: 1;
+      min-width: 0;
+      background: var(--cream);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Views ───────────────────────────────────────────────── */
+    .view { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+    .view.active { display: flex; }
+
+    /* ── View header ─────────────────────────────────────────── */
+    .view-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--green);
+      border-bottom: 2px solid var(--gold);
+      flex-shrink: 0;
+    }
+    .view-header h1 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+      flex: 1;
+    }
+    .view-header .badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(245,245,240,0.55);
+      background: rgba(245,245,240,0.08);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      font: 700 12px/1 inherit;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 120ms, transform 80ms;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--gold);
+      color: #1a1200;
+      border-color: var(--gold);
+    }
+    .btn-primary:hover { background: #c9a530; }
+    .btn-outline {
+      background: transparent;
+      color: var(--cream);
+      border-color: rgba(245,245,240,0.3);
+    }
+    .btn-outline:hover { background: rgba(245,245,240,0.1); }
+    .btn-sm { padding: 3px 9px; font-size: 11px; }
+    .btn-danger { background: var(--danger); color: white; border-color: var(--danger); }
+
+    /* ── Toolbar ─────────────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: #fafaf6;
+      border-bottom: 1px solid var(--cream-dkr);
+      flex-shrink: 0;
+    }
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 340px;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 5px 10px 5px 30px;
+      border: 1px solid var(--cream-dkr);
+      border-radius: var(--radius);
+      font: 13px/1.4 inherit;
+      background: white;
+      color: var(--text);
+    }
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(212,175,55,0.2);
+    }
+    .search-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 13px;
+      pointer-events: none;
+    }
+    .toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+    /* ── Table ───────────────────────────────────────────────── */
+    .table-wrap {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    thead { position: sticky; top: 0; z-index: 2; }
+    thead th {
+      background: var(--cream-dk);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--cream-dkr);
+      text-align: left;
+      white-space: nowrap;
+      cursor: default;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      transition: background 80ms;
+    }
+    tbody tr:hover { background: var(--gold-faint); }
+    tbody tr.selected { background: rgba(212,175,55,0.22); }
+    tbody td {
+      padding: 5px 10px;
+      vertical-align: middle;
+    }
+    tbody td:first-child { font-weight: 600; }
+    .empty-state {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 28px;
-      padding: 28px;
+      gap: 10px;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 13px;
     }
-    .brand {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      opacity: 0.92;
-    }
-    .brand img {
-      width: min(140px, 18vw);
-      aspect-ratio: 1;
-      object-fit: cover;
-      border-radius: 28px;
-      border: 1px solid rgba(245,245,240,0.24);
-      box-shadow: 0 24px 70px rgba(0,0,0,0.34), 0 0 0 6px rgba(245,245,240,0.05);
-    }
-    .brand-name {
-      font-size: 22px;
-      font-weight: 800;
+    .empty-state .emo { font-size: 36px; }
+
+    /* ── Status pill ─────────────────────────────────────────── */
+    .pill {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 12px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .shortcuts {
+    .pill-borrador { background: #e8e5da; color: #555; }
+    .pill-pendiente { background: #fff3cd; color: #7a5a00; }
+    .pill-aprobado  { background: #d4edda; color: #1a5c30; }
+    .pill-pagado    { background: #cce5ff; color: #004085; }
+    .pill-cancelado { background: #f8d7da; color: #721c24; }
+    .pill-entregado { background: #d1ecf1; color: #0c5460; }
+    .pill-abierto   { background: #fff3cd; color: #7a5a00; }
+    .pill-cerrado   { background: #d4edda; color: #1a5c30; }
+    .pill-bajo      { background: #f8d7da; color: #721c24; }
+
+    /* ── Status bar ──────────────────────────────────────────── */
+    #statusbar {
+      height: var(--statusbar);
+      background: var(--green);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 12px;
+      font-size: 11px;
+      color: rgba(245,245,240,0.6);
+      flex-shrink: 0;
+    }
+    #statusbar .sep { width: 1px; height: 14px; background: rgba(255,255,255,0.12); }
+    #statusbar .ok { color: #45d06f; font-weight: 700; }
+    #statusbar .grow { flex: 1; }
+    #statusbar #status-count { color: var(--gold); font-weight: 700; }
+
+    /* ── Dashboard ───────────────────────────────────────────── */
+    #view-dashboard { background: var(--green); overflow-y: auto; }
+    .dashboard-inner {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 900px;
+    }
+    .dash-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .dash-brand img { width: 44px; height: 44px; border-radius: 10px; }
+    .dash-brand .brand-text { color: var(--cream); }
+    .dash-brand .brand-text h2 { font-size: 22px; font-weight: 800; }
+    .dash-brand .brand-text p { font-size: 12px; color: rgba(245,245,240,0.55); margin-top: 2px; }
+    .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      max-width: 680px;
-      width: 100%;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .kpi-card {
+      background: rgba(245,245,240,0.06);
+      border: 1px solid rgba(245,245,240,0.1);
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: background 120ms, border-color 120ms;
+    }
+    .kpi-card:hover {
+      background: rgba(212,175,55,0.1);
+      border-color: rgba(212,175,55,0.35);
+    }
+    .kpi-icon { font-size: 22px; margin-bottom: 8px; }
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(245,245,240,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .kpi-card.alert .kpi-val { color: #ff9a9a; }
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
     }
     .shortcut {
@@ -60,117 +350,979 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      padding: 16px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(245,245,240,0.12);
-      background: rgba(6,43,25,0.42);
+      padding: 14px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(245,245,240,0.1);
+      background: rgba(245,245,240,0.05);
       cursor: pointer;
-      transition: background 120ms, border-color 120ms, transform 80ms;
-      text-decoration: none;
-      color: inherit;
+      transition: background 100ms, border-color 100ms, transform 80ms;
+      color: var(--cream);
+      text-align: center;
     }
     .shortcut:hover {
-      background: rgba(20,83,45,0.7);
+      background: rgba(245,245,240,0.1);
       border-color: rgba(212,175,55,0.4);
       transform: translateY(-2px);
     }
-    .shortcut:active { transform: translateY(0); }
-    .shortcut .icon {
-      font-size: 26px;
-      line-height: 1;
-    }
-    .shortcut .label {
-      font-size: 12px;
-      font-weight: 700;
-      text-align: center;
-      opacity: 0.88;
-    }
-    .shortcut .key {
-      font-size: 10px;
-      color: rgba(245,245,240,0.5);
-      font-weight: 600;
-    }
-    .hint {
-      max-width: 520px;
-      text-align: center;
-      color: rgba(245,245,240,0.52);
-      font-size: 12px;
-      line-height: 1.55;
-    }
-    .corner {
-      position: fixed;
-      right: 18px;
-      top: 18px;
-      color: rgba(245,245,240,0.32);
+    .shortcut:active { transform: none; }
+    .shortcut .s-icon { font-size: 24px; }
+    .shortcut .s-label { font-size: 11.5px; font-weight: 700; }
+    .shortcut .s-key { font-size: 10px; color: rgba(245,245,240,0.45); }
+    .dash-section-title {
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      font-weight: 800;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      color: rgba(245,245,240,0.4);
+      margin-bottom: 8px;
     }
+
+    /* ── Tesorería / Caja ───────────────────────────────────── */
+    .caja-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .caja-accounts {
+      border-right: 1px solid var(--cream-dkr);
+      overflow-y: auto;
+      background: #fafaf6;
+    }
+    .caja-account-item {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--cream-dkr);
+      cursor: pointer;
+      transition: background 80ms;
+    }
+    .caja-account-item:hover { background: var(--gold-faint); }
+    .caja-account-item.selected { background: rgba(212,175,55,0.18); font-weight: 700; }
+    .caja-account-item .acc-name { font-weight: 600; font-size: 13px; }
+    .caja-account-item .acc-bal { font-size: 12px; color: var(--success); margin-top: 2px; }
+    .caja-movements { flex: 1; overflow: auto; }
+
+    /* loading spinner */
+    .loading { display: flex; align-items: center; justify-content: center; padding: 40px; }
+    .spinner {
+      width: 26px; height: 26px;
+      border: 3px solid var(--cream-dkr);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-  <div class="corner">Escritorio</div>
-  <main class="desktop" aria-label="Escritorio Asimov">
-    <div class="brand">
-      <img src="icon.png" alt="Asimov" />
-      <div class="brand-name">Asimov</div>
+<div id="app">
+
+  <!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════ -->
+  <nav id="sidebar">
+    <div id="sidebar-logo">
+      <img src="icon.png" alt="A" />
+      <span class="name">Asimov</span>
     </div>
 
-    <div class="shortcuts" id="shortcuts">
-      <a class="shortcut" data-path="/admin/orders">
-        <span class="icon">📋</span>
-        <span class="label">Pedidos</span>
-        <span class="key">Ctrl+2</span>
-      </a>
-      <a class="shortcut" data-path="/admin/quotes/new">
-        <span class="icon">💰</span>
-        <span class="label">Cotización</span>
-      </a>
-      <a class="shortcut" data-path="/admin/stock">
-        <span class="icon">📦</span>
-        <span class="label">Stock</span>
-        <span class="key">Ctrl+3</span>
-      </a>
-      <a class="shortcut" data-path="/admin/invoices">
-        <span class="icon">🧾</span>
-        <span class="label">Facturas</span>
-      </a>
-      <a class="shortcut" data-path="/admin/cash-accounts">
-        <span class="icon">💵</span>
-        <span class="label">Caja</span>
-        <span class="key">Ctrl+4</span>
-      </a>
-      <a class="shortcut" data-path="/admin/tickets">
-        <span class="icon">🔧</span>
-        <span class="label">Tickets</span>
-      </a>
-      <a class="shortcut" data-path="/admin/accounts">
-        <span class="icon">👥</span>
-        <span class="label">Cuentas</span>
-      </a>
-      <a class="shortcut" data-path="/admin/products">
-        <span class="icon">🏷️</span>
-        <span class="label">Productos</span>
-      </a>
+    <div class="nav-section">
+      <div class="nav-item active" data-view="dashboard">
+        <span class="icon">🏠</span> Dashboard
+      </div>
     </div>
 
-    <div class="hint">
-      Usá el menú superior o hacé click en los accesos rápidos.<br />
-      Las pantallas se abren como ventanas sobre este fondo.
+    <div class="nav-section">
+      <div class="nav-label">Ventas</div>
+      <div class="nav-item" data-view="pedidos"><span class="icon">📋</span> Pedidos</div>
+      <div class="nav-item" data-view="cotizaciones"><span class="icon">💰</span> Cotizaciones</div>
+      <div class="nav-item" data-view="clientes"><span class="icon">👥</span> Clientes</div>
+      <div class="nav-item" data-view="oportunidades"><span class="icon">🎯</span> Oportunidades</div>
     </div>
-  </main>
 
-  <script>
-    document.querySelectorAll(".shortcut[data-path]").forEach(el => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        const path = el.getAttribute("data-path");
-        if (path && window.bartezDesktop) {
-          window.bartezDesktop.openModule(path);
-        }
+    <div class="nav-section">
+      <div class="nav-label">Compras</div>
+      <div class="nav-item" data-view="ordenes-compra"><span class="icon">🛒</span> Órd. de Compra</div>
+      <div class="nav-item" data-view="recepciones"><span class="icon">📥</span> Recepciones</div>
+      <div class="nav-item" data-view="proveedores"><span class="icon">🏭</span> Proveedores</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Stock</div>
+      <div class="nav-item" data-view="stock"><span class="icon">📦</span> Stock</div>
+      <div class="nav-item" data-view="movimientos"><span class="icon">↔️</span> Movimientos</div>
+      <div class="nav-item" data-view="depositos"><span class="icon">🏢</span> Depósitos</div>
+      <div class="nav-item" data-view="series"><span class="icon">🔢</span> Núm. de Serie</div>
+      <div class="nav-item" data-view="alertas-stock"><span class="icon">⚠️</span> Alertas</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Facturación</div>
+      <div class="nav-item" data-view="facturas"><span class="icon">🧾</span> Facturas</div>
+      <div class="nav-item" data-view="remitos"><span class="icon">🚚</span> Remitos</div>
+      <div class="nav-item" data-view="recibos"><span class="icon">📄</span> Recibos</div>
+      <div class="nav-item" data-view="precios"><span class="icon">🏷️</span> Lista de Precios</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Tesorería</div>
+      <div class="nav-item" data-view="caja"><span class="icon">💵</span> Caja</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">RMA</div>
+      <div class="nav-item" data-view="tickets"><span class="icon">🔧</span> Tickets</div>
+      <div class="nav-item" data-view="ordenes-trabajo"><span class="icon">⚙️</span> Órd. de Trabajo</div>
+      <div class="nav-item" data-view="garantias"><span class="icon">🛡️</span> Garantías</div>
+    </div>
+  </nav>
+
+  <!-- ═══ CONTENT ═══════════════════════════════════════════════════════ -->
+  <div id="content">
+
+    <!-- Dashboard -->
+    <div class="view active" id="view-dashboard">
+      <div class="dashboard-inner">
+        <div class="dash-brand">
+          <img src="icon.png" alt="Asimov" />
+          <div class="brand-text">
+            <h2>Asimov ERP</h2>
+            <p id="dash-date">Cargando...</p>
+          </div>
+        </div>
+        <div>
+          <div class="dash-section-title">Indicadores de hoy</div>
+          <div class="kpi-grid" id="kpi-grid">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="dash-section-title">Accesos rápidos</div>
+          <div class="shortcuts-grid">
+            <div class="shortcut" data-view="pedidos"><span class="s-icon">📋</span><span class="s-label">Pedidos</span><span class="s-key">Ctrl+2</span></div>
+            <div class="shortcut" data-view="cotizaciones"><span class="s-icon">💰</span><span class="s-label">Cotizaciones</span></div>
+            <div class="shortcut" data-view="stock"><span class="s-icon">📦</span><span class="s-label">Stock</span><span class="s-key">Ctrl+3</span></div>
+            <div class="shortcut" data-view="facturas"><span class="s-icon">🧾</span><span class="s-label">Facturas</span></div>
+            <div class="shortcut" data-view="caja"><span class="s-icon">💵</span><span class="s-label">Caja</span><span class="s-key">Ctrl+4</span></div>
+            <div class="shortcut" data-view="tickets"><span class="s-icon">🔧</span><span class="s-label">Tickets</span></div>
+            <div class="shortcut" data-view="clientes"><span class="s-icon">👥</span><span class="s-label">Clientes</span></div>
+            <div class="shortcut" data-view="alertas-stock"><span class="s-icon">⚠️</span><span class="s-label">Alertas</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Pedidos de Venta ─────────────────────────────────── -->
+    <div class="view" id="view-pedidos">
+      <div class="view-header">
+        <h1>📋 Pedidos de Venta</h1>
+        <span class="badge" id="badge-pedidos">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('sale-order')">+ Nuevo Pedido</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar pedido, cliente..." oninput="A.loadView('pedidos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('pedidos')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-pedidos">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Cotizaciones ─────────────────────────────────────── -->
+    <div class="view" id="view-cotizaciones">
+      <div class="view-header">
+        <h1>💰 Cotizaciones</h1>
+        <span class="badge" id="badge-cotizaciones">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('quote')">+ Nueva Cotización</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar cotización, cliente..." oninput="A.loadView('cotizaciones',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cotizaciones')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-cotizaciones">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Clientes ─────────────────────────────────────────── -->
+    <div class="view" id="view-clientes">
+      <div class="view-header">
+        <h1>👥 Clientes</h1>
+        <span class="badge" id="badge-clientes">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('client')">+ Nuevo Cliente</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar razón social, CUIT..." oninput="A.loadView('clientes',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('clientes')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-clientes">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Oportunidades ───────────────────────────────────── -->
+    <div class="view" id="view-oportunidades">
+      <div class="view-header">
+        <h1>🎯 Oportunidades</h1>
+        <span class="badge" id="badge-oportunidades">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar oportunidad..." oninput="A.loadView('oportunidades',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('oportunidades')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-oportunidades">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Órdenes de Compra ─────────────────────────────── -->
+    <div class="view" id="view-ordenes-compra">
+      <div class="view-header">
+        <h1>🛒 Órdenes de Compra</h1>
+        <span class="badge" id="badge-ordenes-compra">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('purchase-order')">+ Nueva Orden</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar orden, proveedor..." oninput="A.loadView('ordenes-compra',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('ordenes-compra')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-ordenes-compra">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Recepciones ──────────────────────────────────────── -->
+    <div class="view" id="view-recepciones">
+      <div class="view-header">
+        <h1>📥 Recepciones de Mercadería</h1>
+        <span class="badge" id="badge-recepciones">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('goods-receipt')">+ Nueva Recepción</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar recepción, proveedor..." oninput="A.loadView('recepciones',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recepciones')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-recepciones">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Proveedores ──────────────────────────────────────── -->
+    <div class="view" id="view-proveedores">
+      <div class="view-header">
+        <h1>🏭 Proveedores</h1>
+        <span class="badge" id="badge-proveedores">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('supplier')">+ Nuevo Proveedor</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar razón social, CUIT..." oninput="A.loadView('proveedores',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('proveedores')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-proveedores">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Stock ────────────────────────────────────────────── -->
+    <div class="view" id="view-stock">
+      <div class="view-header">
+        <h1>📦 Stock</h1>
+        <span class="badge" id="badge-stock">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('article')">+ Nuevo Artículo</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar artículo, código..." oninput="A.loadView('stock',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('stock')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-stock">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Movimientos de Stock ─────────────────────────────── -->
+    <div class="view" id="view-movimientos">
+      <div class="view-header">
+        <h1>↔️ Movimientos de Stock</h1>
+        <span class="badge" id="badge-movimientos">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar artículo, depósito..." oninput="A.loadView('movimientos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('movimientos')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-movimientos">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Depósitos ────────────────────────────────────────── -->
+    <div class="view" id="view-depositos">
+      <div class="view-header">
+        <h1>🏢 Depósitos</h1>
+        <span class="badge" id="badge-depositos">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('depositos')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-depositos">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Números de Serie ─────────────────────────────────── -->
+    <div class="view" id="view-series">
+      <div class="view-header">
+        <h1>🔢 Números de Serie</h1>
+        <span class="badge" id="badge-series">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar serie, artículo..." oninput="A.loadView('series',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('series')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-series">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Alertas de Stock ─────────────────────────────────── -->
+    <div class="view" id="view-alertas-stock">
+      <div class="view-header">
+        <h1>⚠️ Alertas de Stock Bajo</h1>
+        <span class="badge" id="badge-alertas-stock">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('alertas-stock')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-alertas-stock">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Facturas ─────────────────────────────────────────── -->
+    <div class="view" id="view-facturas">
+      <div class="view-header">
+        <h1>🧾 Facturas de Venta</h1>
+        <span class="badge" id="badge-facturas">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('invoice')">+ Nueva Factura</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('facturas',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('facturas')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-facturas">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Remitos ──────────────────────────────────────────── -->
+    <div class="view" id="view-remitos">
+      <div class="view-header">
+        <h1>🚚 Remitos</h1>
+        <span class="badge" id="badge-remitos">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('delivery-note')">+ Nuevo Remito</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('remitos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('remitos')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-remitos">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Recibos ──────────────────────────────────────────── -->
+    <div class="view" id="view-recibos">
+      <div class="view-header">
+        <h1>📄 Recibos</h1>
+        <span class="badge" id="badge-recibos">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('receipt')">+ Nuevo Recibo</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('recibos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recibos')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-recibos">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Lista de Precios ─────────────────────────────────── -->
+    <div class="view" id="view-precios">
+      <div class="view-header">
+        <h1>🏷️ Listas de Precios</h1>
+        <span class="badge" id="badge-precios">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('precios')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-precios">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Caja ─────────────────────────────────────────────── -->
+    <div class="view" id="view-caja">
+      <div class="view-header">
+        <h1>💵 Caja y Cuentas</h1>
+        <button class="btn btn-primary" onclick="A.openNativeForm('payment-order')">+ Orden de Pago</button>
+      </div>
+      <div class="caja-grid">
+        <div class="caja-accounts" id="caja-accounts">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="caja-movements">
+          <div class="table-wrap" id="table-caja">
+            <div class="empty-state"><span class="emo">💵</span><span>Seleccioná una cuenta para ver los movimientos.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tickets ──────────────────────────────────────────── -->
+    <div class="view" id="view-tickets">
+      <div class="view-header">
+        <h1>🔧 Tickets de Soporte</h1>
+        <span class="badge" id="badge-tickets">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar ticket, cliente..." oninput="A.loadView('tickets',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('tickets')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-tickets">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Órdenes de Trabajo ───────────────────────────────── -->
+    <div class="view" id="view-ordenes-trabajo">
+      <div class="view-header">
+        <h1>⚙️ Órdenes de Trabajo</h1>
+        <span class="badge" id="badge-ordenes-trabajo">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar OT, cliente..." oninput="A.loadView('ordenes-trabajo',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('ordenes-trabajo')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-ordenes-trabajo">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Garantías ────────────────────────────────────────── -->
+    <div class="view" id="view-garantias">
+      <div class="view-header">
+        <h1>🛡️ Garantías</h1>
+        <span class="badge" id="badge-garantias">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar garantía, cliente, serie..." oninput="A.loadView('garantias',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('garantias')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-garantias">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div><!-- /#content -->
+</div><!-- /#app -->
+
+<!-- ═══ STATUS BAR ══════════════════════════════════════════════════════ -->
+<div id="statusbar">
+  <span class="ok">● DB</span>
+  <span class="sep"></span>
+  <span id="status-view">Dashboard</span>
+  <span class="sep"></span>
+  <span id="status-count"></span>
+  <span class="grow"></span>
+  <span id="status-time">—</span>
+</div>
+
+<script>
+(function() {
+  // ── wait for preload ──────────────────────────────────────────────────
+  const asimov = () => window.asimov;
+
+  // ── view definitions ─────────────────────────────────────────────────
+  const VIEWS = {
+    dashboard: { title: "Dashboard" },
+    pedidos: {
+      title: "Pedidos de Venta",
+      load: (s) => asimov().saleOrders.list(s),
+      cols: [
+        { label: "Número",   key: "number",      w: "110px" },
+        { label: "Cliente",  key: "client_name"               },
+        { label: "Fecha",    key: "date",         w: "90px",  fmt: fmtDate },
+        { label: "Estado",   key: "status",       w: "100px", fmt: fmtPill },
+        { label: "Total",    key: "total",        w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
+    cotizaciones: {
+      title: "Cotizaciones",
+      load: (s) => asimov().quotes.list(s),
+      cols: [
+        { label: "Número",   key: "number",       w: "110px" },
+        { label: "Cliente",  key: "client_name"               },
+        { label: "Fecha",    key: "date",          w: "90px",  fmt: fmtDate },
+        { label: "Estado",   key: "status",        w: "100px", fmt: fmtPill },
+        { label: "Total",    key: "total",         w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
+    clientes: {
+      title: "Clientes",
+      load: (s) => asimov().clients.list(s),
+      cols: [
+        { label: "Código",      key: "code",          w: "80px" },
+        { label: "Razón Social", key: "business_name"            },
+        { label: "CUIT",        key: "cuit",          w: "130px" },
+        { label: "Teléfono",    key: "phone",         w: "130px" },
+        { label: "Ciudad",      key: "city",          w: "120px" },
+      ],
+    },
+    oportunidades: {
+      title: "Oportunidades",
+      load: (s) => asimov().opportunities.list(s),
+      cols: [
+        { label: "Título",   key: "title"                      },
+        { label: "Cuenta",   key: "account_name",  w: "180px" },
+        { label: "Etapa",    key: "stage",         w: "110px", fmt: fmtPill },
+        { label: "Valor",    key: "amount",        w: "110px", fmt: fmtARS, align: "right" },
+        { label: "Cierre",   key: "close_date",    w: "90px",  fmt: fmtDate },
+      ],
+    },
+    "ordenes-compra": {
+      title: "Órdenes de Compra",
+      load: (s) => asimov().purchaseOrders.list(s),
+      cols: [
+        { label: "Número",    key: "number",        w: "110px" },
+        { label: "Proveedor", key: "supplier_name"              },
+        { label: "Fecha",     key: "date",          w: "90px",  fmt: fmtDate },
+        { label: "Estado",    key: "status",        w: "100px", fmt: fmtPill },
+        { label: "Total",     key: "total",         w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
+    recepciones: {
+      title: "Recepciones",
+      load: (s) => asimov().goodsReceipts.list(s),
+      cols: [
+        { label: "Número",    key: "number",        w: "110px" },
+        { label: "Proveedor", key: "supplier_name"              },
+        { label: "Fecha",     key: "date",          w: "90px",  fmt: fmtDate },
+        { label: "Estado",    key: "status",        w: "100px", fmt: fmtPill },
+      ],
+    },
+    proveedores: {
+      title: "Proveedores",
+      load: (s) => asimov().suppliers.list(s),
+      cols: [
+        { label: "Código",      key: "code",          w: "80px" },
+        { label: "Razón Social", key: "business_name"            },
+        { label: "CUIT",        key: "cuit",          w: "130px" },
+        { label: "Teléfono",    key: "phone",         w: "130px" },
+        { label: "Ciudad",      key: "city",          w: "120px" },
+      ],
+    },
+    stock: {
+      title: "Stock",
+      load: (s) => asimov().stock.list(s),
+      cols: [
+        { label: "Código",    key: "code",          w: "90px" },
+        { label: "Artículo",  key: "name"                      },
+        { label: "Unidad",    key: "unit",          w: "70px" },
+        { label: "Stock",     key: "stock_total",   w: "80px",  align: "right", fmt: fmtNum },
+        { label: "Mín.",      key: "min_qty",       w: "70px",  align: "right", fmt: fmtNum },
+        { label: "Precio",    key: "sale_price",    w: "110px", align: "right", fmt: fmtARS },
+      ],
+    },
+    movimientos: {
+      title: "Movimientos de Stock",
+      load: (s) => asimov().stockMovements.list(s),
+      cols: [
+        { label: "Fecha",     key: "date",           w: "90px",  fmt: fmtDate },
+        { label: "Artículo",  key: "article_name"               },
+        { label: "Tipo",      key: "type",           w: "100px", fmt: fmtPill },
+        { label: "Cantidad",  key: "qty",            w: "80px",  align: "right", fmt: fmtNum },
+        { label: "Depósito",  key: "warehouse_name", w: "140px" },
+        { label: "Ref.",      key: "reference",      w: "120px" },
+      ],
+    },
+    depositos: {
+      title: "Depósitos",
+      load: () => asimov().warehouses.list(),
+      cols: [
+        { label: "Nombre",    key: "name"           },
+        { label: "Dirección", key: "address"        },
+        { label: "Activo",    key: "active",         w: "80px", fmt: (v) => v ? "Sí" : "No" },
+      ],
+    },
+    series: {
+      title: "Números de Serie",
+      load: (s) => asimov().serialNumbers.list(s),
+      cols: [
+        { label: "Serie",     key: "serial",         w: "150px" },
+        { label: "Artículo",  key: "article_name"               },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+        { label: "Fecha alta",key: "created_at",     w: "90px",  fmt: fmtDate },
+      ],
+    },
+    "alertas-stock": {
+      title: "Alertas de Stock Bajo",
+      load: () => asimov().stockAlerts.list(),
+      cols: [
+        { label: "Código",    key: "code",           w: "90px" },
+        { label: "Artículo",  key: "name"                      },
+        { label: "Stock",     key: "qty",            w: "80px",  align: "right", fmt: fmtNum, cls: "text-danger" },
+        { label: "Mínimo",    key: "min_qty",        w: "80px",  align: "right", fmt: fmtNum },
+        { label: "Depósito",  key: "warehouse_name", w: "140px" },
+      ],
+    },
+    facturas: {
+      title: "Facturas de Venta",
+      load: (s) => asimov().invoices.list(s),
+      cols: [
+        { label: "Número",    key: "number",         w: "130px" },
+        { label: "Cliente",   key: "client_name"                },
+        { label: "Fecha",     key: "date",           w: "90px",  fmt: fmtDate },
+        { label: "Tipo",      key: "tipo",           w: "60px" },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+        { label: "Total",     key: "total",          w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
+    remitos: {
+      title: "Remitos",
+      load: (s) => asimov().deliveryNotes.list(s),
+      cols: [
+        { label: "Número",    key: "number",         w: "110px" },
+        { label: "Cliente",   key: "client_name"                },
+        { label: "Fecha",     key: "date",           w: "90px",  fmt: fmtDate },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+      ],
+    },
+    recibos: {
+      title: "Recibos",
+      load: (s) => asimov().receipts.list(s),
+      cols: [
+        { label: "Número",    key: "number",         w: "110px" },
+        { label: "Cliente",   key: "client_name"                },
+        { label: "Fecha",     key: "date",           w: "90px",  fmt: fmtDate },
+        { label: "Total",     key: "total",          w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
+    precios: {
+      title: "Listas de Precios",
+      load: () => asimov().priceLists.list(),
+      cols: [
+        { label: "Nombre",    key: "name"                      },
+        { label: "Moneda",    key: "currency",       w: "70px" },
+        { label: "% Ajuste",  key: "adjustment_pct", w: "90px", align: "right" },
+        { label: "Activa",    key: "active",         w: "80px", fmt: (v) => v ? "Sí" : "No" },
+      ],
+    },
+    tickets: {
+      title: "Tickets",
+      load: (s) => asimov().tickets.list(s),
+      cols: [
+        { label: "Número",    key: "number",         w: "100px" },
+        { label: "Cliente",   key: "client_name"                },
+        { label: "Asunto",    key: "description"                },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+        { label: "Prioridad", key: "priority",       w: "90px",  fmt: fmtPill },
+        { label: "Fecha",     key: "created_at",     w: "90px",  fmt: fmtDate },
+      ],
+    },
+    "ordenes-trabajo": {
+      title: "Órdenes de Trabajo",
+      load: (s) => asimov().workOrders.list(s),
+      cols: [
+        { label: "Número",    key: "number",         w: "100px" },
+        { label: "Cliente",   key: "client_name"                },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+        { label: "Fecha",     key: "created_at",     w: "90px",  fmt: fmtDate },
+      ],
+    },
+    garantias: {
+      title: "Garantías",
+      load: (s) => asimov().warranties.list(s),
+      cols: [
+        { label: "Cliente",   key: "client_name"                },
+        { label: "Artículo",  key: "article_name"               },
+        { label: "Serie",     key: "serial_number",  w: "140px" },
+        { label: "Vencim.",   key: "expires_at",     w: "90px",  fmt: fmtDate },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+      ],
+    },
+  };
+
+  // ── formatters ───────────────────────────────────────────────────────
+  function fmtDate(v) {
+    if (!v) return "—";
+    const d = new Date(v);
+    if (isNaN(d)) return String(v).slice(0, 10);
+    return d.toLocaleDateString("es-AR");
+  }
+  function fmtARS(v) {
+    if (v == null || v === "") return "—";
+    return "$ " + Number(v).toLocaleString("es-AR", { minimumFractionDigits: 2 });
+  }
+  function fmtNum(v) {
+    if (v == null || v === "") return "—";
+    return Number(v).toLocaleString("es-AR");
+  }
+  const STATUS_MAP = {
+    borrador:"pill-borrador", pendiente:"pill-pendiente", aprobado:"pill-aprobado",
+    pagado:"pill-pagado", cancelado:"pill-cancelado", entregado:"pill-entregado",
+    abierto:"pill-abierto", cerrado:"pill-cerrado", bajo:"pill-bajo",
+    alta:"pill-aprobado", baja:"pill-cancelado", activo:"pill-aprobado",
+    alta_prioridad:"pill-cancelado", media:"pill-pendiente", baja_prioridad:"pill-borrador",
+  };
+  function fmtPill(v) {
+    if (!v) return "—";
+    const cls = STATUS_MAP[v.toLowerCase().replace(/\s+/g,"_")] || "pill-borrador";
+    return `<span class="pill ${cls}">${v}</span>`;
+  }
+
+  // ── router ───────────────────────────────────────────────────────────
+  let currentView = "dashboard";
+  const loadedViews = new Set();
+
+  function navigate(viewId) {
+    const norm = pathToView(viewId);
+    if (!norm) return;
+    if (norm === currentView) {
+      if (norm !== "dashboard") loadViewData(norm, "");
+      return;
+    }
+
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+
+    const view = document.getElementById("view-" + norm);
+    if (view) view.classList.add("active");
+    document.querySelectorAll(`[data-view="${norm}"]`).forEach(n => n.classList.add("active"));
+
+    currentView = norm;
+    document.getElementById("status-view").textContent = VIEWS[norm]?.title || norm;
+    document.getElementById("status-count").textContent = "";
+
+    if (norm === "dashboard") { loadDashboard(); return; }
+    if (norm === "caja") { loadCaja(); return; }
+    if (!loadedViews.has(norm)) {
+      loadedViews.add(norm);
+      loadViewData(norm, "");
+    }
+  }
+
+  function pathToView(path) {
+    const MAP = {
+      "/dashboard": "dashboard",
+      "/ventas": "pedidos", "/ventas/pedidos": "pedidos",
+      "/ventas/cotizaciones": "cotizaciones",
+      "/ventas/clientes": "clientes",
+      "/ventas/oportunidades": "oportunidades",
+      "/compras": "ordenes-compra", "/compras/ordenes": "ordenes-compra",
+      "/compras/recepciones": "recepciones",
+      "/compras/proveedores": "proveedores",
+      "/stock": "stock", "/stock/articulos": "stock",
+      "/stock/movimientos": "movimientos",
+      "/stock/depositos": "depositos",
+      "/stock/series": "series",
+      "/stock/alertas": "alertas-stock",
+      "/facturacion": "facturas", "/facturacion/facturas": "facturas",
+      "/facturacion/remitos": "remitos",
+      "/facturacion/recibos": "recibos",
+      "/facturacion/precios": "precios",
+      "/tesoreria": "caja", "/tesoreria/caja": "caja",
+      "/rma": "tickets", "/rma/tickets": "tickets",
+      "/rma/ordenes": "ordenes-trabajo",
+      "/rma/garantias": "garantias",
+    };
+    if (MAP[path]) return MAP[path];
+    if (VIEWS[path]) return path;
+    return null;
+  }
+
+  // expose for buttons
+  window.A = {
+    loadView: (viewId, search = "") => loadViewData(viewId, search),
+    openNativeForm: (type) => {
+      // IPC back to main via a fake link click won't work — we need to send IPC
+      // The preload doesn't expose openNativeForm. Use a workaround:
+      // Actually we need to add this. For now, we log it.
+      console.log("openNativeForm:", type);
+      // This will be wired in a follow-up. For now, the menu accelerators work.
+    },
+  };
+
+  // ── table renderer ───────────────────────────────────────────────────
+  function renderTable(containerId, badgeId, cols, rows) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!rows || rows.length === 0) {
+      container.innerHTML = `<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>`;
+      const badge = document.getElementById(badgeId);
+      if (badge) badge.textContent = "0";
+      document.getElementById("status-count").textContent = "0 registros";
+      return;
+    }
+
+    const ths = cols.map(c =>
+      `<th style="${c.w ? `width:${c.w};` : ""}${c.align ? `text-align:${c.align};` : ""}">${c.label}</th>`
+    ).join("");
+
+    const trs = rows.map(row => {
+      const tds = cols.map(c => {
+        const raw = row[c.key] ?? "";
+        const val = c.fmt ? c.fmt(raw) : esc(String(raw));
+        const style = c.align ? ` style="text-align:${c.align}"` : "";
+        return `<td${style}>${val}</td>`;
+      }).join("");
+      return `<tr>${tds}</tr>`;
+    }).join("");
+
+    container.innerHTML = `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    const badge = document.getElementById(badgeId);
+    if (badge) badge.textContent = rows.length;
+    document.getElementById("status-count").textContent = rows.length + " registros";
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  // ── load view data ────────────────────────────────────────────────────
+  async function loadViewData(viewId, search = "") {
+    const def = VIEWS[viewId];
+    if (!def || !def.load) return;
+    const container = document.getElementById("table-" + viewId);
+    if (container) container.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+    try {
+      const rows = await def.load(search);
+      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows);
+    } catch (e) {
+      const container = document.getElementById("table-" + viewId);
+      if (container) container.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;
+    }
+  }
+
+  // ── dashboard ────────────────────────────────────────────────────────
+  async function loadDashboard() {
+    const d = new Date();
+    document.getElementById("dash-date").textContent =
+      d.toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+
+    const kpiGrid = document.getElementById("kpi-grid");
+    kpiGrid.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+    try {
+      const result = await asimov().kpis();
+      const kpis = result.data || {};
+      kpiGrid.innerHTML = [
+        { icon:"💰", val: fmtARS(kpis.salesToday ?? 0), label:"Ventas hoy", view:"pedidos" },
+        { icon:"🧾", val: kpis.invoicesPending ?? 0, label:"Fact. pendientes", view:"facturas", alert: (kpis.invoicesPending > 0) },
+        { icon:"👥", val: kpis.clientsTotal ?? 0, label:"Clientes", view:"clientes" },
+        { icon:"📦", val: kpis.articlesLowStock ?? 0, label:"Alertas stock", view:"alertas-stock", alert: (kpis.articlesLowStock > 0) },
+        { icon:"🛒", val: kpis.purchaseOrdersPending ?? 0, label:"Compras pend.", view:"ordenes-compra" },
+        { icon:"🔧", val: kpis.ticketsOpen ?? 0, label:"Tickets abiertos", view:"tickets", alert: (kpis.ticketsOpen > 0) },
+        { icon:"💵", val: fmtARS(kpis.cashBalance ?? 0), label:"Saldo en caja", view:"caja" },
+      ].map(k => `
+        <div class="kpi-card${k.alert ? " alert" : ""}" onclick="navigate('${k.view}')">
+          <div class="kpi-icon">${k.icon}</div>
+          <div class="kpi-val">${k.val}</div>
+          <div class="kpi-label">${k.label}</div>
+        </div>`).join("");
+    } catch {
+      kpiGrid.innerHTML = `<div style="color:rgba(245,245,240,0.4);padding:20px">No se pudieron cargar los indicadores.</div>`;
+    }
+  }
+
+  // ── caja ─────────────────────────────────────────────────────────────
+  async function loadCaja() {
+    const container = document.getElementById("caja-accounts");
+    container.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+    try {
+      const accounts = await asimov().cashAccounts.list();
+      if (!accounts || accounts.length === 0) {
+        container.innerHTML = `<div class="empty-state"><span class="emo">💵</span><span>Sin cuentas.</span></div>`;
+        return;
+      }
+      container.innerHTML = accounts.map(acc => `
+        <div class="caja-account-item" data-id="${acc.id}" onclick="loadCajaMovements('${acc.id}', this)">
+          <div class="acc-name">${esc(acc.name || "")}</div>
+          <div class="acc-bal">${fmtARS(acc.balance || 0)}</div>
+        </div>`).join("");
+    } catch (e) {
+      container.innerHTML = `<div class="empty-state"><span>Error: ${e.message}</span></div>`;
+    }
+  }
+
+  window.loadCajaMovements = async function(accountId, el) {
+    document.querySelectorAll(".caja-account-item").forEach(i => i.classList.remove("selected"));
+    el.classList.add("selected");
+    const wrap = document.getElementById("table-caja");
+    wrap.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+    try {
+      const rows = await asimov().cashAccounts.movements(accountId);
+      const cols = [
+        { label: "Fecha",     key: "date",      w: "90px",  fmt: fmtDate },
+        { label: "Concepto",  key: "concept" },
+        { label: "Tipo",      key: "type",      w: "90px",  fmt: fmtPill },
+        { label: "Importe",   key: "amount",    w: "120px", align: "right", fmt: fmtARS },
+        { label: "Referencia",key: "reference", w: "130px" },
+      ];
+      renderTable("table-caja", null, cols, rows);
+    } catch (e) {
+      wrap.innerHTML = `<div class="empty-state"><span>Error: ${e.message}</span></div>`;
+    }
+  };
+
+  // ── sidebar clicks ───────────────────────────────────────────────────
+  document.querySelectorAll(".nav-item[data-view]").forEach(el => {
+    el.addEventListener("click", () => navigate(el.dataset.view));
+  });
+  document.querySelectorAll(".shortcut[data-view]").forEach(el => {
+    el.addEventListener("click", () => navigate(el.dataset.view));
+  });
+
+  // expose for kpi cards
+  window.navigate = navigate;
+
+  // ── IPC events from main ─────────────────────────────────────────────
+  window.addEventListener("DOMContentLoaded", () => {
+    if (!asimov()) return;
+
+    asimov().onNavigate((path) => navigate(path));
+
+    asimov().onBackgroundChanged((bg) => {
+      // handled in preload
+    });
+
+    // Refresh list when a form is saved
+    const FORM_REFRESH_MAP = {
+      "shell:sale-order-saved":       "pedidos",
+      "shell:invoice-saved":          "facturas",
+      "shell:delivery-note-saved":    "remitos",
+      "shell:receipt-saved":          "recibos",
+      "shell:purchase-order-saved":   "ordenes-compra",
+      "shell:goods-receipt-saved":    "recepciones",
+      "shell:purchase-invoice-saved": "facturas",
+      "shell:payment-order-saved":    "caja",
+    };
+    Object.entries(FORM_REFRESH_MAP).forEach(([channel, view]) => {
+      asimov().onFormSaved(channel, () => {
+        if (currentView === view) loadViewData(view, "");
+        if (view === "dashboard") loadDashboard();
       });
     });
-  </script>
+
+    // Status bar clock
+    function updateClock() {
+      document.getElementById("status-time").textContent =
+        new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // Initial load
+    loadDashboard();
+  });
+
+})();
+</script>
 </body>
 </html>
