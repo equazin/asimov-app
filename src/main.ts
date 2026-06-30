@@ -38,6 +38,7 @@ const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
 const NEW_SALE_ORDER_FILE = path.join(__dirname, "new-sale-order.html");
 const NEW_QUOTE_FILE = path.join(__dirname, "new-quote.html");
 const NEW_INVOICE_FILE = path.join(__dirname, "new-invoice.html");
+const NEW_DELIVERY_NOTE_FILE = path.join(__dirname, "new-delivery-note.html");
 
 // Title bar custom estilo GESES: barra crema, texto y botones oscuros.
 // Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
@@ -449,7 +450,7 @@ function openAppropriateWindow(): void {
   }
 }
 
-function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice"): void {
+function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note"): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
     case "article":
@@ -469,6 +470,9 @@ function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" |
       break;
     case "invoice":
       createNewInvoiceWindowStandalone(parent);
+      break;
+    case "delivery-note":
+      createNewDeliveryNoteWindowStandalone(parent);
       break;
   }
 }
@@ -684,6 +688,12 @@ if (!gotLock) {
       }
     });
 
+    ipcMain.on("shell:delivery-note-saved", (_event, _data: { delivery: any }) => {
+      if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) {
+        newDeliveryNoteWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -703,6 +713,7 @@ let newSupplierWindow: BrowserWindow | null = null;
 let newSaleOrderWindow: BrowserWindow | null = null;
 let newQuoteWindow: BrowserWindow | null = null;
 let newInvoiceWindow: BrowserWindow | null = null;
+let newDeliveryNoteWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -1050,6 +1061,40 @@ function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
   win.once("ready-to-show", () => win.show());
   win.setMenu(null);
   void win.loadFile(NEW_SUPPLIER_FILE);
+}
+
+function createNewDeliveryNoteWindowStandalone(parent: BrowserWindow | null): void {
+  if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) {
+    newDeliveryNoteWindow.focus();
+    return;
+  }
+
+  newDeliveryNoteWindow = new BrowserWindow({
+    width: 1080,
+    height: 720,
+    minWidth: 880,
+    minHeight: 580,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0efe8",
+    title: "Remitos — NUEVO",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-delivery-note-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newDeliveryNoteWindow.once("ready-to-show", () => newDeliveryNoteWindow?.show());
+  newDeliveryNoteWindow.on("closed", () => { newDeliveryNoteWindow = null; });
+  newDeliveryNoteWindow.setMenu(null);
+  void newDeliveryNoteWindow.loadFile(NEW_DELIVERY_NOTE_FILE);
 }
 
 function createNewInvoiceWindowStandalone(parent: BrowserWindow | null): void {

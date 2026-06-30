@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Remito: NUEVO</title>
+  <style>
+    :root {
+      --bg: #f0efe8;
+      --panel: #ffffff;
+      --accent: #5c2a7a;
+      --accent-light: #f0e8f8;
+      --border: #c4c0b4;
+      --text: #1a1a1a;
+      --text-muted: #6b6560;
+      --input-bg: #fffff8;
+      --input-focus: #5c2a7a;
+      --header-bg: #2d1045;
+      --tab-active: #ffffff;
+      --tab-inactive: #e0ddd4;
+      --danger: #c62828;
+      --ok: #1a6b3a;
+      --warn: #b06000;
+      --row-hover: #f8f0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--text);
+      height: 100vh;
+      padding-top: 32px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--header-bg), #8a4ab0);
+      color: #fff;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 12px; font-weight: 700;
+      font-family: Consolas, monospace;
+    }
+    .status-chip {
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(255,220,80,0.25);
+      border: 1px solid rgba(255,220,80,0.5);
+      color: #ffe880;
+    }
+    .header-close {
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 4px;
+      color: #fff; font-size: 14px;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .header-close:hover { background: rgba(255,255,255,0.3); }
+
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      padding: 8px 12px 0;
+      gap: 2px;
+      border-bottom: 2px solid var(--accent);
+      flex-shrink: 0;
+    }
+    .tab {
+      padding: 6px 14px;
+      background: var(--tab-inactive);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .tab:hover { background: #eae7de; }
+    .tab.active {
+      background: var(--tab-active);
+      color: var(--accent);
+      border-color: var(--accent);
+      border-bottom: 2px solid var(--tab-active);
+      margin-bottom: -2px;
+      z-index: 2;
+    }
+
+    .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
+    .tab-panel.active { display: block; }
+    .tab-panel.items-panel { padding: 0; }
+    .tab-panel.items-panel.active { display: flex; flex-direction: column; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px 12px;
+      align-content: start;
+    }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+
+    .field label {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 8px;
+      font-family: inherit; font-size: 12px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(92,42,122,0.12);
+    }
+    .field textarea { height: 60px; padding: 6px 8px; resize: vertical; }
+    .field.with-btn { position: relative; }
+    .field.with-btn input { padding-right: 34px; }
+    .field-btn {
+      position: absolute; right: 4px; top: 20px;
+      width: 26px; height: 20px;
+      background: var(--accent); border: none; border-radius: 3px;
+      color: #fff; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .field-btn:hover { background: #3d1a55; }
+
+    .section-title {
+      grid-column: span 4;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 6px 0 2px;
+      border-bottom: 1px solid var(--accent-light);
+      margin-top: 6px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    /* Items */
+    .items-toolbar {
+      padding: 8px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .items-hint { font-size: 11px; color: var(--text-muted); }
+    .items-count { margin-left: auto; font-size: 11px; font-weight: 600; }
+
+    .items-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; background: var(--panel); }
+    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 820px; }
+    .items-table thead th {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px;
+      text-align: left;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .items-table thead th.th-num    { width: 32px; text-align: center; }
+    .items-table thead th.th-code   { width: 96px; }
+    .items-table thead th.th-unit   { width: 54px; }
+    .items-table thead th.th-pedida { width: 84px; text-align: center; }
+    .items-table thead th.th-entrega{ width: 84px; text-align: center; }
+    .items-table thead th.th-diff   { width: 70px; text-align: center; }
+    .items-table thead th.th-lote   { width: 100px; }
+    .items-table thead th.th-del    { width: 30px; }
+
+    .items-table tbody tr { border-bottom: 1px solid #ebebeb; }
+    .items-table tbody tr:nth-child(even) { background: #fafaf6; }
+    .items-table tbody tr:hover { background: var(--row-hover); }
+    .items-table td { padding: 2px 4px; vertical-align: middle; }
+    .td-num { text-align: center; font-size: 10px; color: var(--text-muted); }
+    .td-diff { text-align: center; font-family: Consolas, monospace; font-size: 12px; font-weight: 700; }
+    .td-diff.ok { color: var(--ok); }
+    .td-diff.warn { color: var(--warn); }
+    .td-diff.err { color: var(--danger); }
+
+    .cell-input {
+      width: 100%; height: 24px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 0 4px;
+      font-family: inherit; font-size: 12px;
+      background: transparent;
+      color: var(--text);
+      outline: none;
+    }
+    .cell-input:focus {
+      background: var(--input-bg);
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(92,42,122,0.14);
+    }
+    .cell-input.center { text-align: center; }
+
+    .code-wrap { display: flex; gap: 3px; align-items: center; }
+    .code-wrap input { flex: 1; }
+    .picker-btn {
+      width: 20px; height: 20px; flex-shrink: 0;
+      background: var(--accent); border: none; border-radius: 3px;
+      color: #fff; font-size: 13px; font-weight: 900;
+      cursor: pointer; display: grid; place-items: center; line-height: 1;
+    }
+    .picker-btn:hover { background: #3d1a55; }
+    .del-row-btn {
+      width: 22px; height: 22px;
+      background: none; border: 1px solid transparent; border-radius: 3px;
+      color: var(--danger); font-size: 14px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .del-row-btn:hover { background: #fde8e8; border-color: var(--danger); }
+    .empty-items-msg { text-align: center; color: var(--text-muted); font-style: italic; padding: 40px 0; }
+
+    /* Status cards in entrega tab */
+    .status-banner {
+      grid-column: span 4;
+      display: flex;
+      gap: 8px;
+    }
+    .status-card {
+      flex: 1;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--bg);
+    }
+    .status-card .s-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+    .status-card .s-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+    .status-card:hover { background: var(--accent-light); border-color: var(--accent); }
+    .status-card.active { border-color: var(--accent); background: var(--accent); }
+    .status-card.active .s-label { color: #fff; }
+
+    /* Firma */
+    .firma-box {
+      grid-column: span 4;
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 11px;
+      background: var(--bg);
+    }
+
+    .footer {
+      padding: 10px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      height: 30px; padding: 0 18px;
+      border: 1px solid var(--border); border-radius: 5px;
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-default { background: var(--panel); color: var(--text); }
+    .btn-default:hover { background: #f0f0f0; }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: #3d1a55; }
+    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: #fde8e8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .required-star::after { content: " *"; color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Remitos &mdash; NUEVO</h1>
+      <span class="header-badge" id="lblNroRem">#REM-000000</span>
+      <span class="status-chip" id="lblEstadoChip">PENDIENTE</span>
+    </div>
+    <button class="header-close" id="btnClose">&times;</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="encabezado">Encabezado</div>
+    <div class="tab" data-tab="items">Ítems</div>
+    <div class="tab" data-tab="entrega">Entrega y transporte</div>
+    <div class="tab" data-tab="observaciones">Observaciones</div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- ═══════════ ENCABEZADO ═══════════ -->
+    <div class="tab-panel active" id="tab-encabezado">
+      <div class="form-grid">
+        <div class="section-title">Identificación</div>
+        <div class="field">
+          <label>Nro. remito</label>
+          <input type="text" id="txtNroRem" readonly
+            style="background:#f0f0f0;font-family:Consolas,monospace;font-weight:700;" />
+        </div>
+        <div class="field">
+          <label class="required-star">Fecha emisión</label>
+          <input type="date" id="txtFecha" />
+        </div>
+        <div class="field">
+          <label>Fecha despacho</label>
+          <input type="date" id="txtFechaDespacho" />
+        </div>
+        <div class="field">
+          <label>Hora despacho</label>
+          <input type="time" id="txtHoraDespacho" />
+        </div>
+
+        <div class="section-title">Destinatario</div>
+        <div class="field">
+          <label>Código</label>
+          <input type="text" id="txtClienteCodigo" />
+        </div>
+        <div class="field span-2 with-btn">
+          <label class="required-star">Razón Social</label>
+          <input type="text" id="txtClienteNombre" placeholder="Nombre o busque con ..." />
+          <button class="field-btn" id="btnBuscarCliente" title="Buscar cliente (F4)">...</button>
+        </div>
+        <div class="field">
+          <label>CUIT</label>
+          <input type="text" id="txtClienteCuit" readonly style="background:#f0f0f0;" />
+        </div>
+
+        <div class="field span-3">
+          <label class="required-star">Dirección de entrega</label>
+          <input type="text" id="txtDireccion" placeholder="Dirección donde se entrega..." />
+        </div>
+        <div class="field">
+          <label>Localidad</label>
+          <input type="text" id="txtLocalidad" />
+        </div>
+
+        <div class="field">
+          <label>Provincia</label>
+          <input type="text" id="txtProvincia" value="Santa Fe" />
+        </div>
+        <div class="field">
+          <label>Código postal</label>
+          <input type="text" id="txtCP" />
+        </div>
+        <div class="field">
+          <label>Contacto recepción</label>
+          <input type="text" id="txtContacto" placeholder="Persona que recibe..." />
+        </div>
+        <div class="field">
+          <label>Teléfono contacto</label>
+          <input type="text" id="txtTelContacto" />
+        </div>
+
+        <div class="section-title">Referencias</div>
+        <div class="field">
+          <label>Pedido de venta origen</label>
+          <input type="text" id="txtPedidoOrigen" placeholder="PV-YYMM-XXXXX" />
+        </div>
+        <div class="field">
+          <label>Factura vinculada</label>
+          <input type="text" id="txtFacturaVinculada" placeholder="Nro. factura..." />
+        </div>
+        <div class="field">
+          <label>OC del cliente</label>
+          <input type="text" placeholder="Orden de compra del cliente..." />
+        </div>
+        <div class="field">
+          <label>Sucursal destino</label>
+          <input type="text" placeholder="Sucursal de destino si aplica..." />
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ ITEMS ═══════════ -->
+    <div class="tab-panel items-panel" id="tab-items">
+      <div class="items-toolbar">
+        <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
+        <span class="items-hint">Cant. pedida → cant. entregada | F4 o + = buscar artículo | Insert = nueva fila</span>
+        <span class="items-count" id="lblItemCount">0 ítems</span>
+      </div>
+      <div class="items-table-wrap">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th class="th-num">#</th>
+              <th class="th-code">Código</th>
+              <th class="th-desc">Descripción</th>
+              <th class="th-unit">Unid.</th>
+              <th class="th-pedida">Cant. pedida</th>
+              <th class="th-entrega">Cant. entregada</th>
+              <th class="th-diff">Diferencia</th>
+              <th class="th-lote">Lote / Serie</th>
+              <th class="th-del"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <tr>
+              <td colspan="9" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════ ENTREGA Y TRANSPORTE ═══════════ -->
+    <div class="tab-panel" id="tab-entrega">
+      <div class="form-grid">
+        <div class="section-title">Estado de entrega</div>
+        <div class="status-banner">
+          <div class="status-card active" data-status="Pendiente" id="sc-pendiente">
+            <span class="s-icon">📋</span>
+            <span class="s-label">Pendiente</span>
+          </div>
+          <div class="status-card" data-status="En preparación" id="sc-prep">
+            <span class="s-icon">📦</span>
+            <span class="s-label">En preparación</span>
+          </div>
+          <div class="status-card" data-status="Despachado" id="sc-despachado">
+            <span class="s-icon">🚚</span>
+            <span class="s-label">Despachado</span>
+          </div>
+          <div class="status-card" data-status="Entregado" id="sc-entregado">
+            <span class="s-icon">✅</span>
+            <span class="s-label">Entregado</span>
+          </div>
+          <div class="status-card" data-status="Con novedad" id="sc-novedad">
+            <span class="s-icon">⚠️</span>
+            <span class="s-label">Con novedad</span>
+          </div>
+        </div>
+
+        <div class="section-title">Transporte</div>
+        <div class="field span-2">
+          <label>Empresa transportista</label>
+          <select id="selTransporte">
+            <option value="">— Seleccionar —</option>
+            <option>Retira el cliente</option>
+            <option>Entrega propia</option>
+            <option>Andreani</option>
+            <option>Correo Argentino</option>
+            <option>OCA</option>
+            <option>DHL</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Nombre transportista (manual)</label>
+          <input type="text" id="txtTransporteNombre" placeholder="Si eligió 'Otro'..." />
+        </div>
+        <div class="field">
+          <label>Nro. seguimiento</label>
+          <input type="text" id="txtNroSeguimiento" placeholder="Tracking number..." />
+        </div>
+
+        <div class="field">
+          <label>Patente vehículo</label>
+          <input type="text" id="txtPatente" placeholder="AA123BB" style="text-transform:uppercase;" />
+        </div>
+        <div class="field">
+          <label>Tipo vehículo</label>
+          <select>
+            <option>Camioneta</option>
+            <option>Camión</option>
+            <option>Auto</option>
+            <option>Moto</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Chofer / Repartidor</label>
+          <input type="text" id="txtChofer" />
+        </div>
+        <div class="field">
+          <label>DNI chofer</label>
+          <input type="text" id="txtDniChofer" />
+        </div>
+
+        <div class="section-title">Confirmación de entrega</div>
+        <div class="field">
+          <label>Fecha real de entrega</label>
+          <input type="date" id="txtFechaEntrega" />
+        </div>
+        <div class="field">
+          <label>Hora real de entrega</label>
+          <input type="time" id="txtHoraEntrega" />
+        </div>
+        <div class="field">
+          <label>Recibido por</label>
+          <input type="text" id="txtRecibidoPor" placeholder="Nombre de quien recibió..." />
+        </div>
+        <div class="field">
+          <label>DNI quien recibe</label>
+          <input type="text" id="txtDniRecibe" />
+        </div>
+
+        <div class="field span-4" style="margin-top:4px;">
+          <label>Firma de recepción</label>
+          <div class="firma-box">Firma digital / captura de imagen — disponible en Fase 4</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ OBSERVACIONES ═══════════ -->
+    <div class="tab-panel" id="tab-observaciones">
+      <div class="form-grid">
+        <div class="section-title">Instrucciones de entrega</div>
+        <div class="field span-4">
+          <label>Instrucciones para el transportista</label>
+          <textarea style="height:60px;" id="txtInstrucciones"
+            placeholder="Ej: Entregar en horario de 8 a 17 hs. Llamar al cliente antes de llegar. Frágil - No apilar."></textarea>
+        </div>
+        <div class="field span-4">
+          <label>Condiciones especiales de manejo</label>
+          <textarea style="height:50px;" placeholder="Ej: Mantener refrigerado, No exponer al sol, Producto frágil..."></textarea>
+        </div>
+
+        <div class="section-title">Novedades y observaciones</div>
+        <div class="field span-4">
+          <label>Observaciones de la entrega</label>
+          <textarea style="height:60px;" id="txtObsEntrega"
+            placeholder="Registre cualquier novedad ocurrida durante la entrega..."></textarea>
+        </div>
+
+        <div class="section-title">Notas internas</div>
+        <div class="field span-4">
+          <label>Notas internas (no se imprimen)</label>
+          <textarea style="height:50px;" placeholder="Notas para el equipo interno sobre este remito..."></textarea>
+        </div>
+
+        <div class="section-title">Auditoría</div>
+        <div class="field">
+          <label>Preparado por</label>
+          <input type="text" value="Usuario actual" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Fecha preparación</label>
+          <input type="text" id="txtFechaCreacion" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Confirmado por</label>
+          <input type="text" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Fecha confirmación</label>
+          <input type="text" readonly style="background:#f0f0f0;" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <button class="btn btn-default" id="btnNew">Nuevo</button>
+    <button class="btn btn-primary" id="btnSave">Guardar (F8)</button>
+    <button class="btn btn-default" disabled>Imprimir (F9)</button>
+    <button class="btn btn-default" disabled title="Marcar como entregado y registrar confirmación">Confirmar entrega</button>
+    <button class="btn btn-danger" disabled>Anular</button>
+    <button class="btn btn-default" id="btnExit">Salir</button>
+  </div>
+
+  <script>
+    /* ─── Estado ─── */
+    let items = [];
+    let nextRowId = 1;
+    let clienteData = null;
+    let estadoActual = "Pendiente";
+
+    /* ─── Init ─── */
+    (function init() {
+      var now = new Date();
+      var yr = String(now.getFullYear()).slice(2);
+      var mo = String(now.getMonth() + 1).padStart(2, "0");
+      var nr = "REM-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
+      document.getElementById("txtNroRem").value = nr;
+      document.getElementById("lblNroCotBadge") && (document.getElementById("lblNroCotBadge").textContent = "#" + nr);
+      document.getElementById("lblNroRem").textContent = "#" + nr;
+      var today = now.toISOString().slice(0, 10);
+      document.getElementById("txtFecha").value = today;
+      document.getElementById("txtFechaDespacho").value = today;
+      document.getElementById("txtFechaCreacion").value = now.toLocaleDateString("es-AR");
+
+      // Default dispatch time: 09:00
+      document.getElementById("txtHoraDespacho").value = "09:00";
+    })();
+
+    /* ─── Tabs ─── */
+    document.querySelectorAll(".tab").forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+        document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
+        tab.classList.add("active");
+        document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    /* ─── Estado cards ─── */
+    document.querySelectorAll(".status-card").forEach(function(card) {
+      card.addEventListener("click", function() {
+        document.querySelectorAll(".status-card").forEach(function(c) { c.classList.remove("active"); });
+        card.classList.add("active");
+        estadoActual = card.dataset.status;
+        document.getElementById("lblEstadoChip").textContent = estadoActual.toUpperCase();
+      });
+    });
+
+    /* ─── Client picker ─── */
+    document.getElementById("btnBuscarCliente").addEventListener("click", openClientPicker);
+    document.getElementById("txtClienteNombre").addEventListener("keydown", function(e) {
+      if (e.key === "F4") { e.preventDefault(); openClientPicker(); }
+    });
+
+    function openClientPicker() {
+      if (window.asimovNewDeliveryNote) window.asimovNewDeliveryNote.openClientSelection();
+    }
+
+    if (window.asimovNewDeliveryNote) {
+      window.asimovNewDeliveryNote.onClientSelected(function(data) {
+        if (data.contextId !== "remito-cliente" || !data.client) return;
+        clienteData = data.client;
+        document.getElementById("txtClienteCodigo").value = data.client.codigo || data.client.id || "";
+        document.getElementById("txtClienteNombre").value = data.client.razonSocial || data.client.name || "";
+        document.getElementById("txtClienteCuit").value = data.client.cuit || "";
+        document.getElementById("txtDireccion").value = data.client.domicilio || data.client.address || "";
+        document.getElementById("txtLocalidad").value = data.client.localidad || data.client.city || "";
+        document.getElementById("txtCP").value = data.client.cp || "";
+        document.getElementById("txtContacto").value = data.client.contacto || "";
+        document.getElementById("txtTelContacto").value = data.client.telefono || data.client.phone || "";
+      });
+
+      window.asimovNewDeliveryNote.onProductSelected(function(data) {
+        if (!data.product) return;
+        var row = items.find(function(r) { return String(r.id) === String(data.rowId); });
+        if (!row) return;
+        row.codigo = data.product.codigo || data.product.code || "";
+        row.descripcion = data.product.descripcion || data.product.description || data.product.name || "";
+        row.unidad = data.product.unidad || "UN";
+        row.cantPedida = 1;
+        row.cantEntregada = 1;
+        renderItemsTable();
+        setTimeout(function() {
+          var inp = document.querySelector('[data-id="' + data.rowId + '"][data-field="cantEntregada"]');
+          if (inp) { inp.focus(); inp.select(); }
+        }, 50);
+      });
+    }
+
+    /* ─── Items table ─── */
+    function addRow(prefill) {
+      prefill = prefill || {};
+      var rowId = nextRowId++;
+      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantPedida: 1, cantEntregada: 1, lote: "" });
+      Object.assign(items[items.length - 1], prefill);
+      renderItemsTable();
+      setTimeout(function() {
+        var inp = document.querySelector('[data-id="' + rowId + '"][data-field="codigo"]');
+        if (inp) inp.focus();
+      }, 30);
+    }
+
+    function removeRow(rowId) {
+      items = items.filter(function(r) { return r.id !== rowId; });
+      renderItemsTable();
+    }
+
+    function renderItemsTable() {
+      var tbody = document.getElementById("itemsBody");
+      var count = items.length;
+      document.getElementById("lblItemCount").textContent = count + (count === 1 ? " ítem" : " ítems");
+      tbody.innerHTML = "";
+
+      if (count === 0) {
+        var empty = document.createElement("tr");
+        empty.innerHTML = '<td colspan="9" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4</td>';
+        tbody.appendChild(empty);
+        return;
+      }
+
+      items.forEach(function(row, idx) {
+        var diff = row.cantEntregada - row.cantPedida;
+        var diffClass = diff === 0 ? "ok" : diff < 0 ? "warn" : "err";
+        var diffLabel = diff === 0 ? "= Completo" : diff < 0 ? diff + " (parcial)" : "+" + diff + " (exceso)";
+
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          '<td class="td-num">' + (idx + 1) + '</td>' +
+          '<td><div class="code-wrap">' +
+            '<input class="cell-input" data-id="' + row.id + '" data-field="codigo" value="' + esc(row.codigo) + '" />' +
+            '<button class="picker-btn" data-rowid="' + row.id + '" title="Buscar artículo (F4)">+</button>' +
+          '</div></td>' +
+          '<td><input class="cell-input" data-id="' + row.id + '" data-field="descripcion" value="' + esc(row.descripcion) + '" /></td>' +
+          '<td><input class="cell-input" data-id="' + row.id + '" data-field="unidad" value="' + esc(row.unidad) + '" /></td>' +
+          '<td><input class="cell-input center" type="number" min="0" step="1" data-id="' + row.id + '" data-field="cantPedida" value="' + row.cantPedida + '" /></td>' +
+          '<td><input class="cell-input center" type="number" min="0" step="1" data-id="' + row.id + '" data-field="cantEntregada" value="' + row.cantEntregada + '" style="font-weight:700;" /></td>' +
+          '<td class="td-diff ' + diffClass + '">' + diffLabel + '</td>' +
+          '<td><input class="cell-input" data-id="' + row.id + '" data-field="lote" value="' + esc(row.lote) + '" placeholder="Nro lote / serie..." /></td>' +
+          '<td style="text-align:center;"><button class="del-row-btn" data-rowid="' + row.id + '" title="Eliminar">×</button></td>';
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll(".cell-input").forEach(function(inp) {
+        inp.addEventListener("change", onCellChange);
+        inp.addEventListener("keydown", onCellKeydown);
+      });
+      tbody.querySelectorAll(".picker-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() { openPickerForRow(parseInt(btn.dataset.rowid)); });
+      });
+      tbody.querySelectorAll(".del-row-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() { removeRow(parseInt(btn.dataset.rowid)); });
+      });
+    }
+
+    function onCellChange(e) {
+      var el = e.target;
+      var rowId = parseInt(el.dataset.id);
+      var field = el.dataset.field;
+      var row = items.find(function(r) { return r.id === rowId; });
+      if (!row) return;
+      if (field === "cantPedida" || field === "cantEntregada") {
+        row[field] = parseFloat(el.value) || 0;
+      } else {
+        row[field] = el.value;
+      }
+      // Re-render just this row's diff cell
+      var diff = row.cantEntregada - row.cantPedida;
+      var diffClass = diff === 0 ? "ok" : diff < 0 ? "warn" : "err";
+      var diffLabel = diff === 0 ? "= Completo" : diff < 0 ? diff + " (parcial)" : "+" + diff + " (exceso)";
+      var tr = el.closest("tr");
+      var cell = tr ? tr.querySelector(".td-diff") : null;
+      if (cell) {
+        cell.className = "td-diff " + diffClass;
+        cell.textContent = diffLabel;
+      }
+    }
+
+    function onCellKeydown(e) {
+      var rowId = parseInt(e.target.dataset.id);
+      if (e.key === "F4" || e.key === "+") { e.preventDefault(); openPickerForRow(rowId); }
+    }
+
+    function openPickerForRow(rowId) {
+      if (window.asimovNewDeliveryNote) window.asimovNewDeliveryNote.openProductSelection(String(rowId));
+    }
+
+    function esc(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    /* ─── Keyboard & toolbar ─── */
+    document.getElementById("btnAddRow").addEventListener("click", function() { addRow(); });
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "F8") { e.preventDefault(); document.getElementById("btnSave").click(); }
+      if (e.key === "Insert") { e.preventDefault(); addRow(); }
+    });
+
+    /* ─── Footer buttons ─── */
+    document.getElementById("btnNew").addEventListener("click", function() {
+      items = []; nextRowId = 1; clienteData = null;
+      estadoActual = "Pendiente";
+      var now = new Date();
+      var yr = String(now.getFullYear()).slice(2);
+      var mo = String(now.getMonth() + 1).padStart(2, "0");
+      var nr = "REM-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
+      document.getElementById("txtNroRem").value = nr;
+      document.getElementById("lblNroRem").textContent = "#" + nr;
+      document.getElementById("txtClienteCodigo").value = "";
+      document.getElementById("txtClienteNombre").value = "";
+      document.getElementById("txtClienteCuit").value = "";
+      document.getElementById("txtDireccion").value = "";
+      document.querySelectorAll(".status-card").forEach(function(c, i) { c.classList.toggle("active", i === 0); });
+      document.getElementById("lblEstadoChip").textContent = "PENDIENTE";
+      renderItemsTable();
+    });
+
+    document.getElementById("btnSave").addEventListener("click", function() {
+      if (!document.getElementById("txtClienteNombre").value.trim()) {
+        alert("Seleccione un destinatario antes de guardar.");
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "encabezado") t.click(); });
+        document.getElementById("txtClienteNombre").focus();
+        return;
+      }
+      if (items.length === 0) {
+        alert("Agregue al menos un ítem al remito.");
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "items") t.click(); });
+        return;
+      }
+      var delivery = {
+        nroRem: document.getElementById("txtNroRem").value,
+        fecha: document.getElementById("txtFecha").value,
+        fechaDespacho: document.getElementById("txtFechaDespacho").value,
+        estado: estadoActual,
+        cliente: clienteData,
+        clienteNombre: document.getElementById("txtClienteNombre").value,
+        direccion: document.getElementById("txtDireccion").value,
+        items: items,
+        observaciones: document.getElementById("txtObsEntrega").value,
+      };
+      if (window.asimovNewDeliveryNote) window.asimovNewDeliveryNote.saveDeliveryNote(delivery);
+    });
+
+    var closeHandler = function() {
+      if (window.asimovNewDeliveryNote) window.asimovNewDeliveryNote.cancel();
+    };
+    document.getElementById("btnExit").addEventListener("click", closeHandler);
+    document.getElementById("btnClose").addEventListener("click", closeHandler);
+
+    renderItemsTable();
+  </script>
+</body>
+</html>
