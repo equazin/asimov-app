@@ -30,7 +30,7 @@ interface MenuDeps {
   onServerChanged: () => void;
   openApp: (pathname?: string) => void;
   openNewWindow: (pathname?: string) => void;
-  openNativeForm?: (type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt") => void;
+  openNativeForm?: (type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt" | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order") => void;
 }
 
 interface ModuleItem {
@@ -154,9 +154,9 @@ function currentTitle(): string {
   return focusedWindow()?.getTitle().replace(/^Asimov\s+-\s+/, "") ?? "Pantalla";
 }
 
-const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products", "/admin/orders/new", "/admin/quotes/new", "/admin/invoices/new", "/admin/delivery-notes/new", "/admin/receipts/new"]);
+const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products", "/admin/orders/new", "/admin/quotes/new", "/admin/invoices/new", "/admin/delivery-notes/new", "/admin/receipts/new", "/admin/purchase-orders/new"]);
 
-const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt"; accel: string }[]> = {
+const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt" | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order"; accel: string }[]> = {
   Ventas: [
     { label: "Nuevo Pedido", type: "sale-order", accel: "CmdOrCtrl+Shift+V" },
     { label: "Nueva Cotización", type: "quote", accel: "CmdOrCtrl+Shift+Q" },
@@ -167,7 +167,13 @@ const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client
     { label: "Nuevo Remito", type: "delivery-note", accel: "CmdOrCtrl+Shift+R" },
     { label: "Nuevo Recibo", type: "receipt", accel: "CmdOrCtrl+Shift+E" },
   ],
-  Compras: [{ label: "Nuevo Proveedor", type: "supplier", accel: "CmdOrCtrl+Shift+P" }],
+  Compras: [
+    { label: "Nueva Orden de Compra", type: "purchase-order", accel: "CmdOrCtrl+Shift+O" },
+    { label: "Nueva Recepción", type: "goods-receipt", accel: "CmdOrCtrl+Shift+G" },
+    { label: "Nueva Fact. de Compra", type: "purchase-invoice", accel: "CmdOrCtrl+Shift+I" },
+    { label: "Nueva Orden de Pago", type: "payment-order", accel: "CmdOrCtrl+Shift+K" },
+    { label: "Nuevo Proveedor", type: "supplier", accel: "CmdOrCtrl+Shift+P" },
+  ],
   Stock: [{ label: "Nuevo Artículo", type: "article", accel: "CmdOrCtrl+Shift+A" }],
 };
 
@@ -436,7 +442,7 @@ export function buildAppMenu(deps: MenuDeps): void {
         },
         {
           label: "Forzar recarga",
-          accelerator: "CmdOrCtrl+Shift+R",
+          accelerator: "CmdOrCtrl+F5",
           click: () => focusedContents()?.reloadIgnoringCache(),
         },
         { type: "separator" },

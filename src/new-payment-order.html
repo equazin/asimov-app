@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva Orden de Pago</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#6b5000;
+  --header-bg:#3a2c00;
+  --accent-light:#fff8e0;
+  --accent-hover:#856200;
+  --border:#ccc0a0;
+  --bg:#fdfaf0;
+  --surface:#ffffff;
+  --text:#1a1400;
+  --text-muted:#6a5a30;
+  --danger:#c0392b;
+  --success:#27ae60;
+  --warning:#e67e22;
+  --input-bg:#ffffff;
+  --input-border:#c0b080;
+  --shadow:0 1px 3px rgba(0,0,0,0.12);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:13px;
+  background:var(--bg);
+  color:var(--text);
+  padding-top:32px;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.header{
+  background:linear-gradient(135deg,var(--header-bg) 0%,var(--accent) 100%);
+  color:#fff;
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.header-icon{font-size:18px}
+.header-title{font-size:15px;font-weight:700;letter-spacing:0.3px;flex:1}
+.header-badges{display:flex;gap:6px}
+.header-badge{
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:12px;
+  padding:3px 10px;
+  font-size:11px;
+  font-weight:700;
+  font-family:'Courier New',monospace;
+  letter-spacing:0.5px;
+}
+.header-badge.danger{
+  background:rgba(192,57,43,0.5);
+  border-color:rgba(255,150,140,0.5);
+}
+.close-btn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:6px;
+  color:#fff;
+  width:28px;
+  height:28px;
+  cursor:pointer;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.15s;
+}
+.close-btn:hover{background:rgba(255,255,255,0.3)}
+.tabs{
+  display:flex;
+  background:var(--surface);
+  border-bottom:2px solid var(--accent);
+  flex-shrink:0;
+  overflow-x:auto;
+}
+.tab{
+  padding:9px 18px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-muted);
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+  white-space:nowrap;
+  transition:color 0.15s,border-color 0.15s;
+  user-select:none;
+}
+.tab:hover{color:var(--accent)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:16px}
+.tab-panel.active{display:flex;flex-direction:column;gap:14px}
+.section-title{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  color:var(--accent);
+  padding-bottom:6px;
+  border-bottom:1px solid var(--accent-light);
+  margin-bottom:4px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px 14px;
+}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group.span-2{grid-column:span 2}
+.form-group.span-3{grid-column:span 3}
+.form-group.span-4{grid-column:span 4}
+label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  width:100%;
+  padding:6px 8px;
+  border:1px solid var(--input-border);
+  border-radius:5px;
+  font-size:13px;
+  background:var(--input-bg);
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(107,80,0,0.12)}
+input[readonly]{background:#f8f4e8;color:var(--text-muted)}
+textarea{resize:vertical;min-height:72px}
+.picker-row{display:flex;gap:6px}
+.picker-row input{flex:1}
+.picker-btn{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:5px;
+  padding:0 10px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:background 0.15s;
+}
+.picker-btn:hover{background:var(--accent-hover)}
+.facturas-toolbar{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.facturas-toolbar .hint{font-size:11px;color:var(--text-muted);margin-left:auto}
+.btn-sm{
+  padding:5px 12px;
+  border-radius:5px;
+  border:1px solid var(--accent);
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  transition:background 0.15s;
+}
+.btn-sm:hover{background:var(--accent-hover)}
+.btn-sm.secondary{background:transparent;color:var(--accent)}
+.btn-sm.secondary:hover{background:var(--accent-light)}
+.table-wrap{flex:1;overflow:auto;border:1px solid var(--border);border-radius:6px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{
+  position:sticky;
+  top:0;
+  background:var(--accent);
+  color:#fff;
+  padding:7px 8px;
+  text-align:left;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.4px;
+  z-index:1;
+}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:hover{background:var(--accent-light)}
+tbody td{padding:4px 6px}
+.cell-input{
+  width:100%;
+  border:none;
+  background:transparent;
+  font-size:13px;
+  color:var(--text);
+  outline:none;
+  padding:2px 4px;
+}
+.cell-input:focus{background:#fff;border-radius:3px;box-shadow:0 0 0 2px rgba(107,80,0,0.2)}
+.cell-input.right{text-align:right}
+.del-row{
+  background:none;
+  border:none;
+  color:var(--danger);
+  cursor:pointer;
+  font-size:14px;
+  padding:2px 6px;
+  border-radius:3px;
+  opacity:0.6;
+}
+.del-row:hover{opacity:1;background:#fde}
+.facturas-footer{
+  display:flex;
+  justify-content:flex-end;
+  padding:8px 14px;
+  background:var(--accent-light);
+  border-top:1px solid var(--border);
+  border-radius:0 0 6px 6px;
+  font-weight:700;
+  font-size:14px;
+  gap:16px;
+}
+.metodo-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
+.metodo-tab{
+  flex:1;
+  padding:9px 0;
+  text-align:center;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-muted);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  transition:all 0.15s;
+  user-select:none;
+}
+.metodo-tab:last-child{border-right:none}
+.metodo-tab.active{background:var(--accent);color:#fff}
+.metodo-tab:hover:not(.active){background:var(--accent-light);color:var(--accent)}
+.metodo-panel{display:none}
+.metodo-panel.active{display:flex;flex-direction:column;gap:14px}
+.summary-panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px;
+}
+.summary-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.summary-row:last-child{border:none;font-size:15px;font-weight:800}
+.summary-row.ok .summary-val{color:var(--success)}
+.summary-row.warn .summary-val{color:var(--warning)}
+.summary-row.danger .summary-val{color:var(--danger)}
+.semaforo{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.semaforo.ok{background:var(--success)}
+.semaforo.warn{background:var(--warning)}
+.semaforo.danger{background:var(--danger)}
+.footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-shrink:0;
+}
+.footer-spacer{flex:1}
+.footer-btn{
+  padding:8px 20px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  transition:all 0.15s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.btn-save{background:var(--accent);color:#fff}
+.btn-save:hover{background:var(--accent-hover)}
+.btn-print{background:#eee8d0;color:var(--text)}
+.btn-print:hover{background:#e0d8c0}
+.btn-cancel{background:#eee8d0;color:var(--text)}
+.btn-cancel:hover{background:#e0d8c0}
+.btn-exit{background:transparent;border:1px solid var(--border)!important;color:var(--text-muted)}
+.btn-exit:hover{background:#fdf8e8}
+.kbd{
+  display:inline-block;
+  background:rgba(255,255,255,0.25);
+  border-radius:3px;
+  padding:0 4px;
+  font-size:10px;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">💸</span>
+  <span class="header-title">Nueva Orden de Pago</span>
+  <div class="header-badges">
+    <span class="header-badge" id="opBadge">OP-2506-00001</span>
+    <span class="header-badge danger" id="totalBadge">Total: $ 0,00</span>
+  </div>
+  <button class="close-btn" onclick="window.close()">✕</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="encabezado">Encabezado</div>
+  <div class="tab" data-tab="facturas">Facturas a pagar</div>
+  <div class="tab" data-tab="forma">Forma de pago</div>
+  <div class="tab" data-tab="observaciones">Observaciones</div>
+</div>
+
+<div class="content">
+
+  <div class="tab-panel active" id="panel-encabezado">
+    <div class="section-title">Identificación</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nro. OP</label>
+        <input type="text" id="nroOP" readonly value="OP-2506-00001">
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="fecha">
+      </div>
+      <div class="form-group span-2">
+        <label>Concepto general</label>
+        <input type="text" id="concepto" placeholder="Ej: Pago facturas octubre 2025">
+      </div>
+    </div>
+
+    <div class="section-title">Proveedor</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Proveedor</label>
+        <div class="picker-row">
+          <input type="text" id="proveedorNombre" placeholder="Seleccionar proveedor..." readonly>
+          <button class="picker-btn" onclick="abrirProveedorPicker()">...</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>CUIT</label>
+        <input type="text" id="proveedorCuit" readonly placeholder="XX-XXXXXXXX-X">
+      </div>
+      <div class="form-group">
+        <label>Condición IVA</label>
+        <input type="text" id="proveedorIva" readonly placeholder="—">
+      </div>
+    </div>
+
+    <div class="section-title">Pago</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Cobrador / Responsable de pago</label>
+        <input type="text" id="responsable" placeholder="Nombre del responsable">
+      </div>
+      <div class="form-group span-2">
+        <label>Banco / Cuenta a debitar</label>
+        <select id="banco">
+          <option value="caja">Caja general</option>
+          <option value="cuenta_principal">Cuenta bancaria principal</option>
+          <option value="cuenta_usd">Cuenta dólares</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Moneda</label>
+        <select id="moneda">
+          <option value="ARS">ARS — Peso Argentino</option>
+          <option value="USD">USD — Dólar Estadounidense</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-facturas">
+    <div class="facturas-toolbar">
+      <button class="btn-sm" onclick="agregarFactura()">+ Agregar factura</button>
+      <span class="hint">Insert = nueva fila</span>
+    </div>
+    <div class="table-wrap">
+      <table id="facturasTable">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th style="width:140px">Nro. factura proveedor</th>
+            <th style="width:100px">Fecha</th>
+            <th style="width:120px">Importe original</th>
+            <th style="width:120px">Saldo pendiente</th>
+            <th style="width:120px">Importe a pagar</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="facturasBody"></tbody>
+      </table>
+      <div class="facturas-footer">
+        <span>Total a pagar: <span id="totalFacturas">$ 0,00</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-forma">
+    <div class="metodo-tabs">
+      <div class="metodo-tab active" data-metodo="efectivo">💵 Efectivo</div>
+      <div class="metodo-tab" data-metodo="transferencia">🏦 Transferencia</div>
+      <div class="metodo-tab" data-metodo="cheque">📄 Cheque</div>
+      <div class="metodo-tab" data-metodo="tarjeta">💳 Tarjeta</div>
+      <div class="metodo-tab" data-metodo="otros">➕ Otros</div>
+    </div>
+
+    <div class="metodo-panel active" id="mp-efectivo">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Monto en efectivo</label>
+          <input type="number" id="ef-monto" value="0" min="0" step="any" oninput="actualizarResumen()">
+        </div>
+        <div class="form-group span-2">
+          <label>Caja</label>
+          <select id="ef-caja">
+            <option>Caja general</option>
+            <option>Caja auxiliar</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="metodo-panel" id="mp-transferencia">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Monto transferencia</label>
+          <input type="number" id="tr-monto" value="0" min="0" step="any" oninput="actualizarResumen()">
+        </div>
+        <div class="form-group span-2">
+          <label>Banco origen</label>
+          <input type="text" id="tr-banco" placeholder="Nombre del banco o cuenta">
+        </div>
+        <div class="form-group span-2">
+          <label>CBU destino (proveedor)</label>
+          <input type="text" id="tr-cbu" placeholder="0000000000000000000000" maxlength="22">
+        </div>
+        <div class="form-group span-2">
+          <label>Referencia / Nro. operación banco</label>
+          <input type="text" id="tr-ref" placeholder="Referencia bancaria">
+        </div>
+      </div>
+    </div>
+
+    <div class="metodo-panel" id="mp-cheque">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Monto cheque</label>
+          <input type="number" id="ch-monto" value="0" min="0" step="any" oninput="actualizarResumen()">
+        </div>
+        <div class="form-group span-2">
+          <label>Nro. cheque</label>
+          <input type="text" id="ch-nro" placeholder="00000000">
+        </div>
+        <div class="form-group span-2">
+          <label>Banco emisor</label>
+          <input type="text" id="ch-banco" placeholder="Nombre del banco">
+        </div>
+        <div class="form-group">
+          <label>Fecha del cheque</label>
+          <input type="date" id="ch-fecha">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="ch-tipo">
+            <option>Al día</option>
+            <option>Diferido</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="metodo-panel" id="mp-tarjeta">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Monto tarjeta</label>
+          <input type="number" id="ta-monto" value="0" min="0" step="any" oninput="actualizarResumen()">
+        </div>
+        <div class="form-group span-2">
+          <label>Tipo de tarjeta</label>
+          <select id="ta-tipo">
+            <option>Débito</option>
+            <option>Crédito</option>
+          </select>
+        </div>
+        <div class="form-group span-2">
+          <label>Red / Banco</label>
+          <input type="text" id="ta-red" placeholder="Visa / Mastercard / AMEX...">
+        </div>
+        <div class="form-group span-2">
+          <label>Nro. autorización</label>
+          <input type="text" id="ta-auth" placeholder="Código de autorización">
+        </div>
+      </div>
+    </div>
+
+    <div class="metodo-panel" id="mp-otros">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Monto otros</label>
+          <input type="number" id="ot-monto" value="0" min="0" step="any" oninput="actualizarResumen()">
+        </div>
+        <div class="form-group span-2">
+          <label>Concepto</label>
+          <input type="text" id="ot-concepto" placeholder="Descripción del método de pago">
+        </div>
+        <div class="form-group span-4">
+          <label>Referencia</label>
+          <input type="text" id="ot-ref" placeholder="Número de referencia o comprobante">
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-panel">
+      <div class="section-title">Resumen de pago</div>
+      <div class="summary-row"><span>Total facturas</span><span class="summary-val" id="res-facturas">$ 0,00</span></div>
+      <div class="summary-row"><span>Total a pagar</span><span class="summary-val" id="res-pago">$ 0,00</span></div>
+      <div class="summary-row" id="res-dif-row"><span><span class="semaforo ok" id="res-semaforo"></span>Diferencia</span><span class="summary-val" id="res-dif">$ 0,00</span></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-observaciones">
+    <div class="section-title">Aprobaciones</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Solicitado por</label>
+        <input type="text" id="solicitadoPor" placeholder="Nombre del solicitante">
+      </div>
+      <div class="form-group span-2">
+        <label>Aprobado por</label>
+        <input type="text" id="aprobadoPor" placeholder="Nombre del autorizante">
+      </div>
+      <div class="form-group span-2">
+        <label>Ejecutado por</label>
+        <input type="text" id="ejecutadoPor" placeholder="Nombre de quien ejecuta el pago">
+      </div>
+      <div class="form-group span-2">
+        <label>Estado</label>
+        <select id="estado">
+          <option>Borrador</option>
+          <option>Para aprobar</option>
+          <option>Aprobada</option>
+          <option>Ejecutada</option>
+          <option>Rechazada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-title">Comprobante y notas</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Comprobante bancario Nro.</label>
+        <input type="text" id="comprobanteBanco" placeholder="Nro. de comprobante bancario">
+      </div>
+      <div class="form-group span-4">
+        <label>Notas</label>
+        <textarea id="notas" placeholder="Notas internas sobre esta orden de pago..."></textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
+  <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
+  <button class="footer-btn btn-cancel" onclick="anular()">🚫 Anular</button>
+  <div class="footer-spacer"></div>
+  <button class="footer-btn btn-exit" onclick="window.close()">Salir</button>
+</div>
+
+<script>
+(function(){
+  var proveedorId = null;
+  var rowCounter = 0;
+
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fmtNum(n,dec){
+    dec = dec === undefined ? 2 : dec;
+    return Number(n).toLocaleString('es-AR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  }
+
+  function genBadge(){
+    var d = new Date();
+    var yy = String(d.getFullYear()).slice(2);
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    return 'OP-'+yy+mm+'-'+'00001';
+  }
+
+  function initDate(){
+    document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
+  }
+
+  function activarTab(name){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===name)});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='panel-'+name)});
+  }
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){activarTab(this.dataset.tab)});
+  });
+
+  document.querySelectorAll('.metodo-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('.metodo-tab').forEach(function(t){t.classList.remove('active')});
+      document.querySelectorAll('.metodo-panel').forEach(function(p){p.classList.remove('active')});
+      tab.classList.add('active');
+      document.getElementById('mp-'+tab.dataset.metodo).classList.add('active');
+      actualizarResumen();
+    });
+  });
+
+  function totalFacturasVal(){
+    var sum = 0;
+    document.querySelectorAll('#facturasBody tr').forEach(function(tr){
+      sum += parseFloat(tr.dataset.apagar)||0;
+    });
+    return sum;
+  }
+
+  function totalPagoVal(){
+    var ef = parseFloat(document.getElementById('ef-monto').value)||0;
+    var tr = parseFloat(document.getElementById('tr-monto').value)||0;
+    var ch = parseFloat(document.getElementById('ch-monto').value)||0;
+    var ta = parseFloat(document.getElementById('ta-monto').value)||0;
+    var ot = parseFloat(document.getElementById('ot-monto').value)||0;
+    return ef + tr + ch + ta + ot;
+  }
+
+  function actualizarResumen(){
+    var totalF = totalFacturasVal();
+    var totalP = totalPagoVal();
+    var dif = totalP - totalF;
+    document.getElementById('res-facturas').textContent = '$ '+fmtNum(totalF);
+    document.getElementById('res-pago').textContent = '$ '+fmtNum(totalP);
+    document.getElementById('res-dif').textContent = '$ '+fmtNum(Math.abs(dif));
+    var sem = document.getElementById('res-semaforo');
+    var row = document.getElementById('res-dif-row');
+    row.className = 'summary-row';
+    sem.className = 'semaforo';
+    if(Math.abs(dif) < 0.01){sem.classList.add('ok');row.classList.add('ok')}
+    else if(Math.abs(dif) < totalF * 0.05){sem.classList.add('warn');row.classList.add('warn')}
+    else{sem.classList.add('danger');row.classList.add('danger')}
+    document.getElementById('totalBadge').textContent = 'Total: $ '+fmtNum(totalF);
+    document.getElementById('totalFacturas').textContent = '$ '+fmtNum(totalF);
+  }
+
+  function agregarFactura(data){
+    data = data || {};
+    rowCounter++;
+    var tbody = document.getElementById('facturasBody');
+    var tr = document.createElement('tr');
+    tr.dataset.id = rowCounter;
+    tr.dataset.apagar = 0;
+    tr.innerHTML =
+      '<td style="text-align:center;color:#999;font-size:11px">'+rowCounter+'</td>'+
+      '<td><input class="cell-input" data-col="nro" value="'+esc(data.nro||'')+'"></td>'+
+      '<td><input class="cell-input" type="date" data-col="fecha" value="'+esc(data.fecha||'')+'"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="original" value="'+esc(data.original||0)+'" min="0" step="any"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="saldo" value="'+esc(data.saldo||0)+'" min="0" step="any"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="apagar" value="'+esc(data.apagar||0)+'" min="0" step="any"></td>'+
+      '<td><button class="del-row" title="Eliminar">✕</button></td>';
+    tbody.appendChild(tr);
+    tr.querySelector('.del-row').addEventListener('click',function(){tr.remove();actualizarResumen()});
+    tr.querySelector('[data-col=apagar]').addEventListener('input',function(){
+      tr.dataset.apagar = parseFloat(this.value)||0;
+      actualizarResumen();
+    });
+    tr.querySelector('[data-col=original]').addEventListener('blur',function(){
+      var saldo = tr.querySelector('[data-col=saldo]');
+      var apagar = tr.querySelector('[data-col=apagar]');
+      if(!parseFloat(saldo.value)) saldo.value = this.value;
+      if(!parseFloat(apagar.value)){apagar.value = this.value;tr.dataset.apagar=parseFloat(this.value)||0;actualizarResumen()}
+    });
+  }
+
+  function abrirProveedorPicker(){
+    if(window.asimovNewPaymentOrder) window.asimovNewPaymentOrder.openClientSelection('op-proveedor');
+    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'op-proveedor',tipo:'proveedor'});
+  }
+
+  function onClientSelected(data){
+    if(!data || data.contextId !== 'op-proveedor') return;
+    proveedorId = data.id;
+    document.getElementById('proveedorNombre').value = esc(data.nombre||'');
+    document.getElementById('proveedorCuit').value = esc(data.cuit||'');
+    document.getElementById('proveedorIva').value = esc(data.condIva||'');
+    if(data.cbu) document.getElementById('tr-cbu').value = esc(data.cbu);
+  }
+
+  if(window.electronAPI){
+    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
+  }
+
+  if(window.asimovNewPaymentOrder){
+    window.asimovNewPaymentOrder.onClientSelected = onClientSelected;
+  }
+
+  function validar(){
+    if(!document.getElementById('proveedorNombre').value.trim()){
+      alert('Debe seleccionar un proveedor.');
+      activarTab('encabezado');
+      return false;
+    }
+    if(document.querySelectorAll('#facturasBody tr').length === 0){
+      alert('Debe ingresar al menos una factura a pagar.');
+      activarTab('facturas');
+      return false;
+    }
+    return true;
+  }
+
+  function guardar(){
+    if(!validar()) return;
+    var facturas = [];
+    document.querySelectorAll('#facturasBody tr').forEach(function(tr){
+      facturas.push({
+        nro: tr.querySelector('[data-col=nro]').value,
+        fecha: tr.querySelector('[data-col=fecha]').value,
+        original: parseFloat(tr.querySelector('[data-col=original]').value)||0,
+        saldo: parseFloat(tr.querySelector('[data-col=saldo]').value)||0,
+        apagar: parseFloat(tr.querySelector('[data-col=apagar]').value)||0
+      });
+    });
+    var metodoActivo = document.querySelector('.metodo-tab.active').dataset.metodo;
+    var payload = {
+      nroOP: document.getElementById('nroOP').value,
+      fecha: document.getElementById('fecha').value,
+      concepto: document.getElementById('concepto').value,
+      proveedorId: proveedorId,
+      proveedorNombre: document.getElementById('proveedorNombre').value,
+      proveedorCuit: document.getElementById('proveedorCuit').value,
+      responsable: document.getElementById('responsable').value,
+      banco: document.getElementById('banco').value,
+      moneda: document.getElementById('moneda').value,
+      estado: document.getElementById('estado').value,
+      solicitadoPor: document.getElementById('solicitadoPor').value,
+      aprobadoPor: document.getElementById('aprobadoPor').value,
+      ejecutadoPor: document.getElementById('ejecutadoPor').value,
+      comprobanteBanco: document.getElementById('comprobanteBanco').value,
+      notas: document.getElementById('notas').value,
+      metodo: metodoActivo,
+      montoEfectivo: parseFloat(document.getElementById('ef-monto').value)||0,
+      montoTransferencia: parseFloat(document.getElementById('tr-monto').value)||0,
+      cbuDestino: document.getElementById('tr-cbu').value,
+      bancoTransferencia: document.getElementById('tr-banco').value,
+      refTransferencia: document.getElementById('tr-ref').value,
+      montoCheque: parseFloat(document.getElementById('ch-monto').value)||0,
+      nroCheque: document.getElementById('ch-nro').value,
+      fechaCheque: document.getElementById('ch-fecha').value,
+      montoTarjeta: parseFloat(document.getElementById('ta-monto').value)||0,
+      montoOtros: parseFloat(document.getElementById('ot-monto').value)||0,
+      conceptoOtros: document.getElementById('ot-concepto').value,
+      totalFacturas: totalFacturasVal(),
+      totalPago: totalPagoVal(),
+      facturas: facturas
+    };
+    if(window.electronAPI) window.electronAPI.send('shell:payment-order-saved', payload);
+    if(window.asimovNewPaymentOrder) window.asimovNewPaymentOrder.onSaved && window.asimovNewPaymentOrder.onSaved(payload);
+  }
+
+  function imprimir(){
+    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'payment-order',nro:document.getElementById('nroOP').value});
+  }
+
+  function anular(){
+    if(!confirm('¿Desea anular esta orden de pago?')) return;
+    document.getElementById('estado').value = 'Rechazada';
+    guardar();
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key === 'F8'){e.preventDefault();guardar()}
+    if(e.key === 'Insert'){
+      var panel = document.querySelector('.tab-panel.active');
+      if(panel && panel.id === 'panel-facturas'){e.preventDefault();agregarFactura()}
+    }
+  });
+
+  var badge = genBadge();
+  document.getElementById('opBadge').textContent = badge;
+  document.getElementById('nroOP').value = badge;
+  initDate();
+  agregarFactura();
+})();
+</script>
+</body>
+</html>

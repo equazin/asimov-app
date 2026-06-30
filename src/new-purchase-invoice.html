@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva Factura de Compra</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#8b0a14;
+  --header-bg:#520008;
+  --accent-light:#fce8ea;
+  --accent-hover:#a80e1a;
+  --border:#d4b0b4;
+  --bg:#fdf5f5;
+  --surface:#ffffff;
+  --text:#1a0608;
+  --text-muted:#7a4050;
+  --danger:#c0392b;
+  --success:#27ae60;
+  --warning:#e67e22;
+  --input-bg:#ffffff;
+  --input-border:#c8a0a8;
+  --shadow:0 1px 3px rgba(0,0,0,0.12);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:13px;
+  background:var(--bg);
+  color:var(--text);
+  padding-top:32px;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.header{
+  background:linear-gradient(135deg,var(--header-bg) 0%,var(--accent) 100%);
+  color:#fff;
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.header-icon{font-size:18px}
+.header-title{font-size:15px;font-weight:700;letter-spacing:0.3px;flex:1}
+.header-badges{display:flex;gap:6px}
+.header-badge{
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:12px;
+  padding:3px 10px;
+  font-size:11px;
+  font-weight:700;
+  font-family:'Courier New',monospace;
+  letter-spacing:0.5px;
+}
+.close-btn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:6px;
+  color:#fff;
+  width:28px;
+  height:28px;
+  cursor:pointer;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.15s;
+}
+.close-btn:hover{background:rgba(255,255,255,0.3)}
+.tabs{
+  display:flex;
+  background:var(--surface);
+  border-bottom:2px solid var(--accent);
+  flex-shrink:0;
+  overflow-x:auto;
+}
+.tab{
+  padding:9px 18px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-muted);
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+  white-space:nowrap;
+  transition:color 0.15s,border-color 0.15s;
+  user-select:none;
+}
+.tab:hover{color:var(--accent)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:16px}
+.tab-panel.active{display:flex;flex-direction:column;gap:14px}
+.section-title{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  color:var(--accent);
+  padding-bottom:6px;
+  border-bottom:1px solid var(--accent-light);
+  margin-bottom:4px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px 14px;
+}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group.span-2{grid-column:span 2}
+.form-group.span-3{grid-column:span 3}
+.form-group.span-4{grid-column:span 4}
+label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  width:100%;
+  padding:6px 8px;
+  border:1px solid var(--input-border);
+  border-radius:5px;
+  font-size:13px;
+  background:var(--input-bg);
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(139,10,20,0.12)}
+input[readonly]{background:#f8f0f1;color:var(--text-muted)}
+textarea{resize:vertical;min-height:72px}
+.picker-row{display:flex;gap:6px}
+.picker-row input{flex:1}
+.picker-btn{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:5px;
+  padding:0 10px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:background 0.15s;
+}
+.picker-btn:hover{background:var(--accent-hover)}
+.tipo-selector{display:flex;gap:6px;flex-wrap:wrap}
+.tipo-btn{
+  padding:6px 14px;
+  border-radius:6px;
+  border:2px solid var(--border);
+  background:var(--surface);
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-muted);
+  transition:all 0.15s;
+}
+.tipo-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.tipo-btn:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+.items-toolbar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-shrink:0;
+}
+.items-toolbar .hint{font-size:11px;color:var(--text-muted);margin-left:auto}
+.btn-sm{
+  padding:5px 12px;
+  border-radius:5px;
+  border:1px solid var(--accent);
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  transition:background 0.15s;
+}
+.btn-sm:hover{background:var(--accent-hover)}
+.btn-sm.secondary{background:transparent;color:var(--accent)}
+.btn-sm.secondary:hover{background:var(--accent-light)}
+.table-wrap{flex:1;overflow:auto;border:1px solid var(--border);border-radius:6px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{
+  position:sticky;
+  top:0;
+  background:var(--accent);
+  color:#fff;
+  padding:7px 8px;
+  text-align:left;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.4px;
+  z-index:1;
+}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:hover{background:var(--accent-light)}
+tbody td{padding:4px 6px}
+.cell-input{
+  width:100%;
+  border:none;
+  background:transparent;
+  font-size:13px;
+  color:var(--text);
+  outline:none;
+  padding:2px 4px;
+}
+.cell-input:focus{background:#fff;border-radius:3px;box-shadow:0 0 0 2px rgba(139,10,20,0.2)}
+.cell-input.right{text-align:right}
+.del-row{
+  background:none;
+  border:none;
+  color:var(--danger);
+  cursor:pointer;
+  font-size:14px;
+  padding:2px 6px;
+  border-radius:3px;
+  opacity:0.6;
+}
+.del-row:hover{opacity:1;background:#fde}
+.totales-layout{display:grid;grid-template-columns:1fr 320px;gap:16px}
+.totales-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+.totales-card table{width:100%}
+.totales-card td{padding:7px 14px;border-bottom:1px solid var(--border)}
+.totales-card td:last-child{text-align:right;font-weight:600}
+.totales-card tr:last-child td{border:none}
+.totales-total td{background:var(--accent);color:#fff;font-size:15px;font-weight:800}
+.info-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px}
+.info-label{color:var(--text-muted)}
+.info-value{font-weight:600}
+.cuotas-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.cuotas-summary{
+  display:flex;
+  gap:16px;
+  padding:10px 14px;
+  background:var(--accent-light);
+  border-radius:6px;
+  font-size:13px;
+}
+.cuotas-summary strong{color:var(--accent)}
+.footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-shrink:0;
+}
+.footer-spacer{flex:1}
+.footer-btn{
+  padding:8px 20px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  transition:all 0.15s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.btn-save{background:var(--accent);color:#fff}
+.btn-save:hover{background:var(--accent-hover)}
+.btn-print{background:#f0e4e6;color:var(--text)}
+.btn-print:hover{background:#e4d4d8}
+.btn-cancel{background:#f0e4e6;color:var(--text)}
+.btn-cancel:hover{background:#e4d4d8}
+.btn-exit{background:transparent;border:1px solid var(--border)!important;color:var(--text-muted)}
+.btn-exit:hover{background:#fdf5f5}
+.kbd{
+  display:inline-block;
+  background:rgba(255,255,255,0.25);
+  border-radius:3px;
+  padding:0 4px;
+  font-size:10px;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">🧾</span>
+  <span class="header-title">Nueva Factura de Compra</span>
+  <div class="header-badges">
+    <span class="header-badge" id="provBadge">Proveedor: —</span>
+    <span class="header-badge" id="tipoBadge">FC-A</span>
+  </div>
+  <button class="close-btn" onclick="window.close()">✕</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="comprobante">Comprobante</div>
+  <div class="tab" data-tab="items">Ítems</div>
+  <div class="tab" data-tab="totales">Totales</div>
+  <div class="tab" data-tab="vencimientos">Vencimientos y pago</div>
+  <div class="tab" data-tab="observaciones">Observaciones</div>
+</div>
+
+<div class="content">
+
+  <div class="tab-panel active" id="panel-comprobante">
+    <div class="section-title">Tipo de comprobante</div>
+    <div class="tipo-selector" id="tipoSelector">
+      <button class="tipo-btn active" data-tipo="FC-A">Factura A</button>
+      <button class="tipo-btn" data-tipo="FC-B">Factura B</button>
+      <button class="tipo-btn" data-tipo="FC-C">Factura C</button>
+      <button class="tipo-btn" data-tipo="NC-A">Nota Crédito A</button>
+      <button class="tipo-btn" data-tipo="NC-B">Nota Crédito B</button>
+      <button class="tipo-btn" data-tipo="ND-A">Nota Débito A</button>
+      <button class="tipo-btn" data-tipo="ND-B">Nota Débito B</button>
+    </div>
+
+    <div class="section-title">Datos del comprobante</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Punto de venta proveedor</label>
+        <input type="text" id="ptoVenta" placeholder="0001" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>Nro. factura proveedor</label>
+        <input type="text" id="nroFactura" placeholder="00000001">
+      </div>
+      <div class="form-group">
+        <label>Fecha factura</label>
+        <input type="date" id="fechaFactura">
+      </div>
+      <div class="form-group">
+        <label>Fecha recepción factura</label>
+        <input type="date" id="fechaRecepcion">
+      </div>
+      <div class="form-group">
+        <label>Fecha vencimiento</label>
+        <input type="date" id="fechaVencimiento">
+      </div>
+      <div class="form-group">
+        <label>Período fiscal (MM/AAAA)</label>
+        <input type="text" id="periodoFiscal" placeholder="06/2025" maxlength="7">
+      </div>
+      <div class="form-group">
+        <label>CAE del proveedor</label>
+        <input type="text" id="cae" placeholder="12345678901234">
+      </div>
+    </div>
+
+    <div class="section-title">Proveedor</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Proveedor</label>
+        <div class="picker-row">
+          <input type="text" id="proveedorNombre" placeholder="Seleccionar proveedor..." readonly>
+          <button class="picker-btn" onclick="abrirProveedorPicker()">...</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>CUIT</label>
+        <input type="text" id="proveedorCuit" readonly placeholder="XX-XXXXXXXX-X">
+      </div>
+      <div class="form-group">
+        <label>Condición IVA</label>
+        <input type="text" id="proveedorIva" readonly placeholder="—">
+      </div>
+      <div class="form-group span-2">
+        <label>OC vinculada</label>
+        <input type="text" id="ocVinculada" placeholder="OC-YYMM-XXXXX">
+      </div>
+      <div class="form-group span-2">
+        <label>Recepción vinculada</label>
+        <input type="text" id="rmcVinculada" placeholder="RMC-YYMM-XXXXX">
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-items">
+    <div class="items-toolbar">
+      <button class="btn-sm" onclick="agregarFila()">+ Agregar ítem</button>
+      <button class="btn-sm secondary" onclick="abrirProductoPicker()">🔍 Buscar producto (F4)</button>
+      <span class="hint">Insert = nueva fila · F4 = buscar producto</span>
+    </div>
+    <div class="table-wrap">
+      <table id="itemsTable">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th style="width:90px">Código</th>
+            <th>Descripción</th>
+            <th style="width:60px">Unidad</th>
+            <th style="width:80px">Cantidad</th>
+            <th style="width:100px">Precio unit.</th>
+            <th style="width:70px">% Desc.</th>
+            <th style="width:70px">IVA%</th>
+            <th style="width:100px">Subtotal</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-totales">
+    <div class="totales-layout">
+      <div class="totales-card">
+        <table>
+          <tbody>
+            <tr><td>Neto gravado 21%</td><td id="t-neto21">$ 0,00</td></tr>
+            <tr><td>Neto gravado 10,5%</td><td id="t-neto105">$ 0,00</td></tr>
+            <tr><td>Neto no gravado</td><td id="t-neto0">$ 0,00</td></tr>
+            <tr><td>IVA 21%</td><td id="t-iva21">$ 0,00</td></tr>
+            <tr><td>IVA 10,5%</td><td id="t-iva105">$ 0,00</td></tr>
+            <tr><td>Percepciones sufridas</td><td><input type="number" id="percepciones" value="0" min="0" step="any" style="width:120px;text-align:right" oninput="recalcTotals()"></td></tr>
+            <tr class="totales-total"><td>TOTAL FACTURA</td><td id="t-total">$ 0,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="info-card">
+        <div class="section-title">Resumen</div>
+        <div class="info-row"><span class="info-label">Tipo</span><span class="info-value" id="inf-tipo">FC-A</span></div>
+        <div class="info-row"><span class="info-label">Proveedor</span><span class="info-value" id="inf-prov">—</span></div>
+        <div class="info-row"><span class="info-label">Nro. factura</span><span class="info-value" id="inf-nro">—</span></div>
+        <div class="info-row"><span class="info-label">Fecha factura</span><span class="info-value" id="inf-fecha">—</span></div>
+        <div class="info-row"><span class="info-label">Vencimiento</span><span class="info-value" id="inf-venc">—</span></div>
+        <div class="info-row"><span class="info-label">Estado</span><span class="info-value" id="inf-estado">Pendiente</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-vencimientos">
+    <div class="section-title">Plan de pagos</div>
+    <div class="cuotas-toolbar">
+      <button class="btn-sm" onclick="agregarCuota()">+ Agregar cuota</button>
+    </div>
+    <div class="table-wrap" style="max-height:200px">
+      <table id="cuotasTable">
+        <thead>
+          <tr>
+            <th style="width:80px">Nro. cuota</th>
+            <th style="width:140px">Fecha vencimiento</th>
+            <th style="width:130px">Importe</th>
+            <th>Estado</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="cuotasBody"></tbody>
+      </table>
+    </div>
+    <div class="cuotas-summary" id="cuotasSummary">
+      <span>Total cuotas: <strong id="sum-cuotas">$ 0,00</strong></span>
+      <span>Total factura: <strong id="sum-factura">$ 0,00</strong></span>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Datos de pago</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Banco / Cuenta a pagar</label>
+        <select id="bancoPago">
+          <option>Caja general</option>
+          <option>Cuenta bancaria principal</option>
+          <option>Cuenta dólares</option>
+        </select>
+      </div>
+      <div class="form-group span-2">
+        <label>CBU del proveedor</label>
+        <input type="text" id="cbuProveedor" placeholder="0000000000000000000000" maxlength="22">
+      </div>
+      <div class="form-group span-2">
+        <label>Condición de pago</label>
+        <select id="condPago">
+          <option>Contado</option>
+          <option>30 días</option>
+          <option>60 días</option>
+          <option>90 días</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-observaciones">
+    <div class="section-title">Notas y estado</div>
+    <div class="form-grid">
+      <div class="form-group span-4">
+        <label>Notas</label>
+        <textarea id="notas" placeholder="Notas generales sobre esta factura..."></textarea>
+      </div>
+      <div class="form-group span-4">
+        <label>Reclamos</label>
+        <textarea id="reclamos" placeholder="Reclamos o disputas con el proveedor..."></textarea>
+      </div>
+      <div class="form-group span-2">
+        <label>Referencias</label>
+        <input type="text" id="referencias" placeholder="OC, RMC u otras referencias">
+      </div>
+      <div class="form-group span-2">
+        <label>Estado de contabilización</label>
+        <select id="estadoCont">
+          <option>Pendiente</option>
+          <option>Contabilizada</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
+  <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
+  <button class="footer-btn btn-cancel" onclick="anular()">🚫 Anular</button>
+  <div class="footer-spacer"></div>
+  <button class="footer-btn btn-exit" onclick="window.close()">Salir</button>
+</div>
+
+<script>
+(function(){
+  var proveedorId = null;
+  var tipoActual = 'FC-A';
+  var rowCounter = 0;
+  var cuotaCounter = 0;
+
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fmtNum(n,dec){
+    dec = dec === undefined ? 2 : dec;
+    return Number(n).toLocaleString('es-AR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  }
+
+  function initDate(){
+    var d = new Date();
+    var iso = d.toISOString().slice(0,10);
+    document.getElementById('fechaRecepcion').value = iso;
+    document.getElementById('fechaFactura').value = iso;
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    document.getElementById('periodoFiscal').value = mm+'/'+d.getFullYear();
+  }
+
+  function activarTab(name){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===name)});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='panel-'+name)});
+    if(name==='totales') actualizarInfoCard();
+  }
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){activarTab(this.dataset.tab)});
+  });
+
+  document.querySelectorAll('.tipo-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.tipo-btn').forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      tipoActual = btn.dataset.tipo;
+      document.getElementById('tipoBadge').textContent = tipoActual;
+    });
+  });
+
+  function agregarFila(data){
+    data = data || {};
+    rowCounter++;
+    var tbody = document.getElementById('itemsBody');
+    var tr = document.createElement('tr');
+    tr.dataset.id = rowCounter;
+    tr.innerHTML =
+      '<td style="text-align:center;color:#999;font-size:11px">'+rowCounter+'</td>'+
+      '<td><input class="cell-input" data-col="codigo" value="'+esc(data.codigo||'')+'"></td>'+
+      '<td><input class="cell-input" data-col="desc" value="'+esc(data.descripcion||'')+'"></td>'+
+      '<td><input class="cell-input" data-col="unidad" value="'+esc(data.unidad||'UN')+'"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="cant" value="'+esc(data.cantidad||1)+'" min="0" step="any"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="precio" value="'+esc(data.precio||0)+'" min="0" step="any"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="desc_pct" value="0" min="0" max="100" step="any"></td>'+
+      '<td><select class="cell-input" data-col="iva_pct" style="padding:2px 2px"><option value="21">21%</option><option value="10.5">10,5%</option><option value="0">0%</option></select></td>'+
+      '<td><input class="cell-input right" data-col="sub" readonly value="0,00"></td>'+
+      '<td><button class="del-row" title="Eliminar fila">✕</button></td>';
+    tbody.appendChild(tr);
+    tr.querySelector('.del-row').addEventListener('click',function(){tr.remove();recalcTotals()});
+    tr.querySelectorAll('input[data-col=cant],input[data-col=precio],input[data-col=desc_pct]').forEach(function(inp){
+      inp.addEventListener('input',function(){recalcFila(tr);recalcTotals()});
+    });
+    tr.querySelector('[data-col=iva_pct]').addEventListener('change',function(){recalcFila(tr);recalcTotals()});
+    recalcFila(tr);
+    recalcTotals();
+  }
+
+  function recalcFila(tr){
+    var cant = parseFloat(tr.querySelector('[data-col=cant]').value)||0;
+    var precio = parseFloat(tr.querySelector('[data-col=precio]').value)||0;
+    var desc = parseFloat(tr.querySelector('[data-col=desc_pct]').value)||0;
+    var neto = cant * precio * (1 - desc/100);
+    tr.querySelector('[data-col=sub]').value = fmtNum(neto);
+    tr.dataset.neto = neto;
+    tr.dataset.iva = parseFloat(tr.querySelector('[data-col=iva_pct]').value)||0;
+  }
+
+  function recalcTotals(){
+    var neto21 = 0, neto105 = 0, neto0 = 0;
+    document.querySelectorAll('#itemsBody tr').forEach(function(tr){
+      var n = parseFloat(tr.dataset.neto)||0;
+      var iva = parseFloat(tr.dataset.iva)||0;
+      if(iva === 21) neto21 += n;
+      else if(iva === 10.5) neto105 += n;
+      else neto0 += n;
+    });
+    var iva21 = neto21 * 0.21;
+    var iva105 = neto105 * 0.105;
+    var percepciones = parseFloat(document.getElementById('percepciones').value)||0;
+    var total = neto21 + neto105 + neto0 + iva21 + iva105 + percepciones;
+    document.getElementById('t-neto21').textContent = '$ '+fmtNum(neto21);
+    document.getElementById('t-neto105').textContent = '$ '+fmtNum(neto105);
+    document.getElementById('t-neto0').textContent = '$ '+fmtNum(neto0);
+    document.getElementById('t-iva21').textContent = '$ '+fmtNum(iva21);
+    document.getElementById('t-iva105').textContent = '$ '+fmtNum(iva105);
+    document.getElementById('t-total').textContent = '$ '+fmtNum(total);
+    document.getElementById('sum-factura').textContent = '$ '+fmtNum(total);
+    actualizarSumaCuotas();
+  }
+
+  function actualizarInfoCard(){
+    document.getElementById('inf-tipo').textContent = tipoActual;
+    document.getElementById('inf-prov').textContent = document.getElementById('proveedorNombre').value || '—';
+    var pto = document.getElementById('ptoVenta').value;
+    var nro = document.getElementById('nroFactura').value;
+    document.getElementById('inf-nro').textContent = pto && nro ? pto+'-'+nro : '—';
+    document.getElementById('inf-fecha').textContent = document.getElementById('fechaFactura').value || '—';
+    document.getElementById('inf-venc').textContent = document.getElementById('fechaVencimiento').value || '—';
+  }
+
+  function agregarCuota(data){
+    data = data || {};
+    cuotaCounter++;
+    var tbody = document.getElementById('cuotasBody');
+    var tr = document.createElement('tr');
+    tr.dataset.id = cuotaCounter;
+    tr.innerHTML =
+      '<td><input class="cell-input right" data-col="nro" value="'+cuotaCounter+'" readonly></td>'+
+      '<td><input class="cell-input" type="date" data-col="venc" value="'+esc(data.venc||'')+'"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="importe" value="'+esc(data.importe||0)+'" min="0" step="any"></td>'+
+      '<td><select class="cell-input" data-col="estado"><option>Pendiente</option><option>Pagada</option></select></td>'+
+      '<td><button class="del-row" title="Eliminar">✕</button></td>';
+    tbody.appendChild(tr);
+    tr.querySelector('.del-row').addEventListener('click',function(){tr.remove();actualizarSumaCuotas()});
+    tr.querySelector('[data-col=importe]').addEventListener('input',actualizarSumaCuotas);
+  }
+
+  function actualizarSumaCuotas(){
+    var sum = 0;
+    document.querySelectorAll('#cuotasBody tr').forEach(function(tr){
+      sum += parseFloat(tr.querySelector('[data-col=importe]').value)||0;
+    });
+    document.getElementById('sum-cuotas').textContent = '$ '+fmtNum(sum);
+  }
+
+  function abrirProveedorPicker(){
+    if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.openClientSelection('fc-proveedor');
+    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'fc-proveedor',tipo:'proveedor'});
+  }
+
+  function abrirProductoPicker(){
+    if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.openProductSelection();
+    if(window.electronAPI) window.electronAPI.send('shell:open-product-selection',{contextId:'fc-item'});
+  }
+
+  function onClientSelected(data){
+    if(!data || data.contextId !== 'fc-proveedor') return;
+    proveedorId = data.id;
+    document.getElementById('proveedorNombre').value = esc(data.nombre||'');
+    document.getElementById('proveedorCuit').value = esc(data.cuit||'');
+    document.getElementById('proveedorIva').value = esc(data.condIva||'');
+    document.getElementById('provBadge').textContent = 'Proveedor: '+(data.nombre||'—');
+  }
+
+  function onProductSelected(data){
+    if(!data) return;
+    agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,precio:data.precioCompra||0});
+  }
+
+  if(window.electronAPI){
+    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
+    window.electronAPI.on('shell:product-selected',function(_e,data){onProductSelected(data)});
+  }
+
+  if(window.asimovNewPurchaseInvoice){
+    window.asimovNewPurchaseInvoice.onClientSelected = onClientSelected;
+    window.asimovNewPurchaseInvoice.onProductSelected = onProductSelected;
+  }
+
+  function validar(){
+    if(!document.getElementById('proveedorNombre').value.trim()){
+      alert('Debe seleccionar un proveedor.');
+      activarTab('comprobante');
+      return false;
+    }
+    if(document.querySelectorAll('#itemsBody tr').length === 0){
+      alert('Debe ingresar al menos un ítem.');
+      activarTab('items');
+      return false;
+    }
+    return true;
+  }
+
+  function guardar(){
+    if(!validar()) return;
+    var items = [];
+    document.querySelectorAll('#itemsBody tr').forEach(function(tr){
+      items.push({
+        codigo: tr.querySelector('[data-col=codigo]').value,
+        descripcion: tr.querySelector('[data-col=desc]').value,
+        unidad: tr.querySelector('[data-col=unidad]').value,
+        cantidad: parseFloat(tr.querySelector('[data-col=cant]').value)||0,
+        precio: parseFloat(tr.querySelector('[data-col=precio]').value)||0,
+        descPct: parseFloat(tr.querySelector('[data-col=desc_pct]').value)||0,
+        ivaPct: parseFloat(tr.querySelector('[data-col=iva_pct]').value)||0,
+        subtotal: parseFloat(tr.dataset.neto)||0
+      });
+    });
+    var cuotas = [];
+    document.querySelectorAll('#cuotasBody tr').forEach(function(tr){
+      cuotas.push({
+        nro: tr.querySelector('[data-col=nro]').value,
+        venc: tr.querySelector('[data-col=venc]').value,
+        importe: parseFloat(tr.querySelector('[data-col=importe]').value)||0,
+        estado: tr.querySelector('[data-col=estado]').value
+      });
+    });
+    var payload = {
+      tipo: tipoActual,
+      ptoVenta: document.getElementById('ptoVenta').value,
+      nroFactura: document.getElementById('nroFactura').value,
+      fechaFactura: document.getElementById('fechaFactura').value,
+      fechaRecepcion: document.getElementById('fechaRecepcion').value,
+      fechaVencimiento: document.getElementById('fechaVencimiento').value,
+      cae: document.getElementById('cae').value,
+      periodoFiscal: document.getElementById('periodoFiscal').value,
+      proveedorId: proveedorId,
+      proveedorNombre: document.getElementById('proveedorNombre').value,
+      proveedorCuit: document.getElementById('proveedorCuit').value,
+      ocVinculada: document.getElementById('ocVinculada').value,
+      rmcVinculada: document.getElementById('rmcVinculada').value,
+      percepciones: parseFloat(document.getElementById('percepciones').value)||0,
+      bancoPago: document.getElementById('bancoPago').value,
+      cbuProveedor: document.getElementById('cbuProveedor').value,
+      condPago: document.getElementById('condPago').value,
+      notas: document.getElementById('notas').value,
+      reclamos: document.getElementById('reclamos').value,
+      referencias: document.getElementById('referencias').value,
+      estadoCont: document.getElementById('estadoCont').value,
+      items: items,
+      cuotas: cuotas
+    };
+    if(window.electronAPI) window.electronAPI.send('shell:purchase-invoice-saved', payload);
+    if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.onSaved && window.asimovNewPurchaseInvoice.onSaved(payload);
+  }
+
+  function imprimir(){
+    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'purchase-invoice',tipo:tipoActual});
+  }
+
+  function anular(){
+    if(!confirm('¿Desea anular esta factura de compra?')) return;
+    var payload = {accion:'anular',tipo:tipoActual,nroFactura:document.getElementById('nroFactura').value};
+    if(window.electronAPI) window.electronAPI.send('shell:purchase-invoice-saved',Object.assign(payload,{anulada:true}));
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key === 'F8'){e.preventDefault();guardar()}
+    if(e.key === 'F4'){e.preventDefault();abrirProductoPicker()}
+    if(e.key === 'Insert'){
+      var panel = document.querySelector('.tab-panel.active');
+      if(panel && panel.id === 'panel-items'){e.preventDefault();agregarFila()}
+      if(panel && panel.id === 'panel-vencimientos'){e.preventDefault();agregarCuota()}
+    }
+  });
+
+  initDate();
+  agregarFila();
+})();
+</script>
+</body>
+</html>

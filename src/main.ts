@@ -40,6 +40,10 @@ const NEW_QUOTE_FILE = path.join(__dirname, "new-quote.html");
 const NEW_INVOICE_FILE = path.join(__dirname, "new-invoice.html");
 const NEW_DELIVERY_NOTE_FILE = path.join(__dirname, "new-delivery-note.html");
 const NEW_RECEIPT_FILE = path.join(__dirname, "new-receipt.html");
+const NEW_PURCHASE_ORDER_FILE = path.join(__dirname, "new-purchase-order.html");
+const NEW_GOODS_RECEIPT_FILE = path.join(__dirname, "new-goods-receipt.html");
+const NEW_PURCHASE_INVOICE_FILE = path.join(__dirname, "new-purchase-invoice.html");
+const NEW_PAYMENT_ORDER_FILE = path.join(__dirname, "new-payment-order.html");
 
 // Title bar custom estilo GESES: barra crema, texto y botones oscuros.
 // Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
@@ -451,7 +455,7 @@ function openAppropriateWindow(): void {
   }
 }
 
-function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt"): void {
+function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt" | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order"): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
     case "article":
@@ -477,6 +481,18 @@ function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" |
       break;
     case "receipt":
       createNewReceiptWindowStandalone(parent);
+      break;
+    case "purchase-order":
+      createNewPurchaseOrderWindowStandalone(parent);
+      break;
+    case "goods-receipt":
+      createNewGoodsReceiptWindowStandalone(parent);
+      break;
+    case "purchase-invoice":
+      createNewPurchaseInvoiceWindowStandalone(parent);
+      break;
+    case "payment-order":
+      createNewPaymentOrderWindowStandalone(parent);
       break;
   }
 }
@@ -704,6 +720,30 @@ if (!gotLock) {
       }
     });
 
+    ipcMain.on("shell:purchase-order-saved", (_event, _data: { order: any }) => {
+      if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) {
+        newPurchaseOrderWindow.close();
+      }
+    });
+
+    ipcMain.on("shell:goods-receipt-saved", (_event, _data: { receipt: any }) => {
+      if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) {
+        newGoodsReceiptWindow.close();
+      }
+    });
+
+    ipcMain.on("shell:purchase-invoice-saved", (_event, _data: { invoice: any }) => {
+      if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) {
+        newPurchaseInvoiceWindow.close();
+      }
+    });
+
+    ipcMain.on("shell:payment-order-saved", (_event, _data: { order: any }) => {
+      if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) {
+        newPaymentOrderWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -725,6 +765,10 @@ let newQuoteWindow: BrowserWindow | null = null;
 let newInvoiceWindow: BrowserWindow | null = null;
 let newDeliveryNoteWindow: BrowserWindow | null = null;
 let newReceiptWindow: BrowserWindow | null = null;
+let newPurchaseOrderWindow: BrowserWindow | null = null;
+let newGoodsReceiptWindow: BrowserWindow | null = null;
+let newPurchaseInvoiceWindow: BrowserWindow | null = null;
+let newPaymentOrderWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -1106,6 +1150,134 @@ function createNewReceiptWindowStandalone(parent: BrowserWindow | null): void {
   newReceiptWindow.on("closed", () => { newReceiptWindow = null; });
   newReceiptWindow.setMenu(null);
   void newReceiptWindow.loadFile(NEW_RECEIPT_FILE);
+}
+
+function createNewPurchaseOrderWindowStandalone(parent: BrowserWindow | null): void {
+  if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) {
+    newPurchaseOrderWindow.focus();
+    return;
+  }
+  newPurchaseOrderWindow = new BrowserWindow({
+    width: 1140,
+    height: 760,
+    minWidth: 900,
+    minHeight: 580,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0ede4",
+    title: "Compras — NUEVA ORDEN",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-purchase-order-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  newPurchaseOrderWindow.once("ready-to-show", () => newPurchaseOrderWindow?.show());
+  newPurchaseOrderWindow.on("closed", () => { newPurchaseOrderWindow = null; });
+  newPurchaseOrderWindow.setMenu(null);
+  void newPurchaseOrderWindow.loadFile(NEW_PURCHASE_ORDER_FILE);
+}
+
+function createNewGoodsReceiptWindowStandalone(parent: BrowserWindow | null): void {
+  if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) {
+    newGoodsReceiptWindow.focus();
+    return;
+  }
+  newGoodsReceiptWindow = new BrowserWindow({
+    width: 1080,
+    height: 720,
+    minWidth: 860,
+    minHeight: 560,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#e4f0ed",
+    title: "Compras — RECEPCIÓN",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-goods-receipt-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  newGoodsReceiptWindow.once("ready-to-show", () => newGoodsReceiptWindow?.show());
+  newGoodsReceiptWindow.on("closed", () => { newGoodsReceiptWindow = null; });
+  newGoodsReceiptWindow.setMenu(null);
+  void newGoodsReceiptWindow.loadFile(NEW_GOODS_RECEIPT_FILE);
+}
+
+function createNewPurchaseInvoiceWindowStandalone(parent: BrowserWindow | null): void {
+  if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) {
+    newPurchaseInvoiceWindow.focus();
+    return;
+  }
+  newPurchaseInvoiceWindow = new BrowserWindow({
+    width: 1160,
+    height: 780,
+    minWidth: 900,
+    minHeight: 580,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f5e8ea",
+    title: "Compras — FACTURA PROVEEDOR",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-purchase-invoice-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  newPurchaseInvoiceWindow.once("ready-to-show", () => newPurchaseInvoiceWindow?.show());
+  newPurchaseInvoiceWindow.on("closed", () => { newPurchaseInvoiceWindow = null; });
+  newPurchaseInvoiceWindow.setMenu(null);
+  void newPurchaseInvoiceWindow.loadFile(NEW_PURCHASE_INVOICE_FILE);
+}
+
+function createNewPaymentOrderWindowStandalone(parent: BrowserWindow | null): void {
+  if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) {
+    newPaymentOrderWindow.focus();
+    return;
+  }
+  newPaymentOrderWindow = new BrowserWindow({
+    width: 1080,
+    height: 720,
+    minWidth: 860,
+    minHeight: 560,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f5f0e0",
+    title: "Tesorería — ORDEN DE PAGO",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-payment-order-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  newPaymentOrderWindow.once("ready-to-show", () => newPaymentOrderWindow?.show());
+  newPaymentOrderWindow.on("closed", () => { newPaymentOrderWindow = null; });
+  newPaymentOrderWindow.setMenu(null);
+  void newPaymentOrderWindow.loadFile(NEW_PAYMENT_ORDER_FILE);
 }
 
 function createNewDeliveryNoteWindowStandalone(parent: BrowserWindow | null): void {

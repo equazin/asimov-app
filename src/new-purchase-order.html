@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva Orden de Compra</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#a84800;
+  --header-bg:#5a2400;
+  --accent-light:#fff0e0;
+  --accent-hover:#c55500;
+  --border:#d0c0b0;
+  --bg:#faf8f5;
+  --surface:#ffffff;
+  --text:#1a1008;
+  --text-muted:#7a6050;
+  --danger:#c0392b;
+  --success:#27ae60;
+  --warning:#e67e22;
+  --input-bg:#ffffff;
+  --input-border:#c8b8a8;
+  --shadow:0 1px 3px rgba(0,0,0,0.12);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:13px;
+  background:var(--bg);
+  color:var(--text);
+  padding-top:32px;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.header{
+  background:linear-gradient(135deg,var(--header-bg) 0%,var(--accent) 100%);
+  color:#fff;
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.header-icon{font-size:18px}
+.header-title{font-size:15px;font-weight:700;letter-spacing:0.3px;flex:1}
+.header-badge{
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:12px;
+  padding:3px 10px;
+  font-size:11px;
+  font-weight:700;
+  font-family:'Courier New',monospace;
+  letter-spacing:0.5px;
+}
+.close-btn{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:6px;
+  color:#fff;
+  width:28px;
+  height:28px;
+  cursor:pointer;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:background 0.15s;
+}
+.close-btn:hover{background:rgba(255,255,255,0.3)}
+.tabs{
+  display:flex;
+  background:var(--surface);
+  border-bottom:2px solid var(--accent);
+  flex-shrink:0;
+  overflow-x:auto;
+}
+.tab{
+  padding:9px 18px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-muted);
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+  white-space:nowrap;
+  transition:color 0.15s,border-color 0.15s;
+  user-select:none;
+}
+.tab:hover{color:var(--accent)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:16px}
+.tab-panel.active{display:flex;flex-direction:column;gap:14px}
+.section-title{
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  color:var(--accent);
+  padding-bottom:6px;
+  border-bottom:1px solid var(--accent-light);
+  margin-bottom:4px;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px 14px;
+}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group.span-2{grid-column:span 2}
+.form-group.span-3{grid-column:span 3}
+.form-group.span-4{grid-column:span 4}
+label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  width:100%;
+  padding:6px 8px;
+  border:1px solid var(--input-border);
+  border-radius:5px;
+  font-size:13px;
+  background:var(--input-bg);
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(168,72,0,0.12)}
+input[readonly]{background:#f5f0eb;color:var(--text-muted)}
+textarea{resize:vertical;min-height:72px}
+.picker-row{display:flex;gap:6px}
+.picker-row input{flex:1}
+.picker-btn{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:5px;
+  padding:0 10px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:background 0.15s;
+}
+.picker-btn:hover{background:var(--accent-hover)}
+.items-toolbar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-shrink:0;
+}
+.items-toolbar .hint{font-size:11px;color:var(--text-muted);margin-left:auto}
+.btn-sm{
+  padding:5px 12px;
+  border-radius:5px;
+  border:1px solid var(--accent);
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  transition:background 0.15s;
+}
+.btn-sm:hover{background:var(--accent-hover)}
+.btn-sm.secondary{background:transparent;color:var(--accent)}
+.btn-sm.secondary:hover{background:var(--accent-light)}
+.table-wrap{flex:1;overflow:auto;border:1px solid var(--border);border-radius:6px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{
+  position:sticky;
+  top:0;
+  background:var(--accent);
+  color:#fff;
+  padding:7px 8px;
+  text-align:left;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.4px;
+  z-index:1;
+}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:hover{background:var(--accent-light)}
+tbody td{padding:4px 6px}
+.cell-input{
+  width:100%;
+  border:none;
+  background:transparent;
+  font-size:13px;
+  color:var(--text);
+  outline:none;
+  padding:2px 4px;
+}
+.cell-input:focus{background:#fff;border-radius:3px;box-shadow:0 0 0 2px rgba(168,72,0,0.2)}
+.cell-input.right{text-align:right}
+.del-row{
+  background:none;
+  border:none;
+  color:var(--danger);
+  cursor:pointer;
+  font-size:14px;
+  padding:2px 6px;
+  border-radius:3px;
+  opacity:0.6;
+}
+.del-row:hover{opacity:1;background:#fde}
+.totales-layout{display:grid;grid-template-columns:1fr 320px;gap:16px}
+.totales-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+.totales-card table{width:100%}
+.totales-card td{padding:7px 14px;border-bottom:1px solid var(--border)}
+.totales-card td:last-child{text-align:right;font-weight:600}
+.totales-card tr:last-child td{border:none}
+.totales-total td{background:var(--accent);color:#fff;font-size:15px;font-weight:800}
+.info-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px}
+.info-label{color:var(--text-muted)}
+.info-value{font-weight:600}
+.footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-shrink:0;
+}
+.footer-spacer{flex:1}
+.footer-btn{
+  padding:8px 20px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  transition:all 0.15s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.btn-save{background:var(--accent);color:#fff}
+.btn-save:hover{background:var(--accent-hover)}
+.btn-print{background:#e8e0d8;color:var(--text)}
+.btn-print:hover{background:#d8cfc5}
+.btn-cancel{background:#e8e0d8;color:var(--text)}
+.btn-cancel:hover{background:#d8cfc5}
+.btn-exit{background:transparent;border:1px solid var(--border)!important;color:var(--text-muted)}
+.btn-exit:hover{background:#f0ebe5}
+.kbd{
+  display:inline-block;
+  background:rgba(255,255,255,0.25);
+  border-radius:3px;
+  padding:0 4px;
+  font-size:10px;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">📦</span>
+  <span class="header-title">Nueva Orden de Compra</span>
+  <span class="header-badge" id="ocBadge">OC-2506-00001</span>
+  <button class="close-btn" onclick="window.close()">✕</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="encabezado">Encabezado</div>
+  <div class="tab" data-tab="items">Ítems</div>
+  <div class="tab" data-tab="totales">Totales</div>
+  <div class="tab" data-tab="condiciones">Condiciones</div>
+  <div class="tab" data-tab="observaciones">Observaciones</div>
+</div>
+
+<div class="content">
+
+  <div class="tab-panel active" id="panel-encabezado">
+    <div class="section-title">Identificación</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nro. OC</label>
+        <input type="text" id="nroOC" readonly value="OC-2506-00001">
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="fecha">
+      </div>
+      <div class="form-group">
+        <label>Fecha entrega estimada</label>
+        <input type="date" id="fechaEntrega">
+      </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <select id="estado">
+          <option>Borrador</option>
+          <option>Enviada</option>
+          <option>Confirmada</option>
+          <option>Parcialmente recibida</option>
+          <option>Recibida</option>
+          <option>Cancelada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-title">Proveedor</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Proveedor</label>
+        <div class="picker-row">
+          <input type="text" id="proveedorNombre" placeholder="Seleccionar proveedor..." readonly>
+          <button class="picker-btn" onclick="abrirProveedorPicker()">...</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>CUIT Proveedor</label>
+        <input type="text" id="proveedorCuit" readonly placeholder="XX-XXXXXXXX-X">
+      </div>
+      <div class="form-group">
+        <label>Condición IVA</label>
+        <input type="text" id="proveedorIva" readonly placeholder="—">
+      </div>
+    </div>
+
+    <div class="section-title">Detalle</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Vendedor / Comprador responsable</label>
+        <input type="text" id="responsable" placeholder="Nombre del responsable">
+      </div>
+      <div class="form-group">
+        <label>Depósito destino</label>
+        <select id="deposito">
+          <option value="01">01 DEPÓSITO PRINCIPAL</option>
+          <option value="02">02 DEPÓSITO SECUNDARIO</option>
+          <option value="03">03 PUNTO DE VENTA</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Moneda</label>
+        <select id="moneda">
+          <option value="ARS">ARS — Peso Argentino</option>
+          <option value="USD">USD — Dólar Estadounidense</option>
+        </select>
+      </div>
+      <div class="form-group span-2">
+        <label>Lista de precios</label>
+        <input type="text" id="listaPrecio" placeholder="Ej: Lista compras 2025">
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="tipo">
+          <option>Orden estándar</option>
+          <option>Urgente</option>
+          <option>Programada</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-items">
+    <div class="items-toolbar">
+      <button class="btn-sm" onclick="agregarFila()">+ Agregar ítem</button>
+      <button class="btn-sm secondary" onclick="abrirProductoPicker()">🔍 Buscar producto (F4)</button>
+      <span class="hint">Insert = nueva fila · Del = eliminar fila · F4 = buscar producto</span>
+    </div>
+    <div class="table-wrap">
+      <table id="itemsTable">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th style="width:100px">Código</th>
+            <th>Descripción</th>
+            <th style="width:70px">Unidad</th>
+            <th style="width:90px">Cantidad</th>
+            <th style="width:110px">Precio unit.</th>
+            <th style="width:70px">% Desc.</th>
+            <th style="width:110px">Subtotal</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-totales">
+    <div class="totales-layout">
+      <div class="totales-card">
+        <table>
+          <tbody>
+            <tr><td>Bruto</td><td id="t-bruto">$ 0,00</td></tr>
+            <tr><td>Descuentos</td><td id="t-desc">$ 0,00</td></tr>
+            <tr><td>Neto sin IVA</td><td id="t-neto">$ 0,00</td></tr>
+            <tr><td>IVA 21%</td><td id="t-iva21">$ 0,00</td></tr>
+            <tr><td>IVA 10,5%</td><td id="t-iva105">$ 0,00</td></tr>
+            <tr class="totales-total"><td>TOTAL</td><td id="t-total">$ 0,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="info-card">
+        <div class="section-title">Resumen OC</div>
+        <div class="info-row"><span class="info-label">Nro. OC</span><span class="info-value" id="inf-nro">OC-2506-00001</span></div>
+        <div class="info-row"><span class="info-label">Proveedor</span><span class="info-value" id="inf-prov">—</span></div>
+        <div class="info-row"><span class="info-label">Fecha</span><span class="info-value" id="inf-fecha">—</span></div>
+        <div class="info-row"><span class="info-label">Entrega estimada</span><span class="info-value" id="inf-entrega">—</span></div>
+        <div class="info-row"><span class="info-label">Estado</span><span class="info-value" id="inf-estado">Borrador</span></div>
+        <div class="info-row"><span class="info-label">Depósito</span><span class="info-value" id="inf-dep">01 DEPÓSITO PRINCIPAL</span></div>
+        <div class="info-row"><span class="info-label">Moneda</span><span class="info-value" id="inf-mon">ARS</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-condiciones">
+    <div class="section-title">Forma de pago y entrega</div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Forma de pago</label>
+        <select id="formaPago">
+          <option>Contado</option>
+          <option>30 días</option>
+          <option>60 días</option>
+          <option>90 días</option>
+        </select>
+      </div>
+      <div class="form-group span-2">
+        <label>Condición de entrega</label>
+        <select id="condEntrega">
+          <option>Retiramos</option>
+          <option>Nos entregan</option>
+          <option>A convenir</option>
+        </select>
+      </div>
+      <div class="form-group span-4">
+        <label>Dirección de entrega</label>
+        <input type="text" id="direccionEntrega" placeholder="Dirección donde se recibe la mercadería">
+      </div>
+      <div class="form-group span-2">
+        <label>Plazo de entrega</label>
+        <input type="text" id="plazoEntrega" placeholder="Ej: 5 días hábiles">
+      </div>
+    </div>
+    <div class="section-title">Instrucciones</div>
+    <div class="form-grid">
+      <div class="form-group span-4">
+        <label>Instrucciones de entrega</label>
+        <textarea id="instrucciones" placeholder="Instrucciones especiales para la entrega..."></textarea>
+      </div>
+      <div class="form-group span-4">
+        <label>Notas al proveedor</label>
+        <textarea id="notasProveedor" placeholder="Notas o aclaraciones para el proveedor..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="panel-observaciones">
+    <div class="section-title">Notas internas</div>
+    <div class="form-grid">
+      <div class="form-group span-4">
+        <label>Notas internas</label>
+        <textarea id="notasInternas" placeholder="Notas visibles solo para el equipo interno..."></textarea>
+      </div>
+      <div class="form-group span-4">
+        <label>Referencias</label>
+        <input type="text" id="referencias" placeholder="Pedido web, cliente origen, número de solicitud...">
+      </div>
+      <div class="form-group span-2">
+        <label>Aprobado por</label>
+        <input type="text" id="aprobadoPor" placeholder="Nombre del autorizante">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
+  <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
+  <button class="footer-btn btn-cancel" onclick="anular()">🚫 Anular</button>
+  <div class="footer-spacer"></div>
+  <button class="footer-btn btn-exit" onclick="window.close()">Salir</button>
+</div>
+
+<script>
+(function(){
+  var proveedorId = null;
+  var rowCounter = 0;
+
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fmtNum(n,dec){
+    dec = dec === undefined ? 2 : dec;
+    return Number(n).toLocaleString('es-AR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  }
+
+  function genBadge(){
+    var d = new Date();
+    var yy = String(d.getFullYear()).slice(2);
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    return 'OC-'+yy+mm+'-'+'00001';
+  }
+
+  function initDate(){
+    var d = new Date();
+    var iso = d.toISOString().slice(0,10);
+    document.getElementById('fecha').value = iso;
+    var d2 = new Date(d.getTime() + 7*24*60*60*1000);
+    document.getElementById('fechaEntrega').value = d2.toISOString().slice(0,10);
+  }
+
+  function activarTab(name){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===name)});
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='panel-'+name)});
+    if(name==='totales') actualizarInfoCard();
+  }
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){activarTab(this.dataset.tab)});
+  });
+
+  function agregarFila(data){
+    data = data || {};
+    rowCounter++;
+    var tbody = document.getElementById('itemsBody');
+    var tr = document.createElement('tr');
+    tr.dataset.id = rowCounter;
+    tr.innerHTML =
+      '<td style="text-align:center;color:#999;font-size:11px">'+rowCounter+'</td>'+
+      '<td><input class="cell-input" data-col="codigo" value="'+esc(data.codigo||'')+'"></td>'+
+      '<td><input class="cell-input" data-col="desc" value="'+esc(data.descripcion||'')+'"></td>'+
+      '<td><input class="cell-input" data-col="unidad" value="'+esc(data.unidad||'UN')+'"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="cant" value="'+esc(data.cantidad||1)+'" min="0" step="any"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="precio" value="'+esc(data.precio||0)+'" min="0" step="any"></td>'+
+      '<td><input class="cell-input right" type="number" data-col="desc_pct" value="0" min="0" max="100" step="any"></td>'+
+      '<td><input class="cell-input right" data-col="sub" readonly value="0,00"></td>'+
+      '<td><button class="del-row" title="Eliminar fila">✕</button></td>';
+    tbody.appendChild(tr);
+    tr.querySelector('.del-row').addEventListener('click',function(){tr.remove();recalcTotals()});
+    tr.querySelectorAll('input[data-col=cant],input[data-col=precio],input[data-col=desc_pct]').forEach(function(inp){
+      inp.addEventListener('input',function(){recalcFila(tr);recalcTotals()});
+    });
+    recalcFila(tr);
+    recalcTotals();
+  }
+
+  function recalcFila(tr){
+    var cant = parseFloat(tr.querySelector('[data-col=cant]').value)||0;
+    var precio = parseFloat(tr.querySelector('[data-col=precio]').value)||0;
+    var desc = parseFloat(tr.querySelector('[data-col=desc_pct]').value)||0;
+    var bruto = cant * precio;
+    var sub = bruto * (1 - desc/100);
+    tr.querySelector('[data-col=sub]').value = fmtNum(sub);
+    tr.dataset.sub = sub;
+    tr.dataset.bruto = bruto;
+    tr.dataset.desc_monto = bruto - sub;
+  }
+
+  function recalcTotals(){
+    var bruto = 0, descMonto = 0;
+    document.querySelectorAll('#itemsBody tr').forEach(function(tr){
+      bruto += parseFloat(tr.dataset.bruto)||0;
+      descMonto += parseFloat(tr.dataset.desc_monto)||0;
+    });
+    var neto = bruto - descMonto;
+    var iva21 = neto * 0.21;
+    var iva105 = 0;
+    var total = neto + iva21 + iva105;
+    document.getElementById('t-bruto').textContent = '$ '+fmtNum(bruto);
+    document.getElementById('t-desc').textContent = '$ '+fmtNum(descMonto);
+    document.getElementById('t-neto').textContent = '$ '+fmtNum(neto);
+    document.getElementById('t-iva21').textContent = '$ '+fmtNum(iva21);
+    document.getElementById('t-iva105').textContent = '$ '+fmtNum(iva105);
+    document.getElementById('t-total').textContent = '$ '+fmtNum(total);
+  }
+
+  function actualizarInfoCard(){
+    document.getElementById('inf-nro').textContent = document.getElementById('nroOC').value;
+    document.getElementById('inf-prov').textContent = document.getElementById('proveedorNombre').value || '—';
+    document.getElementById('inf-fecha').textContent = document.getElementById('fecha').value || '—';
+    document.getElementById('inf-entrega').textContent = document.getElementById('fechaEntrega').value || '—';
+    document.getElementById('inf-estado').textContent = document.getElementById('estado').value;
+    document.getElementById('inf-dep').textContent = document.getElementById('deposito').options[document.getElementById('deposito').selectedIndex].text;
+    document.getElementById('inf-mon').textContent = document.getElementById('moneda').value;
+  }
+
+  function abrirProveedorPicker(){
+    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.openClientSelection('oc-proveedor');
+    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'oc-proveedor',tipo:'proveedor'});
+  }
+
+  function abrirProductoPicker(){
+    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.openProductSelection();
+    if(window.electronAPI) window.electronAPI.send('shell:open-product-selection',{contextId:'oc-item'});
+  }
+
+  function onClientSelected(data){
+    if(!data || data.contextId !== 'oc-proveedor') return;
+    proveedorId = data.id;
+    document.getElementById('proveedorNombre').value = esc(data.nombre||'');
+    document.getElementById('proveedorCuit').value = esc(data.cuit||'');
+    document.getElementById('proveedorIva').value = esc(data.condIva||'');
+  }
+
+  function onProductSelected(data){
+    if(!data) return;
+    agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,precio:data.precioCompra||0});
+  }
+
+  if(window.electronAPI){
+    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
+    window.electronAPI.on('shell:product-selected',function(_e,data){onProductSelected(data)});
+  }
+
+  if(window.asimovNewPurchaseOrder){
+    window.asimovNewPurchaseOrder.onClientSelected = onClientSelected;
+    window.asimovNewPurchaseOrder.onProductSelected = onProductSelected;
+  }
+
+  function validar(){
+    if(!document.getElementById('proveedorNombre').value.trim()){
+      alert('Debe seleccionar un proveedor.');
+      activarTab('encabezado');
+      return false;
+    }
+    if(document.querySelectorAll('#itemsBody tr').length === 0){
+      alert('Debe ingresar al menos un ítem.');
+      activarTab('items');
+      return false;
+    }
+    return true;
+  }
+
+  function guardar(){
+    if(!validar()) return;
+    var items = [];
+    document.querySelectorAll('#itemsBody tr').forEach(function(tr){
+      items.push({
+        codigo: tr.querySelector('[data-col=codigo]').value,
+        descripcion: tr.querySelector('[data-col=desc]').value,
+        unidad: tr.querySelector('[data-col=unidad]').value,
+        cantidad: parseFloat(tr.querySelector('[data-col=cant]').value)||0,
+        precio: parseFloat(tr.querySelector('[data-col=precio]').value)||0,
+        descPct: parseFloat(tr.querySelector('[data-col=desc_pct]').value)||0,
+        subtotal: parseFloat(tr.dataset.sub)||0
+      });
+    });
+    var payload = {
+      nroOC: document.getElementById('nroOC').value,
+      fecha: document.getElementById('fecha').value,
+      fechaEntrega: document.getElementById('fechaEntrega').value,
+      proveedorId: proveedorId,
+      proveedorNombre: document.getElementById('proveedorNombre').value,
+      proveedorCuit: document.getElementById('proveedorCuit').value,
+      responsable: document.getElementById('responsable').value,
+      deposito: document.getElementById('deposito').value,
+      moneda: document.getElementById('moneda').value,
+      tipo: document.getElementById('tipo').value,
+      estado: document.getElementById('estado').value,
+      formaPago: document.getElementById('formaPago').value,
+      condEntrega: document.getElementById('condEntrega').value,
+      direccionEntrega: document.getElementById('direccionEntrega').value,
+      instrucciones: document.getElementById('instrucciones').value,
+      notasProveedor: document.getElementById('notasProveedor').value,
+      notasInternas: document.getElementById('notasInternas').value,
+      referencias: document.getElementById('referencias').value,
+      aprobadoPor: document.getElementById('aprobadoPor').value,
+      items: items
+    };
+    if(window.electronAPI) window.electronAPI.send('shell:purchase-order-saved', payload);
+    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.onSaved && window.asimovNewPurchaseOrder.onSaved(payload);
+  }
+
+  function imprimir(){
+    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'purchase-order',nro:document.getElementById('nroOC').value});
+  }
+
+  function anular(){
+    if(!confirm('¿Desea anular esta orden de compra?')) return;
+    document.getElementById('estado').value = 'Cancelada';
+    guardar();
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key === 'F8'){e.preventDefault();guardar()}
+    if(e.key === 'F4'){e.preventDefault();abrirProductoPicker()}
+    if(e.key === 'Insert'){
+      var panel = document.querySelector('.tab-panel.active');
+      if(panel && panel.id === 'panel-items'){e.preventDefault();agregarFila()}
+    }
+  });
+
+  var badge = genBadge();
+  document.getElementById('ocBadge').textContent = badge;
+  document.getElementById('nroOC').value = badge;
+  initDate();
+  agregarFila();
+})();
+</script>
+</body>
+</html>
