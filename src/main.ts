@@ -214,8 +214,6 @@ function createMainWindow(primary = true): BrowserWindow {
     backgroundColor: "#062b19",
     title: "Asimov",
     icon: APP_ICON_FILE,
-    titleBarStyle: TITLE_BAR_STYLE,
-    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
