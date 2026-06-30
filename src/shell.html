@@ -750,6 +750,17 @@
   // ── wait for preload ──────────────────────────────────────────────────
   const asimov = () => window.asimov;
 
+  function waitForAsimov(timeoutMs = 5000) {
+    return new Promise((resolve, reject) => {
+      if (window.asimov) { resolve(window.asimov); return; }
+      const start = Date.now();
+      const id = setInterval(() => {
+        if (window.asimov) { clearInterval(id); resolve(window.asimov); }
+        else if (Date.now() - start > timeoutMs) { clearInterval(id); reject(new Error("API no disponible")); }
+      }, 50);
+    });
+  }
+
   // ── view definitions ─────────────────────────────────────────────────
   const VIEWS = {
     dashboard: { title: "Dashboard" },
@@ -1104,11 +1115,12 @@
     const container = document.getElementById("table-" + viewId);
     if (container) container.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
     try {
+      await waitForAsimov();
       const rows = await def.load(search);
       renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows);
     } catch (e) {
-      const container = document.getElementById("table-" + viewId);
-      if (container) container.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;
+      const el = document.getElementById("table-" + viewId);
+      if (el) el.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;
     }
   }
 
@@ -1121,6 +1133,7 @@
     const kpiGrid = document.getElementById("kpi-grid");
     kpiGrid.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
     try {
+      await waitForAsimov();
       const result = await asimov().kpis();
       const kpis = result.data || {};
       kpiGrid.innerHTML = [
@@ -1147,6 +1160,7 @@
     const container = document.getElementById("caja-accounts");
     container.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
     try {
+      await waitForAsimov();
       const accounts = await asimov().cashAccounts.list();
       if (!accounts || accounts.length === 0) {
         container.innerHTML = `<div class="empty-state"><span class="emo">💵</span><span>Sin cuentas.</span></div>`;
@@ -1195,42 +1209,42 @@
 
   // ── IPC events from main ─────────────────────────────────────────────
   window.addEventListener("DOMContentLoaded", () => {
-    if (!asimov()) return;
+    waitForAsimov().then(api => {
+      api.onNavigate((path) => navigate(path));
+      api.onBackgroundChanged((_bg) => { /* handled in preload */ });
 
-    asimov().onNavigate((path) => navigate(path));
-
-    asimov().onBackgroundChanged((bg) => {
-      // handled in preload
-    });
-
-    // Refresh list when a form is saved
-    const FORM_REFRESH_MAP = {
-      "shell:sale-order-saved":       "pedidos",
-      "shell:invoice-saved":          "facturas",
-      "shell:delivery-note-saved":    "remitos",
-      "shell:receipt-saved":          "recibos",
-      "shell:purchase-order-saved":   "ordenes-compra",
-      "shell:goods-receipt-saved":    "recepciones",
-      "shell:purchase-invoice-saved": "facturas",
-      "shell:payment-order-saved":    "caja",
-    };
-    Object.entries(FORM_REFRESH_MAP).forEach(([channel, view]) => {
-      asimov().onFormSaved(channel, () => {
-        if (currentView === view) loadViewData(view, "");
-        if (view === "dashboard") loadDashboard();
+      // Refresh list when a form is saved
+      const FORM_REFRESH_MAP = {
+        "shell:sale-order-saved":       "pedidos",
+        "shell:invoice-saved":          "facturas",
+        "shell:delivery-note-saved":    "remitos",
+        "shell:receipt-saved":          "recibos",
+        "shell:purchase-order-saved":   "ordenes-compra",
+        "shell:goods-receipt-saved":    "recepciones",
+        "shell:purchase-invoice-saved": "facturas",
+        "shell:payment-order-saved":    "caja",
+      };
+      Object.entries(FORM_REFRESH_MAP).forEach(([channel, view]) => {
+        api.onFormSaved(channel, () => {
+          if (currentView === view) loadViewData(view, "");
+          if (view === "dashboard") loadDashboard();
+        });
       });
+
+      // Status bar clock
+      function updateClock() {
+        document.getElementById("status-time").textContent =
+          new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+      }
+      updateClock();
+      setInterval(updateClock, 30000);
+
+      // Initial load
+      loadDashboard();
+    }).catch(() => {
+      document.getElementById("kpi-grid").innerHTML =
+        `<div style="color:#c62828;padding:20px">No se pudo conectar con la base de datos. Reiniciá la app.</div>`;
     });
-
-    // Status bar clock
-    function updateClock() {
-      document.getElementById("status-time").textContent =
-        new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
-    }
-    updateClock();
-    setInterval(updateClock, 30000);
-
-    // Initial load
-    loadDashboard();
   });
 
 })();
