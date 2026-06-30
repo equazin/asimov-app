@@ -30,6 +30,7 @@ interface MenuDeps {
   onServerChanged: () => void;
   openApp: (pathname?: string) => void;
   openNewWindow: (pathname?: string) => void;
+  openNativeForm?: (type: "article" | "client" | "supplier") => void;
 }
 
 interface ModuleItem {
@@ -153,14 +154,39 @@ function currentTitle(): string {
   return focusedWindow()?.getTitle().replace(/^Asimov\s+-\s+/, "") ?? "Pantalla";
 }
 
+function nativeFormItems(group: ModuleGroup, deps: MenuDeps): MenuItemConstructorOptions[] {
+  if (!deps.openNativeForm) return [];
+
+  const nativeMap: Record<string, { label: string; type: "article" | "client" | "supplier"; accel: string }[]> = {
+    Ventas: [{ label: "Nuevo Cliente (ficha nativa)", type: "client", accel: "CmdOrCtrl+Shift+C" }],
+    Compras: [{ label: "Nuevo Proveedor (ficha nativa)", type: "supplier", accel: "CmdOrCtrl+Shift+P" }],
+    Stock: [{ label: "Nuevo Artículo (ficha nativa)", type: "article", accel: "CmdOrCtrl+Shift+A" }],
+  };
+
+  const entries = nativeMap[group.label];
+  if (!entries) return [];
+
+  return [
+    { type: "separator" },
+    ...entries.map((e) => ({
+      label: e.label,
+      accelerator: e.accel,
+      click: () => deps.openNativeForm!(e.type),
+    })),
+  ];
+}
+
 function moduleMenu(group: ModuleGroup, deps: MenuDeps): MenuItemConstructorOptions {
   return {
     label: group.label,
-    submenu: group.items.map((item) => ({
-      label: item.label,
-      accelerator: item.accelerator,
-      click: () => deps.openApp(item.path),
-    })),
+    submenu: [
+      ...group.items.map((item) => ({
+        label: item.label,
+        accelerator: item.accelerator,
+        click: () => deps.openApp(item.path),
+      })),
+      ...nativeFormItems(group, deps),
+    ],
   };
 }
 

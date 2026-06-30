@@ -432,8 +432,23 @@ function openAppropriateWindow(): void {
   }
 }
 
+function openNativeForm(type: "article" | "client" | "supplier"): void {
+  const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
+  switch (type) {
+    case "article":
+      createNewArticleWindowStandalone(parent);
+      break;
+    case "client":
+      createNewClientWindowStandalone(parent);
+      break;
+    case "supplier":
+      createNewSupplierWindowStandalone(parent);
+      break;
+  }
+}
+
 function onServerChanged(): void {
-  buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow });
+  buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow, openNativeForm });
   rebuildTrayMenu();
   if (getServerUrl()) {
     if (pickerWindow) {
@@ -528,7 +543,7 @@ if (!gotLock) {
     );
 
     registerIpcHandlers({ onServerChanged, getMainWindow, onRetry });
-    buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow });
+    buildAppMenu({ isDev: isDev(), onServerChanged, openApp, openNewWindow, openNativeForm });
     registerGlobalShortcuts();
     syncLaunchAtStartup();
     initTray({ getMainWindow, openApp, onServerChanged });
@@ -896,4 +911,80 @@ function createNewArticleWindow(parentWindow: BrowserWindow) {
 
   newArticleWindow.setMenu(null);
   void newArticleWindow.loadFile(NEW_ARTICLE_FILE);
+}
+
+// ---------------------------------------------------------------------------
+// Standalone native forms (opened from menu, non-modal)
+// ---------------------------------------------------------------------------
+
+function createNewArticleWindowStandalone(parent: BrowserWindow | null): void {
+  const win = new BrowserWindow({
+    width: 920,
+    height: 640,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0f0f0",
+    title: "Artículos de Compra-Venta — NUEVO",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "new-article-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  win.once("ready-to-show", () => win.show());
+  win.setMenu(null);
+  void win.loadFile(NEW_ARTICLE_FILE);
+}
+
+function createNewClientWindowStandalone(parent: BrowserWindow | null): void {
+  const win = new BrowserWindow({
+    width: 920,
+    height: 640,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0f0f0",
+    title: "Clientes — NUEVO",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "new-client-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  win.once("ready-to-show", () => win.show());
+  win.setMenu(null);
+  void win.loadFile(NEW_CLIENT_FILE);
+}
+
+function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
+  const win = new BrowserWindow({
+    width: 920,
+    height: 640,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0f0f0",
+    title: "Proveedores — NUEVO",
+    icon: APP_ICON_FILE,
+    webPreferences: {
+      preload: path.join(__dirname, "new-supplier-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  win.once("ready-to-show", () => win.show());
+  win.setMenu(null);
+  void win.loadFile(NEW_SUPPLIER_FILE);
 }
