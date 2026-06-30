@@ -104,7 +104,7 @@ function createMainWindow(): BrowserWindow {
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      contextIsolation: true,
+      contextIsolation: false,
       nodeIntegration: false,
       sandbox: false,
       spellcheck: false,
