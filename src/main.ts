@@ -37,6 +37,7 @@ const NEW_CLIENT_FILE = path.join(__dirname, "new-client.html");
 const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
 const NEW_SALE_ORDER_FILE = path.join(__dirname, "new-sale-order.html");
 const NEW_QUOTE_FILE = path.join(__dirname, "new-quote.html");
+const NEW_INVOICE_FILE = path.join(__dirname, "new-invoice.html");
 
 // Title bar custom estilo GESES: barra crema, texto y botones oscuros.
 // Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
@@ -448,7 +449,7 @@ function openAppropriateWindow(): void {
   }
 }
 
-function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote"): void {
+function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice"): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
     case "article":
@@ -465,6 +466,9 @@ function openNativeForm(type: "article" | "client" | "supplier" | "sale-order" |
       break;
     case "quote":
       createNewQuoteWindowStandalone(parent);
+      break;
+    case "invoice":
+      createNewInvoiceWindowStandalone(parent);
       break;
   }
 }
@@ -674,6 +678,12 @@ if (!gotLock) {
       }
     });
 
+    ipcMain.on("shell:invoice-saved", (_event, _data: { invoice: any }) => {
+      if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) {
+        newInvoiceWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -692,6 +702,7 @@ let newClientWindow: BrowserWindow | null = null;
 let newSupplierWindow: BrowserWindow | null = null;
 let newSaleOrderWindow: BrowserWindow | null = null;
 let newQuoteWindow: BrowserWindow | null = null;
+let newInvoiceWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -1039,6 +1050,40 @@ function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
   win.once("ready-to-show", () => win.show());
   win.setMenu(null);
   void win.loadFile(NEW_SUPPLIER_FILE);
+}
+
+function createNewInvoiceWindowStandalone(parent: BrowserWindow | null): void {
+  if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) {
+    newInvoiceWindow.focus();
+    return;
+  }
+
+  newInvoiceWindow = new BrowserWindow({
+    width: 1160,
+    height: 780,
+    minWidth: 960,
+    minHeight: 640,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0efe8",
+    title: "Facturas de Venta — NUEVA",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-invoice-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newInvoiceWindow.once("ready-to-show", () => newInvoiceWindow?.show());
+  newInvoiceWindow.on("closed", () => { newInvoiceWindow = null; });
+  newInvoiceWindow.setMenu(null);
+  void newInvoiceWindow.loadFile(NEW_INVOICE_FILE);
 }
 
 function createNewQuoteWindowStandalone(parent: BrowserWindow | null): void {

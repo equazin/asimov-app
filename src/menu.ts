@@ -30,7 +30,7 @@ interface MenuDeps {
   onServerChanged: () => void;
   openApp: (pathname?: string) => void;
   openNewWindow: (pathname?: string) => void;
-  openNativeForm?: (type: "article" | "client" | "supplier" | "sale-order" | "quote") => void;
+  openNativeForm?: (type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice") => void;
 }
 
 interface ModuleItem {
@@ -154,13 +154,16 @@ function currentTitle(): string {
   return focusedWindow()?.getTitle().replace(/^Asimov\s+-\s+/, "") ?? "Pantalla";
 }
 
-const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products", "/admin/orders/new", "/admin/quotes/new"]);
+const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products", "/admin/orders/new", "/admin/quotes/new", "/admin/invoices/new"]);
 
-const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier" | "sale-order" | "quote"; accel: string }[]> = {
+const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice"; accel: string }[]> = {
   Ventas: [
     { label: "Nuevo Pedido", type: "sale-order", accel: "CmdOrCtrl+Shift+V" },
     { label: "Nueva Cotización", type: "quote", accel: "CmdOrCtrl+Shift+Q" },
     { label: "Nuevo Cliente", type: "client", accel: "CmdOrCtrl+Shift+C" },
+  ],
+  Facturacion: [
+    { label: "Nueva Factura", type: "invoice", accel: "CmdOrCtrl+Shift+F" },
   ],
   Compras: [{ label: "Nuevo Proveedor", type: "supplier", accel: "CmdOrCtrl+Shift+P" }],
   Stock: [{ label: "Nuevo Artículo", type: "article", accel: "CmdOrCtrl+Shift+A" }],
