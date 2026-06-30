@@ -154,39 +154,39 @@ function currentTitle(): string {
   return focusedWindow()?.getTitle().replace(/^Asimov\s+-\s+/, "") ?? "Pantalla";
 }
 
-function nativeFormItems(group: ModuleGroup, deps: MenuDeps): MenuItemConstructorOptions[] {
-  if (!deps.openNativeForm) return [];
+const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products"]);
 
-  const nativeMap: Record<string, { label: string; type: "article" | "client" | "supplier"; accel: string }[]> = {
-    Ventas: [{ label: "Nuevo Cliente (ficha nativa)", type: "client", accel: "CmdOrCtrl+Shift+C" }],
-    Compras: [{ label: "Nuevo Proveedor (ficha nativa)", type: "supplier", accel: "CmdOrCtrl+Shift+P" }],
-    Stock: [{ label: "Nuevo Artículo (ficha nativa)", type: "article", accel: "CmdOrCtrl+Shift+A" }],
-  };
-
-  const entries = nativeMap[group.label];
-  if (!entries) return [];
-
-  return [
-    { type: "separator" },
-    ...entries.map((e) => ({
-      label: e.label,
-      accelerator: e.accel,
-      click: () => deps.openNativeForm!(e.type),
-    })),
-  ];
-}
+const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier"; accel: string }[]> = {
+  Ventas: [{ label: "Nuevo Cliente", type: "client", accel: "CmdOrCtrl+Shift+C" }],
+  Compras: [{ label: "Nuevo Proveedor", type: "supplier", accel: "CmdOrCtrl+Shift+P" }],
+  Stock: [{ label: "Nuevo Artículo", type: "article", accel: "CmdOrCtrl+Shift+A" }],
+};
 
 function moduleMenu(group: ModuleGroup, deps: MenuDeps): MenuItemConstructorOptions {
+  const nativeEntries = deps.openNativeForm ? NATIVE_MENU_MAP[group.label] ?? [] : [];
+
+  const webItems: MenuItemConstructorOptions[] = group.items
+    .filter((item) => !NATIVE_FORM_PATHS.has(item.path))
+    .map((item) => ({
+      label: item.label,
+      accelerator: item.accelerator,
+      click: () => deps.openApp(item.path),
+    }));
+
+  const nativeItems: MenuItemConstructorOptions[] = nativeEntries.length > 0
+    ? [
+        { type: "separator" as const },
+        ...nativeEntries.map((e) => ({
+          label: e.label,
+          accelerator: e.accel,
+          click: () => deps.openNativeForm!(e.type),
+        })),
+      ]
+    : [];
+
   return {
     label: group.label,
-    submenu: [
-      ...group.items.map((item) => ({
-        label: item.label,
-        accelerator: item.accelerator,
-        click: () => deps.openApp(item.path),
-      })),
-      ...nativeFormItems(group, deps),
-    ],
+    submenu: [...webItems, ...nativeItems],
   };
 }
 

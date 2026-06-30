@@ -162,6 +162,10 @@ function ensureModuleStyles(): void {
       color: #333333 !important;
       min-height: 100% !important;
     }
+    /* Deja espacio para el title bar overlay de Asimov (32px) */
+    html.asimov-desktop-module body {
+      padding-top: 32px !important;
+    }
     html.asimov-desktop-module {
       --asimov-green: #14532d;
       --asimov-green-strong: #062b19;

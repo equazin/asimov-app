@@ -36,6 +36,16 @@ const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
 const NEW_CLIENT_FILE = path.join(__dirname, "new-client.html");
 const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
 
+// Title bar custom estilo GESES: barra crema, texto y botones oscuros.
+// Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
+const TITLE_BAR_OVERLAY = {
+  color: "#e8e5da",
+  symbolColor: "#1f2937",
+  height: 32,
+} as const;
+
+const TITLE_BAR_STYLE = "hidden" as const;
+
 let mainWindow: BrowserWindow | null = null;
 let pickerWindow: BrowserWindow | null = null;
 let splashWindow: BrowserWindow | null = null;
@@ -195,6 +205,8 @@ function createMainWindow(primary = true): BrowserWindow {
     backgroundColor: "#062b19",
     title: "Asimov",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -249,6 +261,8 @@ function createModuleWindow(pathname: string): BrowserWindow | null {
     backgroundColor: "#f5f5f0",
     title: `Asimov - ${getServerLabel()} - ${normalizeAdminPath(pathname)}`,
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -673,6 +687,8 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
     backgroundColor: "#ffffff",
     title: "Selección de Artículos de Compra-Venta",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "product-selection-preload.js"),
       contextIsolation: true,
@@ -750,6 +766,8 @@ function createClientSelectionWindow(parentWindow: BrowserWindow, contextId: str
     backgroundColor: "#ffffff",
     title: "Selección de Clientes",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "client-selection-preload.js"),
       contextIsolation: true,
@@ -833,6 +851,8 @@ function createNewClientWindow(parentWindow: BrowserWindow) {
     backgroundColor: "#f0f0f0",
     title: "Clientes — NUEVO",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "new-client-preload.js"),
       contextIsolation: true,
@@ -863,6 +883,8 @@ function createNewSupplierWindow(parentWindow: BrowserWindow) {
     backgroundColor: "#f0f0f0",
     title: "Proveedores — NUEVO",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "new-supplier-preload.js"),
       contextIsolation: true,
@@ -893,6 +915,8 @@ function createNewArticleWindow(parentWindow: BrowserWindow) {
     backgroundColor: "#f0f0f0",
     title: "Artículos de Compra-Venta. Artículo: NUEVO",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "new-article-preload.js"),
       contextIsolation: true,
@@ -928,6 +952,8 @@ function createNewArticleWindowStandalone(parent: BrowserWindow | null): void {
     backgroundColor: "#f0f0f0",
     title: "Artículos de Compra-Venta — NUEVO",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "new-article-preload.js"),
       contextIsolation: true,
@@ -952,6 +978,8 @@ function createNewClientWindowStandalone(parent: BrowserWindow | null): void {
     backgroundColor: "#f0f0f0",
     title: "Clientes — NUEVO",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "new-client-preload.js"),
       contextIsolation: true,
@@ -976,6 +1004,8 @@ function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
     backgroundColor: "#f0f0f0",
     title: "Proveedores — NUEVO",
     icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: {
       preload: path.join(__dirname, "new-supplier-preload.js"),
       contextIsolation: true,
