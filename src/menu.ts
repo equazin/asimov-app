@@ -30,7 +30,7 @@ interface MenuDeps {
   onServerChanged: () => void;
   openApp: (pathname?: string) => void;
   openNewWindow: (pathname?: string) => void;
-  openNativeForm?: (type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note") => void;
+  openNativeForm?: (type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt") => void;
 }
 
 interface ModuleItem {
@@ -154,9 +154,9 @@ function currentTitle(): string {
   return focusedWindow()?.getTitle().replace(/^Asimov\s+-\s+/, "") ?? "Pantalla";
 }
 
-const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products", "/admin/orders/new", "/admin/quotes/new", "/admin/invoices/new", "/admin/delivery-notes/new"]);
+const NATIVE_FORM_PATHS = new Set(["/admin/clients", "/admin/suppliers", "/admin/products", "/admin/orders/new", "/admin/quotes/new", "/admin/invoices/new", "/admin/delivery-notes/new", "/admin/receipts/new"]);
 
-const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note"; accel: string }[]> = {
+const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client" | "supplier" | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt"; accel: string }[]> = {
   Ventas: [
     { label: "Nuevo Pedido", type: "sale-order", accel: "CmdOrCtrl+Shift+V" },
     { label: "Nueva Cotización", type: "quote", accel: "CmdOrCtrl+Shift+Q" },
@@ -165,6 +165,7 @@ const NATIVE_MENU_MAP: Record<string, { label: string; type: "article" | "client
   Facturacion: [
     { label: "Nueva Factura", type: "invoice", accel: "CmdOrCtrl+Shift+F" },
     { label: "Nuevo Remito", type: "delivery-note", accel: "CmdOrCtrl+Shift+R" },
+    { label: "Nuevo Recibo", type: "receipt", accel: "CmdOrCtrl+Shift+E" },
   ],
   Compras: [{ label: "Nuevo Proveedor", type: "supplier", accel: "CmdOrCtrl+Shift+P" }],
   Stock: [{ label: "Nuevo Artículo", type: "article", accel: "CmdOrCtrl+Shift+A" }],

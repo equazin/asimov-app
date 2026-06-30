@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Recibo: NUEVO</title>
+  <style>
+    :root {
+      --bg: #f0efe8;
+      --panel: #ffffff;
+      --accent: #0d5c3a;
+      --accent-light: #e0f4ec;
+      --border: #c4c0b4;
+      --text: #1a1a1a;
+      --text-muted: #6b6560;
+      --input-bg: #fffff8;
+      --input-focus: #0d5c3a;
+      --header-bg: #073828;
+      --tab-active: #ffffff;
+      --tab-inactive: #e0ddd4;
+      --danger: #c62828;
+      --ok: #0d5c3a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--text);
+      height: 100vh;
+      padding-top: 32px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--header-bg), #1a8a5a);
+      color: #fff;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 12px; font-weight: 700;
+      font-family: Consolas, monospace;
+    }
+    .header-total {
+      background: rgba(80,255,160,0.2);
+      border: 1px solid rgba(80,255,160,0.4);
+      border-radius: 4px;
+      padding: 2px 12px;
+      font-size: 13px; font-weight: 700;
+      font-family: Consolas, monospace;
+      color: #afffce;
+    }
+    .header-close {
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 4px;
+      color: #fff; font-size: 14px;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .header-close:hover { background: rgba(255,255,255,0.3); }
+
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      padding: 8px 12px 0;
+      gap: 2px;
+      border-bottom: 2px solid var(--accent);
+      flex-shrink: 0;
+    }
+    .tab {
+      padding: 6px 14px;
+      background: var(--tab-inactive);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .tab:hover { background: #eae7de; }
+    .tab.active {
+      background: var(--tab-active);
+      color: var(--accent);
+      border-color: var(--accent);
+      border-bottom: 2px solid var(--tab-active);
+      margin-bottom: -2px;
+      z-index: 2;
+    }
+
+    .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
+    .tab-panel.active { display: block; }
+    .tab-panel.split-panel { padding: 0; }
+    .tab-panel.split-panel.active { display: flex; flex-direction: column; overflow: hidden; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px 12px;
+      align-content: start;
+    }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+
+    .field label {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 8px;
+      font-family: inherit; font-size: 12px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(13,92,58,0.12);
+    }
+    .field textarea { height: 60px; padding: 6px 8px; resize: vertical; }
+    .field.with-btn { position: relative; }
+    .field.with-btn input { padding-right: 34px; }
+    .field-btn {
+      position: absolute; right: 4px; top: 20px;
+      width: 26px; height: 20px;
+      background: var(--accent); border: none; border-radius: 3px;
+      color: #fff; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .field-btn:hover { background: #073828; }
+
+    .section-title {
+      grid-column: span 4;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 6px 0 2px;
+      border-bottom: 1px solid var(--accent-light);
+      margin-top: 6px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    /* ─── Facturas tab ─── */
+    .fact-toolbar {
+      padding: 8px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .fact-count { margin-left: auto; font-size: 11px; font-weight: 600; }
+
+    .fact-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; }
+    .fact-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 700px; }
+    .fact-table thead th {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px 8px;
+      text-align: left;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .fact-table thead th.th-r { text-align: right; }
+    .fact-table tbody tr { border-bottom: 1px solid #ebebeb; }
+    .fact-table tbody tr:nth-child(even) { background: #f9f9f5; }
+    .fact-table tbody tr:hover { background: var(--accent-light); }
+    .fact-table td { padding: 4px 8px; vertical-align: middle; font-size: 12px; }
+    .fact-table td.td-r { text-align: right; font-family: Consolas, monospace; }
+    .fact-table td.td-bold { font-weight: 700; }
+    .fact-table tfoot td {
+      padding: 6px 8px;
+      background: var(--bg);
+      font-weight: 700;
+      border-top: 2px solid var(--accent);
+      font-size: 12px;
+    }
+    .fact-table tfoot td.td-r { text-align: right; font-family: Consolas, monospace; color: var(--accent); }
+
+    .fact-input {
+      width: 100%; height: 24px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 0 6px;
+      text-align: right;
+      font-family: Consolas, monospace; font-size: 12px; font-weight: 700;
+      background: transparent;
+      color: var(--accent);
+      outline: none;
+    }
+    .fact-input:focus {
+      background: var(--input-bg);
+      border-color: var(--input-focus);
+    }
+
+    .del-row-btn {
+      width: 22px; height: 22px;
+      background: none; border: 1px solid transparent; border-radius: 3px;
+      color: var(--danger); font-size: 14px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .del-row-btn:hover { background: #fde8e8; border-color: var(--danger); }
+
+    /* ─── Cobro tab ─── */
+    .cobro-wrap { flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
+    .cobro-methods { display: flex; flex-direction: column; gap: 12px; }
+    .method-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .method-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--bg);
+      cursor: pointer;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .method-header .method-icon { font-size: 16px; }
+    .method-header .method-label { font-weight: 700; font-size: 12px; flex: 1; }
+    .method-header .method-amount {
+      font-family: Consolas, monospace;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--accent);
+    }
+    .method-toggle {
+      width: 36px; height: 20px;
+      background: var(--border);
+      border: none; border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .method-toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left 0.2s;
+    }
+    .method-toggle.on { background: var(--accent); }
+    .method-toggle.on::after { left: 18px; }
+    .method-body { padding: 10px 12px; }
+    .method-body.hidden { display: none; }
+    .method-row {
+      display: grid;
+      gap: 8px 12px;
+      align-items: end;
+      margin-bottom: 8px;
+    }
+    .method-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .method-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .method-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .method-field label {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .method-field input, .method-field select {
+      width: 100%; height: 26px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 6px;
+      font-family: inherit; font-size: 12px;
+      background: var(--input-bg);
+      outline: none;
+    }
+    .method-field input:focus, .method-field select:focus {
+      border-color: var(--accent);
+    }
+
+    /* Cobro summary */
+    .cobro-summary {
+      margin-top: 14px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .cobro-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 14px;
+      border-bottom: 1px solid var(--accent-light);
+      font-size: 12px;
+    }
+    .cobro-summary-row:last-child { border-bottom: none; }
+    .cobro-summary-row .lbl { color: var(--text-muted); }
+    .cobro-summary-row .val { font-family: Consolas, monospace; font-weight: 700; }
+    .cobro-summary-row.grand {
+      background: var(--accent);
+      color: #fff;
+    }
+    .cobro-summary-row.grand .lbl { color: rgba(255,255,255,0.85); font-weight: 700; }
+    .cobro-summary-row.grand .val { color: #fff; font-size: 16px; }
+    .cobro-summary-row.diff-ok .val { color: var(--ok); }
+    .cobro-summary-row.diff-err .val { color: var(--danger); }
+
+    /* footer */
+    .footer {
+      padding: 10px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      height: 30px; padding: 0 18px;
+      border: 1px solid var(--border); border-radius: 5px;
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-default { background: var(--panel); color: var(--text); }
+    .btn-default:hover { background: #f0f0f0; }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: #073828; }
+    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: #fde8e8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .required-star::after { content: " *"; color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Recibos &mdash; NUEVO</h1>
+      <span class="header-badge" id="lblNroRec">#REC-000000</span>
+      <span class="header-total" id="lblTotalHeader">$ 0,00</span>
+    </div>
+    <button class="header-close" id="btnClose">&times;</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="encabezado">Encabezado</div>
+    <div class="tab" data-tab="facturas">Facturas cobradas</div>
+    <div class="tab" data-tab="cobro">Forma de cobro</div>
+    <div class="tab" data-tab="observaciones">Observaciones</div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- ═══════════ ENCABEZADO ═══════════ -->
+    <div class="tab-panel active" id="tab-encabezado">
+      <div class="form-grid">
+        <div class="section-title">Identificación</div>
+        <div class="field">
+          <label>Nro. recibo</label>
+          <input type="text" id="txtNroRec" readonly
+            style="background:#f0f0f0;font-family:Consolas,monospace;font-weight:700;" />
+        </div>
+        <div class="field">
+          <label class="required-star">Fecha</label>
+          <input type="date" id="txtFecha" />
+        </div>
+        <div class="field">
+          <label>Tipo</label>
+          <select id="selTipo">
+            <option>Recibo X</option>
+            <option>Recibo oficial</option>
+            <option>Recibo provisional</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cobrador</label>
+          <input type="text" id="txtCobrador" />
+        </div>
+
+        <div class="section-title">Cliente</div>
+        <div class="field">
+          <label>Código</label>
+          <input type="text" id="txtClienteCodigo" />
+        </div>
+        <div class="field span-2 with-btn">
+          <label class="required-star">Razón Social</label>
+          <input type="text" id="txtClienteNombre" placeholder="Nombre o busque con ..." />
+          <button class="field-btn" id="btnBuscarCliente" title="Buscar cliente (F4)">...</button>
+        </div>
+        <div class="field">
+          <label>CUIT</label>
+          <input type="text" id="txtClienteCuit" readonly style="background:#f0f0f0;" />
+        </div>
+
+        <div class="field span-2">
+          <label>Condición IVA</label>
+          <input type="text" id="txtClienteIva" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Saldo en cta. cte. (actual)</label>
+          <input type="text" id="txtSaldoCta" readonly style="background:#f0f0f0;font-weight:700;" value="$ 0,00" />
+        </div>
+        <div class="field">
+          <label>Vendedor responsable</label>
+          <input type="text" id="txtVendedor" />
+        </div>
+
+        <div class="section-title">Concepto</div>
+        <div class="field span-4">
+          <label>Concepto del recibo</label>
+          <input type="text" id="txtConcepto"
+            value="En concepto de cancelación de facturas pendientes." />
+        </div>
+        <div class="field">
+          <label>Moneda</label>
+          <select id="selMoneda">
+            <option>ARS — Pesos</option>
+            <option>USD — Dólares</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tipo de cambio</label>
+          <input type="number" id="txtTipoCambio" value="1" min="1" step="0.01" />
+        </div>
+        <div class="field span-2">
+          <label>Sucursal cobradora</label>
+          <input type="text" value="01 PRINCIPAL" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ FACTURAS COBRADAS ═══════════ -->
+    <div class="tab-panel split-panel" id="tab-facturas">
+      <div class="fact-toolbar">
+        <button class="btn btn-primary" id="btnAddFact" style="height:26px;padding:0 12px;">+ Agregar factura</button>
+        <span style="font-size:11px;color:var(--text-muted);">Ingrese los comprobantes que se cancelan con este recibo</span>
+        <span class="fact-count" id="lblFactCount">0 comprobantes</span>
+      </div>
+      <div class="fact-table-wrap">
+        <table class="fact-table">
+          <thead>
+            <tr>
+              <th style="width:32px;">#</th>
+              <th style="width:150px;">Nro. factura / comprob.</th>
+              <th style="width:90px;">Fecha</th>
+              <th class="th-r" style="width:120px;">Importe original</th>
+              <th class="th-r" style="width:120px;">Saldo pendiente</th>
+              <th class="th-r" style="width:130px;">Importe cobrado</th>
+              <th style="width:30px;"></th>
+            </tr>
+          </thead>
+          <tbody id="factBody">
+            <tr id="factEmptyRow">
+              <td colspan="7" style="text-align:center;color:var(--text-muted);font-style:italic;padding:40px 0;">
+                Sin comprobantes — haga clic en "+ Agregar factura" para agregar
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" style="text-align:right;">TOTAL COBRADO:</td>
+              <td></td>
+              <td class="td-r" id="factTotal">$ 0,00</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════ FORMA DE COBRO ═══════════ -->
+    <div class="tab-panel split-panel" id="tab-cobro">
+      <div class="cobro-wrap">
+        <div class="cobro-methods">
+
+          <!-- Efectivo -->
+          <div class="method-card">
+            <div class="method-header" data-method="efectivo">
+              <span class="method-icon">💵</span>
+              <span class="method-label">Efectivo</span>
+              <span class="method-amount" id="mAmt-efectivo">$ 0,00</span>
+              <button class="method-toggle" id="mtgl-efectivo"></button>
+            </div>
+            <div class="method-body hidden" id="mbody-efectivo">
+              <div class="method-row cols-2">
+                <div class="method-field">
+                  <label>Importe recibido en efectivo</label>
+                  <input type="number" min="0" step="0.01" value="0" data-method="efectivo" id="minput-efectivo"
+                    onchange="updateMethodAmt('efectivo', this.value)" />
+                </div>
+                <div class="method-field">
+                  <label>Vuelto / Cambio</label>
+                  <input type="number" min="0" step="0.01" value="0" readonly style="background:#f0f0f0;" id="mVuelto" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transferencia -->
+          <div class="method-card">
+            <div class="method-header" data-method="transferencia">
+              <span class="method-icon">🏦</span>
+              <span class="method-label">Transferencia bancaria</span>
+              <span class="method-amount" id="mAmt-transferencia">$ 0,00</span>
+              <button class="method-toggle" id="mtgl-transferencia"></button>
+            </div>
+            <div class="method-body hidden" id="mbody-transferencia">
+              <div class="method-row cols-3">
+                <div class="method-field">
+                  <label>Importe</label>
+                  <input type="number" min="0" step="0.01" value="0"
+                    onchange="updateMethodAmt('transferencia', this.value)" />
+                </div>
+                <div class="method-field">
+                  <label>Banco origen</label>
+                  <input type="text" placeholder="Banco del cliente..." />
+                </div>
+                <div class="method-field">
+                  <label>Referencia / CBU</label>
+                  <input type="text" placeholder="Nro. transacción o CBU..." />
+                </div>
+              </div>
+              <div class="method-row cols-2">
+                <div class="method-field">
+                  <label>Fecha acreditación</label>
+                  <input type="date" id="mFechaTransf" />
+                </div>
+                <div class="method-field">
+                  <label>Comprobante nro.</label>
+                  <input type="text" placeholder="Nro. comprobante de transferencia..." />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cheque -->
+          <div class="method-card">
+            <div class="method-header" data-method="cheque">
+              <span class="method-icon">📄</span>
+              <span class="method-label">Cheque(s)</span>
+              <span class="method-amount" id="mAmt-cheque">$ 0,00</span>
+              <button class="method-toggle" id="mtgl-cheque"></button>
+            </div>
+            <div class="method-body hidden" id="mbody-cheque">
+              <div id="chequesContainer">
+                <!-- rows added dynamically -->
+              </div>
+              <button class="btn btn-default" id="btnAddCheque" style="height:26px;font-size:10px;padding:0 10px;margin-top:6px;">
+                + Agregar cheque
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjeta -->
+          <div class="method-card">
+            <div class="method-header" data-method="tarjeta">
+              <span class="method-icon">💳</span>
+              <span class="method-label">Tarjeta de crédito/débito</span>
+              <span class="method-amount" id="mAmt-tarjeta">$ 0,00</span>
+              <button class="method-toggle" id="mtgl-tarjeta"></button>
+            </div>
+            <div class="method-body hidden" id="mbody-tarjeta">
+              <div class="method-row cols-4">
+                <div class="method-field">
+                  <label>Importe</label>
+                  <input type="number" min="0" step="0.01" value="0"
+                    onchange="updateMethodAmt('tarjeta', this.value)" />
+                </div>
+                <div class="method-field">
+                  <label>Red / Emisor</label>
+                  <select>
+                    <option>Visa</option>
+                    <option>Mastercard</option>
+                    <option>Amex</option>
+                    <option>Cabal</option>
+                    <option>Naranja</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div class="method-field">
+                  <label>Nro. cupón / lote</label>
+                  <input type="text" placeholder="Nro. cupón..." />
+                </div>
+                <div class="method-field">
+                  <label>Terminal POS</label>
+                  <input type="text" placeholder="ID terminal..." />
+                </div>
+              </div>
+              <div class="method-row cols-2">
+                <div class="method-field">
+                  <label>Cuotas</label>
+                  <select>
+                    <option>1 (contado)</option>
+                    <option>3 cuotas</option>
+                    <option>6 cuotas</option>
+                    <option>12 cuotas</option>
+                  </select>
+                </div>
+                <div class="method-field">
+                  <label>Nro. autorización</label>
+                  <input type="text" placeholder="Código de autorización..." />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Otros -->
+          <div class="method-card">
+            <div class="method-header" data-method="otros">
+              <span class="method-icon">💼</span>
+              <span class="method-label">Otros / Compensación</span>
+              <span class="method-amount" id="mAmt-otros">$ 0,00</span>
+              <button class="method-toggle" id="mtgl-otros"></button>
+            </div>
+            <div class="method-body hidden" id="mbody-otros">
+              <div class="method-row cols-2">
+                <div class="method-field">
+                  <label>Importe</label>
+                  <input type="number" min="0" step="0.01" value="0"
+                    onchange="updateMethodAmt('otros', this.value)" />
+                </div>
+                <div class="method-field">
+                  <label>Descripción</label>
+                  <input type="text" placeholder="Nota de crédito, compensación, etc..." />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Resumen -->
+        <div class="cobro-summary" style="max-width:480px;margin-left:auto;">
+          <div class="cobro-summary-row">
+            <span class="lbl">Total facturas a cobrar</span>
+            <span class="val" id="sumFactTotal">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row">
+            <span class="lbl">Efectivo</span>
+            <span class="val" id="sumEfectivo">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row">
+            <span class="lbl">Transferencia</span>
+            <span class="val" id="sumTransf">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row">
+            <span class="lbl">Cheques</span>
+            <span class="val" id="sumCheques">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row">
+            <span class="lbl">Tarjeta</span>
+            <span class="val" id="sumTarjeta">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row">
+            <span class="lbl">Otros</span>
+            <span class="val" id="sumOtros">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row grand">
+            <span class="lbl">TOTAL COBRADO</span>
+            <span class="val" id="sumTotalCobrado">$ 0,00</span>
+          </div>
+          <div class="cobro-summary-row diff-ok" id="sumDiffRow">
+            <span class="lbl">Diferencia</span>
+            <span class="val" id="sumDiff">$ 0,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ OBSERVACIONES ═══════════ -->
+    <div class="tab-panel" id="tab-observaciones">
+      <div class="form-grid">
+        <div class="section-title">Texto del recibo</div>
+        <div class="field span-4">
+          <label>Concepto detallado (se imprime en el recibo)</label>
+          <textarea style="height:60px;" id="txtConceptoLargo"
+            placeholder="Descripción detallada del cobro..."></textarea>
+        </div>
+        <div class="field span-4">
+          <label>Notas internas (no se imprimen)</label>
+          <textarea style="height:50px;" placeholder="Notas para el equipo de cobranza..."></textarea>
+        </div>
+
+        <div class="section-title">Auditoría</div>
+        <div class="field">
+          <label>Creado por</label>
+          <input type="text" value="Usuario actual" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Fecha creación</label>
+          <input type="text" id="txtFechaCreacion" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Aprobado por</label>
+          <input type="text" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Canal de cobro</label>
+          <select>
+            <option>Oficina / Mostrador</option>
+            <option>Cobranza a domicilio</option>
+            <option>Depósito bancario</option>
+            <option>Plataforma digital</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <button class="btn btn-default" id="btnNew">Nuevo</button>
+    <button class="btn btn-primary" id="btnSave">Guardar (F8)</button>
+    <button class="btn btn-default" disabled>Imprimir (F9)</button>
+    <button class="btn btn-default" disabled>Enviar por email</button>
+    <button class="btn btn-danger" disabled>Anular</button>
+    <button class="btn btn-default" id="btnExit">Salir</button>
+  </div>
+
+  <script>
+    /* ─── Estado ─── */
+    let facturas = [];
+    let nextFactId = 1;
+    let clienteData = null;
+    let cheques = [];
+    let nextChequeId = 1;
+    let methodAmts = { efectivo: 0, transferencia: 0, cheque: 0, tarjeta: 0, otros: 0 };
+
+    /* ─── Init ─── */
+    (function init() {
+      var now = new Date();
+      var yr = String(now.getFullYear()).slice(2);
+      var mo = String(now.getMonth() + 1).padStart(2, "0");
+      var nr = "REC-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
+      document.getElementById("txtNroRec").value = nr;
+      document.getElementById("lblNroRec").textContent = "#" + nr;
+      document.getElementById("txtFecha").value = now.toISOString().slice(0, 10);
+      document.getElementById("txtFechaCreacion").value = now.toLocaleDateString("es-AR");
+      document.getElementById("mFechaTransf").value = now.toISOString().slice(0, 10);
+      renderCheques();
+    })();
+
+    /* ─── Tabs ─── */
+    document.querySelectorAll(".tab").forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+        document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
+        tab.classList.add("active");
+        document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+        if (tab.dataset.tab === "cobro") updateCobroSummary();
+      });
+    });
+
+    /* ─── Client picker ─── */
+    document.getElementById("btnBuscarCliente").addEventListener("click", openClientPicker);
+    document.getElementById("txtClienteNombre").addEventListener("keydown", function(e) {
+      if (e.key === "F4") { e.preventDefault(); openClientPicker(); }
+    });
+
+    function openClientPicker() {
+      if (window.asimovNewReceipt) window.asimovNewReceipt.openClientSelection();
+    }
+
+    if (window.asimovNewReceipt) {
+      window.asimovNewReceipt.onClientSelected(function(data) {
+        if (data.contextId !== "recibo-cliente" || !data.client) return;
+        clienteData = data.client;
+        document.getElementById("txtClienteCodigo").value = data.client.codigo || data.client.id || "";
+        document.getElementById("txtClienteNombre").value = data.client.razonSocial || data.client.name || "";
+        document.getElementById("txtClienteCuit").value = data.client.cuit || "";
+        document.getElementById("txtClienteIva").value = data.client.condicionIva || "";
+      });
+    }
+
+    /* ─── Facturas table ─── */
+    document.getElementById("btnAddFact").addEventListener("click", function() {
+      var id = nextFactId++;
+      facturas.push({ id: id, nroFact: "", fecha: new Date().toISOString().slice(0, 10), importe: 0, saldo: 0, cobrado: 0 });
+      renderFacturas();
+      setTimeout(function() {
+        var inp = document.querySelector('[data-fid="' + id + '"][data-ffield="nroFact"]');
+        if (inp) inp.focus();
+      }, 30);
+    });
+
+    function renderFacturas() {
+      var tbody = document.getElementById("factBody");
+      var count = facturas.length;
+      document.getElementById("lblFactCount").textContent = count + (count === 1 ? " comprobante" : " comprobantes");
+
+      tbody.innerHTML = "";
+      if (count === 0) {
+        tbody.innerHTML = '<tr id="factEmptyRow"><td colspan="7" style="text-align:center;color:var(--text-muted);font-style:italic;padding:40px 0;">Sin comprobantes</td></tr>';
+        document.getElementById("factTotal").textContent = "$ 0,00";
+        updateHeader();
+        return;
+      }
+
+      var totalCobrado = 0;
+      facturas.forEach(function(row, idx) {
+        totalCobrado += row.cobrado;
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          '<td style="text-align:center;color:var(--text-muted);font-size:10px;">' + (idx + 1) + '</td>' +
+          '<td><input style="width:100%;height:22px;border:1px solid transparent;border-radius:3px;padding:0 4px;font-family:Consolas,monospace;font-size:11px;font-weight:700;background:transparent;outline:none;" data-fid="' + row.id + '" data-ffield="nroFact" value="' + esc(row.nroFact) + '" placeholder="Ej: B 0001-00000123" /></td>' +
+          '<td><input type="date" style="width:100%;height:22px;border:1px solid transparent;border-radius:3px;padding:0 4px;font-size:11px;background:transparent;outline:none;" data-fid="' + row.id + '" data-ffield="fecha" value="' + row.fecha + '" /></td>' +
+          '<td class="td-r"><input class="fact-input" style="color:var(--text-muted);" type="number" min="0" step="0.01" data-fid="' + row.id + '" data-ffield="importe" value="' + row.importe + '" placeholder="0.00" /></td>' +
+          '<td class="td-r"><input class="fact-input" style="color:var(--text-muted);" type="number" min="0" step="0.01" data-fid="' + row.id + '" data-ffield="saldo" value="' + row.saldo + '" placeholder="0.00" /></td>' +
+          '<td class="td-r"><input class="fact-input" type="number" min="0" step="0.01" data-fid="' + row.id + '" data-ffield="cobrado" value="' + row.cobrado + '" placeholder="0.00" /></td>' +
+          '<td style="text-align:center;"><button class="del-row-btn" data-fid="' + row.id + '">×</button></td>';
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll("[data-ffield]").forEach(function(inp) {
+        inp.addEventListener("change", onFactChange);
+      });
+      tbody.querySelectorAll(".del-row-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          facturas = facturas.filter(function(r) { return r.id !== parseInt(btn.dataset.fid); });
+          renderFacturas();
+        });
+      });
+
+      document.getElementById("factTotal").textContent = "$ " + fmtNum(totalCobrado);
+      updateHeader(totalCobrado);
+      updateCobroSummary();
+    }
+
+    function onFactChange(e) {
+      var el = e.target;
+      var fid = parseInt(el.dataset.fid);
+      var field = el.dataset.ffield;
+      var row = facturas.find(function(r) { return r.id === fid; });
+      if (!row) return;
+      if (field === "importe" || field === "saldo" || field === "cobrado") {
+        row[field] = parseFloat(el.value) || 0;
+        if (field === "importe" && !row.saldo) row.saldo = row.importe;
+        if (field === "saldo" && !row.cobrado) row.cobrado = row.saldo;
+      } else {
+        row[field] = el.value;
+      }
+      var totalCobrado = facturas.reduce(function(s, r) { return s + r.cobrado; }, 0);
+      document.getElementById("factTotal").textContent = "$ " + fmtNum(totalCobrado);
+      updateHeader(totalCobrado);
+      updateCobroSummary();
+    }
+
+    /* ─── Method toggles ─── */
+    document.querySelectorAll(".method-toggle").forEach(function(btn) {
+      btn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        btn.classList.toggle("on");
+        var method = btn.id.replace("mtgl-", "");
+        var body = document.getElementById("mbody-" + method);
+        body.classList.toggle("hidden");
+        if (!btn.classList.contains("on")) {
+          methodAmts[method] = 0;
+          var mAmt = document.getElementById("mAmt-" + method);
+          if (mAmt) mAmt.textContent = "$ 0,00";
+          updateCobroSummary();
+        }
+      });
+    });
+    document.querySelectorAll(".method-header").forEach(function(hdr) {
+      hdr.addEventListener("click", function(e) {
+        if (e.target.classList.contains("method-toggle")) return;
+        var toggle = hdr.querySelector(".method-toggle");
+        if (toggle) toggle.click();
+      });
+    });
+
+    window.updateMethodAmt = function(method, val) {
+      methodAmts[method] = parseFloat(val) || 0;
+      var el = document.getElementById("mAmt-" + method);
+      if (el) el.textContent = "$ " + fmtNum(methodAmts[method]);
+      updateCobroSummary();
+    };
+
+    /* ─── Cheques ─── */
+    document.getElementById("btnAddCheque").addEventListener("click", function() {
+      cheques.push({ id: nextChequeId++, banco: "", nro: "", fecha: new Date().toISOString().slice(0,10), importe: 0, tipo: "Al día" });
+      renderCheques();
+    });
+
+    function renderCheques() {
+      var container = document.getElementById("chequesContainer");
+      container.innerHTML = "";
+      if (cheques.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:11px;font-style:italic;">Sin cheques — haga clic en "+ Agregar cheque"</p>';
+        methodAmts.cheque = 0;
+        document.getElementById("mAmt-cheque").textContent = "$ 0,00";
+        updateCobroSummary();
+        return;
+      }
+      cheques.forEach(function(ch) {
+        var div = document.createElement("div");
+        div.style.cssText = "display:grid;grid-template-columns:1fr 1fr 1fr 1fr 90px 24px;gap:6px 8px;align-items:end;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #ebebeb;";
+        div.innerHTML =
+          mkField("Banco", '<input type="text" value="' + esc(ch.banco) + '" data-chid="' + ch.id + '" data-chfield="banco" placeholder="Banco emisor..." />') +
+          mkField("Nro. cheque", '<input type="text" value="' + esc(ch.nro) + '" data-chid="' + ch.id + '" data-chfield="nro" placeholder="Nro..." style="font-family:Consolas,monospace;" />') +
+          mkField("Vto. / Fecha", '<input type="date" value="' + ch.fecha + '" data-chid="' + ch.id + '" data-chfield="fecha" />') +
+          mkField("Tipo", '<select data-chid="' + ch.id + '" data-chfield="tipo"><option' + (ch.tipo==="Al día"?" selected":"") + '>Al día</option><option' + (ch.tipo==="Diferido"?" selected":"") + '>Diferido</option><option' + (ch.tipo==="Cruzado"?" selected":"") + '>Cruzado</option></select>') +
+          mkField("Importe", '<input type="number" min="0" step="0.01" value="' + ch.importe + '" data-chid="' + ch.id + '" data-chfield="importe" style="font-weight:700;" />') +
+          '<div style="display:flex;align-items:flex-end;"><button class="del-row-btn" data-chid="' + ch.id + '">×</button></div>';
+        container.appendChild(div);
+      });
+      container.querySelectorAll("[data-chfield]").forEach(function(inp) {
+        inp.addEventListener("change", function() {
+          var chid = parseInt(inp.dataset.chid);
+          var field = inp.dataset.chfield;
+          var row = cheques.find(function(c) { return c.id === chid; });
+          if (!row) return;
+          row[field] = field === "importe" ? (parseFloat(inp.value) || 0) : inp.value;
+          var total = cheques.reduce(function(s, c) { return s + c.importe; }, 0);
+          methodAmts.cheque = total;
+          document.getElementById("mAmt-cheque").textContent = "$ " + fmtNum(total);
+          updateCobroSummary();
+        });
+      });
+      container.querySelectorAll(".del-row-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          cheques = cheques.filter(function(c) { return c.id !== parseInt(btn.dataset.chid); });
+          renderCheques();
+        });
+      });
+      var total = cheques.reduce(function(s, c) { return s + c.importe; }, 0);
+      methodAmts.cheque = total;
+      document.getElementById("mAmt-cheque").textContent = "$ " + fmtNum(total);
+      updateCobroSummary();
+    }
+
+    function mkField(label, inputHtml) {
+      return '<div><label style="display:block;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">' + label + '</label>' +
+        '<div style="height:26px;">' + inputHtml.replace(/(<input|<select)/, '$1 style="width:100%;height:26px;border:1px solid var(--border);border-radius:4px;padding:0 6px;font-family:inherit;font-size:12px;background:var(--input-bg);outline:none;"').replace(/style="([^"]+)"([^>]+style="width)/, 'style="$1" $2') + '</div></div>';
+    }
+
+    /* ─── Summary & header ─── */
+    function updateCobroSummary() {
+      var factTotal = facturas.reduce(function(s, r) { return s + r.cobrado; }, 0);
+      var totalCobrado = Object.values(methodAmts).reduce(function(s, v) { return s + v; }, 0);
+      var diff = totalCobrado - factTotal;
+
+      document.getElementById("sumFactTotal").textContent = "$ " + fmtNum(factTotal);
+      document.getElementById("sumEfectivo").textContent = "$ " + fmtNum(methodAmts.efectivo);
+      document.getElementById("sumTransf").textContent = "$ " + fmtNum(methodAmts.transferencia);
+      document.getElementById("sumCheques").textContent = "$ " + fmtNum(methodAmts.cheque);
+      document.getElementById("sumTarjeta").textContent = "$ " + fmtNum(methodAmts.tarjeta);
+      document.getElementById("sumOtros").textContent = "$ " + fmtNum(methodAmts.otros);
+      document.getElementById("sumTotalCobrado").textContent = "$ " + fmtNum(totalCobrado);
+
+      var diffRow = document.getElementById("sumDiffRow");
+      var diffVal = document.getElementById("sumDiff");
+      diffVal.textContent = (diff >= 0 ? "+ " : "- ") + "$ " + fmtNum(Math.abs(diff));
+      diffRow.className = "cobro-summary-row " + (Math.abs(diff) < 0.01 ? "diff-ok" : "diff-err");
+
+      // Vuelto
+      var ef = document.getElementById("minput-efectivo");
+      if (ef) {
+        var vuelto = parseFloat(ef.value || "0") - factTotal;
+        var vueltoEl = document.getElementById("mVuelto");
+        if (vueltoEl) vueltoEl.value = Math.max(0, vuelto).toFixed(2);
+      }
+    }
+
+    function updateHeader(total) {
+      total = total || facturas.reduce(function(s, r) { return s + r.cobrado; }, 0);
+      document.getElementById("lblTotalHeader").textContent = "$ " + fmtNum(total);
+    }
+
+    /* ─── Keyboard ─── */
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "F8") { e.preventDefault(); document.getElementById("btnSave").click(); }
+    });
+
+    /* ─── Footer buttons ─── */
+    document.getElementById("btnNew").addEventListener("click", function() {
+      facturas = []; nextFactId = 1; clienteData = null; cheques = []; nextChequeId = 1;
+      methodAmts = { efectivo: 0, transferencia: 0, cheque: 0, tarjeta: 0, otros: 0 };
+      var now = new Date();
+      var yr = String(now.getFullYear()).slice(2);
+      var mo = String(now.getMonth() + 1).padStart(2, "0");
+      var nr = "REC-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
+      document.getElementById("txtNroRec").value = nr;
+      document.getElementById("lblNroRec").textContent = "#" + nr;
+      document.getElementById("lblTotalHeader").textContent = "$ 0,00";
+      document.getElementById("txtClienteCodigo").value = "";
+      document.getElementById("txtClienteNombre").value = "";
+      document.getElementById("txtClienteCuit").value = "";
+      document.getElementById("txtClienteIva").value = "";
+      document.querySelectorAll(".method-toggle.on").forEach(function(t) { t.click(); });
+      renderFacturas(); renderCheques();
+    });
+
+    document.getElementById("btnSave").addEventListener("click", function() {
+      if (!document.getElementById("txtClienteNombre").value.trim()) {
+        alert("Seleccione un cliente antes de guardar.");
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "encabezado") t.click(); });
+        document.getElementById("txtClienteNombre").focus();
+        return;
+      }
+      if (facturas.length === 0) {
+        alert("Agregue al menos un comprobante en la pestaña 'Facturas cobradas'.");
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "facturas") t.click(); });
+        return;
+      }
+      var receipt = {
+        nroRec: document.getElementById("txtNroRec").value,
+        fecha: document.getElementById("txtFecha").value,
+        cliente: clienteData,
+        clienteNombre: document.getElementById("txtClienteNombre").value,
+        concepto: document.getElementById("txtConcepto").value,
+        facturas: facturas,
+        cobro: Object.assign({}, methodAmts, { cheques: cheques }),
+        totalCobrado: Object.values(methodAmts).reduce(function(s, v) { return s + v; }, 0),
+      };
+      if (window.asimovNewReceipt) window.asimovNewReceipt.saveReceipt(receipt);
+    });
+
+    var closeHandler = function() {
+      if (window.asimovNewReceipt) window.asimovNewReceipt.cancel();
+    };
+    document.getElementById("btnExit").addEventListener("click", closeHandler);
+    document.getElementById("btnClose").addEventListener("click", closeHandler);
+
+    function esc(str) {
+      return String(str || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function fmtNum(n) {
+      return isNaN(n) ? "0,00" : Number(n).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    renderFacturas();
+    updateCobroSummary();
+  </script>
+</body>
+</html>
