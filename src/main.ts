@@ -35,6 +35,7 @@ const NEW_ARTICLE_FILE = path.join(__dirname, "new-article.html");
 const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
 const NEW_CLIENT_FILE = path.join(__dirname, "new-client.html");
 const NEW_SUPPLIER_FILE = path.join(__dirname, "new-supplier.html");
+const NEW_SALE_ORDER_FILE = path.join(__dirname, "new-sale-order.html");
 
 // Title bar custom estilo GESES: barra crema, texto y botones oscuros.
 // Reemplaza la barra nativa de Windows que toma el color de fondo de la página web.
@@ -446,7 +447,7 @@ function openAppropriateWindow(): void {
   }
 }
 
-function openNativeForm(type: "article" | "client" | "supplier"): void {
+function openNativeForm(type: "article" | "client" | "supplier" | "sale-order"): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
     case "article":
@@ -457,6 +458,9 @@ function openNativeForm(type: "article" | "client" | "supplier"): void {
       break;
     case "supplier":
       createNewSupplierWindowStandalone(parent);
+      break;
+    case "sale-order":
+      createNewSaleOrderWindowStandalone(parent);
       break;
   }
 }
@@ -654,6 +658,12 @@ if (!gotLock) {
       }
     });
 
+    ipcMain.on("shell:sale-order-saved", (_event, _data: { order: any }) => {
+      if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) {
+        newSaleOrderWindow.close();
+      }
+    });
+
     app.on("activate", () => {
       if (BrowserWindow.getAllWindows().length === 0) openAppropriateWindow();
     });
@@ -670,6 +680,7 @@ let newArticleWindow: BrowserWindow | null = null;
 let clientSelectionWindow: BrowserWindow | null = null;
 let newClientWindow: BrowserWindow | null = null;
 let newSupplierWindow: BrowserWindow | null = null;
+let newSaleOrderWindow: BrowserWindow | null = null;
 
 function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string) {
   if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
@@ -1017,4 +1028,38 @@ function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
   win.once("ready-to-show", () => win.show());
   win.setMenu(null);
   void win.loadFile(NEW_SUPPLIER_FILE);
+}
+
+function createNewSaleOrderWindowStandalone(parent: BrowserWindow | null): void {
+  if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) {
+    newSaleOrderWindow.focus();
+    return;
+  }
+
+  newSaleOrderWindow = new BrowserWindow({
+    width: 1120,
+    height: 740,
+    minWidth: 900,
+    minHeight: 600,
+    resizable: true,
+    parent: parent ?? undefined,
+    modal: false,
+    show: false,
+    backgroundColor: "#f0efe8",
+    title: "Pedidos de Venta — NUEVO",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "new-sale-order-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  newSaleOrderWindow.once("ready-to-show", () => newSaleOrderWindow?.show());
+  newSaleOrderWindow.on("closed", () => { newSaleOrderWindow = null; });
+  newSaleOrderWindow.setMenu(null);
+  void newSaleOrderWindow.loadFile(NEW_SALE_ORDER_FILE);
 }

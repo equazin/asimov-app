@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Pedido de Venta: NUEVO</title>
+  <style>
+    :root {
+      --bg: #f0efe8;
+      --panel: #ffffff;
+      --accent: #1a6b3a;
+      --accent-light: #e4f4eb;
+      --border: #c4c0b4;
+      --text: #1a1a1a;
+      --text-muted: #6b6560;
+      --input-bg: #fffff8;
+      --input-focus: #1a6b3a;
+      --header-bg: #0a4020;
+      --tab-active: #ffffff;
+      --tab-inactive: #e0ddd4;
+      --danger: #c62828;
+      --row-hover: #f0faf4;
+      --row-selected: #c8e8d4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      color: var(--text);
+      height: 100vh;
+      padding-top: 32px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--header-bg), #2a8a4e);
+      color: #fff;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px; font-weight: 700;
+      font-family: Consolas, monospace;
+    }
+    .header-close {
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 4px;
+      color: #fff; font-size: 14px;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .header-close:hover { background: rgba(255,255,255,0.3); }
+
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      padding: 8px 12px 0;
+      gap: 2px;
+      border-bottom: 2px solid var(--accent);
+      flex-shrink: 0;
+    }
+    .tab {
+      padding: 6px 12px;
+      background: var(--tab-inactive);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tab:hover { background: #eae7de; }
+    .tab.active {
+      background: var(--tab-active);
+      color: var(--accent);
+      border-color: var(--accent);
+      border-bottom: 2px solid var(--tab-active);
+      margin-bottom: -2px;
+      z-index: 2;
+    }
+
+    .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
+    .tab-panel.active { display: block; }
+    .tab-panel.items-panel { padding: 0; }
+    .tab-panel.items-panel.active { display: flex; flex-direction: column; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px 12px;
+      align-content: start;
+    }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+
+    .field label {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 8px;
+      font-family: inherit; font-size: 12px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(26,107,58,0.12);
+    }
+    .field textarea { height: 68px; padding: 6px 8px; resize: vertical; }
+    .field.with-btn { position: relative; }
+    .field.with-btn input { padding-right: 34px; }
+    .field-btn {
+      position: absolute; right: 4px; top: 20px;
+      width: 26px; height: 20px;
+      background: var(--accent); border: none; border-radius: 3px;
+      color: #fff; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .field-btn:hover { background: #0f4a28; }
+
+    .section-title {
+      grid-column: span 4;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 6px 0 2px;
+      border-bottom: 1px solid var(--accent-light);
+      margin-top: 4px;
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    /* Items */
+    .items-toolbar {
+      padding: 8px 12px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .items-hint { font-size: 11px; color: var(--text-muted); }
+    .items-count { margin-left: auto; font-size: 11px; font-weight: 600; }
+
+    .items-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; background: var(--panel); }
+    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 820px; }
+    .items-table thead th {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px;
+      text-align: left;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .items-table thead th.th-num   { width: 36px; text-align: center; }
+    .items-table thead th.th-code  { width: 108px; }
+    .items-table thead th.th-desc  { /* flex */ }
+    .items-table thead th.th-unit  { width: 58px; }
+    .items-table thead th.th-qty   { width: 80px; }
+    .items-table thead th.th-price { width: 100px; }
+    .items-table thead th.th-disc  { width: 68px; }
+    .items-table thead th.th-sub   { width: 110px; text-align: right; }
+    .items-table thead th.th-del   { width: 32px; }
+
+    .items-table tbody tr { border-bottom: 1px solid #ebebeb; }
+    .items-table tbody tr:nth-child(even) { background: #fafaf6; }
+    .items-table tbody tr:hover { background: var(--row-hover); }
+    .items-table td { padding: 2px 4px; vertical-align: middle; }
+    .td-num { text-align: center; font-size: 10px; color: var(--text-muted); }
+    .td-sub { text-align: right; font-family: Consolas, monospace; font-size: 12px; font-weight: 600; padding-right: 8px !important; }
+
+    .cell-input {
+      width: 100%; height: 24px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 0 4px;
+      font-family: inherit; font-size: 12px;
+      background: transparent;
+      color: var(--text);
+      outline: none;
+    }
+    .cell-input:focus {
+      background: var(--input-bg);
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(26,107,58,0.15);
+    }
+    .cell-input.right { text-align: right; }
+
+    .code-wrap { display: flex; gap: 3px; align-items: center; }
+    .code-wrap input { flex: 1; }
+    .picker-btn {
+      width: 20px; height: 20px; flex-shrink: 0;
+      background: var(--accent); border: none; border-radius: 3px;
+      color: #fff; font-size: 13px; font-weight: 900;
+      cursor: pointer; display: grid; place-items: center; line-height: 1;
+    }
+    .picker-btn:hover { background: #0f4a28; }
+
+    .del-row-btn {
+      width: 22px; height: 22px;
+      background: none; border: 1px solid transparent; border-radius: 3px;
+      color: var(--danger); font-size: 14px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+    }
+    .del-row-btn:hover { background: #fde8e8; border-color: var(--danger); }
+
+    .empty-items-msg { text-align: center; color: var(--text-muted); font-style: italic; padding: 40px 0; }
+
+    /* Totales */
+    .totals-panel { padding: 16px; display: flex; gap: 16px; flex-wrap: wrap; align-content: start; overflow-y: auto; background: var(--panel); }
+    .totals-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      min-width: 240px; flex: 1;
+    }
+    .totals-card h3 {
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--accent-light);
+    }
+    .totals-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      font-size: 12px;
+    }
+    .totals-row:last-child { border-bottom: none; }
+    .totals-row .lbl { color: var(--text-muted); }
+    .totals-row .val { font-family: Consolas, monospace; font-weight: 600; }
+    .totals-row.grand {
+      margin-top: 8px; padding: 8px 10px;
+      background: var(--accent); border-radius: 6px; color: #fff;
+    }
+    .totals-row.grand .lbl { color: rgba(255,255,255,0.85); font-weight: 700; }
+    .totals-row.grand .val { color: #fff; font-size: 16px; font-weight: 700; }
+
+    /* Footer */
+    .footer {
+      padding: 10px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn {
+      height: 30px; padding: 0 18px;
+      border: 1px solid var(--border); border-radius: 5px;
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-default { background: var(--panel); color: var(--text); }
+    .btn-default:hover { background: #f0f0f0; }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: #0f4a28; }
+    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: #fde8e8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .required-star::after { content: " *"; color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Pedidos de Venta &mdash; NUEVO</h1>
+      <span class="header-badge" id="lblNroPedido">#PV-000000</span>
+    </div>
+    <button class="header-close" id="btnClose">&times;</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="encabezado">Encabezado</div>
+    <div class="tab" data-tab="items">Ítems</div>
+    <div class="tab" data-tab="totales">Totales</div>
+    <div class="tab" data-tab="condiciones">Condiciones</div>
+    <div class="tab" data-tab="observaciones">Observaciones</div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- ═══════════ ENCABEZADO ═══════════ -->
+    <div class="tab-panel active" id="tab-encabezado">
+      <div class="form-grid">
+        <div class="section-title">Identificación del pedido</div>
+        <div class="field">
+          <label>Nro. pedido</label>
+          <input type="text" id="txtNroPedido" readonly style="background:#f0f0f0;font-family:Consolas,monospace;font-weight:700;" />
+        </div>
+        <div class="field">
+          <label class="required-star">Fecha</label>
+          <input type="date" id="txtFecha" />
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input type="time" id="txtHora" />
+        </div>
+        <div class="field">
+          <label>Tipo</label>
+          <select id="selTipo">
+            <option>Pedido</option>
+            <option>Presupuesto</option>
+            <option>Pedido urgente</option>
+          </select>
+        </div>
+
+        <div class="section-title">Cliente</div>
+        <div class="field">
+          <label>Código</label>
+          <input type="text" id="txtClienteCodigo" />
+        </div>
+        <div class="field span-2 with-btn">
+          <label class="required-star">Razón Social</label>
+          <input type="text" id="txtClienteNombre" placeholder="Nombre o busque con ..." />
+          <button class="field-btn" id="btnBuscarCliente" title="Buscar cliente (F4)">...</button>
+        </div>
+        <div class="field">
+          <label>CUIT</label>
+          <input type="text" id="txtClienteCuit" readonly style="background:#f0f0f0;" />
+        </div>
+
+        <div class="field span-2">
+          <label>Condición IVA</label>
+          <input type="text" id="txtClienteIva" readonly style="background:#f0f0f0;" />
+        </div>
+        <div class="field">
+          <label>Condición de venta</label>
+          <select id="selCondVenta">
+            <option>Contado</option>
+            <option>Cta. Cte. 30 días</option>
+            <option>Cta. Cte. 60 días</option>
+            <option>Cta. Cte. 90 días</option>
+            <option>Cheque 30 días</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Lista de precios</label>
+          <select id="selListaPrecios">
+            <option>LISTA GENERAL</option>
+            <option>LISTA MAYORISTA</option>
+            <option>LISTA USD</option>
+          </select>
+        </div>
+
+        <div class="section-title">Comercial</div>
+        <div class="field">
+          <label>Vendedor</label>
+          <input type="text" id="txtVendedor" />
+        </div>
+        <div class="field">
+          <label>Moneda</label>
+          <select id="selMoneda">
+            <option>ARS — Pesos</option>
+            <option>USD — Dólares</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Sucursal</label>
+          <input type="text" value="01 PRINCIPAL" />
+        </div>
+        <div class="field">
+          <label>Depósito</label>
+          <input type="text" value="CENTRAL" />
+        </div>
+
+        <div class="field">
+          <label>% Descuento gral.</label>
+          <input type="number" id="txtDescuentoGral" value="0" min="0" max="100" step="0.1" />
+        </div>
+        <div class="field">
+          <label>Referencia cliente</label>
+          <input type="text" id="txtRefCliente" placeholder="Nro. OC, código externo..." />
+        </div>
+        <div class="field">
+          <label>Estado</label>
+          <select id="selEstado">
+            <option>Pendiente</option>
+            <option>Aprobado</option>
+            <option>En proceso</option>
+            <option>Entregado</option>
+            <option>Cancelado</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Prioridad</label>
+          <select>
+            <option>Normal</option>
+            <option>Alta</option>
+            <option>Urgente</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ ITEMS ═══════════ -->
+    <div class="tab-panel items-panel" id="tab-items">
+      <div class="items-toolbar">
+        <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
+        <span class="items-hint">F4 o + = buscar artículo &nbsp;|&nbsp; Insert = nueva fila &nbsp;|&nbsp; Del = eliminar fila</span>
+        <span class="items-count" id="lblItemCount">0 ítems</span>
+      </div>
+      <div class="items-table-wrap">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th class="th-num">#</th>
+              <th class="th-code">Código</th>
+              <th class="th-desc">Descripción</th>
+              <th class="th-unit">Unid.</th>
+              <th class="th-qty">Cantidad</th>
+              <th class="th-price">Precio unit.</th>
+              <th class="th-disc">% Desc.</th>
+              <th class="th-sub">Subtotal</th>
+              <th class="th-del"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <tr>
+              <td colspan="9" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4 para agregar artículos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════ TOTALES ═══════════ -->
+    <div class="tab-panel" id="tab-totales">
+      <div class="totals-panel">
+        <div class="totals-card">
+          <h3>Resumen</h3>
+          <div class="totals-row"><span class="lbl">Cantidad de ítems</span><span class="val" id="sumItems">0</span></div>
+          <div class="totals-row"><span class="lbl">Subtotal bruto</span><span class="val" id="sumBruto">$ 0,00</span></div>
+          <div class="totals-row"><span class="lbl">Total descuentos</span><span class="val" id="sumDesc" style="color:var(--danger);">− $ 0,00</span></div>
+          <div class="totals-row"><span class="lbl">Subtotal neto</span><span class="val" id="sumNeto">$ 0,00</span></div>
+        </div>
+        <div class="totals-card">
+          <h3>Impuestos</h3>
+          <div class="totals-row"><span class="lbl">IVA 21%</span><span class="val" id="sumIva21">$ 0,00</span></div>
+          <div class="totals-row"><span class="lbl">IVA 10,5%</span><span class="val" id="sumIva10">$ 0,00</span></div>
+          <div class="totals-row"><span class="lbl">Percepción IIBB</span><span class="val">$ 0,00</span></div>
+          <div class="totals-row grand">
+            <span class="lbl">TOTAL PEDIDO</span>
+            <span class="val" id="sumTotal">$ 0,00</span>
+          </div>
+        </div>
+        <div class="totals-card">
+          <h3>Condiciones</h3>
+          <div class="totals-row"><span class="lbl">Condición de venta</span><span class="val" id="infCondVenta">—</span></div>
+          <div class="totals-row"><span class="lbl">Moneda</span><span class="val" id="infMoneda">ARS</span></div>
+          <div class="totals-row"><span class="lbl">Lista de precios</span><span class="val" id="infLista">—</span></div>
+          <div class="totals-row"><span class="lbl">Fecha entrega</span><span class="val" id="infEntrega">—</span></div>
+          <div class="totals-row"><span class="lbl">Estado</span><span class="val" id="infEstado">Pendiente</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ CONDICIONES ═══════════ -->
+    <div class="tab-panel" id="tab-condiciones">
+      <div class="form-grid">
+        <div class="section-title">Entrega</div>
+        <div class="field">
+          <label>Fecha de entrega</label>
+          <input type="date" id="txtFechaEntrega" />
+        </div>
+        <div class="field">
+          <label>Hora de entrega</label>
+          <input type="time" />
+        </div>
+        <div class="field">
+          <label>Tipo flete</label>
+          <select>
+            <option>A cargo del cliente</option>
+            <option>A cargo de la empresa</option>
+            <option>Sin flete</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Transporte</label>
+          <input type="text" placeholder="Empresa de transporte..." />
+        </div>
+
+        <div class="field span-4">
+          <label>Dirección de entrega</label>
+          <input type="text" placeholder="Dirección completa de entrega..." />
+        </div>
+        <div class="field span-2">
+          <label>Localidad</label>
+          <input type="text" />
+        </div>
+        <div class="field">
+          <label>Provincia</label>
+          <select>
+            <option>Santa Fe</option><option>Buenos Aires</option><option>CABA</option>
+            <option>Córdoba</option><option>Mendoza</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Horario recepción</label>
+          <input type="text" placeholder="Ej: 8 a 17 hs" />
+        </div>
+
+        <div class="section-title">Pago</div>
+        <div class="field">
+          <label>Forma de pago</label>
+          <select>
+            <option>Efectivo</option>
+            <option>Transferencia bancaria</option>
+            <option>Cheque</option>
+            <option>Tarjeta de crédito</option>
+            <option>MercadoPago</option>
+            <option>Cta. Cte.</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Plazo (días)</label>
+          <input type="number" value="0" />
+        </div>
+        <div class="field">
+          <label>CBU / Alias</label>
+          <input type="text" placeholder="Para transferencias" />
+        </div>
+        <div class="field">
+          <label>Banco</label>
+          <input type="text" />
+        </div>
+
+        <div class="section-title">Validez del presupuesto</div>
+        <div class="field">
+          <label>Válido hasta</label>
+          <input type="date" id="txtValidoHasta" />
+        </div>
+        <div class="field">
+          <label>Aprobado por</label>
+          <input type="text" />
+        </div>
+        <div class="field">
+          <label>Confirmación cliente</label>
+          <select>
+            <option>Pendiente de confirmación</option>
+            <option>Confirmado por cliente</option>
+            <option>Rechazado por cliente</option>
+          </select>
+        </div>
+        <div class="field"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ OBSERVACIONES ═══════════ -->
+    <div class="tab-panel" id="tab-observaciones">
+      <div class="form-grid">
+        <div class="section-title">Observaciones internas</div>
+        <div class="field span-4">
+          <label>Notas internas (no se imprimen)</label>
+          <textarea style="height:72px;" placeholder="Notas para el equipo de ventas o depósito..."></textarea>
+        </div>
+
+        <div class="section-title">Para el cliente</div>
+        <div class="field span-4">
+          <label>Observaciones (se imprimen en el pedido)</label>
+          <textarea style="height:72px;" id="txtObsCliente" placeholder="Texto visible en el pedido enviado al cliente..."></textarea>
+        </div>
+
+        <div class="section-title">Para logística / transporte</div>
+        <div class="field span-4">
+          <label>Instrucciones de despacho</label>
+          <textarea style="height:56px;" placeholder="Instrucciones especiales para el depósito o el transporte..."></textarea>
+        </div>
+
+        <div class="section-title">Referencias</div>
+        <div class="field span-2">
+          <label>OC del cliente (nro.)</label>
+          <input type="text" placeholder="Número de orden de compra del cliente" />
+        </div>
+        <div class="field span-2">
+          <label>Referencia externa</label>
+          <input type="text" placeholder="Código o referencia del cliente" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <button class="btn btn-default" id="btnNew">Nuevo</button>
+    <button class="btn btn-primary" id="btnSave">Guardar (F8)</button>
+    <button class="btn btn-default" disabled>Imprimir (F9)</button>
+    <button class="btn btn-danger" disabled>Eliminar</button>
+    <button class="btn btn-default" id="btnExit">Salir</button>
+  </div>
+
+  <script>
+    /* ─── Estado ─── */
+    let items = [];
+    let nextRowId = 1;
+    let clienteData = null;
+
+    /* ─── Init ─── */
+    (function init() {
+      const now = new Date();
+      const yr = String(now.getFullYear()).slice(2);
+      const mo = String(now.getMonth() + 1).padStart(2, "0");
+      const nr = "PV-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
+      document.getElementById("txtNroPedido").value = nr;
+      document.getElementById("lblNroPedido").textContent = "#" + nr;
+      document.getElementById("txtFecha").value = now.toISOString().slice(0, 10);
+      document.getElementById("txtHora").value = now.toTimeString().slice(0, 5);
+      const future = new Date(now);
+      future.setDate(future.getDate() + 30);
+      document.getElementById("txtValidoHasta").value = future.toISOString().slice(0, 10);
+    })();
+
+    /* ─── Tabs ─── */
+    document.querySelectorAll(".tab").forEach(function(tab) {
+      tab.addEventListener("click", function() {
+        document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
+        document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
+        tab.classList.add("active");
+        var panel = document.getElementById("tab-" + tab.dataset.tab);
+        panel.classList.add("active");
+        if (tab.dataset.tab === "totales") updateTotalsTab();
+      });
+    });
+
+    /* ─── Client picker ─── */
+    document.getElementById("btnBuscarCliente").addEventListener("click", openClientPicker);
+    document.getElementById("txtClienteNombre").addEventListener("keydown", function(e) {
+      if (e.key === "F4") { e.preventDefault(); openClientPicker(); }
+    });
+
+    function openClientPicker() {
+      if (window.asimovNewSaleOrder) window.asimovNewSaleOrder.openClientSelection();
+    }
+
+    if (window.asimovNewSaleOrder) {
+      window.asimovNewSaleOrder.onClientSelected(function(data) {
+        var client = data.client;
+        var contextId = data.contextId;
+        if (contextId !== "pedido-cliente" || !client) return;
+        clienteData = client;
+        document.getElementById("txtClienteCodigo").value = client.codigo || client.id || "";
+        document.getElementById("txtClienteNombre").value = client.razonSocial || client.name || "";
+        document.getElementById("txtClienteCuit").value = client.cuit || "";
+        document.getElementById("txtClienteIva").value = client.condicionIva || "Responsable Inscripto";
+      });
+
+      window.asimovNewSaleOrder.onProductSelected(function(data) {
+        var product = data.product;
+        var rowId = data.rowId;
+        if (!product) return;
+        var row = items.find(function(r) { return String(r.id) === String(rowId); });
+        if (!row) return;
+        row.codigo = product.codigo || product.code || "";
+        row.descripcion = product.descripcion || product.description || product.name || "";
+        row.unidad = product.unidad || "UN";
+        row.precio = parseFloat(product.importe || product.price || "0") || 0;
+        row.cantidad = 1;
+        row.iva = parseFloat(product.iva || "21") || 21;
+        renderItemsTable();
+        recalcTotals();
+        setTimeout(function() {
+          var qtyInput = document.querySelector('[data-id="' + rowId + '"][data-field="cantidad"]');
+          if (qtyInput) { qtyInput.focus(); qtyInput.select(); }
+        }, 50);
+      });
+    }
+
+    /* ─── Items table ─── */
+    function addRow(prefill) {
+      prefill = prefill || {};
+      var rowId = nextRowId++;
+      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, precio: 0, descuento: 0, iva: 21 });
+      var row = items[items.length - 1];
+      Object.keys(prefill).forEach(function(k) { row[k] = prefill[k]; });
+      renderItemsTable();
+      recalcTotals();
+      setTimeout(function() {
+        var codeInput = document.querySelector('[data-id="' + rowId + '"][data-field="codigo"]');
+        if (codeInput) codeInput.focus();
+      }, 30);
+    }
+
+    function removeRow(rowId) {
+      items = items.filter(function(r) { return r.id !== rowId; });
+      renderItemsTable();
+      recalcTotals();
+    }
+
+    function renderItemsTable() {
+      var tbody = document.getElementById("itemsBody");
+      var count = items.length;
+      document.getElementById("lblItemCount").textContent = count + (count === 1 ? " ítem" : " ítems");
+
+      tbody.innerHTML = "";
+      if (count === 0) {
+        var empty = document.createElement("tr");
+        empty.innerHTML = '<td colspan="9" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4 para agregar artículos</td>';
+        tbody.appendChild(empty);
+        return;
+      }
+
+      items.forEach(function(row, idx) {
+        var sub = row.cantidad * row.precio * (1 - row.descuento / 100);
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          '<td class="td-num">' + (idx + 1) + '</td>' +
+          '<td><div class="code-wrap">' +
+            '<input class="cell-input" data-id="' + row.id + '" data-field="codigo" value="' + esc(row.codigo) + '" />' +
+            '<button class="picker-btn" data-rowid="' + row.id + '" title="Buscar artículo (F4)">+</button>' +
+          '</div></td>' +
+          '<td><input class="cell-input" data-id="' + row.id + '" data-field="descripcion" value="' + esc(row.descripcion) + '" /></td>' +
+          '<td><input class="cell-input" data-id="' + row.id + '" data-field="unidad" value="' + esc(row.unidad) + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" step="1" data-id="' + row.id + '" data-field="cantidad" value="' + row.cantidad + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="precio" value="' + row.precio + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" max="100" step="0.1" data-id="' + row.id + '" data-field="descuento" value="' + row.descuento + '" /></td>' +
+          '<td class="td-sub">$ ' + fmtNum(sub) + '</td>' +
+          '<td style="text-align:center;"><button class="del-row-btn" data-rowid="' + row.id + '" title="Eliminar fila">×</button></td>';
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll(".cell-input").forEach(function(input) {
+        input.addEventListener("change", onCellChange);
+        input.addEventListener("keydown", onCellKeydown);
+      });
+      tbody.querySelectorAll(".picker-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() { openPickerForRow(parseInt(btn.dataset.rowid)); });
+      });
+      tbody.querySelectorAll(".del-row-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() { removeRow(parseInt(btn.dataset.rowid)); });
+      });
+    }
+
+    function onCellChange(e) {
+      var input = e.target;
+      var rowId = parseInt(input.dataset.id);
+      var field = input.dataset.field;
+      var row = items.find(function(r) { return r.id === rowId; });
+      if (!row) return;
+      if (field === "cantidad" || field === "precio" || field === "descuento") {
+        row[field] = parseFloat(input.value) || 0;
+      } else {
+        row[field] = input.value;
+      }
+      var sub = row.cantidad * row.precio * (1 - row.descuento / 100);
+      var tr = input.closest("tr");
+      var cell = tr ? tr.querySelector(".td-sub") : null;
+      if (cell) cell.textContent = "$ " + fmtNum(sub);
+      recalcTotals();
+    }
+
+    function onCellKeydown(e) {
+      var rowId = parseInt(e.target.dataset.id);
+      if (e.key === "F4" || e.key === "+") {
+        e.preventDefault();
+        openPickerForRow(rowId);
+      }
+    }
+
+    function openPickerForRow(rowId) {
+      if (window.asimovNewSaleOrder) {
+        window.asimovNewSaleOrder.openProductSelection(String(rowId));
+      }
+    }
+
+    function recalcTotals() {
+      var bruto = items.reduce(function(s, r) { return s + r.cantidad * r.precio; }, 0);
+      var neto  = items.reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100); }, 0);
+      var iva21 = items.filter(function(r) { return r.iva === 21; })
+                       .reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100) * 0.21; }, 0);
+      var iva10 = items.filter(function(r) { return r.iva === 10.5; })
+                       .reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100) * 0.105; }, 0);
+      window._totals = { bruto: bruto, neto: neto, desc: bruto - neto, iva21: iva21, iva10: iva10, total: neto + iva21 + iva10, count: items.length };
+    }
+
+    function updateTotalsTab() {
+      var t = window._totals || { bruto: 0, neto: 0, desc: 0, iva21: 0, iva10: 0, total: 0, count: 0 };
+      document.getElementById("sumItems").textContent = t.count;
+      document.getElementById("sumBruto").textContent = "$ " + fmtNum(t.bruto);
+      document.getElementById("sumDesc").textContent = "− $ " + fmtNum(t.desc);
+      document.getElementById("sumNeto").textContent = "$ " + fmtNum(t.neto);
+      document.getElementById("sumIva21").textContent = "$ " + fmtNum(t.iva21);
+      document.getElementById("sumIva10").textContent = "$ " + fmtNum(t.iva10);
+      document.getElementById("sumTotal").textContent = "$ " + fmtNum(t.total);
+      var cond = document.getElementById("selCondVenta");
+      var lista = document.getElementById("selListaPrecios");
+      var moneda = document.getElementById("selMoneda");
+      var estado = document.getElementById("selEstado");
+      var entrega = document.getElementById("txtFechaEntrega");
+      document.getElementById("infCondVenta").textContent = cond ? cond.value : "—";
+      document.getElementById("infLista").textContent = lista ? lista.value : "—";
+      document.getElementById("infMoneda").textContent = moneda ? moneda.value.split(" ")[0] : "ARS";
+      document.getElementById("infEstado").textContent = estado ? estado.value : "—";
+      document.getElementById("infEntrega").textContent = (entrega && entrega.value) ? entrega.value : "—";
+    }
+
+    function esc(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function fmtNum(n) {
+      return isNaN(n) ? "0,00" : Number(n).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    /* ─── Toolbar & keyboard ─── */
+    document.getElementById("btnAddRow").addEventListener("click", function() { addRow(); });
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "F8") { e.preventDefault(); document.getElementById("btnSave").click(); }
+      if (e.key === "Insert") { e.preventDefault(); addRow(); }
+    });
+
+    /* ─── Footer buttons ─── */
+    document.getElementById("btnNew").addEventListener("click", function() {
+      items = [];
+      nextRowId = 1;
+      clienteData = null;
+      var now = new Date();
+      var yr = String(now.getFullYear()).slice(2);
+      var mo = String(now.getMonth() + 1).padStart(2, "0");
+      var nr = "PV-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
+      document.getElementById("txtNroPedido").value = nr;
+      document.getElementById("lblNroPedido").textContent = "#" + nr;
+      document.getElementById("txtClienteCodigo").value = "";
+      document.getElementById("txtClienteNombre").value = "";
+      document.getElementById("txtClienteCuit").value = "";
+      document.getElementById("txtClienteIva").value = "";
+      document.getElementById("txtObsCliente").value = "";
+      renderItemsTable();
+      recalcTotals();
+    });
+
+    document.getElementById("btnSave").addEventListener("click", function() {
+      if (!document.getElementById("txtClienteNombre").value.trim()) {
+        alert("Seleccione un cliente antes de guardar.");
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "encabezado") t.click(); });
+        document.getElementById("txtClienteNombre").focus();
+        return;
+      }
+      if (items.length === 0) {
+        alert("Agregue al menos un ítem al pedido.");
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "items") t.click(); });
+        return;
+      }
+      recalcTotals();
+      var order = {
+        nroPedido: document.getElementById("txtNroPedido").value,
+        fecha: document.getElementById("txtFecha").value,
+        hora: document.getElementById("txtHora").value,
+        tipo: document.getElementById("selTipo").value,
+        cliente: clienteData,
+        clienteNombre: document.getElementById("txtClienteNombre").value,
+        clienteCodigo: document.getElementById("txtClienteCodigo").value,
+        condVenta: document.getElementById("selCondVenta").value,
+        listaPrecios: document.getElementById("selListaPrecios").value,
+        moneda: document.getElementById("selMoneda").value,
+        items: items,
+        totales: window._totals || {},
+        observaciones: document.getElementById("txtObsCliente").value,
+      };
+      if (window.asimovNewSaleOrder) window.asimovNewSaleOrder.saveSaleOrder(order);
+    });
+
+    var closeHandler = function() {
+      if (window.asimovNewSaleOrder) window.asimovNewSaleOrder.cancel();
+    };
+    document.getElementById("btnExit").addEventListener("click", closeHandler);
+    document.getElementById("btnClose").addEventListener("click", closeHandler);
+
+    recalcTotals();
+    renderItemsTable();
+  </script>
+</body>
+</html>
