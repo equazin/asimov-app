@@ -365,6 +365,85 @@
     .export-card p  { font-size: 11px; color: var(--muted); }
     .export-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
+    /* ── Config form ─────────────────────────────────────── */
+    .config-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      padding: 18px; max-width: 760px;
+    }
+    .config-field { display: flex; flex-direction: column; gap: 4px; }
+    .config-field.full { grid-column: 1 / -1; }
+    .config-field label { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .config-field input, .config-field select, .config-field textarea {
+      padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius);
+      font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg); color: var(--text); outline: none;
+      transition: border-color 0.15s;
+    }
+    .config-field input:focus, .config-field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,107,58,0.12); }
+    .config-field textarea { resize: vertical; min-height: 60px; }
+    .config-save-bar { padding: 12px 18px; background: var(--panel); border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+    .save-msg { font-size: 11px; }
+    .save-msg.ok { color: var(--success); }
+
+    /* ── Usuarios ─────────────────────────────────────────── */
+    .user-form-bar {
+      padding: 10px 14px; background: #f7f6f0; border-bottom: 1px solid var(--border);
+      display: none; flex-wrap: wrap; gap: 8px; align-items: flex-end; flex-shrink: 0;
+    }
+    .user-form-bar.visible { display: flex; }
+    .user-form-bar .uf-field { display: flex; flex-direction: column; gap: 3px; }
+    .user-form-bar .uf-field label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .user-form-bar input, .user-form-bar select {
+      padding: 4px 7px; border: 1px solid var(--border); border-radius: var(--radius);
+      font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg);
+    }
+
+    /* ── Knowledge / Conversaciones ──────────────────────── */
+    .kb-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg); }
+    .kb-item {
+      padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 80ms;
+    }
+    .kb-item:hover { background: var(--accent-lt); }
+    .kb-item.selected { background: #c8e8d4; }
+    .kb-item .kbi-title { font-weight: 600; font-size: 12px; }
+    .kb-item .kbi-cat { font-size: 10.5px; color: var(--muted); }
+    .kb-detail { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .kb-editor { flex: 1; display: flex; flex-direction: column; padding: 12px; gap: 8px; overflow-y: auto; background: var(--panel); }
+    .kb-editor input[type=text], .kb-editor textarea {
+      padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius);
+      font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg); outline: none;
+    }
+    .kb-editor input[type=text]:focus, .kb-editor textarea:focus { border-color: var(--accent); }
+    .kb-editor textarea { flex: 1; resize: none; min-height: 240px; }
+    .kb-editor-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* Conversation messages */
+    .conv-thread { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; background: #faf9f4; }
+    .conv-msg { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; max-width: 85%; }
+    .conv-msg.usuario { align-self: flex-end; background: var(--accent-lt); border-color: var(--accent); }
+    .conv-msg .msg-author { font-size: 9.5px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+    .conv-msg .msg-body { font-size: 12px; white-space: pre-wrap; }
+    .conv-msg .msg-time { font-size: 9.5px; color: var(--muted); margin-top: 3px; text-align: right; }
+    .conv-input-bar { padding: 8px 10px; border-top: 1px solid var(--border); background: var(--panel); display: flex; gap: 8px; flex-shrink: 0; }
+    .conv-input-bar textarea { flex: 1; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius); font: 12px "Segoe UI", system-ui, sans-serif; resize: none; height: 42px; }
+    .conv-input-bar textarea:focus { outline: none; border-color: var(--accent); }
+
+    /* ── Favoritos / Apariencia ───────────────────────────── */
+    .fav-section { padding: 16px; max-width: 600px; display: flex; flex-direction: column; gap: 16px; }
+    .fav-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .fav-card h3 { font-size: 12px; font-weight: 700; color: var(--header-bg); margin-bottom: 10px; }
+    .fav-bookmark { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid #ece9e0; }
+    .fav-bookmark:last-child { border-bottom: none; }
+    .fav-bookmark .fb-title { font-size: 12px; font-weight: 600; flex: 1; }
+    .fav-bookmark .fb-path { font-size: 10.5px; color: var(--muted); }
+    .fav-add-form { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .fav-add-form input { padding: 4px 7px; border: 1px solid var(--border); border-radius: var(--radius); font: 12px "Segoe UI", system-ui, sans-serif; flex: 1; min-width: 100px; }
+    .bg-picker { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+    .bg-swatch {
+      width: 28px; height: 28px; border-radius: 4px; border: 2px solid var(--border); cursor: pointer; transition: transform 80ms;
+    }
+    .bg-swatch:hover { transform: scale(1.1); }
+    .bg-swatch.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,107,58,0.3); }
+
     /* loading spinner */
     .loading { display: flex; align-items: center; justify-content: center; padding: 40px; background: var(--panel); }
     .spinner {
@@ -450,6 +529,15 @@
       <div class="nav-item" data-view="tickets"><span class="icon">🔧</span> Tickets</div>
       <div class="nav-item" data-view="ordenes-trabajo"><span class="icon">⚙️</span> Órd. de Trabajo</div>
       <div class="nav-item" data-view="garantias"><span class="icon">🛡️</span> Garantías</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Sistema</div>
+      <div class="nav-item" data-view="config"><span class="icon">🔧</span> Configuración</div>
+      <div class="nav-item" data-view="usuarios"><span class="icon">👥</span> Usuarios y Roles</div>
+      <div class="nav-item" data-view="knowledge"><span class="icon">📚</span> Base Conocimiento</div>
+      <div class="nav-item" data-view="conversaciones"><span class="icon">💬</span> Conversaciones</div>
+      <div class="nav-item" data-view="favoritos"><span class="icon">⭐</span> Favoritos / Apariencia</div>
     </div>
   </nav>
 
@@ -914,6 +1002,115 @@
       </div>
     </div>
 
+    <!-- ── Configuración del Sistema ────────────────────────── -->
+    <div class="view" id="view-config" style="flex-direction:column">
+      <div class="view-header"><h1>🔧 Configuración del Sistema</h1></div>
+      <div style="flex:1;overflow-y:auto;background:var(--bg)">
+        <div class="config-grid" id="config-grid">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+      <div class="config-save-bar">
+        <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar cambios</button>
+        <span class="save-msg ok" id="config-save-msg" style="display:none">✓ Guardado</span>
+      </div>
+    </div>
+
+    <!-- ── Usuarios y Roles ───────────────────────────────── -->
+    <div class="view" id="view-usuarios">
+      <div class="view-header">
+        <h1>👥 Usuarios y Roles</h1>
+        <span class="badge" id="badge-usuarios">—</span>
+        <button class="btn btn-primary" onclick="toggleUserForm()">+ Nuevo Usuario</button>
+      </div>
+      <div class="user-form-bar" id="user-form-bar">
+        <div class="uf-field"><label>Nombre</label><input id="uf-name" type="text" placeholder="Nombre completo" style="width:170px" /></div>
+        <div class="uf-field"><label>Email</label><input id="uf-email" type="email" placeholder="email@empresa.com" style="width:180px" /></div>
+        <div class="uf-field"><label>Rol</label>
+          <select id="uf-role">
+            <option value="user">Usuario</option>
+            <option value="admin">Administrador</option>
+            <option value="readonly">Solo lectura</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveUser()">Agregar</button>
+        <button class="btn btn-outline btn-sm" onclick="toggleUserForm()">Cancelar</button>
+      </div>
+      <div class="table-wrap" id="table-usuarios">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Base de Conocimiento ───────────────────────────── -->
+    <div class="view" id="view-knowledge">
+      <div class="view-header">
+        <h1>📚 Base de Conocimiento</h1>
+        <div class="search-wrap" style="max-width:200px;margin-left:8px">
+          <span class="search-icon">🔍</span>
+          <input type="search" placeholder="Buscar artículo..." oninput="filterKnowledge(this.value)" />
+        </div>
+        <button class="btn btn-primary" onclick="newKnowledge()">+ Nuevo Artículo</button>
+      </div>
+      <div class="ctacte-grid">
+        <div class="kb-list" id="kb-list">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="kb-detail" id="kb-detail">
+          <div class="empty-state"><span class="emo">📚</span><span>Seleccioná un artículo o creá uno nuevo.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Conversaciones ────────────────────────────────── -->
+    <div class="view" id="view-conversaciones">
+      <div class="view-header">
+        <h1>💬 Conversaciones</h1>
+        <div class="search-wrap" style="max-width:200px;margin-left:8px">
+          <span class="search-icon">🔍</span>
+          <input type="search" placeholder="Buscar conversación..." oninput="filterConversations(this.value)" />
+        </div>
+        <button class="btn btn-primary" onclick="newConversation()">+ Nueva</button>
+      </div>
+      <div class="ctacte-grid">
+        <div class="kb-list" id="conv-list">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="kb-detail" id="conv-detail" style="display:flex;flex-direction:column">
+          <div class="empty-state" style="flex:1"><span class="emo">💬</span><span>Seleccioná una conversación.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Favoritos / Apariencia ─────────────────────────── -->
+    <div class="view" id="view-favoritos" style="overflow-y:auto">
+      <div class="view-header"><h1>⭐ Favoritos y Apariencia</h1></div>
+      <div class="fav-section">
+        <div class="fav-card">
+          <h3>⭐ Favoritos (accesos directos)</h3>
+          <div id="fav-bookmarks-list"></div>
+          <div class="fav-add-form">
+            <input id="fav-title" type="text" placeholder="Nombre del acceso" />
+            <input id="fav-path" type="text" placeholder="Ruta (ej: /ventas/pedidos)" />
+            <button class="btn btn-outline btn-sm" onclick="addFavorite()">+ Agregar</button>
+          </div>
+        </div>
+        <div class="fav-card">
+          <h3>🎨 Fondo del escritorio</h3>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:6px">Elegí un color de fondo o dejá el predeterminado.</p>
+          <div class="bg-picker">
+            <div class="bg-swatch" style="background:var(--bg)" data-bg="default" onclick="setBg('default','')" title="Predeterminado"></div>
+            <div class="bg-swatch" style="background:#1a3a2a" data-bg="#1a3a2a" onclick="setBg('color','#1a3a2a')" title="Verde oscuro"></div>
+            <div class="bg-swatch" style="background:#2c3e50" data-bg="#2c3e50" onclick="setBg('color','#2c3e50')" title="Azul noche"></div>
+            <div class="bg-swatch" style="background:#4a3728" data-bg="#4a3728" onclick="setBg('color','#4a3728')" title="Marrón cálido"></div>
+            <div class="bg-swatch" style="background:#1a1a2e" data-bg="#1a1a2e" onclick="setBg('color','#1a1a2e')" title="Índigo oscuro"></div>
+            <div class="bg-swatch" style="background:#2d4a22" data-bg="#2d4a22" onclick="setBg('color','#2d4a22')" title="Verde bosque"></div>
+            <div class="bg-swatch" style="background:#3d2b3d" data-bg="#3d2b3d" onclick="setBg('color','#3d2b3d')" title="Violeta oscuro"></div>
+            <div class="bg-swatch" style="background:#f0efe8" data-bg="default2" onclick="setBg('color','#f0efe8')" title="Crema (default)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Auditoría ──────────────────────────────────────── -->
     <div class="view" id="view-auditoria">
       <div class="view-header">
@@ -1257,6 +1454,11 @@
     if (norm === "diario") { initDiario(); return; }
     if (norm === "reportes") { initReportes(); return; }
     if (norm === "export-contable") { initExportContable(); return; }
+    if (norm === "config") { loadConfig(); return; }
+    if (norm === "usuarios") { loadUsuarios(); return; }
+    if (norm === "knowledge") { loadKnowledge(); return; }
+    if (norm === "conversaciones") { loadConversaciones(); return; }
+    if (norm === "favoritos") { loadFavoritos(); return; }
     if (!loadedViews.has(norm)) {
       loadedViews.add(norm);
       loadViewData(norm, "");
@@ -1286,6 +1488,11 @@
       "/tesoreria/cta-clientes": "cta-cte-clientes",
       "/tesoreria/cta-proveedores": "cta-cte-proveedores",
       "/crm": "cuentas-crm", "/crm/cuentas": "cuentas-crm",
+      "/sistema": "config", "/sistema/config": "config",
+      "/sistema/usuarios": "usuarios",
+      "/sistema/knowledge": "knowledge",
+      "/sistema/conversaciones": "conversaciones",
+      "/sistema/favoritos": "favoritos",
       "/contabilidad": "diario", "/contabilidad/diario": "diario",
       "/contabilidad/reportes": "reportes",
       "/contabilidad/export": "export-contable",
@@ -1747,6 +1954,380 @@
     }
   }
   window.exportCSV = exportCSV;
+
+  // ── Configuración del Sistema ────────────────────────────────────────────
+  const CONFIG_FIELDS = [
+    { key: "empresa_nombre",   label: "Razón Social",         placeholder: "Bartez Tecnología S.R.L." },
+    { key: "empresa_cuit",     label: "CUIT",                 placeholder: "30-12345678-9" },
+    { key: "empresa_email",    label: "Email",                placeholder: "info@empresa.com" },
+    { key: "empresa_telefono", label: "Teléfono",             placeholder: "+54 9 11 1234-5678" },
+    { key: "empresa_ciudad",   label: "Ciudad",               placeholder: "Buenos Aires" },
+    { key: "empresa_provincia",label: "Provincia",            placeholder: "CABA" },
+    { key: "empresa_direccion",label: "Dirección",            placeholder: "Av. Corrientes 1234", full: true },
+    { key: "factura_pto_venta",label: "Punto de venta",       placeholder: "0001" },
+    { key: "factura_tipo_def", label: "Tipo factura defecto", placeholder: "B" },
+    { key: "moneda_defecto",   label: "Moneda por defecto",   placeholder: "ARS" },
+  ];
+
+  async function loadConfig() {
+    const grid = document.getElementById("config-grid");
+    grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const api  = await waitForAsimov();
+      const rows = await api.config.getAll();
+      const map  = Object.fromEntries(rows.map(r => [r.key, r.value]));
+      grid.innerHTML = CONFIG_FIELDS.map(f => `
+        <div class="config-field${f.full ? " full" : ""}">
+          <label>${f.label}</label>
+          <input type="text" id="cfg-${f.key}" value="${esc(map[f.key] || "")}" placeholder="${f.placeholder}" />
+        </div>
+      `).join("");
+    } catch (e) {
+      grid.innerHTML = `<div style="padding:20px;color:var(--danger)">${e.message}</div>`;
+    }
+  }
+
+  async function saveConfig() {
+    const msg = document.getElementById("config-save-msg");
+    msg.style.display = "none";
+    try {
+      const api = await waitForAsimov();
+      for (const f of CONFIG_FIELDS) {
+        const el = document.getElementById("cfg-" + f.key);
+        if (el) await api.config.set(f.key, el.value);
+      }
+      msg.style.display = "inline";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    } catch (e) {
+      msg.textContent = "Error: " + e.message;
+      msg.className = "save-msg";
+      msg.style.display = "inline";
+    }
+  }
+  window.saveConfig = saveConfig;
+
+  // ── Usuarios y Roles ─────────────────────────────────────────────────────
+  async function loadUsuarios() {
+    const el = document.getElementById("table-usuarios");
+    el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const api  = await waitForAsimov();
+      const rows = await api.users.list();
+      const badge = document.getElementById("badge-usuarios");
+      if (badge) badge.textContent = rows.length;
+      document.getElementById("status-count").textContent = rows.length + " usuarios";
+      if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">👥</span><span>Sin usuarios registrados.</span></div>'; return; }
+      const trs = rows.map(r => `<tr>
+        <td>${esc(r.name)}</td>
+        <td>${esc(r.email || "—")}</td>
+        <td><span class="pill ${r.role === "admin" ? "pill-aprobado" : "pill-borrador"}">${r.role}</span></td>
+        <td>${r.active ? '<span class="pill pill-aprobado">Activo</span>' : '<span class="pill pill-cancelado">Inactivo</span>'}</td>
+        <td>${fmtDate(r.created_at)}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="toggleUser('${r.id}')">${r.active ? "Desactivar" : "Activar"}</button></td>
+      </tr>`).join("");
+      el.innerHTML = `<table><thead><tr>
+        <th>Nombre</th><th>Email</th><th style="width:100px">Rol</th>
+        <th style="width:90px">Estado</th><th style="width:100px">Alta</th><th style="width:90px"></th>
+      </tr></thead><tbody>${trs}</tbody></table>`;
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+
+  function toggleUserForm() {
+    const bar = document.getElementById("user-form-bar");
+    bar.classList.toggle("visible");
+    if (bar.classList.contains("visible")) document.getElementById("uf-name").focus();
+  }
+
+  async function saveUser() {
+    const name  = document.getElementById("uf-name").value.trim();
+    const email = document.getElementById("uf-email").value.trim();
+    const role  = document.getElementById("uf-role").value;
+    if (!name) { alert("El nombre es obligatorio."); return; }
+    const api = await waitForAsimov();
+    await api.users.save({ name, email, role, active: 1 });
+    document.getElementById("uf-name").value  = "";
+    document.getElementById("uf-email").value = "";
+    document.getElementById("user-form-bar").classList.remove("visible");
+    await loadUsuarios();
+  }
+
+  async function toggleUser(id) {
+    const api = await waitForAsimov();
+    await api.users.toggle(id);
+    await loadUsuarios();
+  }
+
+  window.toggleUserForm = toggleUserForm;
+  window.saveUser = saveUser;
+  window.toggleUser = toggleUser;
+
+  // ── Base de Conocimiento ─────────────────────────────────────────────────
+  let _kbData = [];
+  let _kbCurrentId = null;
+
+  async function loadKnowledge() {
+    document.getElementById("kb-list").innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    document.getElementById("kb-detail").innerHTML = '<div class="empty-state"><span class="emo">📚</span><span>Seleccioná un artículo o creá uno nuevo.</span></div>';
+    _kbCurrentId = null;
+    try {
+      const api  = await waitForAsimov();
+      _kbData = await api.knowledge.list("");
+      renderKbList(_kbData);
+    } catch (e) {
+      document.getElementById("kb-list").innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+
+  function filterKnowledge(q) {
+    const lower = q.toLowerCase();
+    renderKbList(_kbData.filter(r => String(r.title).toLowerCase().includes(lower) || String(r.category || "").toLowerCase().includes(lower)));
+  }
+
+  function renderKbList(rows) {
+    const el = document.getElementById("kb-list");
+    if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin artículos.</span></div>'; return; }
+    el.innerHTML = rows.map(r => `
+      <div class="kb-item${_kbCurrentId === r.id ? " selected" : ""}" onclick="openKbArticle('${r.id}')">
+        <div class="kbi-title">${esc(r.title)}</div>
+        <div class="kbi-cat">${esc(r.category || "Sin categoría")}</div>
+      </div>`).join("");
+  }
+
+  async function openKbArticle(id) {
+    _kbCurrentId = id;
+    renderKbList(_kbData);
+    const det = document.getElementById("kb-detail");
+    det.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const api = await waitForAsimov();
+      const art = await api.knowledge.get(id);
+      det.innerHTML = `
+        <div class="kb-editor">
+          <input type="text" id="kb-title" value="${esc(art.title)}" placeholder="Título del artículo" style="font-weight:700;font-size:13px" />
+          <div style="display:flex;gap:8px">
+            <input type="text" id="kb-category" value="${esc(art.category || "")}" placeholder="Categoría" style="flex:1" />
+            <input type="text" id="kb-tags" value="${esc(art.tags || "")}" placeholder="Tags (separados por coma)" style="flex:2" />
+          </div>
+          <textarea id="kb-content" placeholder="Contenido del artículo...">${esc(art.content || "")}</textarea>
+          <div class="kb-editor-actions">
+            <button class="btn btn-primary btn-sm" onclick="saveKbArticle('${id}')">💾 Guardar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteKbArticle('${id}')">🗑 Eliminar</button>
+          </div>
+        </div>`;
+    } catch (e) {
+      det.innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+
+  function newKnowledge() {
+    _kbCurrentId = null;
+    renderKbList(_kbData);
+    const det = document.getElementById("kb-detail");
+    det.innerHTML = `
+      <div class="kb-editor">
+        <input type="text" id="kb-title" placeholder="Título del artículo" style="font-weight:700;font-size:13px" />
+        <div style="display:flex;gap:8px">
+          <input type="text" id="kb-category" placeholder="Categoría" style="flex:1" />
+          <input type="text" id="kb-tags" placeholder="Tags (separados por coma)" style="flex:2" />
+        </div>
+        <textarea id="kb-content" placeholder="Contenido del artículo..."></textarea>
+        <div class="kb-editor-actions">
+          <button class="btn btn-primary btn-sm" onclick="saveKbArticle(null)">💾 Guardar</button>
+        </div>
+      </div>`;
+    document.getElementById("kb-title").focus();
+  }
+
+  async function saveKbArticle(id) {
+    const title   = document.getElementById("kb-title").value.trim();
+    const category= document.getElementById("kb-category").value.trim();
+    const tags    = document.getElementById("kb-tags").value.trim();
+    const content = document.getElementById("kb-content").value;
+    if (!title) { alert("El título es obligatorio."); return; }
+    const api = await waitForAsimov();
+    const res = await api.knowledge.save({ id: id || undefined, title, category, tags, content });
+    _kbData = await api.knowledge.list("");
+    _kbCurrentId = res.id;
+    renderKbList(_kbData);
+    await openKbArticle(res.id);
+  }
+
+  async function deleteKbArticle(id) {
+    if (!confirm("¿Eliminar este artículo?")) return;
+    const api = await waitForAsimov();
+    await api.knowledge.del(id);
+    _kbData = _kbData.filter(r => r.id !== id);
+    _kbCurrentId = null;
+    renderKbList(_kbData);
+    document.getElementById("kb-detail").innerHTML = '<div class="empty-state"><span class="emo">📚</span><span>Artículo eliminado.</span></div>';
+  }
+
+  window.filterKnowledge = filterKnowledge;
+  window.openKbArticle = openKbArticle;
+  window.newKnowledge = newKnowledge;
+  window.saveKbArticle = saveKbArticle;
+  window.deleteKbArticle = deleteKbArticle;
+
+  // ── Conversaciones ───────────────────────────────────────────────────────
+  let _convData = [];
+  let _convCurrentId = null;
+
+  async function loadConversaciones() {
+    document.getElementById("conv-list").innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    document.getElementById("conv-detail").innerHTML = '<div class="empty-state" style="flex:1"><span class="emo">💬</span><span>Seleccioná una conversación.</span></div>';
+    _convCurrentId = null;
+    try {
+      const api = await waitForAsimov();
+      _convData = await api.conversations.list("");
+      renderConvList(_convData);
+    } catch (e) {
+      document.getElementById("conv-list").innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+
+  function filterConversations(q) {
+    const lower = q.toLowerCase();
+    renderConvList(_convData.filter(r => String(r.title).toLowerCase().includes(lower) || String(r.client_name || "").toLowerCase().includes(lower)));
+  }
+
+  function renderConvList(rows) {
+    const el = document.getElementById("conv-list");
+    if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin conversaciones.</span></div>'; return; }
+    el.innerHTML = rows.map(r => `
+      <div class="kb-item${_convCurrentId === r.id ? " selected" : ""}" onclick="openConversation('${r.id}')">
+        <div class="kbi-title">${esc(r.title)}</div>
+        <div class="kbi-cat">${esc(r.client_name || "Sin cliente")} · ${r.msg_count || 0} mensajes · <span class="${r.status === "abierta" ? "pill-abierto" : "pill-cerrado"}">${r.status}</span></div>
+      </div>`).join("");
+  }
+
+  async function openConversation(id) {
+    _convCurrentId = id;
+    renderConvList(_convData);
+    const det = document.getElementById("conv-detail");
+    det.innerHTML = '<div class="loading" style="flex:1"><div class="spinner"></div></div>';
+    try {
+      const api  = await waitForAsimov();
+      const conv = await api.conversations.get(id);
+      const msgs = (conv.messages || []).map(m => `
+        <div class="conv-msg${m.author === "usuario" ? " usuario" : ""}">
+          <div class="msg-author">${esc(m.author)}</div>
+          <div class="msg-body">${esc(m.body)}</div>
+          <div class="msg-time">${fmtDatetime(m.created_at)}</div>
+        </div>`).join("") || '<div style="padding:20px;color:var(--muted);font-size:12px">Sin mensajes aún.</div>';
+      const isClosed = conv.status === "cerrada";
+      det.innerHTML = `
+        <div style="padding:8px 12px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:center;gap:10px;flex-shrink:0">
+          <span style="font-weight:700;font-size:12px;flex:1">${esc(conv.title)}</span>
+          ${conv.client_name ? `<span style="font-size:11px;color:var(--muted)">${esc(conv.client_name)}</span>` : ""}
+          ${fmtPill(conv.status)}
+          ${!isClosed ? `<button class="btn btn-outline btn-sm" onclick="closeConversation('${id}')">Cerrar</button>` : ""}
+        </div>
+        <div class="conv-thread" id="conv-thread-${id}">${msgs}</div>
+        ${!isClosed ? `
+        <div class="conv-input-bar">
+          <textarea id="conv-msg-input-${id}" placeholder="Escribí un mensaje..." onkeydown="if(event.ctrlKey&&event.key==='Enter')sendMessage('${id}')"></textarea>
+          <button class="btn btn-primary btn-sm" onclick="sendMessage('${id}')">Enviar</button>
+        </div>` : ""}`;
+      const thread = document.getElementById(`conv-thread-${id}`);
+      if (thread) thread.scrollTop = thread.scrollHeight;
+    } catch (e) {
+      det.innerHTML = `<div class="empty-state" style="flex:1"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+
+  async function newConversation() {
+    const title = prompt("Título de la conversación:");
+    if (!title) return;
+    const client = prompt("Cliente (opcional, dejá vacío si no aplica):", "") || "";
+    const api = await waitForAsimov();
+    const res = await api.conversations.create({ title, client_name: client });
+    _convData = await api.conversations.list("");
+    _convCurrentId = res.id;
+    renderConvList(_convData);
+    await openConversation(res.id);
+  }
+
+  async function sendMessage(convId) {
+    const input = document.getElementById(`conv-msg-input-${convId}`);
+    const body  = input.value.trim();
+    if (!body) return;
+    const api = await waitForAsimov();
+    await api.conversations.addMessage({ conversation_id: convId, author: "usuario", body });
+    input.value = "";
+    await openConversation(convId);
+    _convData = await api.conversations.list("");
+  }
+
+  async function closeConversation(convId) {
+    if (!confirm("¿Cerrar esta conversación?")) return;
+    const api = await waitForAsimov();
+    await api.conversations.close(convId);
+    _convData = await api.conversations.list("");
+    renderConvList(_convData);
+    await openConversation(convId);
+  }
+
+  window.filterConversations = filterConversations;
+  window.openConversation = openConversation;
+  window.newConversation = newConversation;
+  window.sendMessage = sendMessage;
+  window.closeConversation = closeConversation;
+
+  // ── Favoritos / Apariencia ───────────────────────────────────────────────
+  async function loadFavoritos() {
+    try {
+      const api = await waitForAsimov();
+      const bookmarks = await api.shell.listBookmarks();
+      renderBookmarks(bookmarks);
+    } catch {}
+  }
+
+  function renderBookmarks(bookmarks) {
+    const el = document.getElementById("fav-bookmarks-list");
+    if (!bookmarks.length) {
+      el.innerHTML = '<p style="font-size:11px;color:var(--muted);padding:4px 0">No tenés favoritos aún. Agregá accesos directos a vistas frecuentes.</p>';
+      return;
+    }
+    el.innerHTML = bookmarks.map(b => `
+      <div class="fav-bookmark">
+        <span class="fb-title">${esc(b.title)}</span>
+        <span class="fb-path">${esc(b.path)}</span>
+        <button class="btn btn-outline btn-sm" onclick="removeFavorite('${b.id}')">✕</button>
+      </div>`).join("");
+  }
+
+  async function addFavorite() {
+    const title = document.getElementById("fav-title").value.trim();
+    const path  = document.getElementById("fav-path").value.trim();
+    if (!title || !path) { alert("Completá nombre y ruta."); return; }
+    const api  = await waitForAsimov();
+    const list = await api.shell.addBookmark(title, path);
+    renderBookmarks(list);
+    document.getElementById("fav-title").value = "";
+    document.getElementById("fav-path").value  = "";
+  }
+
+  async function removeFavorite(id) {
+    const api  = await waitForAsimov();
+    const list = await api.shell.removeBookmark(id);
+    renderBookmarks(list);
+  }
+
+  async function setBg(type, value) {
+    document.querySelectorAll(".bg-swatch").forEach(s => s.classList.remove("active"));
+    const target = document.querySelector(`.bg-swatch[data-bg="${type === "default" ? "default" : value || "default2"}"]`);
+    if (target) target.classList.add("active");
+    const api = await waitForAsimov();
+    await api.shell.setBackground({ type, value });
+    if (type === "default") document.body.removeAttribute("style");
+    else if (type === "color") document.body.style.background = value;
+  }
+
+  window.addFavorite = addFavorite;
+  window.removeFavorite = removeFavorite;
+  window.setBg = setBg;
 
   async function checkUpdate() {
     const btn = document.getElementById("status-update");

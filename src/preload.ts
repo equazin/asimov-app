@@ -224,6 +224,36 @@ const api = {
     list: (search = "") => ipcRenderer.invoke("db:warranties:list", search),
   },
 
+  // Sistema Config
+  config: {
+    getAll: () => ipcRenderer.invoke("db:config:get-all") as Promise<{ key: string; value: string }[]>,
+    set: (key: string, value: string) => ipcRenderer.invoke("db:config:set", { key, value }),
+  },
+
+  // Usuarios
+  users: {
+    list: () => ipcRenderer.invoke("db:users:list"),
+    save: (row: unknown) => ipcRenderer.invoke("db:users:save", row),
+    toggle: (id: string) => ipcRenderer.invoke("db:users:toggle", id),
+  },
+
+  // Base de Conocimiento
+  knowledge: {
+    list: (search = "") => ipcRenderer.invoke("db:knowledge:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:knowledge:get", id),
+    save: (row: unknown) => ipcRenderer.invoke("db:knowledge:save", row),
+    del: (id: string) => ipcRenderer.invoke("db:knowledge:delete", id),
+  },
+
+  // Conversaciones
+  conversations: {
+    list: (search = "") => ipcRenderer.invoke("db:conversations:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:conversations:get", id),
+    create: (row: unknown) => ipcRenderer.invoke("db:conversations:create", row),
+    addMessage: (row: unknown) => ipcRenderer.invoke("db:conversations:add-message", row),
+    close: (id: string) => ipcRenderer.invoke("db:conversations:close", id),
+  },
+
   // Pickers
   openClientSelection: (contextId = "") =>
     ipcRenderer.send("shell:open-client-selection", { contextId }),

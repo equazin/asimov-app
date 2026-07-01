@@ -538,6 +538,38 @@ CREATE TABLE IF NOT EXISTS warranties (
 );
 
 -- ============================================================
+-- SISTEMA / CONFIG
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS knowledge_base (
+  id         TEXT PRIMARY KEY,
+  title      TEXT NOT NULL,
+  category   TEXT,
+  content    TEXT,
+  tags       TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS conversations (
+  id          TEXT PRIMARY KEY,
+  title       TEXT NOT NULL,
+  client_id   TEXT,
+  client_name TEXT,
+  status      TEXT NOT NULL DEFAULT 'abierta',
+  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS conversation_messages (
+  id              TEXT PRIMARY KEY,
+  conversation_id TEXT NOT NULL,
+  author          TEXT NOT NULL DEFAULT 'usuario',
+  body            TEXT NOT NULL,
+  created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+);
+
+-- ============================================================
 -- Índices
 -- ============================================================
 

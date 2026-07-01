@@ -512,6 +512,97 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     return { ok: true, filePath };
   });
 
+  // --- DB: Sistema Config --------------------------------------------------
+  ipcMain.handle("db:config:get-all", () =>
+    dbAll("SELECT key, value FROM system_config ORDER BY key")
+  );
+  ipcMain.handle("db:config:set", (_event, raw: unknown) => {
+    const r = (raw ?? {}) as { key?: unknown; value?: unknown };
+    dbRun("INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)",
+      [safeStr(r.key), safeStr(r.value, 2000)]);
+    return { ok: true };
+  });
+
+  // --- DB: Usuarios --------------------------------------------------------
+  ipcMain.handle("db:users:list", () =>
+    dbAll("SELECT id, name, email, role, active, created_at FROM users ORDER BY name")
+  );
+  ipcMain.handle("db:users:save", (_event, row: unknown) => {
+    const r = (row ?? {}) as Record<string, unknown>;
+    const id = safeStr(r.id) || crypto.randomUUID();
+    dbRun(`INSERT OR REPLACE INTO users (id, name, email, role, password_hash, active, created_at)
+           VALUES (?, ?, ?, ?,
+             COALESCE((SELECT password_hash FROM users WHERE id=?), ''),
+             ?,
+             COALESCE((SELECT created_at FROM users WHERE id=?), datetime('now')))`,
+      [id, safeStr(r.name), safeStr(r.email), safeStr(r.role) || "user", id, r.active ?? 1, id]);
+    return { ok: true, id };
+  });
+  ipcMain.handle("db:users:toggle", (_event, id: unknown) => {
+    dbRun("UPDATE users SET active = 1 - active WHERE id = ?", [safeStr(id)]);
+    return { ok: true };
+  });
+
+  // --- DB: Base de Conocimiento --------------------------------------------
+  ipcMain.handle("db:knowledge:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(
+      "SELECT id, title, category, tags, created_at FROM knowledge_base WHERE title LIKE ? OR category LIKE ? OR tags LIKE ? ORDER BY title LIMIT 500",
+      [q, q, q]
+    );
+  });
+  ipcMain.handle("db:knowledge:get", (_event, id: unknown) =>
+    dbGet("SELECT * FROM knowledge_base WHERE id = ?", [safeStr(id)])
+  );
+  ipcMain.handle("db:knowledge:save", (_event, row: unknown) => {
+    const r = (row ?? {}) as Record<string, unknown>;
+    const id = safeStr(r.id) || crypto.randomUUID();
+    dbRun(`INSERT OR REPLACE INTO knowledge_base (id, title, category, content, tags, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?,
+             COALESCE((SELECT created_at FROM knowledge_base WHERE id=?), datetime('now')),
+             datetime('now'))`,
+      [id, safeStr(r.title), safeStr(r.category), safeStr(r.content, 50000), safeStr(r.tags), id]);
+    return { ok: true, id };
+  });
+  ipcMain.handle("db:knowledge:delete", (_event, id: unknown) => {
+    dbRun("DELETE FROM knowledge_base WHERE id = ?", [safeStr(id)]);
+    return { ok: true };
+  });
+
+  // --- DB: Conversaciones --------------------------------------------------
+  ipcMain.handle("db:conversations:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(
+      `SELECT c.*, (SELECT COUNT(*) FROM conversation_messages WHERE conversation_id = c.id) AS msg_count
+       FROM conversations c WHERE c.title LIKE ? OR c.client_name LIKE ?
+       ORDER BY c.created_at DESC LIMIT 500`,
+      [q, q]
+    );
+  });
+  ipcMain.handle("db:conversations:get", (_event, id: unknown) => {
+    const conv = dbGet("SELECT * FROM conversations WHERE id = ?", [safeStr(id)]);
+    const msgs = dbAll("SELECT * FROM conversation_messages WHERE conversation_id = ? ORDER BY created_at ASC", [safeStr(id)]);
+    return { ...conv, messages: msgs };
+  });
+  ipcMain.handle("db:conversations:create", (_event, row: unknown) => {
+    const r = (row ?? {}) as Record<string, unknown>;
+    const id = crypto.randomUUID();
+    dbRun("INSERT INTO conversations (id, title, client_name, status) VALUES (?, ?, ?, ?)",
+      [id, safeStr(r.title), safeStr(r.client_name), "abierta"]);
+    return { ok: true, id };
+  });
+  ipcMain.handle("db:conversations:add-message", (_event, raw: unknown) => {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const id = crypto.randomUUID();
+    dbRun("INSERT INTO conversation_messages (id, conversation_id, author, body) VALUES (?, ?, ?, ?)",
+      [id, safeStr(r.conversation_id), safeStr(r.author) || "usuario", safeStr(r.body, 10000)]);
+    return { ok: true, id };
+  });
+  ipcMain.handle("db:conversations:close", (_event, id: unknown) => {
+    dbRun("UPDATE conversations SET status = 'cerrada' WHERE id = ?", [safeStr(id)]);
+    return { ok: true };
+  });
+
   ipcMain.handle("db:export:purchases-csv", async (_event, params: unknown) => {
     const p = (params ?? {}) as { from?: string; to?: string };
     const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
