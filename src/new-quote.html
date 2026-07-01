@@ -5,131 +5,134 @@
   <title>Cotización: NUEVA</title>
   <style>
     :root {
-      --bg: #f0efe8;
-      --panel: #ffffff;
-      --accent: #1a6b6b;
-      --accent-light: #e0f4f4;
-      --border: #c4c0b4;
-      --text: #1a1a1a;
-      --text-muted: #6b6560;
-      --input-bg: #fffff8;
-      --input-focus: #1a6b6b;
-      --header-bg: #0a3838;
-      --tab-active: #ffffff;
-      --tab-inactive: #e0ddd4;
-      --danger: #c62828;
-      --row-hover: #f0fafa;
-      --row-selected: #c8e4e4;
+      --accent:#006b5a;
+      --header-bg:#003830;
+      --accent-light:#e0f4f0;
+      --accent-hover:#008a72;
+      --border:#b8d4d0;
+      --bg:#f5faf9;
+      --surface:#ffffff;
+      --text:#0a1e1b;
+      --text-muted:#4a706a;
+      --danger:#c0392b;
+      --success:#27ae60;
+      --warning:#e67e22;
+      --input-bg:#ffffff;
+      --input-border:#a8c8c4;
+      --shadow:0 1px 3px rgba(0,0,0,0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
-      font-family: "Segoe UI", system-ui, sans-serif;
-      font-size: 12px;
+      font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      font-size: 13px;
       color: var(--text);
-      height: 100vh;
       padding-top: 32px;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, var(--header-bg), #2a8a8a);
+      background: linear-gradient(135deg, var(--header-bg) 0%, var(--accent) 100%);
       color: #fff;
-      padding: 8px 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      gap: 10px;
       flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    .header-left { display: flex; align-items: center; gap: 16px; }
-    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
+    .header-icon { font-size: 18px; }
+    .header-title { font-size: 15px; font-weight: 700; letter-spacing: 0.3px; flex: 1; }
     .header-badge {
       background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 4px;
-      padding: 2px 8px;
-      font-size: 11px; font-weight: 700;
-      font-family: Consolas, monospace;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
     }
-    .header-close {
-      width: 24px; height: 24px;
+    .close-btn {
       background: rgba(255,255,255,0.15);
-      border: none; border-radius: 4px;
-      color: #fff; font-size: 14px;
-      cursor: pointer; display: grid; place-items: center;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
     }
-    .header-close:hover { background: rgba(255,255,255,0.3); }
+    .close-btn:hover { background: rgba(255,255,255,0.3); }
 
     .tabs {
       display: flex;
-      background: var(--bg);
-      padding: 8px 12px 0;
-      gap: 2px;
+      background: var(--surface);
       border-bottom: 2px solid var(--accent);
       flex-shrink: 0;
+      overflow-x: auto;
     }
     .tab {
-      padding: 6px 12px;
-      background: var(--tab-inactive);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      border-radius: 6px 6px 0 0;
+      padding: 9px 18px;
       cursor: pointer;
-      font-size: 11px; font-weight: 600;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-muted);
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .tab:hover { background: #eae7de; }
-    .tab.active {
-      background: var(--tab-active);
-      color: var(--accent);
-      border-color: var(--accent);
-      border-bottom: 2px solid var(--tab-active);
+      border-bottom: 2px solid transparent;
       margin-bottom: -2px;
-      z-index: 2;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--accent); }
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 700;
     }
 
-    .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
-    .tab-panel.active { display: block; }
+    .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 16px; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 14px; }
     .tab-panel.items-panel { padding: 0; }
     .tab-panel.items-panel.active { display: flex; flex-direction: column; }
 
     .form-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px 12px;
-      align-content: start;
+      gap: 10px 14px;
     }
+    .form-group { display: flex; flex-direction: column; gap: 3px; }
+    .form-group.span-2 { grid-column: span 2; }
+    .form-group.span-3 { grid-column: span 3; }
+    .form-group.span-4 { grid-column: span 4; }
     .span-2 { grid-column: span 2; }
     .span-3 { grid-column: span 3; }
     .span-4 { grid-column: span 4; }
 
-    .field label {
-      display: block;
-      font-size: 10px; font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 3px;
-    }
+    /* legacy aliases */
+    .field { display: flex; flex-direction: column; gap: 3px; }
+    .field label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
     .field input, .field select, .field textarea {
-      width: 100%; height: 28px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0 8px;
-      font-family: inherit; font-size: 12px;
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
+      font-size: 13px;
       background: var(--input-bg);
       color: var(--text);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .field input:focus, .field select:focus {
-      border-color: var(--input-focus);
-      box-shadow: 0 0 0 2px rgba(26,107,107,0.12);
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0,107,90,0.12);
     }
     .field textarea { height: 68px; padding: 6px 8px; resize: vertical; }
     .field.with-btn { position: relative; }
@@ -141,7 +144,7 @@
       color: #fff; font-size: 11px; font-weight: 700;
       cursor: pointer; display: grid; place-items: center;
     }
-    .field-btn:hover { background: #0f4848; }
+    .field-btn:hover { background: var(--accent-hover); }
 
     .section-title {
       grid-column: span 4;
@@ -149,95 +152,60 @@
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.8px;
-      padding: 6px 0 2px;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      padding-bottom: 6px;
       border-bottom: 1px solid var(--accent-light);
-      margin-top: 4px;
     }
-    .section-title:first-child { margin-top: 0; }
 
-    /* Validity badge in encabezado */
-    .validity-banner {
-      grid-column: span 4;
-      background: var(--accent-light);
-      border: 1px solid var(--accent);
-      border-radius: 6px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 11px;
+    /* Tablas */
+    .items-table-wrap { flex: 1; overflow: auto; border: 1px solid var(--border); border-radius: 6px; }
+    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .items-table th {
+      position: sticky; top: 0;
+      background: var(--accent); color: #fff;
+      padding: 7px 8px; text-align: left;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      z-index: 10;
     }
-    .validity-banner strong { color: var(--accent); font-weight: 700; }
-    .validity-banner span { color: var(--text-muted); }
+    .items-table tr { border-bottom: 1px solid var(--border); }
+    .items-table tr:hover { background: var(--accent-light); }
+    .items-table td { padding: 4px 6px; height: 32px; font-size: 12px; }
 
-    /* Items */
-    .items-toolbar {
-      padding: 8px 12px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-    .items-hint { font-size: 11px; color: var(--text-muted); }
-    .items-count { margin-left: auto; font-size: 11px; font-weight: 600; }
+    .th-num { width: 36px; text-align: center; }
+    .th-code { width: 100px; }
+    .th-desc { }
+    .th-unit { width: 60px; }
+    .th-qty { width: 70px; text-align: right; }
+    .th-price { width: 100px; text-align: right; }
+    .th-disc { width: 70px; text-align: right; }
+    .th-sub { width: 110px; text-align: right; }
+    .th-del { width: 36px; }
 
-    .items-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; background: var(--panel); }
-    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 820px; }
-    .items-table thead th {
-      position: sticky; top: 0; z-index: 10;
-      background: var(--accent);
-      color: #fff;
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 6px;
-      text-align: left;
-      border-right: 1px solid rgba(255,255,255,0.12);
-    }
-    .items-table thead th.th-num   { width: 36px; text-align: center; }
-    .items-table thead th.th-code  { width: 108px; }
-    .items-table thead th.th-unit  { width: 58px; }
-    .items-table thead th.th-qty   { width: 80px; }
-    .items-table thead th.th-price { width: 100px; }
-    .items-table thead th.th-disc  { width: 68px; }
-    .items-table thead th.th-sub   { width: 110px; text-align: right; }
-    .items-table thead th.th-del   { width: 32px; }
-
-    .items-table tbody tr { border-bottom: 1px solid #ebebeb; }
-    .items-table tbody tr:nth-child(even) { background: #fafaf6; }
-    .items-table tbody tr:hover { background: var(--row-hover); }
-    .items-table td { padding: 2px 4px; vertical-align: middle; }
-    .td-num { text-align: center; font-size: 10px; color: var(--text-muted); }
-    .td-sub { text-align: right; font-family: Consolas, monospace; font-size: 12px; font-weight: 600; padding-right: 8px !important; }
+    .td-num { text-align: center; color: var(--text-muted); font-size: 11px; }
+    .td-sub { text-align: right; font-weight: 600; font-family: Consolas, monospace; font-size: 12px; font-weight: 600; padding-right: 8px !important; }
 
     .cell-input {
       width: 100%; height: 24px;
-      border: 1px solid transparent;
-      border-radius: 3px;
+      border: 1px solid transparent; border-radius: 3px;
       padding: 0 4px;
       font-family: inherit; font-size: 12px;
-      background: transparent;
-      color: var(--text);
+      background: transparent; color: var(--text);
       outline: none;
     }
-    .cell-input:focus {
-      background: var(--input-bg);
-      border-color: var(--input-focus);
-      box-shadow: 0 0 0 2px rgba(26,107,107,0.15);
-    }
+    .cell-input:focus { background: var(--panel); border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,107,90,0.15); }
     .cell-input.right { text-align: right; }
 
-    .code-wrap { display: flex; gap: 3px; align-items: center; }
-    .code-wrap input { flex: 1; }
+    .code-wrap { position: relative; }
+    .code-wrap input { padding-right: 24px; }
     .picker-btn {
-      width: 20px; height: 20px; flex-shrink: 0;
+      position: absolute; right: 2px; top: 2px;
+      width: 20px; height: 20px;
       background: var(--accent); border: none; border-radius: 3px;
-      color: #fff; font-size: 13px; font-weight: 900;
-      cursor: pointer; display: grid; place-items: center; line-height: 1;
+      color: #fff; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
     }
-    .picker-btn:hover { background: #0f4848; }
+    .picker-btn:hover { background: var(--accent-hover); }
 
     .del-row-btn {
       width: 22px; height: 22px;
@@ -284,14 +252,46 @@
     .totals-row.grand .val { color: #fff; font-size: 16px; font-weight: 700; }
 
     .footer {
-      padding: 10px 16px;
-      background: var(--bg);
+      background: var(--surface);
       border-top: 1px solid var(--border);
+      padding: 10px 16px;
       display: flex;
-      justify-content: flex-end;
       gap: 8px;
+      align-items: center;
       flex-shrink: 0;
     }
+    .footer-spacer { flex: 1; }
+    .footer-btn {
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-save { background: var(--accent); color: #fff; }
+    .btn-save:hover { background: var(--accent-hover); }
+    .btn-print { background: #e0eeec; color: var(--text); }
+    .btn-print:hover { background: #cfe4e1; }
+    .btn-cancel { background: #e0eeec; color: var(--text); }
+    .btn-cancel:hover { background: #cfe4e1; }
+    .btn-exit { background: transparent; border: 1px solid var(--border)!important; color: var(--text-muted); }
+    .btn-exit:hover { background: #f0f7f6; }
+    .kbd {
+      display: inline-block;
+      background: rgba(255,255,255,0.25);
+      border-radius: 3px;
+      padding: 0 4px;
+      font-size: 10px;
+      font-family: monospace;
+    }
+    .footer-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .required-star::after { content: " *"; color: var(--danger); }
+    /* legacy btn aliases */
     .btn {
       height: 30px; padding: 0 18px;
       border: 1px solid var(--border); border-radius: 5px;
@@ -300,16 +300,8 @@
       display: inline-flex; align-items: center; justify-content: center;
       transition: all 0.15s;
     }
-    .btn-default { background: var(--panel); color: var(--text); }
-    .btn-default:hover { background: #f0f0f0; }
     .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .btn-primary:hover { background: #0f4848; }
-    .btn-success { background: #1a6b3a; color: #fff; border-color: #1a6b3a; }
-    .btn-success:hover { background: #0f4a28; }
-    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
-    .btn-danger:hover { background: #fde8e8; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .required-star::after { content: " *"; color: var(--danger); }
+    .btn-primary:hover { background: var(--accent-hover); }
   
 /* ASIMOV-THEME-START */
 :root{
@@ -344,11 +336,10 @@ th{ color:#fff !important; }
 <body>
 
   <div class="header">
-    <div class="header-left">
-      <h1>Cotizaciones &mdash; NUEVA</h1>
-      <span class="header-badge" id="lblNroCot">#COT-000000</span>
-    </div>
-    <button class="header-close" id="btnClose">&times;</button>
+    <span class="header-icon">💰</span>
+    <span class="header-title">Nueva Cotización</span>
+    <span class="header-badge" id="lblNroCot">#COT-000000</span>
+    <button class="close-btn" id="btnClose">✕</button>
   </div>
 
   <div class="tabs">
@@ -359,10 +350,10 @@ th{ color:#fff !important; }
     <div class="tab" data-tab="observaciones">Observaciones</div>
   </div>
 
-  <div class="content-area">
+  <div class="content">
 
     <!-- ═══════════ ENCABEZADO ═══════════ -->
-    <div class="tab-panel active" id="tab-encabezado">
+    <div class="tab-panel active" id="panel-encabezado">
       <div class="form-grid">
         <div class="section-title">Identificación</div>
         <div class="field">
@@ -476,7 +467,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ ITEMS ═══════════ -->
-    <div class="tab-panel items-panel" id="tab-items">
+    <div class="tab-panel items-panel" id="panel-items">
       <div class="items-toolbar">
         <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
         <span class="items-hint">F4 o + = buscar artículo &nbsp;|&nbsp; Insert = nueva fila &nbsp;|&nbsp; Del = eliminar fila</span>
@@ -507,7 +498,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ TOTALES ═══════════ -->
-    <div class="tab-panel" id="tab-totales">
+    <div class="tab-panel" id="panel-totales">
       <div class="totals-panel">
         <div class="totals-card">
           <h3>Resumen de cotización</h3>
@@ -538,7 +529,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ CONDICIONES ═══════════ -->
-    <div class="tab-panel" id="tab-condiciones">
+    <div class="tab-panel" id="panel-condiciones">
       <div class="form-grid">
         <div class="section-title">Validez y entrega</div>
         <div class="field">
@@ -634,7 +625,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ OBSERVACIONES ═══════════ -->
-    <div class="tab-panel" id="tab-observaciones">
+    <div class="tab-panel" id="panel-observaciones">
       <div class="form-grid">
         <div class="section-title">Notas internas</div>
         <div class="field span-4">
@@ -673,12 +664,12 @@ th{ color:#fff !important; }
   </div>
 
   <div class="footer">
-    <button class="btn btn-default" id="btnNew">Nueva</button>
-    <button class="btn btn-primary" id="btnSave">Guardar (F8)</button>
-    <button class="btn btn-default" disabled>Imprimir / PDF</button>
-    <button class="btn btn-success" disabled title="Convierte esta cotización en un Pedido de Venta">Convertir a Pedido</button>
-    <button class="btn btn-danger" disabled>Eliminar</button>
-    <button class="btn btn-default" id="btnExit">Salir</button>
+    <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
+    <button class="footer-btn btn-print" disabled>🖨️ Imprimir / PDF</button>
+    <button class="footer-btn btn-print" disabled title="Convierte esta cotización en un Pedido de Venta">📋 Convertir a Pedido</button>
+    <button class="footer-btn btn-cancel" disabled>🗑️ Eliminar</button>
+    <span class="footer-spacer"></span>
+    <button class="footer-btn btn-exit" id="btnExit">🚪 Salir</button>
   </div>
 
   <script>
@@ -726,7 +717,7 @@ th{ color:#fff !important; }
         document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
         document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
         tab.classList.add("active");
-        var panel = document.getElementById("tab-" + tab.dataset.tab);
+        var panel = document.getElementById("panel-" + tab.dataset.tab);
         panel.classList.add("active");
         if (tab.dataset.tab === "totales") updateTotalsTab();
       });
@@ -904,24 +895,7 @@ th{ color:#fff !important; }
       if (e.key === "Insert") { e.preventDefault(); addRow(); }
     });
 
-    /* ─── Footer buttons ─── */
-    document.getElementById("btnNew").addEventListener("click", function() {
-      items = []; nextRowId = 1; clienteData = null;
-      var now = new Date();
-      var yr = String(now.getFullYear()).slice(2);
-      var mo = String(now.getMonth() + 1).padStart(2, "0");
-      var nr = "COT-" + yr + mo + "-" + String(Math.floor(10000 + Math.random() * 90000));
-      document.getElementById("txtNroCot").value = nr;
-      document.getElementById("lblNroCot").textContent = "#" + nr;
-      document.getElementById("txtClienteCodigo").value = "";
-      document.getElementById("txtClienteNombre").value = "";
-      document.getElementById("txtClienteCuit").value = "";
-      document.getElementById("txtClienteIva").value = "";
-      document.getElementById("txtEmail").value = "";
-      document.getElementById("txtObsCliente").value = "";
-      document.getElementById("txtDescOferta").value = "";
-      renderItemsTable(); recalcTotals();
-    });
+    /* btnNew removed */
 
     document.getElementById("btnSave").addEventListener("click", function() {
       if (!document.getElementById("txtClienteNombre").value.trim()) {

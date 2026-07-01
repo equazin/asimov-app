@@ -4,21 +4,24 @@
   <meta charset="utf-8" />
   <title>Recibo: NUEVO</title>
   <style>
-    :root {
-      --bg: #f0efe8;
-      --panel: #ffffff;
-      --accent: #0d5c3a;
-      --accent-light: #e0f4ec;
-      --border: #c4c0b4;
-      --text: #1a1a1a;
-      --text-muted: #6b6560;
-      --input-bg: #fffff8;
-      --input-focus: #0d5c3a;
-      --header-bg: #073828;
-      --tab-active: #ffffff;
-      --tab-inactive: #e0ddd4;
-      --danger: #c62828;
-      --ok: #0d5c3a;
+    :root{
+      --accent:#006b5a;
+      --header-bg:#003830;
+      --accent-light:#e0f4f0;
+      --accent-hover:#008a72;
+      --border:#b8d4d0;
+      --bg:#f5faf9;
+      --surface:#ffffff;
+      --text:#0a1e1b;
+      --text-muted:#4a706a;
+      --danger:#c0392b;
+      --success:#27ae60;
+      --warning:#e67e22;
+      --input-bg:#ffffff;
+      --input-border:#a8c8c4;
+      --shadow:0 1px 3px rgba(0,0,0,0.12);
+      --panel:var(--surface);
+      --ok:#006b5a;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -32,78 +35,80 @@
       flex-direction: column;
       overflow: hidden;
     }
-    .header {
-      background: linear-gradient(135deg, var(--header-bg), #1a8a5a);
-      color: #fff;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      flex-shrink: 0;
+    .header{
+      background:linear-gradient(135deg,var(--header-bg) 0%,var(--accent) 100%);
+      color:#fff;
+      padding:10px 16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-shrink:0;
+      box-shadow:0 2px 6px rgba(0,0,0,0.3);
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
-    .header-badge {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 4px;
-      padding: 2px 10px;
-      font-size: 12px; font-weight: 700;
-      font-family: Consolas, monospace;
+    .header-icon{font-size:18px}
+    .header-title{font-size:15px;font-weight:700;letter-spacing:0.3px;flex:1}
+    .header-badge{
+      background:rgba(255,255,255,0.2);
+      border:1px solid rgba(255,255,255,0.35);
+      border-radius:12px;
+      padding:3px 10px;
+      font-size:11px;
+      font-weight:700;
+      font-family:'Courier New',monospace;
+      letter-spacing:0.5px;
     }
-    .header-total {
-      background: rgba(80,255,160,0.2);
-      border: 1px solid rgba(80,255,160,0.4);
-      border-radius: 4px;
-      padding: 2px 12px;
-      font-size: 13px; font-weight: 700;
-      font-family: Consolas, monospace;
-      color: #afffce;
+    .header-total{
+      background:rgba(80,255,160,0.2);
+      border:1px solid rgba(80,255,160,0.4);
+      border-radius:12px;
+      padding:3px 12px;
+      font-size:12px;font-weight:700;
+      font-family:'Courier New',monospace;
+      color:#afffce;
     }
-    .header-close {
-      width: 24px; height: 24px;
-      background: rgba(255,255,255,0.15);
-      border: none; border-radius: 4px;
-      color: #fff; font-size: 14px;
-      cursor: pointer; display: grid; place-items: center;
+    .close-btn{
+      background:rgba(255,255,255,0.15);
+      border:1px solid rgba(255,255,255,0.3);
+      border-radius:6px;
+      color:#fff;
+      width:28px;
+      height:28px;
+      cursor:pointer;
+      font-size:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background 0.15s;
     }
-    .header-close:hover { background: rgba(255,255,255,0.3); }
+    .close-btn:hover{background:rgba(255,255,255,0.3)}
 
-    .tabs {
-      display: flex;
-      background: var(--bg);
-      padding: 8px 12px 0;
-      gap: 2px;
-      border-bottom: 2px solid var(--accent);
-      flex-shrink: 0;
+    .tabs{
+      display:flex;
+      background:var(--surface);
+      border-bottom:2px solid var(--accent);
+      flex-shrink:0;
+      overflow-x:auto;
     }
-    .tab {
-      padding: 6px 14px;
-      background: var(--tab-inactive);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      border-radius: 6px 6px 0 0;
-      cursor: pointer;
-      font-size: 11px; font-weight: 600;
-      color: var(--text-muted);
-      transition: all 0.15s;
+    .tab{
+      padding:9px 18px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:500;
+      color:var(--text-muted);
+      border-bottom:2px solid transparent;
+      margin-bottom:-2px;
+      white-space:nowrap;
+      transition:color 0.15s,border-color 0.15s;
+      user-select:none;
     }
-    .tab:hover { background: #eae7de; }
-    .tab.active {
-      background: var(--tab-active);
-      color: var(--accent);
-      border-color: var(--accent);
-      border-bottom: 2px solid var(--tab-active);
-      margin-bottom: -2px;
-      z-index: 2;
-    }
+    .tab:hover{color:var(--accent)}
+    .tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
 
-    .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .tab-panel { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; background: var(--panel); }
-    .tab-panel.active { display: block; }
-    .tab-panel.split-panel { padding: 0; }
-    .tab-panel.split-panel.active { display: flex; flex-direction: column; overflow: hidden; }
+    .content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+    .tab-panel{display:none;flex:1;overflow-y:auto;padding:16px}
+    .tab-panel.active{display:flex;flex-direction:column;gap:14px}
+    .tab-panel.split-panel{padding:0}
+    .tab-panel.split-panel.active{display:flex;flex-direction:column;overflow:hidden}
 
     .form-grid {
       display: grid;
@@ -125,18 +130,18 @@
     }
     .field input, .field select, .field textarea {
       width: 100%; height: 28px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      border: 1px solid var(--input-border);
+      border-radius: 5px;
       padding: 0 8px;
-      font-family: inherit; font-size: 12px;
+      font-family: inherit; font-size: 13px;
       background: var(--input-bg);
       color: var(--text);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s,box-shadow 0.15s;
     }
     .field input:focus, .field select:focus {
-      border-color: var(--input-focus);
-      box-shadow: 0 0 0 2px rgba(13,92,58,0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0,107,90,0.12);
     }
     .field textarea { height: 60px; padding: 6px 8px; resize: vertical; }
     .field.with-btn { position: relative; }
@@ -332,15 +337,47 @@
     .cobro-summary-row.diff-err .val { color: var(--danger); }
 
     /* footer */
-    .footer {
-      padding: 10px 16px;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      flex-shrink: 0;
+    .footer{
+      background:var(--surface);
+      border-top:1px solid var(--border);
+      padding:10px 16px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-shrink:0;
     }
+    .footer-spacer{flex:1}
+    .footer-btn{
+      padding:8px 20px;
+      border-radius:6px;
+      border:none;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:700;
+      transition:all 0.15s;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .btn-save{background:var(--accent);color:#fff}
+    .btn-save:hover{background:var(--accent-hover)}
+    .btn-print{background:#e0eeec;color:var(--text)}
+    .btn-print:hover{background:#cfe4e1}
+    .btn-cancel{background:#e0eeec;color:var(--text)}
+    .btn-cancel:hover{background:#cfe4e1}
+    .btn-exit{background:transparent;border:1px solid var(--border)!important;color:var(--text-muted)}
+    .btn-exit:hover{background:#f0f7f6}
+    .kbd{
+      display:inline-block;
+      background:rgba(255,255,255,0.25);
+      border-radius:3px;
+      padding:0 4px;
+      font-size:10px;
+      font-family:monospace;
+    }
+    .footer-btn:disabled{opacity:0.4;cursor:not-allowed}
+    .required-star::after { content: " *"; color: var(--danger); }
+    /* keep old .btn class for internal toolbar buttons */
     .btn {
       height: 30px; padding: 0 18px;
       border: 1px solid var(--border); border-radius: 5px;
@@ -349,14 +386,10 @@
       display: inline-flex; align-items: center; justify-content: center;
       transition: all 0.15s;
     }
-    .btn-default { background: var(--panel); color: var(--text); }
+    .btn-default { background: var(--surface); color: var(--text); }
     .btn-default:hover { background: #f0f0f0; }
     .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .btn-primary:hover { background: #073828; }
-    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
-    .btn-danger:hover { background: #fde8e8; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .required-star::after { content: " *"; color: var(--danger); }
+    .btn-primary:hover { background: var(--accent-hover); }
   
 /* ASIMOV-THEME-START */
 :root{
@@ -391,12 +424,11 @@ th{ color:#fff !important; }
 <body>
 
   <div class="header">
-    <div class="header-left">
-      <h1>Recibos &mdash; NUEVO</h1>
-      <span class="header-badge" id="lblNroRec">#REC-000000</span>
-      <span class="header-total" id="lblTotalHeader">$ 0,00</span>
-    </div>
-    <button class="header-close" id="btnClose">&times;</button>
+    <span class="header-icon">📄</span>
+    <span class="header-title">Nuevo Recibo</span>
+    <span class="header-badge" id="lblNroRec">#REC-000000</span>
+    <span class="header-total" id="lblTotalHeader">$ 0,00</span>
+    <button class="close-btn" id="btnClose" onclick="window.close()">✕</button>
   </div>
 
   <div class="tabs">
@@ -406,10 +438,10 @@ th{ color:#fff !important; }
     <div class="tab" data-tab="observaciones">Observaciones</div>
   </div>
 
-  <div class="content-area">
+  <div class="content">
 
     <!-- ═══════════ ENCABEZADO ═══════════ -->
-    <div class="tab-panel active" id="tab-encabezado">
+    <div class="tab-panel active" id="panel-encabezado">
       <div class="form-grid">
         <div class="section-title">Identificación</div>
         <div class="field">
@@ -487,7 +519,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ FACTURAS COBRADAS ═══════════ -->
-    <div class="tab-panel split-panel" id="tab-facturas">
+    <div class="tab-panel split-panel" id="panel-facturas">
       <div class="fact-toolbar">
         <button class="btn btn-primary" id="btnAddFact" style="height:26px;padding:0 12px;">+ Agregar factura</button>
         <span style="font-size:11px;color:var(--text-muted);">Ingrese los comprobantes que se cancelan con este recibo</span>
@@ -526,7 +558,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ FORMA DE COBRO ═══════════ -->
-    <div class="tab-panel split-panel" id="tab-cobro">
+    <div class="tab-panel split-panel" id="panel-cobro">
       <div class="cobro-wrap">
         <div class="cobro-methods">
 
@@ -725,7 +757,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════ OBSERVACIONES ═══════════ -->
-    <div class="tab-panel" id="tab-observaciones">
+    <div class="tab-panel" id="panel-observaciones">
       <div class="form-grid">
         <div class="section-title">Texto del recibo</div>
         <div class="field span-4">
@@ -766,12 +798,12 @@ th{ color:#fff !important; }
   </div>
 
   <div class="footer">
-    <button class="btn btn-default" id="btnNew">Nuevo</button>
-    <button class="btn btn-primary" id="btnSave">Guardar (F8)</button>
-    <button class="btn btn-default" disabled>Imprimir (F9)</button>
-    <button class="btn btn-default" disabled>Enviar por email</button>
-    <button class="btn btn-danger" disabled>Anular</button>
-    <button class="btn btn-default" id="btnExit">Salir</button>
+    <button class="footer-btn btn-exit" id="btnExit">🚪 Salir <span class="kbd">ESC</span></button>
+    <div class="footer-spacer"></div>
+    <button class="footer-btn btn-print" disabled>🖨️ Imprimir <span class="kbd">F9</span></button>
+    <button class="footer-btn btn-print" disabled>📧 Enviar por email</button>
+    <button class="footer-btn btn-cancel" disabled>❌ Anular</button>
+    <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
   </div>
 
   <script>
@@ -803,7 +835,7 @@ th{ color:#fff !important; }
         document.querySelectorAll(".tab").forEach(function(t) { t.classList.remove("active"); });
         document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
         tab.classList.add("active");
-        document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+        document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
         if (tab.dataset.tab === "cobro") updateCobroSummary();
       });
     });

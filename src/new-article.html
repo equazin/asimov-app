@@ -5,29 +5,29 @@
   <title>Artículo: NUEVO</title>
   <style>
     :root {
-      --bg: #f0efe8;
-      --panel: #ffffff;
-      --accent: #1a6b50;
-      --accent-light: #e8f4ef;
-      --border: #c4c0b4;
-      --border-dark: #8a8680;
-      --text: #1a1a1a;
-      --text-muted: #6b6560;
-      --input-bg: #fffff8;
-      --input-focus: #1a6b50;
-      --header-bg: #0d4a38;
-      --tab-active: #ffffff;
-      --tab-inactive: #e0ddd4;
-      --danger: #c62828;
-      --warning: #f9a825;
+      --accent:#006b5a;
+      --header-bg:#003830;
+      --accent-light:#e0f4f0;
+      --accent-hover:#008a72;
+      --border:#b8d4d0;
+      --bg:#f5faf9;
+      --surface:#ffffff;
+      --text:#0a1e1b;
+      --text-muted:#4a706a;
+      --danger:#c0392b;
+      --success:#27ae60;
+      --warning:#e67e22;
+      --input-bg:#ffffff;
+      --input-border:#a8c8c4;
+      --shadow:0 1px 3px rgba(0,0,0,0.12);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      font-size: 12px;
+      font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      font-size: 13px;
       color: var(--text);
       height: 100vh;
       padding-top: 32px;
@@ -38,52 +38,68 @@
 
     /* Header */
     .header {
-      background: linear-gradient(135deg, var(--header-bg), #1a7a5a);
+      background: linear-gradient(135deg, var(--header-bg) 0%, var(--accent) 100%);
       color: #fff;
-      padding: 8px 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      gap: 10px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    .header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.3px; }
-    .header-close {
-      width: 24px; height: 24px;
+    .header-icon { font-size: 18px; }
+    .header-title { font-size: 15px; font-weight: 700; letter-spacing: 0.3px; flex: 1; }
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+    .close-btn {
       background: rgba(255,255,255,0.15);
-      border: none; border-radius: 4px;
-      color: #fff; font-size: 14px;
-      cursor: pointer; display: grid; place-items: center;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
     }
-    .header-close:hover { background: rgba(255,255,255,0.3); }
+    .close-btn:hover { background: rgba(255,255,255,0.3); }
 
     /* Tabs */
     .tabs {
       display: flex;
-      background: var(--bg);
-      padding: 8px 12px 0;
-      gap: 2px;
+      background: var(--surface);
       border-bottom: 2px solid var(--accent);
+      flex-shrink: 0;
+      overflow-x: auto;
     }
     .tab {
-      padding: 6px 14px;
-      background: var(--tab-inactive);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      border-radius: 6px 6px 0 0;
+      padding: 9px 18px;
       cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-muted);
-      transition: all 0.15s;
-    }
-    .tab:hover { background: #eae7de; }
-    .tab.active {
-      background: var(--tab-active);
-      color: var(--accent);
-      border-color: var(--accent);
-      border-bottom: 2px solid var(--tab-active);
+      border-bottom: 2px solid transparent;
       margin-bottom: -2px;
-      z-index: 2;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--accent); }
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 700;
     }
 
     /* Tab panels */
@@ -91,12 +107,11 @@
       display: none;
       flex: 1;
       overflow-y: auto;
-      padding: 14px 16px;
-      background: var(--panel);
+      padding: 16px;
     }
-    .tab-panel.active { display: block; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 14px; }
 
-    .content-area {
+    .content {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -227,34 +242,55 @@
 
     /* Footer */
     .footer {
-      padding: 10px 16px;
-      background: var(--bg);
+      background: var(--surface);
       border-top: 1px solid var(--border);
+      padding: 10px 16px;
       display: flex;
-      justify-content: flex-end;
       gap: 8px;
-    }
-    .btn {
-      height: 30px;
-      padding: 0 18px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
       align-items: center;
-      justify-content: center;
+      flex-shrink: 0;
+    }
+    .footer-spacer { flex: 1; }
+    .footer-btn {
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-save { background: var(--accent); color: #fff; }
+    .btn-save:hover { background: var(--accent-hover); }
+    .btn-print { background: #e0eeec; color: var(--text); }
+    .btn-print:hover { background: #cfe4e1; }
+    .btn-cancel { background: #e0eeec; color: var(--text); }
+    .btn-cancel:hover { background: #cfe4e1; }
+    .btn-exit { background: transparent; border: 1px solid var(--border)!important; color: var(--text-muted); }
+    .btn-exit:hover { background: #f0f7f6; }
+    .kbd {
+      display: inline-block;
+      background: rgba(255,255,255,0.25);
+      border-radius: 3px;
+      padding: 0 4px;
+      font-size: 10px;
+      font-family: monospace;
+    }
+    .footer-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    /* legacy btn aliases */
+    .btn {
+      height: 30px; padding: 0 18px;
+      border: 1px solid var(--border); border-radius: 5px;
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
       transition: all 0.15s;
     }
-    .btn-default { background: var(--panel); color: var(--text); }
-    .btn-default:hover { background: #f0f0f0; }
     .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .btn-primary:hover { background: #15574a; }
-    .btn-danger { background: var(--panel); color: var(--danger); border-color: var(--danger); }
-    .btn-danger:hover { background: #fde8e8; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary:hover { background: var(--accent-hover); }
   
 /* ASIMOV-THEME-START */
 :root{
@@ -288,8 +324,10 @@ th{ color:#fff !important; }
 </head>
 <body>
   <div class="header">
-    <h1>Artículos de Compra-Venta &mdash; NUEVO</h1>
-    <button class="header-close" id="btnClose">&times;</button>
+    <span class="header-icon">📦</span>
+    <span class="header-title">Nuevo Artículo</span>
+    <span class="header-badge" id="lblBadge">NUEVO</span>
+    <button class="close-btn" id="btnClose">✕</button>
   </div>
 
   <div class="tabs">
@@ -303,9 +341,9 @@ th{ color:#fff !important; }
     <div class="tab" data-tab="formulas">Fórmulas</div>
   </div>
 
-  <div class="content-area">
+  <div class="content">
     <!-- ═══════════════ GENERAL ═══════════════ -->
-    <div class="tab-panel active" id="tab-general">
+    <div class="tab-panel active" id="panel-general">
       <div class="general-layout">
         <div class="general-fields">
           <div class="form-grid">
@@ -350,7 +388,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ VENTA ═══════════════ -->
-    <div class="tab-panel" id="tab-venta">
+    <div class="tab-panel" id="panel-venta">
       <div class="form-grid">
         <div class="section-title">Precios por Lista</div>
         <div class="mini-table">
@@ -380,7 +418,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ CATEGORÍAS ═══════════════ -->
-    <div class="tab-panel" id="tab-categorias">
+    <div class="tab-panel" id="panel-categorias">
       <div class="form-grid">
         <div class="section-title">Categorización principal</div>
         <div class="field span-2"><label>Rubro</label><select><option>INFORMÁTICA</option><option>ELECTRÓNICA</option><option>OFICINA</option><option>REDES</option><option>VARIOS</option></select></div>
@@ -406,7 +444,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ COMPOSICIÓN ═══════════════ -->
-    <div class="tab-panel" id="tab-esquema">
+    <div class="tab-panel" id="panel-esquema">
       <div class="form-grid">
         <div class="section-title">Componentes del artículo (BOM)</div>
         <div class="field span-2"><label>Tipo</label><select><option>Simple</option><option>Compuesto</option><option>Kit</option><option>Servicio</option></select></div>
@@ -432,7 +470,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ CONTABILIDAD ═══════════════ -->
-    <div class="tab-panel" id="tab-contabilidad">
+    <div class="tab-panel" id="panel-contabilidad">
       <div class="form-grid">
         <div class="section-title">Cuentas contables</div>
         <div class="field span-2"><label>Cta. contable Ventas</label><input type="text" placeholder="Ej: 4.1.01.001" /></div>
@@ -455,7 +493,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ VARIOS ═══════════════ -->
-    <div class="tab-panel" id="tab-varios">
+    <div class="tab-panel" id="panel-varios">
       <div class="form-grid">
         <div class="section-title">Códigos de barra</div>
         <div class="mini-table">
@@ -494,7 +532,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ ATRIBUTOS ═══════════════ -->
-    <div class="tab-panel" id="tab-atributos">
+    <div class="tab-panel" id="panel-atributos">
       <div class="form-grid">
         <div class="section-title">Atributos del artículo</div>
         <div class="mini-table">
@@ -517,7 +555,7 @@ th{ color:#fff !important; }
     </div>
 
     <!-- ═══════════════ FÓRMULAS ═══════════════ -->
-    <div class="tab-panel" id="tab-formulas">
+    <div class="tab-panel" id="panel-formulas">
       <div class="form-grid">
         <div class="section-title">Fórmula de precio de venta</div>
         <div class="field span-2"><label>Método de cálculo</label><select><option>Sobre costo + margen</option><option>Precio fijo</option><option>Sobre lista base + %</option><option>Según fórmula personalizada</option></select></div>
@@ -544,11 +582,10 @@ th{ color:#fff !important; }
   </div>
 
   <div class="footer">
-    <button class="btn btn-default" id="btnNew">Nuevo</button>
-    <button class="btn btn-primary" id="btnSave">Guardar</button>
-    <button class="btn btn-default" disabled>Guardar como...</button>
-    <button class="btn btn-danger" disabled>Eliminar</button>
-    <button class="btn btn-default" id="btnExit">Salir</button>
+    <button class="footer-btn btn-cancel" disabled>🗑️ Eliminar</button>
+    <div class="footer-spacer"></div>
+    <button class="footer-btn btn-exit" id="btnExit">🚪 Salir</button>
+    <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F2</span></button>
   </div>
 
   <script>
@@ -566,18 +603,11 @@ th{ color:#fff !important; }
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
         document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
         tab.classList.add("active");
-        document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+        document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
       });
     });
 
-    document.getElementById("btnNew").addEventListener("click", () => {
-      txtCodigo.value = Math.floor(100000 + Math.random() * 900000);
-      txtDescripcion.value = "";
-      txtLinea.value = "";
-      txtCategoria.value = "ACCESORIOS PC";
-      selIva.selectedIndex = 0;
-      txtDescripcion.focus();
-    });
+    /* btnNew removed */
 
     document.getElementById("btnSave").addEventListener("click", () => {
       if (!txtCodigo.value || !txtDescripcion.value) {
