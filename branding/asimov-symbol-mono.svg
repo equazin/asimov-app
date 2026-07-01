@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Asimov">
+  <title>Asimov — símbolo monocromo (1 tinta)</title>
+  <path d="M60 37 L31 96" fill="none" stroke="#14171D" stroke-width="15" stroke-linecap="round"/>
+  <path d="M60 37 L89 96" fill="none" stroke="#14171D" stroke-width="15" stroke-linecap="round"/>
+  <path d="M43 76 H77" fill="none" stroke="#14171D" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="60" cy="22" r="11" fill="#14171D"/>
+</svg>

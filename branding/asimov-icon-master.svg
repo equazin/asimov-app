@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Asimov app icon">
+  <title>Asimov — ícono de aplicación</title>
+  <rect x="0" y="0" width="120" height="120" rx="27" fill="#14171D"/>
+  <g transform="translate(60,59) scale(0.82) translate(-60,-59)">
+    <path d="M60 37 L31 96" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round"/>
+    <path d="M60 37 L89 96" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round"/>
+    <path d="M43 76 H77" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="60" cy="22" r="11" fill="#FF6A2B"/>
+  </g>
+</svg>
