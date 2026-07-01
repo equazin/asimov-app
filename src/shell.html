@@ -1655,6 +1655,8 @@
 
   // expose for kpi cards
   window.navigate = navigate;
+  // expose for status-bar update button (onclick="checkUpdate()")
+  window.checkUpdate = checkUpdate;
 
   // ── IPC events from main ─────────────────────────────────────────────
   window.addEventListener("DOMContentLoaded", () => {
