@@ -4,7 +4,7 @@
  * App completamente nativa: todas las pantallas son HTML local con SQLite.
  * No hay carga de servidores remotos, sin partición de sesión web.
  */
-import { app, BrowserWindow, globalShortcut, ipcMain } from "electron";
+import { app, BrowserWindow, globalShortcut, ipcMain, Menu } from "electron";
 import * as path from "node:path";
 import {
   getWindowBounds,
@@ -12,7 +12,6 @@ import {
   getPrintPreferences,
   type WindowBounds,
 } from "./config";
-import { buildAppMenu } from "./menu";
 import { registerIpcHandlers } from "./ipc";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
@@ -38,8 +37,8 @@ const NEW_GOODS_RECEIPT_FILE    = path.join(__dirname, "new-goods-receipt.html")
 const NEW_PURCHASE_INVOICE_FILE = path.join(__dirname, "new-purchase-invoice.html");
 const NEW_PAYMENT_ORDER_FILE    = path.join(__dirname, "new-payment-order.html");
 
-// Custom title bar para ventanas de formularios nativos (estilo GESES)
-const TITLE_BAR_OVERLAY = { color: "#e8e5da", symbolColor: "#1f2937", height: 32 } as const;
+// Custom title bar para ventanas de formularios nativos (tema Asimov: Ink)
+const TITLE_BAR_OVERLAY = { color: "#14171D", symbolColor: "#e6e8ea", height: 32 } as const;
 const TITLE_BAR_STYLE = "hidden" as const;
 
 // ---------------------------------------------------------------------------
@@ -99,7 +98,7 @@ function createMainWindow(): BrowserWindow {
     minWidth: 1024,
     minHeight: 640,
     show: false,
-    backgroundColor: "#062b19",
+    backgroundColor: "#14171D",
     title: "Asimov ERP",
     icon: APP_ICON_FILE,
     webPreferences: {
@@ -220,7 +219,8 @@ if (!gotLock) {
     initDb();
 
     registerIpcHandlers({ getMainWindow });
-    buildAppMenu({ isDev: isDev(), openNativeForm });
+    // Sin barra de menú superior: la navegación vive en el sidebar del shell.
+    Menu.setApplicationMenu(null);
     registerGlobalShortcuts();
     syncLaunchAtStartup();
     initTray({ getMainWindow });
@@ -346,7 +346,7 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
     parent: parentWindow,
     modal: true,
     show: false,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#14171D",
     title: "Selección de Artículos",
     icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE,
@@ -409,7 +409,7 @@ function createClientSelectionWindow(parentWindow: BrowserWindow, contextId: str
     parent: parentWindow,
     modal: true,
     show: false,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#14171D",
     title: "Selección de Clientes",
     icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE,
@@ -462,7 +462,7 @@ function createNewArticleWindow(parentWindow: BrowserWindow) {
   if (newArticleWindow && !newArticleWindow.isDestroyed()) { newArticleWindow.focus(); return; }
   newArticleWindow = new BrowserWindow({
     width: 900, height: 600, resizable: true, parent: parentWindow, modal: true,
-    show: false, backgroundColor: "#f0f0f0", title: "Artículos — NUEVO", icon: APP_ICON_FILE,
+    show: false, backgroundColor: "#14171D", title: "Artículos — NUEVO", icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: { preload: path.join(__dirname, "new-article-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
@@ -476,7 +476,7 @@ function createNewClientWindow(parentWindow: BrowserWindow) {
   if (newClientWindow && !newClientWindow.isDestroyed()) { newClientWindow.focus(); return; }
   newClientWindow = new BrowserWindow({
     width: 920, height: 640, resizable: true, parent: parentWindow, modal: true,
-    show: false, backgroundColor: "#f0f0f0", title: "Clientes — NUEVO", icon: APP_ICON_FILE,
+    show: false, backgroundColor: "#14171D", title: "Clientes — NUEVO", icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: { preload: path.join(__dirname, "new-client-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
@@ -490,7 +490,7 @@ function createNewSupplierWindow(parentWindow: BrowserWindow) {
   if (newSupplierWindow && !newSupplierWindow.isDestroyed()) { newSupplierWindow.focus(); return; }
   newSupplierWindow = new BrowserWindow({
     width: 920, height: 640, resizable: true, parent: parentWindow, modal: true,
-    show: false, backgroundColor: "#f0f0f0", title: "Proveedores — NUEVO", icon: APP_ICON_FILE,
+    show: false, backgroundColor: "#14171D", title: "Proveedores — NUEVO", icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: { preload: path.join(__dirname, "new-supplier-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
@@ -539,37 +539,37 @@ function createNewSupplierWindowStandalone(parent: BrowserWindow | null): void {
 }
 
 function createNewSaleOrderWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newSaleOrderWindow, (w) => { newSaleOrderWindow = w; }, { width: 1120, height: 740, minWidth: 900, minHeight: 600, bg: "#f0efe8", title: "Pedidos de Venta — NUEVO", preload: "new-sale-order-preload.js", file: NEW_SALE_ORDER_FILE }, parent);
+  makeStandaloneForm(newSaleOrderWindow, (w) => { newSaleOrderWindow = w; }, { width: 1120, height: 740, minWidth: 900, minHeight: 600, bg: "#14171D", title: "Pedidos de Venta — NUEVO", preload: "new-sale-order-preload.js", file: NEW_SALE_ORDER_FILE }, parent);
 }
 
 function createNewQuoteWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newQuoteWindow, (w) => { newQuoteWindow = w; }, { width: 1120, height: 740, minWidth: 900, minHeight: 600, bg: "#f0efe8", title: "Cotizaciones — NUEVA", preload: "new-quote-preload.js", file: NEW_QUOTE_FILE }, parent);
+  makeStandaloneForm(newQuoteWindow, (w) => { newQuoteWindow = w; }, { width: 1120, height: 740, minWidth: 900, minHeight: 600, bg: "#14171D", title: "Cotizaciones — NUEVA", preload: "new-quote-preload.js", file: NEW_QUOTE_FILE }, parent);
 }
 
 function createNewInvoiceWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newInvoiceWindow, (w) => { newInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 960, minHeight: 640, bg: "#f0efe8", title: "Facturas de Venta — NUEVA", preload: "new-invoice-preload.js", file: NEW_INVOICE_FILE }, parent);
+  makeStandaloneForm(newInvoiceWindow, (w) => { newInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 960, minHeight: 640, bg: "#14171D", title: "Facturas de Venta — NUEVA", preload: "new-invoice-preload.js", file: NEW_INVOICE_FILE }, parent);
 }
 
 function createNewDeliveryNoteWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newDeliveryNoteWindow, (w) => { newDeliveryNoteWindow = w; }, { width: 1080, height: 720, minWidth: 880, minHeight: 580, bg: "#f0efe8", title: "Remitos — NUEVO", preload: "new-delivery-note-preload.js", file: NEW_DELIVERY_NOTE_FILE }, parent);
+  makeStandaloneForm(newDeliveryNoteWindow, (w) => { newDeliveryNoteWindow = w; }, { width: 1080, height: 720, minWidth: 880, minHeight: 580, bg: "#14171D", title: "Remitos — NUEVO", preload: "new-delivery-note-preload.js", file: NEW_DELIVERY_NOTE_FILE }, parent);
 }
 
 function createNewReceiptWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newReceiptWindow, (w) => { newReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 580, bg: "#f0efe8", title: "Recibos — NUEVO", preload: "new-receipt-preload.js", file: NEW_RECEIPT_FILE }, parent);
+  makeStandaloneForm(newReceiptWindow, (w) => { newReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 580, bg: "#14171D", title: "Recibos — NUEVO", preload: "new-receipt-preload.js", file: NEW_RECEIPT_FILE }, parent);
 }
 
 function createNewPurchaseOrderWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newPurchaseOrderWindow, (w) => { newPurchaseOrderWindow = w; }, { width: 1140, height: 760, minWidth: 900, minHeight: 580, bg: "#f0ede4", title: "Compras — NUEVA ORDEN", preload: "new-purchase-order-preload.js", file: NEW_PURCHASE_ORDER_FILE }, parent);
+  makeStandaloneForm(newPurchaseOrderWindow, (w) => { newPurchaseOrderWindow = w; }, { width: 1140, height: 760, minWidth: 900, minHeight: 580, bg: "#14171D", title: "Compras — NUEVA ORDEN", preload: "new-purchase-order-preload.js", file: NEW_PURCHASE_ORDER_FILE }, parent);
 }
 
 function createNewGoodsReceiptWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newGoodsReceiptWindow, (w) => { newGoodsReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#e4f0ed", title: "Compras — RECEPCIÓN", preload: "new-goods-receipt-preload.js", file: NEW_GOODS_RECEIPT_FILE }, parent);
+  makeStandaloneForm(newGoodsReceiptWindow, (w) => { newGoodsReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#14171D", title: "Compras — RECEPCIÓN", preload: "new-goods-receipt-preload.js", file: NEW_GOODS_RECEIPT_FILE }, parent);
 }
 
 function createNewPurchaseInvoiceWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newPurchaseInvoiceWindow, (w) => { newPurchaseInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 900, minHeight: 580, bg: "#f5e8ea", title: "Compras — FACTURA PROVEEDOR", preload: "new-purchase-invoice-preload.js", file: NEW_PURCHASE_INVOICE_FILE }, parent);
+  makeStandaloneForm(newPurchaseInvoiceWindow, (w) => { newPurchaseInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 900, minHeight: 580, bg: "#14171D", title: "Compras — FACTURA PROVEEDOR", preload: "new-purchase-invoice-preload.js", file: NEW_PURCHASE_INVOICE_FILE }, parent);
 }
 
 function createNewPaymentOrderWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newPaymentOrderWindow, (w) => { newPaymentOrderWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#f5f0e0", title: "Tesorería — ORDEN DE PAGO", preload: "new-payment-order-preload.js", file: NEW_PAYMENT_ORDER_FILE }, parent);
+  makeStandaloneForm(newPaymentOrderWindow, (w) => { newPaymentOrderWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#14171D", title: "Tesorería — ORDEN DE PAGO", preload: "new-payment-order-preload.js", file: NEW_PAYMENT_ORDER_FILE }, parent);
 }
