@@ -149,9 +149,13 @@ export function getMainWindow(): BrowserWindow | null {
 // ---------------------------------------------------------------------------
 
 function registerGlobalShortcuts(): void {
+  // Acciones globales (teclas F). La navegación por módulos (Ctrl+1..9) la
+  // maneja el shell en el renderer, para no capturar esas teclas globalmente.
   const shortcuts: Record<string, string> = {
+    F1: "help",
     F2: "new",
     F3: "search",
+    F4: "dashboard",
     F5: "refresh",
     F8: "save",
     F9: "print",
@@ -161,10 +165,6 @@ function registerGlobalShortcuts(): void {
     globalShortcut.register(key, () => {
       const focused = BrowserWindow.getFocusedWindow();
       if (!focused) return;
-      if (action === "refresh") {
-        focused.webContents.reload();
-        return;
-      }
       if (action === "print") {
         const prefs = getPrintPreferences();
         focused.webContents.print(
@@ -173,6 +173,11 @@ function registerGlobalShortcuts(): void {
         );
         return;
       }
+      if (action === "dashboard") {
+        focused.webContents.send("shell:navigate", "/dashboard");
+        return;
+      }
+      // help / new / search / refresh / save → los resuelve el renderer.
       focused.webContents.send("shortcut:triggered", action);
     });
   }

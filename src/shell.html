@@ -389,6 +389,29 @@
     .save-msg { font-size: 11px; }
     .save-msg.ok { color: var(--success); }
 
+    /* ── Config: sección impresora + hints ── */
+    .config-section { margin: 8px 18px 18px; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); max-width: 760px; }
+    .config-section h3 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .cfg-hint { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+    .printer-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+    .cfg-check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text); user-select: none; padding-bottom: 5px; }
+    .cfg-check input { width: auto; }
+
+    /* ── Atajos de teclado ── */
+    .shortcuts-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; max-width: 820px; }
+    .sc-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .sc-card h3 { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .sc-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .sc-table td { padding: 5px 4px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .sc-table tr:last-child td { border-bottom: none; }
+    .sc-table td:first-child { width: 108px; white-space: nowrap; }
+    .sc-table td:last-child { color: var(--text); }
+    kbd {
+      display: inline-block; font-family: "Segoe UI", system-ui, sans-serif; font-size: 10.5px; font-weight: 700;
+      color: var(--text); background: var(--input-bg); border: 1px solid var(--border-dk);
+      border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; min-width: 20px; text-align: center;
+    }
+
     /* ── Usuarios ─────────────────────────────────────────── */
     .user-form-bar {
       padding: 10px 14px; background: #20242b; border-bottom: 1px solid var(--border);
@@ -543,6 +566,7 @@
       <div class="nav-item" data-view="knowledge"><span class="icon">📚</span> Base Conocimiento</div>
       <div class="nav-item" data-view="conversaciones"><span class="icon">💬</span> Conversaciones</div>
       <div class="nav-item" data-view="favoritos"><span class="icon">⭐</span> Favoritos / Apariencia</div>
+      <div class="nav-item" data-view="atajos"><span class="icon">⌨️</span> Atajos de teclado</div>
     </div>
   </nav>
 
@@ -568,13 +592,13 @@
         <div>
           <div class="dash-section-title">Accesos rápidos</div>
           <div class="shortcuts-grid">
-            <div class="shortcut" data-view="pedidos"><span class="s-icon">📋</span><span class="s-label">Pedidos</span><span class="s-key">Ctrl+2</span></div>
-            <div class="shortcut" data-view="cotizaciones"><span class="s-icon">💰</span><span class="s-label">Cotizaciones</span></div>
-            <div class="shortcut" data-view="stock"><span class="s-icon">📦</span><span class="s-label">Stock</span><span class="s-key">Ctrl+3</span></div>
-            <div class="shortcut" data-view="facturas"><span class="s-icon">🧾</span><span class="s-label">Facturas</span></div>
-            <div class="shortcut" data-view="caja"><span class="s-icon">💵</span><span class="s-label">Caja</span><span class="s-key">Ctrl+4</span></div>
-            <div class="shortcut" data-view="tickets"><span class="s-icon">🔧</span><span class="s-label">Tickets</span></div>
-            <div class="shortcut" data-view="clientes"><span class="s-icon">👥</span><span class="s-label">Clientes</span></div>
+            <div class="shortcut" data-view="pedidos"><span class="s-icon">📋</span><span class="s-label">Ventas</span><span class="s-key">Ctrl+2</span></div>
+            <div class="shortcut" data-view="ordenes-compra"><span class="s-icon">🛒</span><span class="s-label">Compras</span><span class="s-key">Ctrl+3</span></div>
+            <div class="shortcut" data-view="stock"><span class="s-icon">📦</span><span class="s-label">Stock</span><span class="s-key">Ctrl+4</span></div>
+            <div class="shortcut" data-view="facturas"><span class="s-icon">🧾</span><span class="s-label">Facturación</span><span class="s-key">Ctrl+5</span></div>
+            <div class="shortcut" data-view="caja"><span class="s-icon">💵</span><span class="s-label">Tesorería</span><span class="s-key">Ctrl+6</span></div>
+            <div class="shortcut" data-view="tickets"><span class="s-icon">🔧</span><span class="s-label">RMA</span><span class="s-key">Ctrl+8</span></div>
+            <div class="shortcut" data-view="atajos"><span class="s-icon">⌨️</span><span class="s-label">Atajos</span><span class="s-key">F1</span></div>
             <div class="shortcut" data-view="alertas-stock"><span class="s-icon">⚠️</span><span class="s-label">Alertas</span></div>
           </div>
         </div>
@@ -1014,10 +1038,60 @@
         <div class="config-grid" id="config-grid">
           <div class="loading"><div class="spinner"></div></div>
         </div>
+        <!-- Impresora -->
+        <div class="config-section">
+          <h3>🖨️ Impresora predeterminada</h3>
+          <p class="cfg-hint">Elegí la impresora para impresión directa (F9). Con impresión silenciosa activada, no se abre el diálogo del sistema.</p>
+          <div class="printer-row">
+            <div class="config-field" style="min-width:280px;flex:1">
+              <label>Impresora</label>
+              <select id="cfg-printer"><option value="">Cargando…</option></select>
+            </div>
+            <label class="cfg-check"><input type="checkbox" id="cfg-printer-silent" /> Impresión silenciosa</label>
+            <button class="btn btn-outline btn-sm" onclick="savePrinter()">Guardar impresora</button>
+            <span class="save-msg ok" id="printer-save-msg" style="display:none">✓ Guardada</span>
+          </div>
+        </div>
       </div>
       <div class="config-save-bar">
         <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar cambios</button>
         <span class="save-msg ok" id="config-save-msg" style="display:none">✓ Guardado</span>
+      </div>
+    </div>
+
+    <!-- ── Atajos de teclado ──────────────────────────────── -->
+    <div class="view" id="view-atajos" style="flex-direction:column">
+      <div class="view-header"><h1>⌨️ Atajos de teclado</h1></div>
+      <div style="flex:1;overflow-y:auto;background:var(--bg);padding:18px">
+        <div class="shortcuts-cols">
+          <div class="sc-card">
+            <h3>Acciones · teclas F</h3>
+            <table class="sc-table">
+              <tr><td><kbd>F1</kbd></td><td>Ayuda · esta pantalla de atajos</td></tr>
+              <tr><td><kbd>F2</kbd></td><td>Nuevo (en la pantalla actual)</td></tr>
+              <tr><td><kbd>F3</kbd></td><td>Buscar (foco en el buscador)</td></tr>
+              <tr><td><kbd>F4</kbd></td><td>Ir al Dashboard</td></tr>
+              <tr><td><kbd>F5</kbd></td><td>Refrescar la pantalla actual</td></tr>
+              <tr><td><kbd>F8</kbd></td><td>Guardar (en formularios)</td></tr>
+              <tr><td><kbd>F9</kbd></td><td>Imprimir</td></tr>
+            </table>
+          </div>
+          <div class="sc-card">
+            <h3>Navegación · Ctrl + número</h3>
+            <table class="sc-table">
+              <tr><td><kbd>Ctrl</kbd>+<kbd>1</kbd></td><td>Dashboard</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>2</kbd></td><td>Ventas</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>3</kbd></td><td>Compras</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>4</kbd></td><td>Stock</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>5</kbd></td><td>Facturación</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>6</kbd></td><td>Tesorería</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>7</kbd></td><td>Contabilidad</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>8</kbd></td><td>RMA</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>9</kbd></td><td>Sistema · Configuración</td></tr>
+            </table>
+          </div>
+        </div>
+        <p class="cfg-hint" style="margin-top:14px">En los formularios, <kbd>Esc</kbd> cierra la ventana. Los atajos F funcionan también dentro de las fichas de alta.</p>
       </div>
     </div>
 
@@ -1165,6 +1239,8 @@
   // ── view definitions ─────────────────────────────────────────────────
   const VIEWS = {
     dashboard: { title: "Dashboard" },
+    atajos: { title: "Atajos de teclado" },
+    config: { title: "Configuración" },
     pedidos: {
       title: "Pedidos de Venta",
       load: (s) => asimov().saleOrders.list(s),
@@ -1459,6 +1535,7 @@
     if (norm === "diario") { initDiario(); return; }
     if (norm === "reportes") { initReportes(); return; }
     if (norm === "export-contable") { initExportContable(); return; }
+    if (norm === "atajos") return;
     if (norm === "config") { loadConfig(); return; }
     if (norm === "usuarios") { loadUsuarios(); return; }
     if (norm === "knowledge") { loadKnowledge(); return; }
@@ -1659,11 +1736,60 @@
   // expose for status-bar update button (onclick="checkUpdate()")
   window.checkUpdate = checkUpdate;
 
+  // ── Atajos de teclado ───────────────────────────────────────────────────
+  function activeView() { return document.querySelector(".view.active"); }
+  function clickActiveNew() {
+    const v = activeView();
+    const b = v && v.querySelector(".view-header .btn-primary");
+    if (b) b.click();
+  }
+  function focusActiveSearch() {
+    const v = activeView();
+    const s = v && v.querySelector('input[type="search"]');
+    if (s) { s.focus(); s.select(); }
+  }
+  function saveActive() {
+    if (currentView === "config") saveConfig();
+  }
+  function refreshCurrentView() {
+    const RELOADERS = {
+      dashboard: loadDashboard, caja: loadCaja,
+      "cta-cte-clientes": loadCtaCteClientes, "cta-cte-proveedores": loadCtaCteProveedores,
+      diario: initDiario, reportes: initReportes, "export-contable": initExportContable,
+      config: loadConfig, usuarios: loadUsuarios, knowledge: loadKnowledge,
+      conversaciones: loadConversaciones, favoritos: loadFavoritos, atajos: () => {},
+    };
+    if (RELOADERS[currentView]) RELOADERS[currentView]();
+    else loadViewData(currentView, "");
+  }
+  function handleShortcut(action) {
+    switch (action) {
+      case "help":      navigate("atajos"); break;
+      case "dashboard": navigate("dashboard"); break;
+      case "new":       clickActiveNew(); break;
+      case "search":    focusActiveSearch(); break;
+      case "refresh":   refreshCurrentView(); break;
+      case "save":      saveActive(); break;
+    }
+  }
+  // Navegación por Ctrl+1..9 (solo cuando el shell tiene foco; no global).
+  window.addEventListener("keydown", (e) => {
+    if (!e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+    const NAV = { "1": "dashboard", "2": "/ventas", "3": "/compras", "4": "/stock",
+      "5": "/facturacion", "6": "/tesoreria", "7": "/contabilidad", "8": "/rma", "9": "/sistema" };
+    const target = NAV[e.key];
+    if (target) { e.preventDefault(); navigate(target); }
+  });
+
   // ── IPC events from main ─────────────────────────────────────────────
   window.addEventListener("DOMContentLoaded", () => {
     waitForAsimov().then(api => {
       api.onNavigate((path) => navigate(path));
       api.onBackgroundChanged((_bg) => { /* handled in preload */ });
+
+      // ── Atajos de teclado ──────────────────────────────────────────────
+      // Acciones (teclas F) llegan desde main vía shortcut:triggered.
+      if (api.onShortcut) api.onShortcut(handleShortcut);
 
       // Refresh list when a form is saved
       const FORM_REFRESH_MAP = {
@@ -1989,10 +2115,50 @@
           <input type="text" id="cfg-${f.key}" value="${esc(map[f.key] || "")}" placeholder="${f.placeholder}" />
         </div>
       `).join("");
+      await loadPrinters(api);
     } catch (e) {
       grid.innerHTML = `<div style="padding:20px;color:var(--danger)">${e.message}</div>`;
     }
   }
+
+  async function loadPrinters(api) {
+    const sel = document.getElementById("cfg-printer");
+    const chk = document.getElementById("cfg-printer-silent");
+    if (!sel) return;
+    try {
+      const [printers, prefs] = await Promise.all([
+        api.listPrinters ? api.listPrinters() : [],
+        api.printPreferences ? api.printPreferences.get() : {},
+      ]);
+      const current = (prefs && prefs.preferredPrinter) || "";
+      const opts = ['<option value="">Diálogo del sistema (sin predeterminada)</option>']
+        .concat((printers || []).map(p => {
+          const name = p.displayName || p.name || "";
+          return `<option value="${esc(name)}"${name === current ? " selected" : ""}>${esc(name)}</option>`;
+        }));
+      sel.innerHTML = opts.join("");
+      if (chk) chk.checked = !!(prefs && prefs.silentPrint);
+    } catch (e) {
+      sel.innerHTML = '<option value="">No se pudieron listar impresoras</option>';
+    }
+  }
+
+  async function savePrinter() {
+    const sel = document.getElementById("cfg-printer");
+    const chk = document.getElementById("cfg-printer-silent");
+    const msg = document.getElementById("printer-save-msg");
+    try {
+      const api = await waitForAsimov();
+      if (api.printPreferences) {
+        await api.printPreferences.setPrinter(sel ? sel.value : "");
+        await api.printPreferences.setSilent(chk ? chk.checked : false);
+      }
+      if (msg) { msg.textContent = "✓ Guardada"; msg.className = "save-msg ok"; msg.style.display = "inline"; setTimeout(() => { msg.style.display = "none"; }, 2500); }
+    } catch (e) {
+      if (msg) { msg.textContent = "Error: " + e.message; msg.className = "save-msg"; msg.style.display = "inline"; }
+    }
+  }
+  window.savePrinter = savePrinter;
 
   async function saveConfig() {
     const msg = document.getElementById("config-save-msg");
