@@ -132,11 +132,11 @@
     .view-header .badge {
       font-size: 10.5px;
       font-weight: 700;
-      color: rgba(255,255,255,0.7);
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--accent);
+      background: rgba(255,106,43,0.10);
+      border: 1px solid rgba(255,106,43,0.80);
       padding: 1px 8px;
-      border-radius: 10px;
+      border-radius: 999px;
     }
     .btn {
       display: inline-flex;
@@ -151,11 +151,11 @@
     }
     .btn:active { transform: scale(0.97); }
     .btn-primary {
-      background: rgba(255,255,255,0.18);
+      background: var(--accent);
       color: #fff;
-      border-color: rgba(255,255,255,0.3);
+      border-color: var(--accent);
     }
-    .btn-primary:hover { background: rgba(255,255,255,0.28); }
+    .btn-primary:hover { background: #e85e25; border-color: #e85e25; }
     .btn-outline {
       background: transparent;
       color: var(--accent);
@@ -414,14 +414,16 @@
 
     /* ── Usuarios ─────────────────────────────────────────── */
     .user-form-bar {
-      padding: 10px 14px; background: #20242b; border-bottom: 1px solid var(--border);
+      margin: 14px;
+      padding: 14px 16px; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 9px;
       display: none; flex-wrap: wrap; gap: 8px; align-items: flex-end; flex-shrink: 0;
     }
     .user-form-bar.visible { display: flex; }
     .user-form-bar .uf-field { display: flex; flex-direction: column; gap: 3px; }
     .user-form-bar .uf-field label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
     .user-form-bar input, .user-form-bar select {
-      padding: 4px 7px; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px;
       font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg);
     }
 
@@ -434,10 +436,13 @@
     .kb-item.selected { background: var(--accent-sel); }
     .kb-item .kbi-title { font-weight: 600; font-size: 12px; }
     .kb-item .kbi-cat { font-size: 10.5px; color: var(--muted); }
-    .kb-detail { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .kb-editor { flex: 1; display: flex; flex-direction: column; padding: 12px; gap: 8px; overflow-y: auto; background: var(--panel); }
+    .kb-detail { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); padding: 14px; }
+    .kb-editor {
+      flex: 1; display: flex; flex-direction: column; padding: 14px; gap: 10px; overflow-y: auto;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 9px;
+    }
     .kb-editor input[type=text], .kb-editor textarea {
-      padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 6px 9px; border: 1px solid var(--border); border-radius: 7px;
       font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg); outline: none;
     }
     .kb-editor input[type=text]:focus, .kb-editor textarea:focus { border-color: var(--accent); }
