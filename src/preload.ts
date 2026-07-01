@@ -184,6 +184,35 @@ const api = {
     list: (search = "") => ipcRenderer.invoke("db:opportunities:list", search),
   },
 
+  // DB — Cta Cte
+  ctaCteClients: {
+    list: (search = "") => ipcRenderer.invoke("db:cta-cte:clients:list", search),
+    detail: (clientId: string) => ipcRenderer.invoke("db:cta-cte:clients:detail", clientId),
+  },
+  ctaCteSuppliers: {
+    list: (search = "") => ipcRenderer.invoke("db:cta-cte:suppliers:list", search),
+    detail: (supplierId: string) => ipcRenderer.invoke("db:cta-cte:suppliers:detail", supplierId),
+  },
+
+  // DB — Reportes
+  reports: {
+    sales:       (from: string, to: string) => ipcRenderer.invoke("db:reports:sales",       { from, to }),
+    purchases:   (from: string, to: string) => ipcRenderer.invoke("db:reports:purchases",   { from, to }),
+    topArticles: (from: string, to: string) => ipcRenderer.invoke("db:reports:top-articles",{ from, to }),
+  },
+
+  // DB — Diario / Auditoría / Export
+  diario: {
+    list: (from: string, to: string) => ipcRenderer.invoke("db:diario:list", { from, to }),
+  },
+  audit: {
+    recent: () => ipcRenderer.invoke("db:audit:recent"),
+  },
+  exportCsv: {
+    invoices:  (from: string, to: string) => ipcRenderer.invoke("db:export:invoices-csv",  { from, to }),
+    purchases: (from: string, to: string) => ipcRenderer.invoke("db:export:purchases-csv", { from, to }),
+  },
+
   // DB — RMA
   tickets: {
     list: (search = "") => ipcRenderer.invoke("db:tickets:list", search),

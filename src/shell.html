@@ -313,6 +313,58 @@
     .caja-account-item .acc-bal { font-size: 11px; color: var(--success); margin-top: 2px; }
     .caja-movements { flex: 1; overflow: auto; }
 
+    /* ── Cta. Cte. (mismo layout que Caja) ──────────────────── */
+    .ctacte-grid {
+      display: grid; grid-template-columns: 260px 1fr; flex: 1; min-height: 0; overflow: hidden;
+    }
+    .ctacte-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg); }
+    .ctacte-item {
+      padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 80ms;
+    }
+    .ctacte-item:hover { background: var(--accent-lt); }
+    .ctacte-item.selected { background: #c8e8d4; }
+    .ctacte-item .cci-name { font-weight: 600; font-size: 12px; }
+    .ctacte-item .cci-cuit { font-size: 10.5px; color: var(--muted); }
+    .ctacte-item .cci-saldo { font-size: 11px; font-weight: 700; margin-top: 2px; }
+    .ctacte-item .cci-saldo.positivo { color: var(--danger); }
+    .ctacte-item .cci-saldo.cero { color: var(--success); }
+    .ctacte-detail { flex: 1; overflow: auto; }
+
+    /* ── Reportes ─────────────────────────────────────────── */
+    .report-toolbar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 8px 12px; background: var(--panel); border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .report-toolbar label { font-size: 11px; color: var(--muted); }
+    .report-toolbar input[type=date] {
+      padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius);
+      font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg);
+    }
+    .report-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+    .report-tab {
+      padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      border-bottom: 2px solid transparent; color: var(--muted); transition: color 100ms, border-color 100ms;
+    }
+    .report-tab:hover { color: var(--accent); }
+    .report-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .report-summary {
+      display: flex; gap: 12px; padding: 8px 12px; background: #eef7f2; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .report-summary .rs-item { font-size: 11px; }
+    .report-summary .rs-val { font-weight: 700; color: var(--header-bg); }
+
+    /* ── Export / Auditoría ──────────────────────────────── */
+    .export-panel {
+      padding: 20px; max-width: 600px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .export-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .export-card h3 { font-size: 13px; font-weight: 700; color: var(--header-bg); }
+    .export-card p  { font-size: 11px; color: var(--muted); }
+    .export-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
     /* loading spinner */
     .loading { display: flex; align-items: center; justify-content: center; padding: 40px; background: var(--panel); }
     .spinner {
@@ -374,8 +426,23 @@
     </div>
 
     <div class="nav-section">
+      <div class="nav-label">CRM</div>
+      <div class="nav-item" data-view="cuentas-crm"><span class="icon">🏢</span> Cuentas CRM</div>
+    </div>
+
+    <div class="nav-section">
       <div class="nav-label">Tesorería</div>
       <div class="nav-item" data-view="caja"><span class="icon">💵</span> Caja</div>
+      <div class="nav-item" data-view="cta-cte-clientes"><span class="icon">👤</span> Cta. Cte. Clientes</div>
+      <div class="nav-item" data-view="cta-cte-proveedores"><span class="icon">🏭</span> Cta. Cte. Prov.</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Contabilidad</div>
+      <div class="nav-item" data-view="diario"><span class="icon">📓</span> Diario</div>
+      <div class="nav-item" data-view="reportes"><span class="icon">📊</span> Reportes</div>
+      <div class="nav-item" data-view="export-contable"><span class="icon">📤</span> Export Contable</div>
+      <div class="nav-item" data-view="auditoria"><span class="icon">🔍</span> Auditoría</div>
     </div>
 
     <div class="nav-section">
@@ -731,6 +798,136 @@
       </div>
     </div>
 
+    <!-- ── Cuentas CRM ────────────────────────────────────── -->
+    <div class="view" id="view-cuentas-crm">
+      <div class="view-header">
+        <h1>🏢 Cuentas CRM</h1>
+        <span class="badge" id="badge-cuentas-crm">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar cuenta, industria..." oninput="A.loadView('cuentas-crm',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cuentas-crm')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-cuentas-crm">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Cta. Cte. Clientes ────────────────────────────── -->
+    <div class="view" id="view-cta-cte-clientes">
+      <div class="view-header">
+        <h1>👤 Cuenta Corriente Clientes</h1>
+        <div class="search-wrap" style="max-width:220px;margin-left:8px;">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="search-ctacte-clientes" placeholder="Buscar cliente..." oninput="filterCtaCteClientes(this.value)" />
+        </div>
+      </div>
+      <div class="ctacte-grid">
+        <div class="ctacte-list" id="ctacte-clientes-list">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="ctacte-detail">
+          <div class="table-wrap" id="table-ctacte-clientes-detail">
+            <div class="empty-state"><span class="emo">👤</span><span>Seleccioná un cliente para ver su cuenta corriente.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Cta. Cte. Proveedores ─────────────────────────── -->
+    <div class="view" id="view-cta-cte-proveedores">
+      <div class="view-header">
+        <h1>🏭 Cuenta Corriente Proveedores</h1>
+        <div class="search-wrap" style="max-width:220px;margin-left:8px;">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="search-ctacte-proveedores" placeholder="Buscar proveedor..." oninput="filterCtaCteSuppliers(this.value)" />
+        </div>
+      </div>
+      <div class="ctacte-grid">
+        <div class="ctacte-list" id="ctacte-proveedores-list">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="ctacte-detail">
+          <div class="table-wrap" id="table-ctacte-proveedores-detail">
+            <div class="empty-state"><span class="emo">🏭</span><span>Seleccioná un proveedor para ver su cuenta corriente.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Diario ─────────────────────────────────────────── -->
+    <div class="view" id="view-diario">
+      <div class="view-header"><h1>📓 Diario de Caja</h1></div>
+      <div class="report-toolbar">
+        <label>Desde <input type="date" id="diario-from" /></label>
+        <label>Hasta <input type="date" id="diario-to" /></label>
+        <button class="btn btn-primary btn-sm" onclick="loadDiario()">Consultar</button>
+      </div>
+      <div class="table-wrap" id="table-diario">
+        <div class="empty-state"><span class="emo">📓</span><span>Seleccioná un rango de fechas y consultá.</span></div>
+      </div>
+    </div>
+
+    <!-- ── Reportes ───────────────────────────────────────── -->
+    <div class="view" id="view-reportes">
+      <div class="view-header"><h1>📊 Reportes</h1></div>
+      <div class="report-toolbar">
+        <label>Desde <input type="date" id="report-from" /></label>
+        <label>Hasta <input type="date" id="report-to" /></label>
+        <button class="btn btn-primary btn-sm" onclick="loadReport()">Consultar</button>
+      </div>
+      <div class="report-tabs">
+        <div class="report-tab active" data-tab="ventas" onclick="switchReportTab('ventas')">Ventas</div>
+        <div class="report-tab" data-tab="compras" onclick="switchReportTab('compras')">Compras</div>
+        <div class="report-tab" data-tab="articulos" onclick="switchReportTab('articulos')">Artículos</div>
+      </div>
+      <div id="report-summary" class="report-summary" style="display:none"></div>
+      <div class="table-wrap" id="table-reportes">
+        <div class="empty-state"><span class="emo">📊</span><span>Seleccioná un rango y hacé clic en Consultar.</span></div>
+      </div>
+    </div>
+
+    <!-- ── Export Contable ────────────────────────────────── -->
+    <div class="view" id="view-export-contable" style="overflow-y:auto">
+      <div class="view-header"><h1>📤 Export Contable</h1></div>
+      <div class="export-panel">
+        <div class="export-card">
+          <h3>Facturas de Venta</h3>
+          <p>Exporta todas las facturas de venta emitidas en el período en formato CSV (compatible con Excel y sistemas contables).</p>
+          <div class="export-row">
+            <label style="font-size:11px">Desde <input type="date" id="exp-sales-from" /></label>
+            <label style="font-size:11px">Hasta <input type="date" id="exp-sales-to" /></label>
+            <button class="btn btn-primary" onclick="exportCSV('invoices')">⬇ Exportar CSV</button>
+          </div>
+          <div id="exp-sales-msg" style="font-size:11px;color:var(--success);display:none"></div>
+        </div>
+        <div class="export-card">
+          <h3>Facturas de Compra</h3>
+          <p>Exporta todas las facturas de compra registradas en el período en formato CSV.</p>
+          <div class="export-row">
+            <label style="font-size:11px">Desde <input type="date" id="exp-purch-from" /></label>
+            <label style="font-size:11px">Hasta <input type="date" id="exp-purch-to" /></label>
+            <button class="btn btn-primary" onclick="exportCSV('purchases')">⬇ Exportar CSV</button>
+          </div>
+          <div id="exp-purch-msg" style="font-size:11px;color:var(--success);display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Auditoría ──────────────────────────────────────── -->
+    <div class="view" id="view-auditoria">
+      <div class="view-header">
+        <h1>🔍 Auditoría — Últimas Operaciones</h1>
+        <span class="badge" id="badge-auditoria">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('auditoria')">↻ Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-auditoria">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
   </div><!-- /#content -->
 </div><!-- /#app -->
 
@@ -971,6 +1168,29 @@
         { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
       ],
     },
+    "cuentas-crm": {
+      title: "Cuentas CRM",
+      load: (s) => asimov().crmAccounts.list(s),
+      cols: [
+        { label: "Nombre",    key: "name"                       },
+        { label: "Industria", key: "industry",       w: "140px" },
+        { label: "Teléfono",  key: "phone",          w: "130px" },
+        { label: "Email",     key: "email",          w: "180px" },
+        { label: "Ciudad",    key: "address",        w: "140px" },
+      ],
+    },
+    auditoria: {
+      title: "Auditoría",
+      load: () => asimov().audit.recent(),
+      cols: [
+        { label: "Tipo",      key: "tipo",           w: "130px" },
+        { label: "Documento", key: "ref",            w: "140px" },
+        { label: "Quién",     key: "quien"                      },
+        { label: "Fecha doc.",key: "date",           w: "90px",  fmt: fmtDate },
+        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+        { label: "Registrado",key: "created_at",     w: "130px", fmt: fmtDatetime },
+      ],
+    },
   };
 
   // ── formatters ───────────────────────────────────────────────────────
@@ -979,6 +1199,12 @@
     const d = new Date(v);
     if (isNaN(d)) return String(v).slice(0, 10);
     return d.toLocaleDateString("es-AR");
+  }
+  function fmtDatetime(v) {
+    if (!v) return "—";
+    const d = new Date(v);
+    if (isNaN(d)) return String(v).slice(0, 16);
+    return d.toLocaleString("es-AR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
   }
   function fmtARS(v) {
     if (v == null || v === "") return "—";
@@ -1026,6 +1252,11 @@
 
     if (norm === "dashboard") { loadDashboard(); return; }
     if (norm === "caja") { loadCaja(); return; }
+    if (norm === "cta-cte-clientes") { loadCtaCteClientes(); return; }
+    if (norm === "cta-cte-proveedores") { loadCtaCteProveedores(); return; }
+    if (norm === "diario") { initDiario(); return; }
+    if (norm === "reportes") { initReportes(); return; }
+    if (norm === "export-contable") { initExportContable(); return; }
     if (!loadedViews.has(norm)) {
       loadedViews.add(norm);
       loadViewData(norm, "");
@@ -1052,6 +1283,13 @@
       "/facturacion/recibos": "recibos",
       "/facturacion/precios": "precios",
       "/tesoreria": "caja", "/tesoreria/caja": "caja",
+      "/tesoreria/cta-clientes": "cta-cte-clientes",
+      "/tesoreria/cta-proveedores": "cta-cte-proveedores",
+      "/crm": "cuentas-crm", "/crm/cuentas": "cuentas-crm",
+      "/contabilidad": "diario", "/contabilidad/diario": "diario",
+      "/contabilidad/reportes": "reportes",
+      "/contabilidad/export": "export-contable",
+      "/contabilidad/auditoria": "auditoria",
       "/rma": "tickets", "/rma/tickets": "tickets",
       "/rma/ordenes": "ordenes-trabajo",
       "/rma/garantias": "garantias",
@@ -1250,6 +1488,265 @@
         `<div style="color:#c62828;padding:20px">No se pudo conectar con la base de datos. Reiniciá la app.</div>`;
     });
   });
+
+  // ── Cta. Cte. Clientes ──────────────────────────────────────────────────
+  let _ctaCteClientsData = [];
+  async function loadCtaCteClientes() {
+    document.getElementById("ctacte-clientes-list").innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    document.getElementById("table-ctacte-clientes-detail").innerHTML = '<div class="empty-state"><span class="emo">👤</span><span>Seleccioná un cliente para ver su cuenta corriente.</span></div>';
+    try {
+      const api = await waitForAsimov();
+      _ctaCteClientsData = await api.ctaCteClients.list("");
+      renderCtaCteClientsList(_ctaCteClientsData);
+    } catch (e) {
+      document.getElementById("ctacte-clientes-list").innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+  function filterCtaCteClientes(q) {
+    const lower = q.toLowerCase();
+    const filtered = _ctaCteClientsData.filter(r =>
+      String(r.business_name || "").toLowerCase().includes(lower) ||
+      String(r.cuit || "").includes(lower)
+    );
+    renderCtaCteClientsList(filtered);
+  }
+  function renderCtaCteClientsList(rows) {
+    const el = document.getElementById("ctacte-clientes-list");
+    if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>'; return; }
+    el.innerHTML = rows.map(r => {
+      const saldo = (r.total_facturado || 0) - (r.total_cobrado || 0);
+      const cls = saldo > 0.01 ? "positivo" : "cero";
+      const label = saldo > 0.01 ? `Debe $ ${Number(saldo).toLocaleString("es-AR",{minimumFractionDigits:2})}` : "Al día";
+      return `<div class="ctacte-item" onclick="selectCtaCteClient('${r.id}','${esc(r.business_name)}')">
+        <div class="cci-name">${esc(r.business_name)}</div>
+        <div class="cci-cuit">${r.cuit || "—"}</div>
+        <div class="cci-saldo ${cls}">${label}</div>
+      </div>`;
+    }).join("");
+  }
+  async function selectCtaCteClient(id, name) {
+    document.querySelectorAll("#ctacte-clientes-list .ctacte-item").forEach(el => {
+      el.classList.toggle("selected", el.onclick && el.onclick.toString().includes(`'${id}'`));
+    });
+    const det = document.getElementById("table-ctacte-clientes-detail");
+    det.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const api = await waitForAsimov();
+      const rows = await api.ctaCteClients.detail(id);
+      if (!rows.length) { det.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin movimientos para este cliente.</span></div>'; return; }
+      let saldo = 0;
+      const trs = rows.map(r => {
+        saldo += (r.debe || 0) - (r.haber || 0);
+        const saldoCls = saldo > 0.01 ? "color:var(--danger);font-weight:700" : "color:var(--success);font-weight:700";
+        return `<tr>
+          <td>${fmtDate(r.date)}</td>
+          <td>${r.tipo}</td>
+          <td>${esc(r.referencia)}</td>
+          <td style="text-align:right">${r.debe > 0 ? fmtARS(r.debe) : "—"}</td>
+          <td style="text-align:right">${r.haber > 0 ? fmtARS(r.haber) : "—"}</td>
+          <td style="text-align:right;${saldoCls}">${fmtARS(saldo)}</td>
+          <td>${fmtPill(r.status)}</td>
+        </tr>`;
+      }).join("");
+      det.innerHTML = `<table><thead><tr>
+        <th style="width:90px">Fecha</th><th style="width:110px">Tipo</th><th>Referencia</th>
+        <th style="width:120px;text-align:right">Debe</th><th style="width:120px;text-align:right">Haber</th>
+        <th style="width:130px;text-align:right">Saldo</th><th style="width:100px">Estado</th>
+      </tr></thead><tbody>${trs}</tbody></table>`;
+    } catch (e) {
+      det.innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+  window.selectCtaCteClient = selectCtaCteClient;
+  window.filterCtaCteClientes = filterCtaCteClientes;
+
+  // ── Cta. Cte. Proveedores ────────────────────────────────────────────────
+  let _ctaCteSuppliersData = [];
+  async function loadCtaCteProveedores() {
+    document.getElementById("ctacte-proveedores-list").innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    document.getElementById("table-ctacte-proveedores-detail").innerHTML = '<div class="empty-state"><span class="emo">🏭</span><span>Seleccioná un proveedor para ver su cuenta corriente.</span></div>';
+    try {
+      const api = await waitForAsimov();
+      _ctaCteSuppliersData = await api.ctaCteSuppliers.list("");
+      renderCtaCteSuppliersL(_ctaCteSuppliersData);
+    } catch (e) {
+      document.getElementById("ctacte-proveedores-list").innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+  function filterCtaCteSuppliers(q) {
+    const lower = q.toLowerCase();
+    const filtered = _ctaCteSuppliersData.filter(r =>
+      String(r.business_name || "").toLowerCase().includes(lower) ||
+      String(r.cuit || "").includes(lower)
+    );
+    renderCtaCteSuppliersL(filtered);
+  }
+  function renderCtaCteSuppliersL(rows) {
+    const el = document.getElementById("ctacte-proveedores-list");
+    if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>'; return; }
+    el.innerHTML = rows.map(r => {
+      const saldo = (r.total_comprado || 0) - (r.total_pagado || 0);
+      const cls = saldo > 0.01 ? "positivo" : "cero";
+      const label = saldo > 0.01 ? `Debe $ ${Number(saldo).toLocaleString("es-AR",{minimumFractionDigits:2})}` : "Al día";
+      return `<div class="ctacte-item" onclick="selectCtaCteSupplier('${r.id}','${esc(r.business_name)}')">
+        <div class="cci-name">${esc(r.business_name)}</div>
+        <div class="cci-cuit">${r.cuit || "—"}</div>
+        <div class="cci-saldo ${cls}">${label}</div>
+      </div>`;
+    }).join("");
+  }
+  async function selectCtaCteSupplier(id, name) {
+    const det = document.getElementById("table-ctacte-proveedores-detail");
+    det.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const api = await waitForAsimov();
+      const rows = await api.ctaCteSuppliers.detail(id);
+      if (!rows.length) { det.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin movimientos para este proveedor.</span></div>'; return; }
+      let saldo = 0;
+      const trs = rows.map(r => {
+        saldo += (r.debe || 0) - (r.haber || 0);
+        const saldoCls = saldo > 0.01 ? "color:var(--danger);font-weight:700" : "color:var(--success);font-weight:700";
+        return `<tr>
+          <td>${fmtDate(r.date)}</td><td>${r.tipo}</td><td>${esc(r.referencia)}</td>
+          <td style="text-align:right">${r.debe > 0 ? fmtARS(r.debe) : "—"}</td>
+          <td style="text-align:right">${r.haber > 0 ? fmtARS(r.haber) : "—"}</td>
+          <td style="text-align:right;${saldoCls}">${fmtARS(saldo)}</td>
+          <td>${fmtPill(r.status)}</td>
+        </tr>`;
+      }).join("");
+      det.innerHTML = `<table><thead><tr>
+        <th style="width:90px">Fecha</th><th style="width:120px">Tipo</th><th>Referencia</th>
+        <th style="width:120px;text-align:right">Debe</th><th style="width:120px;text-align:right">Haber</th>
+        <th style="width:130px;text-align:right">Saldo</th><th style="width:100px">Estado</th>
+      </tr></thead><tbody>${trs}</tbody></table>`;
+    } catch (e) {
+      det.innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+  window.selectCtaCteSupplier = selectCtaCteSupplier;
+  window.filterCtaCteSuppliers = filterCtaCteSuppliers;
+
+  // ── Diario ───────────────────────────────────────────────────────────────
+  function initDiario() {
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    document.getElementById("diario-from").value = new Date(y, m, 1).toISOString().slice(0, 10);
+    document.getElementById("diario-to").value   = now.toISOString().slice(0, 10);
+  }
+  async function loadDiario() {
+    const from = document.getElementById("diario-from").value;
+    const to   = document.getElementById("diario-to").value;
+    const el   = document.getElementById("table-diario");
+    el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    try {
+      const api  = await waitForAsimov();
+      const rows = await api.diario.list(from, to);
+      if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📓</span><span>Sin movimientos en el período.</span></div>'; return; }
+      const trs = rows.map(r => `<tr>
+        <td>${fmtDatetime(r.date)}</td>
+        <td>${esc(r.account_name)}</td>
+        <td>${fmtPill(r.type)}</td>
+        <td>${esc(r.concept)}</td>
+        <td style="text-align:right;font-weight:600">${fmtARS(r.amount)}</td>
+        <td style="color:var(--muted);font-size:10.5px">${r.reference_type || "—"}</td>
+      </tr>`).join("");
+      el.innerHTML = `<table><thead><tr>
+        <th style="width:130px">Fecha/Hora</th><th style="width:150px">Cuenta</th>
+        <th style="width:100px">Tipo</th><th>Concepto</th>
+        <th style="width:120px;text-align:right">Importe</th><th style="width:110px">Referencia</th>
+      </tr></thead><tbody>${trs}</tbody></table>`;
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+  window.loadDiario = loadDiario;
+
+  // ── Reportes ─────────────────────────────────────────────────────────────
+  let _reportTab = "ventas";
+  function initReportes() {
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    document.getElementById("report-from").value = new Date(y, m, 1).toISOString().slice(0, 10);
+    document.getElementById("report-to").value   = now.toISOString().slice(0, 10);
+    _reportTab = "ventas";
+    document.querySelectorAll(".report-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === "ventas"));
+  }
+  function switchReportTab(tab) {
+    _reportTab = tab;
+    document.querySelectorAll(".report-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+    loadReport();
+  }
+  async function loadReport() {
+    const from = document.getElementById("report-from").value;
+    const to   = document.getElementById("report-to").value;
+    const el   = document.getElementById("table-reportes");
+    const sum  = document.getElementById("report-summary");
+    el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+    sum.style.display = "none";
+    try {
+      const api = await waitForAsimov();
+      let rows, cols, trs, totalNeto = 0, totalIva = 0, totalTotal = 0;
+      if (_reportTab === "ventas") {
+        rows = await api.reports.sales(from, to);
+        cols = `<th style="width:90px">Fecha</th><th style="width:140px">Número</th><th>Cliente</th><th style="width:50px">Tipo</th><th style="width:100px">Estado</th><th style="width:110px;text-align:right">Neto</th><th style="width:100px;text-align:right">IVA</th><th style="width:120px;text-align:right">Total</th>`;
+        trs = rows.map(r => { totalNeto += r.subtotal||0; totalIva += r.iva_amount||0; totalTotal += r.total||0;
+          return `<tr><td>${fmtDate(r.date)}</td><td>${esc(r.number)}</td><td>${esc(r.client_name)}</td><td>${r.tipo||"—"}</td><td>${fmtPill(r.status)}</td><td style="text-align:right">${fmtARS(r.subtotal)}</td><td style="text-align:right">${fmtARS(r.iva_amount)}</td><td style="text-align:right;font-weight:700">${fmtARS(r.total)}</td></tr>`; }).join("");
+      } else if (_reportTab === "compras") {
+        rows = await api.reports.purchases(from, to);
+        cols = `<th style="width:90px">Fecha</th><th style="width:140px">Número</th><th>Proveedor</th><th style="width:50px">Tipo</th><th style="width:100px">Estado</th><th style="width:110px;text-align:right">Neto</th><th style="width:100px;text-align:right">IVA</th><th style="width:120px;text-align:right">Total</th>`;
+        trs = rows.map(r => { totalNeto += r.subtotal||0; totalIva += r.iva_amount||0; totalTotal += r.total||0;
+          return `<tr><td>${fmtDate(r.date)}</td><td>${esc(r.number)}</td><td>${esc(r.supplier_name)}</td><td>${r.tipo||"—"}</td><td>${fmtPill(r.status)}</td><td style="text-align:right">${fmtARS(r.subtotal)}</td><td style="text-align:right">${fmtARS(r.iva_amount)}</td><td style="text-align:right;font-weight:700">${fmtARS(r.total)}</td></tr>`; }).join("");
+      } else {
+        rows = await api.reports.topArticles(from, to);
+        cols = `<th style="width:100px">Código</th><th>Artículo</th><th style="width:100px;text-align:right">Cantidad</th><th style="width:130px;text-align:right">Total Neto</th>`;
+        trs = rows.map(r => { totalTotal += r.total_neto||0;
+          return `<tr><td>${esc(r.code)}</td><td>${esc(r.description)}</td><td style="text-align:right">${fmtNum(r.qty_total)}</td><td style="text-align:right;font-weight:700">${fmtARS(r.total_neto)}</td></tr>`; }).join("");
+      }
+      if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📊</span><span>Sin datos en el período.</span></div>'; return; }
+      el.innerHTML = `<table><thead><tr>${cols}</tr></thead><tbody>${trs}</tbody></table>`;
+      sum.style.display = "flex";
+      sum.innerHTML = _reportTab === "articulos"
+        ? `<span class="rs-item">${rows.length} artículos &nbsp;|&nbsp; Total neto: <span class="rs-val">${fmtARS(totalTotal)}</span></span>`
+        : `<span class="rs-item">${rows.length} documentos &nbsp;|&nbsp; Neto: <span class="rs-val">${fmtARS(totalNeto)}</span> &nbsp; IVA: <span class="rs-val">${fmtARS(totalIva)}</span> &nbsp; Total: <span class="rs-val">${fmtARS(totalTotal)}</span></span>`;
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+    }
+  }
+  window.switchReportTab = switchReportTab;
+  window.loadReport = loadReport;
+
+  // ── Export Contable ──────────────────────────────────────────────────────
+  function initExportContable() {
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    const fromStr = new Date(y, m, 1).toISOString().slice(0, 10);
+    const toStr   = now.toISOString().slice(0, 10);
+    document.getElementById("exp-sales-from").value = fromStr;
+    document.getElementById("exp-sales-to").value   = toStr;
+    document.getElementById("exp-purch-from").value = fromStr;
+    document.getElementById("exp-purch-to").value   = toStr;
+  }
+  async function exportCSV(type) {
+    const isInv = type === "invoices";
+    const from = document.getElementById(isInv ? "exp-sales-from" : "exp-purch-from").value;
+    const to   = document.getElementById(isInv ? "exp-sales-to"   : "exp-purch-to").value;
+    const msgEl = document.getElementById(isInv ? "exp-sales-msg" : "exp-purch-msg");
+    msgEl.style.display = "none";
+    try {
+      const api = await waitForAsimov();
+      const res = isInv ? await api.exportCsv.invoices(from, to) : await api.exportCsv.purchases(from, to);
+      if (res.cancelled) return;
+      if (res.ok) {
+        msgEl.textContent = `✓ Exportado: ${res.filePath}`;
+        msgEl.style.display = "block";
+      }
+    } catch (e) {
+      msgEl.textContent = `Error: ${e.message}`;
+      msgEl.style.color = "var(--danger)";
+      msgEl.style.display = "block";
+    }
+  }
+  window.exportCSV = exportCSV;
 
   async function checkUpdate() {
     const btn = document.getElementById("status-update");

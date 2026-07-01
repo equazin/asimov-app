@@ -2,7 +2,9 @@
  * Handlers IPC del proceso principal.
  * Toda comunicación renderer → main pasa por aquí con validación de entrada.
  */
-import { app, BrowserWindow, ipcMain, Notification } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Notification } from "electron";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import {
   getLaunchAtStartup,
   getShellPreferences,
@@ -375,5 +377,161 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("db:next-number", (_event, type: unknown) => {
     const seq = nextSequence(safeStr(type));
     return { seq, number: formatDocNumber(safeStr(type).toUpperCase().slice(0, 4), seq) };
+  });
+
+  // --- DB: Cta Cte Clientes ------------------------------------------------
+  ipcMain.handle("db:cta-cte:clients:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(`
+      SELECT c.id, c.business_name, c.cuit,
+        COALESCE((SELECT SUM(total) FROM invoices WHERE client_id = c.id AND status NOT IN ('cancelado','borrador')),0) AS total_facturado,
+        COALESCE((SELECT SUM(total) FROM receipts  WHERE client_id = c.id),0) AS total_cobrado
+      FROM clients c
+      WHERE c.active = 1 AND (c.business_name LIKE ? OR c.cuit LIKE ?)
+      ORDER BY c.business_name LIMIT 500
+    `, [q, q]);
+  });
+  ipcMain.handle("db:cta-cte:clients:detail", (_event, clientId: unknown) => {
+    const id = safeStr(clientId);
+    return dbAll(`
+      SELECT date, 'Factura' AS tipo, number AS referencia, total AS debe, 0 AS haber, status
+        FROM invoices WHERE client_id = ? AND status NOT IN ('cancelado','borrador')
+      UNION ALL
+      SELECT date, 'Recibo'  AS tipo, number AS referencia, 0 AS debe, total AS haber, status
+        FROM receipts WHERE client_id = ?
+      ORDER BY date DESC LIMIT 500
+    `, [id, id]);
+  });
+
+  // --- DB: Cta Cte Proveedores ---------------------------------------------
+  ipcMain.handle("db:cta-cte:suppliers:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(`
+      SELECT s.id, s.business_name, s.cuit,
+        COALESCE((SELECT SUM(total) FROM purchase_invoices WHERE supplier_id = s.id AND status NOT IN ('cancelado','borrador')),0) AS total_comprado,
+        COALESCE((SELECT SUM(total) FROM payment_orders  WHERE supplier_id = s.id AND status NOT IN ('cancelado','borrador')),0) AS total_pagado
+      FROM suppliers s
+      WHERE s.active = 1 AND (s.business_name LIKE ? OR s.cuit LIKE ?)
+      ORDER BY s.business_name LIMIT 500
+    `, [q, q]);
+  });
+  ipcMain.handle("db:cta-cte:suppliers:detail", (_event, supplierId: unknown) => {
+    const id = safeStr(supplierId);
+    return dbAll(`
+      SELECT date, 'Fact. Compra' AS tipo, number AS referencia, total AS debe, 0 AS haber, status
+        FROM purchase_invoices WHERE supplier_id = ?
+      UNION ALL
+      SELECT date, 'Ord. de Pago' AS tipo, number AS referencia, 0 AS debe, total AS haber, status
+        FROM payment_orders WHERE supplier_id = ?
+      ORDER BY date DESC LIMIT 500
+    `, [id, id]);
+  });
+
+  // --- DB: Reportes --------------------------------------------------------
+  ipcMain.handle("db:reports:sales", (_event, params: unknown) => {
+    const p = (params ?? {}) as { from?: string; to?: string };
+    const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
+    return dbAll(`SELECT date, number, client_name, tipo, status, subtotal, iva_amount, total
+                  FROM invoices WHERE date BETWEEN ? AND ? AND status NOT IN ('cancelado','borrador')
+                  ORDER BY date DESC LIMIT 1000`, [from, to]);
+  });
+  ipcMain.handle("db:reports:purchases", (_event, params: unknown) => {
+    const p = (params ?? {}) as { from?: string; to?: string };
+    const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
+    return dbAll(`SELECT date, number, supplier_name, tipo, status, subtotal, iva_amount, total
+                  FROM purchase_invoices WHERE date BETWEEN ? AND ? AND status NOT IN ('cancelado','borrador')
+                  ORDER BY date DESC LIMIT 1000`, [from, to]);
+  });
+  ipcMain.handle("db:reports:top-articles", (_event, params: unknown) => {
+    const p = (params ?? {}) as { from?: string; to?: string };
+    const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
+    return dbAll(`SELECT ii.code, ii.description, SUM(ii.qty) AS qty_total, SUM(ii.subtotal) AS total_neto
+                  FROM invoice_items ii JOIN invoices i ON i.id = ii.invoice_id
+                  WHERE i.date BETWEEN ? AND ? AND i.status NOT IN ('cancelado','borrador')
+                  GROUP BY ii.code, ii.description ORDER BY total_neto DESC LIMIT 100`, [from, to]);
+  });
+
+  // --- DB: Diario (cash movements journal) ---------------------------------
+  ipcMain.handle("db:diario:list", (_event, params: unknown) => {
+    const p = (params ?? {}) as { from?: string; to?: string };
+    const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
+    return dbAll(`SELECT cm.date, ca.name AS account_name, cm.type, cm.concept, cm.amount,
+                         cm.reference_type, cm.reference_id
+                  FROM cash_movements cm LEFT JOIN cash_accounts ca ON ca.id = cm.account_id
+                  WHERE date(cm.date) BETWEEN ? AND ?
+                  ORDER BY cm.date DESC LIMIT 1000`, [from, to]);
+  });
+
+  // --- DB: Auditoría -------------------------------------------------------
+  ipcMain.handle("db:audit:recent", () => {
+    return dbAll(`
+      SELECT 'Factura Venta'  AS tipo, number AS ref, client_name   AS quien, date, status, created_at FROM invoices
+      UNION ALL
+      SELECT 'Pedido Venta',           number,         client_name,           date, status, created_at FROM sale_orders
+      UNION ALL
+      SELECT 'Recibo',                 number,         client_name,           date, status, created_at FROM receipts
+      UNION ALL
+      SELECT 'Remito',                 number,         client_name,           date, status, created_at FROM delivery_notes
+      UNION ALL
+      SELECT 'Fact. Compra',           number,         supplier_name,         date, status, created_at FROM purchase_invoices
+      UNION ALL
+      SELECT 'Ord. Compra',            number,         supplier_name,         date, status, created_at FROM purchase_orders
+      UNION ALL
+      SELECT 'Ord. de Pago',           number,         supplier_name,         date, status, created_at FROM payment_orders
+      UNION ALL
+      SELECT 'Cotización',             number,         client_name,           date, status, created_at FROM quotes
+      ORDER BY created_at DESC LIMIT 300
+    `);
+  });
+
+  // --- DB: Export Contable (CSV) -------------------------------------------
+  ipcMain.handle("db:export:invoices-csv", async (_event, params: unknown) => {
+    const p = (params ?? {}) as { from?: string; to?: string };
+    const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
+
+    const { filePath } = await dialog.showSaveDialog({
+      title: "Exportar facturas de venta",
+      defaultPath: path.join(app.getPath("documents"), `facturas-${from}-${to}.csv`),
+      filters: [{ name: "CSV", extensions: ["csv"] }],
+    });
+    if (!filePath) return { ok: false, cancelled: true };
+
+    const rows = dbAll<Record<string, unknown>>(
+      `SELECT date, number, tipo, client_name, subtotal, iva_amount, total, status
+       FROM invoices WHERE date BETWEEN ? AND ? ORDER BY date`, [from, to]
+    );
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const header = "Fecha,Número,Tipo,Cliente,Neto,IVA,Total,Estado\n";
+    const csv = rows.map(r => [r.date, r.number, r.tipo, esc(r.client_name), r.subtotal, r.iva_amount, r.total, r.status].join(",")).join("\n");
+    fs.writeFileSync(filePath, "﻿" + header + csv, "utf8");
+    return { ok: true, filePath };
+  });
+
+  ipcMain.handle("db:export:purchases-csv", async (_event, params: unknown) => {
+    const p = (params ?? {}) as { from?: string; to?: string };
+    const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
+
+    const { filePath } = await dialog.showSaveDialog({
+      title: "Exportar facturas de compra",
+      defaultPath: path.join(app.getPath("documents"), `compras-${from}-${to}.csv`),
+      filters: [{ name: "CSV", extensions: ["csv"] }],
+    });
+    if (!filePath) return { ok: false, cancelled: true };
+
+    const rows = dbAll<Record<string, unknown>>(
+      `SELECT date, number, tipo, supplier_name, subtotal, iva_amount, total, status
+       FROM purchase_invoices WHERE date BETWEEN ? AND ? ORDER BY date`, [from, to]
+    );
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const header = "Fecha,Número,Tipo,Proveedor,Neto,IVA,Total,Estado\n";
+    const csv = rows.map(r => [r.date, r.number, r.tipo, esc(r.supplier_name), r.subtotal, r.iva_amount, r.total, r.status].join(",")).join("\n");
+    fs.writeFileSync(filePath, "﻿" + header + csv, "utf8");
+    return { ok: true, filePath };
   });
 }
