@@ -1585,6 +1585,9 @@
     };
     if (MAP[path]) return MAP[path];
     if (VIEWS[path]) return path;
+    // Vistas especiales (caja, diario, usuarios, etc.): resolver cualquier id
+    // que tenga su panel <div id="view-<id>"> en el DOM.
+    if (typeof path === "string" && document.getElementById("view-" + path)) return path;
     return null;
   }
 
