@@ -1063,11 +1063,9 @@
   window.A = {
     loadView: (viewId, search = "") => loadViewData(viewId, search),
     openNativeForm: (type) => {
-      // IPC back to main via a fake link click won't work — we need to send IPC
-      // The preload doesn't expose openNativeForm. Use a workaround:
-      // Actually we need to add this. For now, we log it.
-      console.log("openNativeForm:", type);
-      // This will be wired in a follow-up. For now, the menu accelerators work.
+      if (window.asimov && window.asimov.openNativeForm) {
+        window.asimov.openNativeForm(type);
+      }
     },
   };
 

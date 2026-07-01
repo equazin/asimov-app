@@ -199,6 +199,10 @@ const api = {
     ipcRenderer.send("shell:open-client-selection", { contextId }),
   openProductSelection: (rowId = "") =>
     ipcRenderer.send("shell:open-product-selection", { rowId }),
+
+  // Abrir formularios nativos desde el shell
+  openNativeForm: (type: string) =>
+    ipcRenderer.send("shell:open-form", type),
 };
 
 // contextIsolation: false → asignación directa en window

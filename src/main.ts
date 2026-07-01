@@ -229,6 +229,11 @@ if (!gotLock) {
 
     if (!isDev()) initAutoUpdater();
 
+    // --- Shell "Nuevo" buttons → abrir formularios nativos ---
+    ipcMain.on("shell:open-form", (_event, type: NativeFormType) => {
+      openNativeForm(type);
+    });
+
     // --- Product picker IPC ---
     ipcMain.on("shell:open-product-selection", (event, data: { rowId: string }) => {
       const sender = BrowserWindow.fromWebContents(event.sender);
