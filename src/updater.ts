@@ -12,19 +12,20 @@
 import { app, dialog } from "electron";
 import { notifyUpdateAvailable } from "./tray";
 
+type AU = typeof import("electron-updater").autoUpdater;
+let _au: AU | null = null;
+
 export function initAutoUpdater(): void {
-  // Carga perezosa: electron-updater sólo tiene sentido empaquetado.
-  let autoUpdater: typeof import("electron-updater").autoUpdater;
   try {
-    autoUpdater = require("electron-updater").autoUpdater;
+    _au = require("electron-updater").autoUpdater;
   } catch {
     return;
   }
 
-  autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
+  _au!.autoDownload = true;
+  _au!.autoInstallOnAppQuit = true;
 
-  autoUpdater.on("update-downloaded", (info) => {
+  _au!.on("update-downloaded", (info: { version: string }) => {
     notifyUpdateAvailable(info.version);
     void dialog
       .showMessageBox({
@@ -36,24 +37,41 @@ export function initAutoUpdater(): void {
         detail: "La nueva versión se aplicará al reiniciar la aplicación.",
       })
       .then((result) => {
-        if (result.response === 0) autoUpdater.quitAndInstall();
+        if (result.response === 0) _au!.quitAndInstall();
       });
   });
 
-  autoUpdater.on("error", (err) => {
-    // No interrumpir al usuario por fallos de update; sólo log.
+  _au!.on("error", (err: Error) => {
     console.error("[auto-update] error:", err?.message ?? err);
   });
 
   try {
-    void autoUpdater.checkForUpdates();
+    void _au!.checkForUpdates();
   } catch (err) {
     console.error("[auto-update] check failed:", err);
   }
 
-  // Re-chequear cada 6 horas mientras la app esté abierta.
   setInterval(() => {
     if (!app.isPackaged) return;
-    void autoUpdater.checkForUpdates().catch(() => {});
+    void _au!.checkForUpdates().catch(() => {});
   }, 6 * 60 * 60 * 1000);
+}
+
+export async function checkForUpdateManual(): Promise<{ status: string; version?: string }> {
+  if (!app.isPackaged) {
+    return { status: "dev", version: app.getVersion() };
+  }
+  if (!_au) {
+    return { status: "unavailable" };
+  }
+  try {
+    const result = await _au.checkForUpdates();
+    if (result?.updateInfo?.version && result.updateInfo.version !== app.getVersion()) {
+      return { status: "available", version: result.updateInfo.version };
+    }
+    return { status: "up-to-date", version: app.getVersion() };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { status: "error", version: msg };
+  }
 }

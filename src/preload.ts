@@ -61,6 +61,7 @@ const api = {
   // App
   getLaunchAtStartup: () => ipcRenderer.invoke("app:launch-at-startup:get") as Promise<boolean>,
   setLaunchAtStartup: (v: boolean) => ipcRenderer.invoke("app:launch-at-startup:set", v),
+  checkForUpdate: () => ipcRenderer.invoke("app:check-update") as Promise<{ status: string; version?: string }>,
 
   // Print
   print: (opts?: PrintOptions) => ipcRenderer.invoke("print:current", opts ?? {}),

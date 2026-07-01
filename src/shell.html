@@ -742,6 +742,8 @@
   <span class="sep"></span>
   <span id="status-count"></span>
   <span class="grow"></span>
+  <span id="status-update" onclick="checkUpdate()" title="Buscar actualizaciones" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">↑ v<span id="status-version">—</span></span>
+  <span class="sep"></span>
   <span id="status-time">—</span>
 </div>
 
@@ -1237,6 +1239,10 @@
       updateClock();
       setInterval(updateClock, 30000);
 
+      // Show app version in status bar
+      const ver = api.version || "";
+      if (ver) document.getElementById("status-version").textContent = ver;
+
       // Initial load
       loadDashboard();
     }).catch(() => {
@@ -1244,6 +1250,53 @@
         `<div style="color:#c62828;padding:20px">No se pudo conectar con la base de datos. Reiniciá la app.</div>`;
     });
   });
+
+  async function checkUpdate() {
+    const btn = document.getElementById("status-update");
+    const origText = btn.textContent;
+    btn.textContent = "Buscando...";
+    btn.style.pointerEvents = "none";
+    try {
+      const api = await waitForAsimov();
+      const res = await api.checkForUpdate();
+      let msg, color;
+      if (res.status === "available") {
+        msg = `Nueva versión ${res.version} disponible. Reiniciá para actualizar.`;
+        color = "#a5d6a7";
+      } else if (res.status === "up-to-date") {
+        msg = `Asimov ${res.version} — ya tenés la última versión.`;
+        color = "#fff";
+      } else if (res.status === "dev") {
+        msg = `Modo desarrollo (v${res.version}).`;
+        color = "#fff9c4";
+      } else {
+        msg = `No se pudo verificar actualizaciones.`;
+        color = "#ffccbc";
+      }
+      showStatusToast(msg, color);
+    } catch {
+      showStatusToast("Error al buscar actualizaciones.", "#ffccbc");
+    } finally {
+      btn.textContent = origText;
+      btn.style.pointerEvents = "";
+    }
+  }
+
+  function showStatusToast(msg, bg) {
+    let toast = document.getElementById("update-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "update-toast";
+      toast.style.cssText = "position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:8px 18px;border-radius:6px;font-size:13px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:opacity .3s";
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.background = bg || "#fff";
+    toast.style.color = "#1a1a1a";
+    toast.style.opacity = "1";
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { toast.style.opacity = "0"; }, 4000);
+  }
 
 })();
 </script>

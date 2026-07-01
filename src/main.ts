@@ -14,7 +14,7 @@ import {
 } from "./config";
 import { buildAppMenu } from "./menu";
 import { registerIpcHandlers } from "./ipc";
-import { initAutoUpdater } from "./updater";
+import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
 
@@ -233,6 +233,9 @@ if (!gotLock) {
     ipcMain.on("shell:open-form", (_event, type: NativeFormType) => {
       openNativeForm(type);
     });
+
+    // --- Chequeo manual de actualizaciones ---
+    ipcMain.handle("app:check-update", () => checkForUpdateManual());
 
     // --- Product picker IPC ---
     ipcMain.on("shell:open-product-selection", (event, data: { rowId: string }) => {
