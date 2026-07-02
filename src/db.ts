@@ -639,9 +639,10 @@ export function formatDocNumber(prefix: string, seq: number): string {
 // Inicialización
 // ---------------------------------------------------------------------------
 
-export function initDb(): void {
-  const dbPath = path.join(app.getPath("userData"), "asimov.db");
-  _db = new Database(dbPath);
+export function initDb(dbPath?: string): void {
+  // En tests se pasa ":memory:" para una DB aislada; en la app, el archivo real.
+  const file = dbPath ?? path.join(app.getPath("userData"), "asimov.db");
+  _db = new Database(file);
   _db.exec(SCHEMA_SQL);
 
   // Migrations for existing tables
@@ -655,6 +656,14 @@ export function initDb(): void {
   const cashExists = (_db.prepare("SELECT id FROM cash_accounts LIMIT 1").get() as any);
   if (!cashExists) {
     _db.prepare("INSERT INTO cash_accounts (id, name) VALUES (?, ?)").run("ca-default", "Caja Principal");
+  }
+}
+
+/** Cierra la conexión y resetea el estado. Usado principalmente en tests. */
+export function closeDb(): void {
+  if (_db) {
+    _db.close();
+    _db = null;
   }
 }
 

@@ -114,8 +114,7 @@ que el bug de datos maestros).
 - [x] **Hash real de contraseñas** con `scrypt` (Node nativo, sin dependencias):
   `src/auth.ts` (`hashPassword`/`verifyPassword` con salt aleatorio y comparación
   de tiempo constante). Cableado en `db:users:save` (acepta `password` opcional y
-  la hashea; si no viene, preserva). Verificado (18/18 en
-  `scripts/verify-auth.js`).
+  la hashea; si no viene, preserva). Cubierto por `test/auth.test.ts`.
 - [x] **Login de aplicación** contra tabla `users`. Ventana `login.html` (segura:
   `contextIsolation:true` + `contextBridge` + `sandbox`) que gatea el arranque; la
   ventana principal solo se crea al autenticar (`completeLogin`). Handlers
@@ -136,8 +135,8 @@ que el bug de datos maestros).
   libsecret). Nuevo `src/secrets.ts` (`encryptSecret`/`decryptSecret`, formato
   `enc:v1:<base64>`, migración transparente de texto plano y degradación segura si
   el SO no ofrece cifrado). `db:config:set` cifra `air_password`; `getAirLocalConfig`
-  lo descifra; el volcado genérico `db:config:get-all` lo enmascara. Verificado con
-  `scripts/verify-secrets.js` (6/6). **Pendiente (limitación externa):** el login de
+  lo descifra; el volcado genérico `db:config:get-all` lo enmascara. Cubierto por
+  `test/secrets.test.ts`. **Pendiente (limitación externa):** el login de
   AIR envía la clave como query-param GET (`?q=login&pass=...`); es la API de AIR y
   no se puede cambiar desde acá — mitigable solo si AIR habilita POST/HTTPS-body.
 - [x] **Endurecer el shell principal: `contextIsolation: true` + `sandbox: true` +
@@ -160,33 +159,60 @@ que el bug de datos maestros).
   shell, que solo abre tras login). Hacer como tarea dedicada con prueba manual.
 - [ ] (Opcional) DB cifrada (SQLCipher).
 
-## Fase 3 — Tests 🟠 (EN CURSO)
+## Fase 3 — Tests ✅ (COMPLETADA)
+
+> Suite Vitest sobre la capa de lógica: **53 tests en verde** y **gate de
+> cobertura 80% activo** (95.9% statements / 71.8% branches / 95.8% functions).
+> Los módulos de integración con Electron (main, ipc, tray, updater, menu,
+> preload, config) se cubren con `smoke-test.js` (arranque) y
+> `verify-shell-bridge.js` (puente contextBridge bajo Electron real), no con
+> unit tests.
 
 - [x] **Vitest configurado** (`vitest.config.ts` + scripts `test`/`test:watch`/
   `test:coverage`). `test/setup.ts` mockea `electron` (temp dir por archivo +
-  `safeStorage` simulado); `test/helpers.ts` inicializa/limpia la DB SQLite.
-- [x] **Unit: mapeadores de `masters.ts`** (`test/masters.test.ts`, 5 tests):
-  cliente/proveedor/artículo UI→schema, default de `fiscal_type`, IVA por defecto
-  y autocódigo.
-- [x] **Unit: cliente AIR** (`test/air.test.ts`, 9 tests): `mapAirProduct`
-  (alias de código/nombre, parseo es-AR `1.234,56` y `1,5`), sumas por depósito,
-  estado activo/inactivo, y `mapAirProducts` filtrando inválidos.
-- [ ] Unit: cálculos de IVA/totales/cta cte de `documents.ts` (portar
-  `verify-documents.js` a Vitest: `test/documents.test.ts`).
-- [ ] Unit: `auth.ts` (hash/verify/authenticate/seed) y `secrets.ts` round-trip.
-- [ ] Integración: handlers `db:*` contra SQLite (reusando `test/helpers.ts`).
-- [ ] Meta 80%: reactivar `thresholds` en `vitest.config.ts` al completar la suite.
+  `safeStorage` simulado); `test/helpers.ts` inicializa/limpia la DB SQLite en
+  memoria.
+- [x] **Unit: mapeadores de `masters.ts`** (`test/masters.test.ts`, 5 tests).
+- [x] **Unit: cliente AIR** (`test/air.test.ts`, 9 tests): parseo es-AR, sumas
+  por depósito, activo/inactivo, filtrado de inválidos.
+- [x] **Unit: `documents.ts`** (`test/documents.test.ts`, 15 tests): stock IN/OUT,
+  caja IN/OUT, idempotencia (reversa al re-guardar), documento rechazado/anulado
+  sin efecto, y los 5 comprobantes header-only con sus totales (IVA por línea,
+  número con punto de venta, percepciones).
+- [x] **Unit: `auth.ts`** (`test/auth.test.ts`, 11 tests): hash/verify, salt
+  aleatorio, seed idempotente, login por nombre/email/case-insensitive, rechazo
+  de clave/usuario/inactivo, cambio de clave, y que la sesión no expone el hash.
+- [x] **Unit: `secrets.ts`** (`test/secrets.test.ts`, 6 tests): round-trip,
+  migración de texto plano, degradación sin cifrado del SO, y la rama de fallo
+  del backend.
+- [x] **Integración: `db.ts`** (`test/db.test.ts`, 7 tests): semillas, secuencias,
+  numeración, upserts idempotentes y KPIs del dashboard.
+- [x] **Gate 80% activo**: `thresholds` habilitados en `vitest.config.ts`
+  (lines/functions/statements 80, branches 70). `npm test` y
+  `npm run test:coverage` en verde.
 
-> Estado actual: **14 tests en verde** (`npm test`). Los scripts `verify-*.js`
-> siguen como checks de humo en CI. Config con `thresholds` comentados hasta
-> cerrar la suite.
+> Nota: los antiguos `scripts/verify-{documents,auth,secrets}.js` se eliminaron
+> (quedaron cubiertos por la suite Vitest). Se conservan `smoke-test.js` y
+> `verify-shell-bridge.js` como pruebas de integración bajo Electron real.
 
-## Fase 4 — Deuda técnica y docs 🟡
+## Fase 4 — Deuda técnica y docs 🟡 (EN CURSO)
 
-- [ ] Actualizar el README (describe la arquitectura vieja de "wrapper web
-  remoto", que contradice a `main.ts`: app 100% nativa).
-- [ ] Extraer JS inline de las fichas HTML a módulos reutilizables.
-- [ ] Unificar el patrón de comunicación form→main.
+- [x] **README reescrito** a la arquitectura real (app nativa + SQLite + login),
+  reemplazando la descripción del viejo "wrapper web remoto" (multi-servidor,
+  `window.bartezDesktop`, deeplinks, `persist:bartez`). Incluye estructura real de
+  módulos, seguridad, tests, credenciales por defecto y link al roadmap.
+- [x] **Dead-code del wrapper eliminado**: `picker.html`/`picker-preload.ts`
+  (selector de servidor remoto), `splash.html`/`splash-preload.ts` (carga de web
+  remota) y `offline.html`/`offline-preload.ts` (sin conexión al servidor) — ya no
+  se cargan desde `main.ts`. Se sacaron también de `copy-assets.js`. Build limpio y
+  53 tests en verde tras la limpieza.
+- [~] **Extraer JS inline de las fichas + unificar patrón form→main.** Diferido a
+  propósito (mismo criterio que la CSP): la ruta de guardado **ya está unificada**
+  (cada ficha → método `save*` del preload → handler `*-saved` → `documents.ts`),
+  pero extraer los ~1.5k líneas de `<script>` inline de las 12 fichas + el shell y
+  reescribir los `onclick` a event-delegation es un refactor amplio y de alto
+  riesgo **sin poder validar la UI automáticamente** (el `smoke-test` no ejercita
+  el shell, que solo abre tras login). Hacer como tarea dedicada con prueba manual.
 
 ## Fase 5 — Fiscal y distribución 🟢
 

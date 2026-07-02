@@ -1,95 +1,134 @@
 # Asimov
 
-App de escritorio para Windows del ERP [Bartez Tecnología](https://bartez.com.ar).
-Gestión comercial nativa: impresión directa, notificaciones, multi-servidor y
-actualización automática.
+ERP de escritorio para Windows de [Bartez Tecnología](https://bartez.com.ar).
+Aplicación **nativa y offline-first**: todas las pantallas son HTML local y los
+datos viven en una base **SQLite** en el equipo. Cubre la gestión comercial
+completa —ventas, compras, stock, tesorería, CRM y RMA— con impresión directa,
+notificaciones nativas y actualización automática.
 
-> **Arquitectura:** Asimov **no** empaqueta el frontend. Carga la web remota
-> del ERP y comparte backend y base de datos con la versión web. Cada deploy de
-> la web actualiza la app al instante.
+> **Arquitectura:** Asimov **no** carga ninguna web remota ni comparte base con
+> otra versión. Todo el frontend se empaqueta con la app y la persistencia es
+> local (`better-sqlite3`). El acceso está protegido por login con contraseñas
+> hasheadas (scrypt) y las credenciales de integraciones se guardan cifradas.
 
 ## Instalación
 
-Descargar el último instalador desde [Releases](https://github.com/equazin/asimov-app/releases/latest)
-y ejecutar **Asimov-Setup-x.x.x.exe**.
+Descargar el último instalador desde
+[Releases](https://github.com/equazin/asimov-app/releases/latest) y ejecutar
+**Asimov-Setup-x.x.x.exe**.
 
-Al abrir por primera vez aparece la pantalla de bienvenida y el selector de servidor.
-Ingresá la URL del ERP (ej: `https://bartez.com.ar`) y opcionalmente un nombre.
+Al abrir por primera vez aparece la pantalla de **login**. En el primer arranque
+se crea un usuario administrador por defecto:
+
+| Usuario | Contraseña |
+|---------|------------|
+| `admin` | `asimov`   |
+
+> ⚠️ **Cambiá estas credenciales apenas ingreses**: creá tu propio usuario admin
+> con contraseña desde *Sistema → Usuarios y Roles* y desactivá el default.
+
+La base de datos se crea automáticamente en `%APPDATA%/asimov-app/asimov.db`.
 
 ## Desarrollo
 
 ```bash
 npm install
-npm run dev      # compila TS y abre Electron en modo desarrollo
+npm run dev      # compila TS y abre Electron (con DevTools)
 ```
 
-Para desarrollo ingresá `http://localhost:3000` o `https://bartez.com.ar`.
+> Módulos nativos: `better-sqlite3` se compila para el ABI de Electron al
+> empaquetar. Si al correr en dev falla la carga del módulo, reconstruilo con
+> `npx electron-builder install-app-deps`.
 
 ## Scripts
 
 | Script | Qué hace |
 |--------|----------|
 | `npm run build` | Compila TypeScript (`src/` → `dist/`) y copia assets |
-| `npm run dev` | Build + abre Electron con DevTools habilitado |
+| `npm run dev` | Build + abre Electron con DevTools |
 | `npm run start` | Build + abre Electron en modo normal |
+| `npm test` | Corre la suite de tests (Vitest) |
+| `npm run test:coverage` | Tests + reporte de cobertura (gate 80%) |
+| `npm run smoke-test` | Lanza la app, verifica estabilidad y cierra |
 | `npm run dist` | Genera el instalador NSIS (`.exe`) en `release/` |
 | `npm run dist:dir` | Empaqueta sin instalador (carpeta, para pruebas) |
-| `npm run smoke-test` | Lanza la app, verifica estabilidad, cierra |
 | `npm run release` | Build + publish a GitHub Releases |
 
 ## Estructura
 
 ```
 src/
-├── main.ts            Proceso principal (ventanas, sesión, navegación)
-├── ipc.ts             Handlers IPC (servidor, impresión, notificaciones)
-├── tray.ts            Ícono de bandeja del sistema
-├── menu.ts            Menú nativo de la app
-├── updater.ts         Auto-actualización (electron-updater)
-├── config.ts          Configuración local persistente (electron-store)
-├── preload.ts         Puente seguro para la ventana del ERP
-├── picker-preload.ts  Puente para el selector de servidor
-├── picker.html        UI del primer arranque y selector de servidor
-├── splash.html        Pantalla de carga
-└── offline.html       Pantalla sin conexión
+├── main.ts              Proceso principal: login, ventanas, formularios nativos
+├── auth.ts              Autenticación (hash scrypt, login, seed de admin)
+├── ipc.ts               Handlers IPC (DB, impresión, notificaciones, AIR)
+├── db.ts                Capa SQLite (schema, helpers, upserts, KPIs)
+├── documents.ts         Persistencia de documentos + movimientos de stock/caja
+├── masters.ts           Alta de datos maestros (cliente/proveedor/artículo)
+├── secrets.ts           Cifrado en reposo de credenciales (safeStorage)
+├── air.ts               Integración con el catálogo de AIR S.R.L.
+├── config.ts            Preferencias locales (electron-store)
+├── tray.ts · menu.ts    Bandeja del sistema y menú nativo
+├── updater.ts           Auto-actualización (electron-updater)
+├── preload.ts           Puente seguro del shell (contextBridge)
+├── login.html           Pantalla de ingreso
+├── shell.html           Shell principal (SPA de listas por módulo)
+├── product/client/supplier-selection.html   Selectores (pickers)
+└── new-*.html           12 fichas nativas (pedido, factura, remito, recibo,
+                         OC, recepción, factura de compra, orden de pago, …)
 ```
 
 ## Capacidades
 
-- Onboarding de bienvenida en primer arranque
-- Selector multi-servidor con historial y labels editables
-- Sesión persistente aislada (`persist:bartez`)
-- Impresión nativa con fallback a `window.print()`
-- Notificaciones nativas para leads y alertas
-- Tray icon con acceso rápido y minimizar a bandeja
-- Deeplinks `bartez://open?path=/admin/...`
-- Inicio automático con Windows
-- Auto-actualización vía GitHub Releases
-- Menu nativo por modulos GESES: Ventas, Compras, Stock, Facturacion, Tesoreria, Contabilidad, RMA y Config
-- Multi-ventana (`Ctrl+N`) para operar dos pantallas del ERP en paralelo
-- Favoritos locales (`Ctrl+B` panel, `Ctrl+D` guardar pantalla actual)
-- Barra de estado inyectada: servidor, version, conexion y hora
-- Fondo de operador personalizable desde el menu Apariencia
+- **Login con roles** (admin / user / readonly), contraseñas hasheadas con scrypt
+- **Datos maestros**: clientes, proveedores, artículos, depósitos, listas de precios
+- **Ventas**: pedidos, cotizaciones, facturas, remitos, recibos
+- **Compras**: órdenes de compra, recepciones, facturas de compra, órdenes de pago
+- **Stock**: los remitos y recepciones **mueven existencias** (`article_stock`,
+  `stock_movements`), con alertas de stock mínimo
+- **Tesorería**: recibos y órdenes de pago **mueven caja** (`cash_movements`,
+  saldo de cuentas); cuentas corrientes de clientes y proveedores
+- **CRM y RMA**: oportunidades, tickets, órdenes de trabajo, garantías
+- **Reportes y export**: ventas/compras, top de artículos, diario, auditoría,
+  export contable a CSV
+- **Integración AIR S.R.L.**: sync de catálogo con token cacheado y credenciales
+  cifradas
+- Impresión nativa (directa/silenciosa) con fallback a `window.print()`
+- Notificaciones nativas, tray icon con minimizar a bandeja
+- Inicio automático con Windows y auto-actualización vía GitHub Releases
+- Atajos F1–F9 y navegación por módulos GESES
 
-## API nativa expuesta a la web
+## Seguridad
 
-```js
-if (window.bartezDesktop?.isDesktop) {
-  await window.bartezDesktop.print({ silent: true });
-  await window.bartezDesktop.notify({ title, body });
-  const printers = await window.bartezDesktop.listPrinters();
-  await window.bartezDesktop.setLaunchAtStartup(true);
-  await window.bartezDesktop.shell.addBookmark(document.title);
-  window.bartezDesktop.shell.toggleBookmarks();
-}
+- **Autenticación**: contraseñas con **scrypt** (salt aleatorio, comparación de
+  tiempo constante). El login gatea el arranque; el sistema solo se abre al
+  autenticar. Roles con enforcement real en el proceso principal (no solo en UI).
+- **Credenciales cifradas**: las claves de integraciones (ej. AIR) se guardan con
+  el `safeStorage` de Electron, respaldado por el llavero del SO (DPAPI en
+  Windows). Migración transparente de valores heredados en texto plano.
+- **Aislamiento del renderer**: todas las ventanas usan `contextIsolation: true`
+  + `sandbox` + `contextBridge`. Un eventual XSS en el renderer no puede tocar
+  Node/Electron.
+
+## Tests
+
+Suite de unidad/integración con **Vitest** sobre la capa de lógica (DB en memoria,
+`electron` mockeado). Cubre `db`, `documents`, `masters`, `auth` y `secrets` con
+gate de cobertura al 80%.
+
+```bash
+npm test              # corre la suite
+npm run test:coverage # con reporte de cobertura
 ```
+
+Los módulos de integración con Electron se validan aparte: `smoke-test.js`
+(arranque sin crashes) y `verify-shell-bridge.js` (puente `contextBridge` bajo
+Electron real).
 
 ## Publicar una nueva versión
 
 ```bash
 npm version patch   # o minor/major
-git tag v$(node -p "require('./package.json').version")
-git push && git push --tags
+git push --follow-tags
 ```
 
 El workflow `release.yml` se activa con tags `v*`, compila en Windows y publica
@@ -97,12 +136,14 @@ el instalador como GitHub Release.
 
 ## Firma de código (pendiente)
 
-Para evitar SmartScreen, se necesita un certificado EV/OV.
-Agregar como GitHub Secrets:
-- `WIN_CSC_LINK` — archivo .pfx en base64
-- `WIN_CSC_KEY_PASSWORD` — contraseña del certificado
+Para evitar SmartScreen se necesita un certificado EV/OV. Agregar como GitHub
+Secrets `WIN_CSC_LINK` (.pfx en base64) y `WIN_CSC_KEY_PASSWORD`, y descomentar
+las líneas de firma en `electron-builder.yml` y `.github/workflows/release.yml`.
 
-Y descomentar las líneas de signing en `electron-builder.yml` y `.github/workflows/release.yml`.
+## Roadmap
+
+El plan de trabajo con lo hecho y lo pendiente está en
+[`docs/PLAN-DE-TRABAJO.md`](docs/PLAN-DE-TRABAJO.md).
 
 ---
 
