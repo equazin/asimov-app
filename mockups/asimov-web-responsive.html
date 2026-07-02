@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asimov — La base inteligente de tu negocio</title>
+  <meta name="description" content="Asimov, la app de escritorio del ERP Bartez Tecnología. Impresión directa, notificaciones nativas, multi-servidor y actualización automática." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #14171D;
+      --graphite: #232833;
+      --orange: #FF6A2B;
+      --orange-ink: #5A1E06;
+      --cyan: #2FD4BE;
+      --cloud: #F4F5F3;
+      --n700: #2B303B;
+      --n500: #5B6270;
+      --n300: #A8ADB7;
+      --n100: #E4E6E4;
+      --success: #2FB47A;
+      --warning: #F5A524;
+      --danger: #E5484D;
+      --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+      --body: Inter, "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", Consolas, monospace;
+      --radius: 14px;
+      --shadow: 0 20px 60px rgba(20, 23, 29, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--cloud);
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1120px, 100% - 2.5rem);
+      margin-inline: auto;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--display);
+      font-weight: 700;
+      line-height: 1.15;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font: 600 0.95rem/1 var(--body);
+      padding: 0.85rem 1.4rem;
+      border-radius: 10px;
+      border: 0;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--orange);
+      color: var(--orange-ink);
+      box-shadow: 0 8px 24px rgba(255, 106, 43, 0.35);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--n300);
+    }
+    .btn-ghost.on-dark { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+    /* ---------- Header ---------- */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(244, 245, 243, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--n100);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .brand svg { height: 34px; width: auto; }
+    .nav-links {
+      display: none;
+      align-items: center;
+      gap: 1.75rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--n700);
+    }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta { display: none; }
+    .nav-toggle {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1.5px solid var(--n300);
+      border-radius: 10px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .nav-toggle span, .nav-toggle::before, .nav-toggle::after {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--ink);
+      margin: 2.5px 0;
+      border-radius: 2px;
+    }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.5rem 0 1.1rem;
+      font-weight: 500;
+    }
+    .mobile-menu a { text-decoration: none; padding: 0.55rem 0.25rem; border-radius: 8px; }
+    .mobile-menu a:hover { background: var(--n100); }
+    .mobile-menu .btn { margin-top: 0.5rem; justify-content: center; }
+    #menu-state { display: none; }
+    #menu-state:checked ~ .mobile-menu { display: flex; }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      padding: 3.5rem 0 4.5rem;
+      background:
+        radial-gradient(circle at 85% 8%, rgba(255, 106, 43, 0.10), transparent 26rem),
+        radial-gradient(circle at 5% 90%, rgba(47, 212, 190, 0.10), transparent 24rem),
+        var(--cloud);
+    }
+    .hero-grid {
+      display: grid;
+      gap: 2.75rem;
+      align-items: center;
+    }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font: 500 0.8rem/1 var(--mono);
+      color: var(--n500);
+      background: #fff;
+      border: 1px solid var(--n100);
+      padding: 0.5rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+    .kicker .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); }
+    .hero h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); }
+    .hero h1 em { font-style: normal; color: var(--orange); }
+    .hero p.lede {
+      font-size: 1.1rem;
+      color: var(--n500);
+      max-width: 34rem;
+      margin: 1.25rem 0 2rem;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      margin-top: 1.75rem;
+      font: 400 0.8rem/1.4 var(--mono);
+      color: var(--n500);
+    }
+    .hero-meta span::before { content: "· "; color: var(--cyan); font-weight: 700; }
+
+    /* App window mock */
+    .app-mock {
+      background: var(--ink);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--n700);
+      font-size: 11px;
+    }
+    .app-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.85rem;
+      background: var(--graphite);
+      color: var(--n300);
+      font: 500 10px/1 var(--mono);
+    }
+    .app-titlebar .dots { display: flex; gap: 5px; margin-left: auto; }
+    .app-titlebar .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--n500); }
+    .app-body { display: grid; grid-template-columns: 132px 1fr; min-height: 300px; }
+    .app-side {
+      background: var(--graphite);
+      color: var(--n300);
+      padding: 0.8rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+    .app-side .item {
+      padding: 0.42rem 0.55rem;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .app-side .item i { width: 6px; height: 6px; border-radius: 2px; background: var(--n500); }
+    .app-side .item.active { background: rgba(255, 106, 43, 0.16); color: #fff; }
+    .app-side .item.active i { background: var(--orange); }
+    .app-main { background: #fff; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+    .kpi {
+      border: 1px solid var(--n100);
+      border-radius: 9px;
+      padding: 0.6rem 0.65rem;
+    }
+    .kpi b { display: block; font: 500 13px/1.2 var(--mono); margin-top: 0.2rem; }
+    .kpi small { color: var(--n500); font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .kpi .up { color: var(--success); font-size: 9px; }
+    .kpi .warn { color: var(--warning); font-size: 9px; }
+    .chart {
+      flex: 1;
+      border: 1px solid var(--n100);
+      border-radius: 9px;
+      padding: 0.65rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 4.5%;
+      min-height: 90px;
+    }
+    .chart i { flex: 1; border-radius: 3px 3px 0 0; background: var(--n100); }
+    .chart i.hi { background: var(--cyan); }
+    .chart i.top { background: var(--orange); }
+    .app-rows { display: flex; flex-direction: column; gap: 0.45rem; }
+    .app-rows .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.6rem;
+      border: 1px solid var(--n100);
+      border-radius: 8px;
+      padding: 0.5rem 0.65rem;
+      font-size: 10px;
+      color: var(--n700);
+    }
+    .app-rows .row code { font: 500 9.5px/1 var(--mono); color: var(--n500); }
+    .pill {
+      font: 600 8px/1 var(--body);
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(47, 180, 122, 0.14);
+      color: var(--success);
+    }
+    .pill.pend { background: rgba(245, 165, 36, 0.16); color: #9a6a10; }
+
+    /* ---------- Sections ---------- */
+    section { padding: 4.5rem 0; }
+    .section-head { max-width: 40rem; margin-bottom: 2.75rem; }
+    .section-head h2 { font-size: clamp(1.7rem, 3.5vw, 2.4rem); }
+    .section-head p { color: var(--n500); margin: 0.9rem 0 0; }
+    .eyebrow {
+      font: 500 0.75rem/1 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--orange);
+      display: block;
+      margin-bottom: 0.85rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+    .feature {
+      background: #fff;
+      border: 1px solid var(--n100);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .feature .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 106, 43, 0.12);
+      margin-bottom: 1rem;
+    }
+    .feature:nth-child(3n) .icon { background: rgba(47, 212, 190, 0.14); }
+    .feature h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .feature p { margin: 0; color: var(--n500); font-size: 0.92rem; }
+
+    /* Modules */
+    .modules { background: var(--ink); color: #fff; }
+    .modules .section-head p { color: var(--n300); }
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.9rem;
+    }
+    .module {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+    }
+    .module i { width: 9px; height: 9px; border-radius: 3px; background: var(--cyan); flex: none; }
+    .module:nth-child(odd) i { background: var(--orange); }
+
+    /* Architecture */
+    .arch-grid { display: grid; gap: 2.5rem; align-items: center; }
+    .arch-diagram {
+      background: #fff;
+      border: 1px solid var(--n100);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      font: 500 0.8rem/1.3 var(--mono);
+      text-align: center;
+    }
+    .arch-node {
+      border: 1.5px solid var(--n300);
+      border-radius: 10px;
+      padding: 0.8rem;
+      color: var(--n700);
+    }
+    .arch-node.hot { border-color: var(--orange); background: rgba(255,106,43,0.06); color: var(--ink); }
+    .arch-arrow { color: var(--n300); font-size: 1rem; line-height: 1; }
+    .arch-list { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 0.85rem; }
+    .arch-list li { display: flex; gap: 0.7rem; color: var(--n700); font-size: 0.95rem; }
+    .arch-list li::before { content: "✓"; color: var(--success); font-weight: 700; flex: none; }
+
+    /* API */
+    .api pre {
+      margin: 0;
+      background: var(--graphite);
+      color: var(--cloud);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      font: 400 0.8rem/1.7 var(--mono);
+      overflow-x: auto;
+      box-shadow: var(--shadow);
+    }
+    .api .tok-k { color: var(--cyan); }
+    .api .tok-s { color: var(--orange); }
+    .api .tok-c { color: var(--n500); }
+
+    /* Download CTA */
+    .download {
+      background: linear-gradient(160deg, var(--graphite), var(--ink));
+      color: #fff;
+      text-align: center;
+    }
+    .download h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
+    .download p { color: var(--n300); max-width: 32rem; margin: 1rem auto 2.25rem; }
+    .download .hero-actions { justify-content: center; }
+    .download small { display: block; margin-top: 1.5rem; font: 400 0.75rem/1.5 var(--mono); color: var(--n500); }
+
+    /* Footer */
+    footer {
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--n100);
+      font-size: 0.85rem;
+      color: var(--n500);
+    }
+    .foot {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .foot svg { height: 26px; width: auto; }
+    .foot a { color: var(--n700); }
+
+    /* ---------- Tablet ≥ 640 ---------- */
+    @media (min-width: 640px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .module-grid { grid-template-columns: repeat(4, 1fr); }
+      .foot { flex-direction: row; justify-content: space-between; align-items: center; }
+    }
+
+    /* ---------- Desktop ≥ 960 ---------- */
+    @media (min-width: 960px) {
+      .nav-links { display: flex; }
+      .nav-cta { display: inline-flex; }
+      .nav-toggle, .mobile-menu, #menu-state:checked ~ .mobile-menu { display: none; }
+      .hero { padding: 5.5rem 0 6.5rem; }
+      .hero-grid { grid-template-columns: 1.05fr 1fr; }
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+      .arch-grid { grid-template-columns: 1fr 1.1fr; }
+      .arch-diagram { flex-direction: row; align-items: center; }
+      .arch-node { flex: 1; }
+      .arch-arrow { transform: rotate(-90deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="wrap">
+      <nav class="nav">
+        <a class="brand" href="#" aria-label="Asimov">
+          <svg viewBox="0 0 430 120" role="img" aria-label="Asimov">
+            <path d="M60 37 L31 96" fill="none" stroke="#14171D" stroke-width="15" stroke-linecap="round"/>
+            <path d="M60 37 L89 96" fill="none" stroke="#14171D" stroke-width="15" stroke-linecap="round"/>
+            <path d="M43 76 H77" fill="none" stroke="#14171D" stroke-width="12" stroke-linecap="round"/>
+            <circle cx="60" cy="22" r="11" fill="#FF6A2B"/>
+            <text x="140" y="83" font-family="'Space Grotesk','Segoe UI',sans-serif" font-size="70" font-weight="700" letter-spacing="1" fill="#14171D">asimov</text>
+          </svg>
+        </a>
+        <div class="nav-links">
+          <a href="#capacidades">Capacidades</a>
+          <a href="#modulos">Módulos</a>
+          <a href="#arquitectura">Arquitectura</a>
+          <a href="#api">API</a>
+        </div>
+        <a class="btn btn-primary nav-cta" href="#descargar">Descargar</a>
+        <label class="nav-toggle" for="menu-state" aria-label="Abrir menú"><span></span></label>
+      </nav>
+      <input type="checkbox" id="menu-state" />
+      <div class="mobile-menu">
+        <a href="#capacidades">Capacidades</a>
+        <a href="#modulos">Módulos</a>
+        <a href="#arquitectura">Arquitectura</a>
+        <a href="#api">API</a>
+        <a class="btn btn-primary" href="#descargar">Descargar para Windows</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="kicker"><span class="dot"></span> v3.7.0 · Windows 10/11</span>
+          <h1>La base <em>inteligente</em> de tu negocio.</h1>
+          <p class="lede">
+            Asimov es la app de escritorio del ERP Bartez Tecnología. Gestión comercial
+            nativa: impresión directa, notificaciones, multi-servidor y actualización
+            automática — siempre sincronizada con tu ERP web.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#descargar">Descargar para Windows</a>
+            <a class="btn btn-ghost" href="#arquitectura">Ver cómo funciona</a>
+          </div>
+          <div class="hero-meta">
+            <span>Instalador NSIS</span>
+            <span>Auto-actualización</span>
+            <span>Sesión persistente</span>
+          </div>
+        </div>
+
+        <div class="app-mock" role="img" aria-label="Ventana de Asimov mostrando el panel de ventas">
+          <div class="app-titlebar">
+            asimov — bartez.com.ar
+            <span class="dots"><i></i><i></i><i></i></span>
+          </div>
+          <div class="app-body">
+            <aside class="app-side">
+              <div class="item active"><i></i> Ventas</div>
+              <div class="item"><i></i> Compras</div>
+              <div class="item"><i></i> Stock</div>
+              <div class="item"><i></i> Facturación</div>
+              <div class="item"><i></i> Tesorería</div>
+              <div class="item"><i></i> Contabilidad</div>
+              <div class="item"><i></i> RMA</div>
+            </aside>
+            <div class="app-main">
+              <div class="kpis">
+                <div class="kpi"><small>Ventas hoy</small><b>$ 1.842.300</b><span class="up">▲ 12%</span></div>
+                <div class="kpi"><small>Pedidos</small><b>47</b><span class="up">▲ 8</span></div>
+                <div class="kpi"><small>Stock crítico</small><b>6 SKU</b><span class="warn">● revisar</span></div>
+              </div>
+              <div class="chart" aria-hidden="true">
+                <i style="height:35%"></i><i style="height:55%"></i><i style="height:42%"></i>
+                <i class="hi" style="height:70%"></i><i style="height:58%"></i>
+                <i class="top" style="height:92%"></i><i style="height:64%"></i>
+              </div>
+              <div class="app-rows">
+                <div class="row"><code>PED-04471</code> Distribuidora Sur <span class="pill">Facturado</span></div>
+                <div class="row"><code>PED-04472</code> AIR S.R.L. <span class="pill pend">Pendiente</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="capacidades">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Capacidades</span>
+          <h2>Todo lo nativo que a la web le falta</h2>
+          <p>El ERP que ya usás, con las capacidades que solo una app de escritorio puede dar.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature">
+            <div class="icon">🖨️</div>
+            <h3>Impresión directa</h3>
+            <p>Imprimí comprobantes sin diálogos, con fallback automático a <code>window.print()</code>.</p>
+          </div>
+          <div class="feature">
+            <div class="icon">🔔</div>
+            <h3>Notificaciones nativas</h3>
+            <p>Enterate de leads y alertas al instante, aunque la ventana esté minimizada.</p>
+          </div>
+          <div class="feature">
+            <div class="icon">🗄️</div>
+            <h3>Multi-servidor</h3>
+            <p>Selector con historial y labels editables. Cambiá de servidor sin perder sesión.</p>
+          </div>
+          <div class="feature">
+            <div class="icon">🪟</div>
+            <h3>Multi-ventana</h3>
+            <p>Abrí dos pantallas del ERP en paralelo con <kbd>Ctrl+N</kbd> y operá sin cambiar de pestaña.</p>
+          </div>
+          <div class="feature">
+            <div class="icon">⭐</div>
+            <h3>Favoritos locales</h3>
+            <p>Guardá la pantalla actual con <kbd>Ctrl+D</kbd> y volvé a ella desde el panel <kbd>Ctrl+B</kbd>.</p>
+          </div>
+          <div class="feature">
+            <div class="icon">🔄</div>
+            <h3>Actualización automática</h3>
+            <p>Cada release se instala solo vía GitHub Releases. Siempre en la última versión.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modulos" class="modules">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Módulos GESES</span>
+          <h2>Un menú nativo por cada módulo</h2>
+          <p>Acceso directo a toda la operación desde el menú de la app.</p>
+        </div>
+        <div class="module-grid">
+          <div class="module"><i></i> Ventas</div>
+          <div class="module"><i></i> Compras</div>
+          <div class="module"><i></i> Stock</div>
+          <div class="module"><i></i> Facturación</div>
+          <div class="module"><i></i> Tesorería</div>
+          <div class="module"><i></i> Contabilidad</div>
+          <div class="module"><i></i> RMA</div>
+          <div class="module"><i></i> Config</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="arquitectura">
+      <div class="wrap arch-grid">
+        <div>
+          <span class="eyebrow">Arquitectura</span>
+          <h2>Sin frontend empaquetado. Sin deploys dobles.</h2>
+          <ul class="arch-list">
+            <li>Asimov carga la web remota del ERP: cada deploy actualiza la app al instante.</li>
+            <li>Comparte backend y base de datos con la versión web — un solo origen de verdad.</li>
+            <li>Sesión aislada y persistente (<code>persist:bartez</code>).</li>
+            <li>Deeplinks <code>bartez://open?path=/admin/...</code> desde cualquier lugar.</li>
+          </ul>
+        </div>
+        <div class="arch-diagram" aria-label="Diagrama: la app Asimov carga el ERP web, que comparte backend con la base de datos">
+          <div class="arch-node hot">Asimov<br />(escritorio)</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-node">ERP web<br />bartez.com.ar</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-node">Backend +<br />base de datos</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="api" class="api">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="eyebrow">Para desarrolladores</span>
+          <h2>API nativa expuesta a la web</h2>
+          <p>La web del ERP detecta la app y usa sus capacidades nativas.</p>
+        </div>
+<pre><code><span class="tok-k">if</span> (window.bartezDesktop?.isDesktop) {
+  <span class="tok-k">await</span> window.bartezDesktop.print({ silent: <span class="tok-s">true</span> });
+  <span class="tok-k">await</span> window.bartezDesktop.notify({ title, body });
+  <span class="tok-k">const</span> printers = <span class="tok-k">await</span> window.bartezDesktop.listPrinters();
+  <span class="tok-c">// favoritos, arranque automático, bandeja…</span>
+  window.bartezDesktop.shell.toggleBookmarks();
+}</code></pre>
+      </div>
+    </section>
+
+    <section id="descargar" class="download">
+      <div class="wrap">
+        <h2>Instalalo en dos minutos</h2>
+        <p>Descargá el instalador, ingresá la URL de tu ERP y listo. La app se mantiene actualizada sola.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/equazin/asimov-app/releases/latest">Descargar Asimov-Setup.exe</a>
+          <a class="btn btn-ghost on-dark" href="https://bartez.com.ar">Usar el ERP web</a>
+        </div>
+        <small>v3.7.0 · Windows 10/11 · ~90 MB · auto-update vía GitHub Releases</small>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <svg viewBox="0 0 430 120" role="img" aria-label="Asimov">
+        <path d="M60 37 L31 96" fill="none" stroke="#14171D" stroke-width="15" stroke-linecap="round"/>
+        <path d="M60 37 L89 96" fill="none" stroke="#14171D" stroke-width="15" stroke-linecap="round"/>
+        <path d="M43 76 H77" fill="none" stroke="#14171D" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="60" cy="22" r="11" fill="#FF6A2B"/>
+        <text x="140" y="83" font-family="'Space Grotesk','Segoe UI',sans-serif" font-size="70" font-weight="700" letter-spacing="1" fill="#14171D">asimov</text>
+      </svg>
+      <span>Asimov by <a href="https://bartez.com.ar">Bartez Tecnología</a> · La base inteligente de tu negocio.</span>
+    </div>
+  </footer>
+
+</body>
+</html>
