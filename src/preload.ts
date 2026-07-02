@@ -263,6 +263,19 @@ const api = {
   // Abrir formularios nativos desde el shell
   openNativeForm: (type: string) =>
     ipcRenderer.send("shell:open-form", type),
+
+  // --- AIR S.R.L. Integration ---
+  air: {
+    getConfig: () => ipcRenderer.invoke("air:config:get"),
+    isEnabled: () => ipcRenderer.invoke("air:enabled") as Promise<boolean>,
+    listProducts: (search = "") => ipcRenderer.invoke("air:products:list", search),
+    countProducts: () => ipcRenderer.invoke("air:products:count") as Promise<{ total: number; active: number }>,
+    syncHistory: () => ipcRenderer.invoke("air:sync:history"),
+    runSync: () => ipcRenderer.invoke("air:sync:run"),
+    testConnection: () => ipcRenderer.invoke("air:test-connection") as Promise<{ ok: boolean; message: string; productCount?: number }>,
+    startSyncTimer: () => ipcRenderer.invoke("air:sync-timer:start"),
+    stopSyncTimer: () => ipcRenderer.invoke("air:sync-timer:stop"),
+  },
 };
 
 // contextIsolation: false → asignación directa en window

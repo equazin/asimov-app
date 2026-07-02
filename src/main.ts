@@ -16,6 +16,7 @@ import { registerIpcHandlers } from "./ipc";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
+import { isAirEnabled } from "./air";
 
 // ---------------------------------------------------------------------------
 // File paths
@@ -392,7 +393,30 @@ function loadProductsForPicker(): void {
       entr: "0",
       linea: "",
       categoria: a.category ?? "",
+      source: "local",
     }));
+
+    if (isAirEnabled()) {
+      const airRows = dbAll(
+        "SELECT air_code, description, part_number, brand, category, price_usd, iva_pct, stock FROM air_products WHERE active = 1 ORDER BY description LIMIT 5000",
+        [],
+      ) as Array<Record<string, unknown>>;
+      for (const a of airRows) {
+        mapped.push({
+          codigo: String(a.air_code ?? ""),
+          descripcion: String(a.description ?? ""),
+          importe: String(a.price_usd ?? "0.00"),
+          iva: String(a.iva_pct ?? "21"),
+          st: String(a.stock ?? "0"),
+          compro: "0",
+          entr: "0",
+          linea: String(a.brand ?? ""),
+          categoria: String(a.category ?? ""),
+          source: "air",
+        });
+      }
+    }
+
     productSelectionWindow?.webContents.send("product-selection:loaded", mapped);
   } catch {}
 }

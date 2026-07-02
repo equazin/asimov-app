@@ -5,215 +5,196 @@
   <title>Selección de Artículos</title>
   <style>
     :root {
-      --win-bg: #ece9d8;
-      --win-btn-bg: #f0f0f0;
-      --win-border-light: #ffffff;
-      --win-border-dark: #808080;
-      --win-border-darkest: #404040;
-      --purple-title: #7a157a;
-      --teal-header: #008080;
-      --select-bg: #0a246a;
-      --select-text: #ffffff;
+      --bg: #14171D;
+      --surface: #1b1f27;
+      --card: #232833;
+      --accent: #FF6A2B;
+      --accent-hover: #e85e25;
+      --border: #343a43;
+      --border-soft: #2c333d;
+      --text: #f2f3f5;
+      --text-muted: #9aa1ab;
+      --input-bg: #171b22;
+      --select-bg: rgba(255,106,43,0.15);
+      --select-border: rgba(255,106,43,0.5);
+      --radius: 8px;
     }
 
-    * {
-      box-sizing: border-box;
-      user-select: none;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      padding: 0;
-      padding-top: 32px;
-      background-color: var(--win-bg);
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 11px;
-      color: #000000;
-      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      border: 3px solid var(--win-bg);
+      overflow: hidden;
+      padding-top: 32px;
+      user-select: none;
     }
 
-    /* Windows 98 style Bevel borders */
-    .window-inset {
-      border: 2px solid;
-      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
-      background-color: #ffffff;
-    }
-
-    .window-outset {
-      border: 2px solid;
-      border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-    }
-
-    /* Bevel buttons */
-    .classic-btn {
-      background-color: var(--win-btn-bg);
-      border: 2px solid;
-      border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-      padding: 2px 12px;
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: bold;
-      color: #000000;
-      cursor: pointer;
-      outline: none;
-      height: 24px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .classic-btn:active {
-      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
-      padding: 3px 11px 1px 13px;
-    }
-
-    .classic-btn:disabled {
-      color: #808080;
-      cursor: not-allowed;
-    }
-
-    /* Title bar */
-    .title-bar {
-      height: 26px;
-      background: linear-gradient(90deg, var(--purple-title), #b85bb8);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6px;
-      font-weight: bold;
-      font-size: 12px;
-      border-bottom: 1px solid var(--win-border-dark);
-    }
-
-    .title-bar-text {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .title-bar-close {
-      width: 16px;
-      height: 14px;
-      background-color: var(--win-bg);
-      border: 1px solid;
-      border-color: var(--win-border-light) var(--win-border-dark) var(--win-border-dark) var(--win-border-light);
-      color: #000;
-      font-weight: bold;
-      font-size: 9px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-    }
-
-    .title-bar-close:active {
-      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
-    }
-
-    /* Search bar */
+    /* ── Search bar ─────────────────────────────── */
     .search-panel {
-      padding: 10px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      background-color: var(--win-bg);
+      gap: 10px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-soft);
     }
 
     .search-label {
-      font-weight: bold;
-      font-size: 11px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .search-input {
-      height: 24px;
+      height: 32px;
       flex: 1;
-      border: 2px solid;
-      border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
-      padding: 0 6px;
-      outline: none;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 10px;
+      color: var(--text);
       font-family: inherit;
       font-size: 12px;
-      background-color: #ffffff;
+      outline: none;
+      transition: border-color 0.15s;
     }
-
     .search-input:focus {
-      border-color: #000000;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(255,106,43,0.18);
     }
+    .search-input::placeholder { color: #6f7784; }
 
-    /* Table section */
+    /* ── Buttons ─────────────────────────────────── */
+    .btn {
+      height: 32px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.12s;
+      outline: none;
+    }
+    .btn:hover { background: #2a303b; }
+    .btn:active { background: #1e2430; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    /* ── Table ───────────────────────────────────── */
     .table-container {
       flex: 1;
       overflow-y: auto;
       overflow-x: auto;
-      margin: 0 10px;
-      background-color: #ffffff;
+      background: var(--input-bg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed;
     }
 
     th {
       position: sticky;
       top: 0;
-      background-color: var(--teal-header);
-      color: #ffffff;
+      background: var(--card);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
       text-align: left;
-      font-weight: bold;
-      font-size: 11px;
-      padding: 4px 6px;
-      border-right: 1px solid rgba(255,255,255,0.2);
-      border-bottom: 1px solid var(--win-border-dark);
+      padding: 8px 8px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border-soft);
       z-index: 10;
+      white-space: nowrap;
     }
+    th:last-child { border-right: none; }
 
     td {
-      padding: 3px 6px;
+      padding: 5px 8px;
       font-size: 11px;
-      border-right: 1px solid #e0e0e0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--border-soft);
+      border-right: 1px solid rgba(52,58,67,0.4);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    td:last-child { border-right: none; }
 
-    .col-code { width: 70px; font-family: Consolas, monospace; }
-    .col-desc { width: 280px; }
-    .col-price { width: 70px; text-align: right; font-family: Consolas, monospace; }
-    .col-iva { width: 50px; text-align: center; }
-    .col-stock { width: 50px; text-align: center; font-weight: bold; }
-    .col-compro { width: 50px; text-align: center; color: #666; }
-    .col-entr { width: 50px; text-align: center; color: #666; }
-    .col-line { width: 80px; }
-    .col-cat { width: 100px; }
-
-    tbody tr {
-      cursor: pointer;
-    }
-
-    tbody tr:nth-child(even) {
-      background-color: #fafafa;
-    }
+    tbody tr { cursor: pointer; background: var(--input-bg); }
+    tbody tr:nth-child(even) { background: #1c2129; }
+    tbody tr:hover { background: var(--card); }
 
     tbody tr.selected {
-      background-color: var(--select-bg) !important;
-      color: var(--select-text) !important;
+      background: var(--select-bg) !important;
+      outline: 1px solid var(--select-border);
+      outline-offset: -1px;
+    }
+    tbody tr.selected td { color: #fff; }
+
+    .col-code { width: 80px; font-family: "Cascadia Code", Consolas, monospace; font-size: 11px; color: var(--accent); }
+    .col-desc { min-width: 280px; }
+    .col-price { width: 80px; text-align: right; font-family: "Cascadia Code", Consolas, monospace; }
+    .col-iva { width: 50px; text-align: center; color: var(--text-muted); }
+    .col-stock { width: 50px; text-align: center; font-weight: 700; }
+    .col-compro { width: 50px; text-align: center; color: var(--text-muted); }
+    .col-entr { width: 50px; text-align: center; color: var(--text-muted); }
+    .col-line { width: 90px; }
+    .col-cat { width: 100px; color: var(--text-muted); }
+
+    /* ── Badges ──────────────────────────────────── */
+    .badge-air {
+      display: inline-block;
+      background: rgba(34,197,94,0.15);
+      color: #4ade80;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(34,197,94,0.3);
+      letter-spacing: 0.5px;
+    }
+    .badge-local {
+      display: inline-block;
+      background: rgba(148,163,184,0.1);
+      color: #94a3b8;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(148,163,184,0.2);
+      letter-spacing: 0.5px;
     }
 
-    tbody tr.selected td {
-      border-right-color: rgba(255,255,255,0.1);
-    }
-
-    /* Bottom section */
+    /* ── Bottom panel ────────────────────────────── */
     .bottom-panel {
-      padding: 10px;
-      background-color: var(--win-bg);
+      padding: 10px 16px;
+      background: var(--surface);
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -223,12 +204,14 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .stock-box {
-      background-color: #ffffca;
-      border: 1px solid var(--win-border-dark);
-      padding: 4px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -236,19 +219,21 @@
     }
 
     .stock-box-title {
-      background-color: #000080;
-      color: #ffffff;
-      padding: 2px 6px;
-      font-size: 10px;
-      border-radius: 2px;
+      background: var(--accent);
+      color: #fff;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 800;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
     }
 
     .record-count {
       margin-left: auto;
-      font-family: Consolas, monospace;
+      font-family: "Cascadia Code", Consolas, monospace;
       font-size: 12px;
       font-weight: bold;
-      color: #333333;
+      color: var(--text-muted);
     }
 
     .actions-bar {
@@ -256,245 +241,40 @@
       gap: 8px;
       align-items: center;
     }
+    .actions-bar .btn { flex: 1; height: 34px; font-size: 12px; }
 
-    .grow {
-      flex: 1;
-    }
-  
-/* ASIMOV-THEME-START */
-:root{
-  color-scheme: dark;
-  --bg:#14171D; --surface:#14171D; --panel:#232833; --card:#232833;
-  --accent:#FF6A2B; --accent-hover:#e85e25; --accent-light:#3a2a1e;
-  --accent-lt:#3a2a1e; --border:#343a43; --border-soft:#2c333d;
-  --text:#f2f3f5; --text-muted:#9aa1ab; --muted:#9aa1ab;
-  --input-bg:#171b22; --input-focus:#FF6A2B; --header-bg:#1b1f27;
-  --tab-active:#14171D; --tab-inactive:#14171D; --danger:#e5544b;
-  --radius:9px;
-}
-html,body{ background:#0f1117 !important; }
-body{ color:var(--text) !important; }
-.header{
-  background:#1b1f27 !important;
-  border-bottom:1px solid var(--border-soft) !important;
-  box-shadow:none !important;
-  min-height:46px;
-  padding:10px 16px !important;
-}
-.header-icon{ font-size:15px !important; }
-.header-title{ color:#fff !important; font-size:13px !important; font-weight:700 !important; letter-spacing:0 !important; }
-.header-badges{ gap:8px !important; }
-.header-badge{
-  background:rgba(255,106,43,0.10) !important;
-  border:1px solid rgba(255,106,43,0.80) !important;
-  color:var(--accent) !important;
-  border-radius:999px !important;
-  padding:2px 10px !important;
-  box-shadow:none !important;
-}
-.close-btn{
-  background:#232833 !important;
-  border:1px solid #59616d !important;
-  color:#d9dde4 !important;
-  border-radius:8px !important;
-}
-.close-btn:hover{ background:#2a303b !important; }
-.tabs{
-  background:#14171D !important;
-  border-top:0 !important;
-  border-bottom:1px solid var(--border-soft) !important;
-  box-shadow:none !important;
-}
-.tab{
-  color:var(--text-muted) !important;
-  border-bottom:2px solid transparent !important;
-  margin-bottom:0 !important;
-  padding:10px 16px !important;
-  font-size:12px !important;
-  font-weight:600 !important;
-}
-.tab:hover{ background:#191d25 !important; color:#d7dae0 !important; }
-.tab.active{
-  background:#14171D !important;
-  color:var(--accent) !important;
-  border-bottom-color:var(--accent) !important;
-}
-.content{ background:#14171D !important; }
-.tab-panel{ background:#14171D !important; padding:16px !important; }
-.tab-panel.active{ gap:12px !important; }
-.tab-panel.items-panel{ padding:0 !important; }
-.section-title{
-  display:flex !important;
-  align-items:center !important;
-  gap:9px !important;
-  margin:0 !important;
-  padding:15px 16px 4px !important;
-  background:var(--card) !important;
-  border:1px solid var(--border) !important;
-  border-bottom:0 !important;
-  border-radius:var(--radius) var(--radius) 0 0 !important;
-  color:#f3f4f6 !important;
-  font-size:13px !important;
-  font-weight:700 !important;
-  letter-spacing:0 !important;
-  text-transform:none !important;
-}
-.section-title::before{
-  content:"" !important;
-  display:inline-block !important;
-  width:6px !important;
-  height:18px !important;
-  border-radius:999px !important;
-  background:var(--accent) !important;
-  flex:0 0 auto !important;
-}
-.section-title + .form-grid{
-  margin-top:-12px !important;
-  padding:22px 16px 16px !important;
-  background:var(--card) !important;
-  border:1px solid var(--border) !important;
-  border-top:0 !important;
-  border-radius:0 0 var(--radius) var(--radius) !important;
-}
-.section-title + .mini-table,
-.section-title + textarea,
-.section-title + input,
-.section-title + select{
-  margin-top:-12px !important;
-}
-.form-grid{ gap:10px 12px !important; }
-.form-group,.field{ gap:5px !important; min-width:0 !important; }
-label,.field label,.form-group label{
-  color:var(--text-muted) !important;
-  font-size:10px !important;
-  font-weight:800 !important;
-  letter-spacing:0.04em !important;
-}
-input,select,textarea,.cell-input{
-  background:var(--input-bg) !important;
-  color:var(--text) !important;
-  border:1px solid var(--border) !important;
-  border-radius:7px !important;
-  box-shadow:none !important;
-}
-input:not(.cell-input),select,textarea{ min-height:30px !important; padding:6px 9px !important; }
-input[readonly],textarea[readonly]{ background:#171b22 !important; color:var(--text-muted) !important; }
-input::placeholder,textarea::placeholder{ color:#6f7784 !important; opacity:1 !important; }
-input:focus,select:focus,textarea:focus,.cell-input:focus{
-  border-color:var(--accent) !important;
-  box-shadow:0 0 0 2px rgba(255,106,43,0.18) !important;
-  outline:none !important;
-}
-option{ background:#232833; color:var(--text); }
-.picker-btn,.field-btn,.btn-primary,.btn-save,.btn-sm:not(.secondary){
-  background:var(--accent) !important;
-  color:#fff !important;
-  border-color:var(--accent) !important;
-}
-.picker-btn:hover,.field-btn:hover,.btn-primary:hover,.btn-save:hover,.btn-sm:not(.secondary):hover{
-  background:var(--accent-hover) !important;
-  border-color:var(--accent-hover) !important;
-}
-.btn-default,.btn-cancel,.btn-print,.btn-sm.secondary,.add-row-btn{
-  background:#232833 !important;
-  color:var(--text) !important;
-  border:1px solid var(--border) !important;
-}
-.btn-default:hover,.btn-cancel:hover,.btn-print:hover,.btn-sm.secondary:hover,.add-row-btn:hover{
-  background:#2a303b !important;
-}
-.btn-exit{
-  background:#232833 !important;
-  color:var(--text-muted) !important;
-  border:1px solid var(--border) !important;
-}
-.btn-exit:hover{ background:#2a303b !important; color:#fff !important; }
-.footer{
-  background:#1b1f27 !important;
-  border-top:1px solid var(--border-soft) !important;
-  padding:12px 16px !important;
-}
-.footer-btn{
-  border-radius:8px !important;
-  min-height:30px !important;
-  padding:7px 16px !important;
-  font-size:12px !important;
-}
-.table-wrap,.mini-table{
-  background:#171b22 !important;
-  border:1px solid var(--border) !important;
-  border-radius:8px !important;
-}
-thead th,th{
-  background:#232833 !important;
-  color:var(--text-muted) !important;
-  border-color:var(--border) !important;
-}
-tbody tr{ background:#171b22 !important; border-color:var(--border) !important; }
-tbody tr:nth-child(even),tr:nth-child(even){ background:#1c2129 !important; }
-tbody tr:hover{ background:#232833 !important; }
-td{ border-color:var(--border) !important; }
-.items-toolbar,.totals-panel{ background:#14171D !important; }
-.totals-card{
-  background:var(--card) !important;
-  border-color:var(--border) !important;
-  border-radius:var(--radius) !important;
-}
-.totals-row.subtotal{ background:#1c2129 !important; }
-.kbd,kbd{
-  background:rgba(255,255,255,0.16) !important;
-  color:#fff !important;
-  border-color:rgba(255,255,255,0.18) !important;
-}
-.del-row-btn:hover,.del-row:hover{ background:#3a2323 !important; }
-@media (max-width:760px){
-  .form-grid{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
-  .form-group.span-2,.field.span-2{ grid-column:span 2 !important; }
-  .form-group.span-3,.form-group.span-4,.field.span-3,.field.span-4{ grid-column:1 / -1 !important; }
-}
-::-webkit-scrollbar{ width:10px; height:10px; }
-::-webkit-scrollbar-thumb{ background:#343a43; border-radius:5px; }
-::-webkit-scrollbar-track{ background:#14171D; }
-/* ASIMOV-THEME-END */
+    /* ── Scrollbar ────────────────────────────────── */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #343a43; border-radius: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
   </style>
 </head>
 <body>
 
-  <!-- Title bar -->
-  <div class="title-bar">
-    <div class="title-bar-text">
-      <span>Selección de Artículos de Compra-Venta.</span>
-    </div>
-    <div class="title-bar-close" id="btnCloseWindow">×</div>
-  </div>
-
   <!-- Search panel -->
   <div class="search-panel">
-    <span class="search-label">DESCRIPCIÓN</span>
-    <input type="text" class="search-input" id="txtSearch" placeholder="Escriba aquí para buscar..." autofocus />
-    <button class="classic-btn" type="button">Cualquier Parte</button>
-    <button class="classic-btn" type="button">Más Arriba &gt;&gt;</button>
-    <button class="classic-btn" type="button">Stock Todos</button>
+    <span class="search-label">Buscar</span>
+    <input type="text" class="search-input" id="txtSearch" placeholder="Buscar por código, descripción, línea o categoría..." autofocus />
   </div>
 
   <!-- Table panel -->
-  <div class="table-container window-inset">
+  <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th style="width: 70px;">código</th>
-          <th style="width: 280px;">descripción</th>
-          <th style="width: 70px; text-align: right;">importe</th>
-          <th style="width: 50px; text-align: center;">% iva</th>
-          <th style="width: 50px; text-align: center;">st</th>
-          <th style="width: 50px; text-align: center;">compro</th>
-          <th style="width: 50px; text-align: center;">entr</th>
-          <th style="width: 80px;">línea</th>
-          <th style="width: 100px;">categoría</th>
+          <th class="col-code">Código</th>
+          <th class="col-desc">Descripción</th>
+          <th class="col-price" style="text-align:right;">Precio USD</th>
+          <th class="col-iva">IVA</th>
+          <th class="col-stock">Stock</th>
+          <th class="col-compro">Compro</th>
+          <th class="col-entr">Entr</th>
+          <th class="col-line">Línea</th>
+          <th class="col-cat">Categoría</th>
+          <th style="width:55px;text-align:center;">Origen</th>
         </tr>
       </thead>
       <tbody id="productTableBody">
-        <!-- Products will be injected here -->
       </tbody>
     </table>
   </div>
@@ -503,63 +283,23 @@ td{ border-color:var(--border) !important; }
   <div class="bottom-panel">
     <div class="info-bar">
       <div class="stock-box">
-        <span class="stock-box-title">Stock</span>
-        <span>Principal:</span>
-        <span id="lblStockCount" style="color: #000080;">0</span>
+        <span class="stock-box-title">STOCK</span>
+        <span id="lblStockCount">0</span>
       </div>
-      <div>
-        <span>Vendedores:</span>
-        <span style="font-weight: bold;">Todos</span>
-      </div>
-      <div>
-        <span>Clientes:</span>
-        <span style="font-weight: bold;">Todos</span>
-      </div>
-      <button class="classic-btn" style="padding: 2px 6px;">Kardex</button>
-      <button class="classic-btn" style="padding: 2px 6px;">Compr.</button>
-      <button class="classic-btn" style="padding: 2px 6px;">Ajustar</button>
-      <button class="classic-btn" style="padding: 2px 6px;">Expor.</button>
       <span class="record-count" id="lblRecordCount">0 / 0</span>
     </div>
 
     <div class="actions-bar">
-      <button class="classic-btn grow" id="btnSelect" style="height: 30px;">Seleccionar</button>
-      <button class="classic-btn grow" id="btnNew" style="height: 30px;">Nuevo</button>
-      <button class="classic-btn grow" id="btnModify" style="height: 30px;" disabled>Modificar</button>
-      <button class="classic-btn grow" id="btnExit" style="height: 30px;">Salir</button>
+      <button class="btn btn-primary" id="btnSelect">Seleccionar</button>
+      <button class="btn" id="btnNew">Nuevo</button>
+      <button class="btn" id="btnModify" disabled>Modificar</button>
+      <button class="btn" id="btnExit">Salir</button>
     </div>
   </div>
 
   <script>
-    // Sample product database
-    let products = [
-      { codigo: "41089", descripcion: "NOTEBOOK MSI GL65 CORE I7", importe: "1850.00", iva: "10.50", st: "5", compro: "0", entr: "0", linea: "MSI", categoria: "NOTEBOOK" },
-      { codigo: "41088", descripcion: "NOTEBOOK MSI MODERN 15 RYZEN 5", importe: "950.00", iva: "10.50", st: "12", compro: "0", entr: "0", linea: "MSI", categoria: "NOTEBOOK" },
-      { codigo: "315951", descripcion: "PLACA ANBYTE USB 2.0 PCI 4P ANBYTE", importe: "12.50", iva: "10.50", st: "8", compro: "0", entr: "0", linea: "ANBYTE", categoria: "ACCESORIOS PC" },
-      { codigo: "709095", descripcion: "DOCKING SATA 2.5Y 3.5 USB MANHATAN", importe: "35.00", iva: "10.50", st: "22", compro: "0", entr: "0", linea: "MANHATTAN", categoria: "ACCESORIOS PC" },
-      { codigo: "524421", descripcion: "CAMARA IP INTELLINET SOHO MPEG4/JPEG", importe: "89.00", iva: "21.00", st: "3", compro: "0", entr: "0", linea: "INTELLINET", categoria: "CONECTIVIDAD" },
-      { codigo: "709088", descripcion: "DOCKING SATA 2.5Y 3.5 USB/eSATA MANHATAN", importe: "45.00", iva: "10.50", st: "15", compro: "0", entr: "0", linea: "MANHATTAN", categoria: "ACCESORIOS PC" },
-      { codigo: "956826", descripcion: "BLUETOOTH SENSOR USB 100M ANBYTE", importe: "8.50", iva: "10.50", st: "40", compro: "0", entr: "0", linea: "ANBYTE", categoria: "CONECTIVIDAD" },
-      { codigo: "957107", descripcion: "COOLER FUENTE 8 X 8 X 0.25 3.P. GENERICOS", importe: "4.00", iva: "21.00", st: "150", compro: "0", entr: "0", linea: "GENERICO", categoria: "ACCESORIOS PC" },
-      { codigo: "440837", descripcion: "CANDADO PARA NOTEBOOK/LCD 1.8MT MANHATTAN", importe: "15.00", iva: "21.00", st: "35", compro: "0", entr: "0", linea: "MANHATTAN", categoria: "ACCESORIOS PC" },
-      { codigo: "41110", descripcion: "WIRELESS AIRFORCE-ONE 2 2.4GHZ 3 LAN 400MW KOZUMI", importe: "120.00", iva: "10.50", st: "10", compro: "0", entr: "0", linea: "KOZUMI", categoria: "CONECTIVIDAD" },
-      { codigo: "41077", descripcion: "MP5 8GB MP4+CAM1.3+FM+VOZ+SPK TITAN 095", importe: "49.00", iva: "21.00", st: "0", compro: "0", entr: "0", linea: "TITAN", categoria: "MEMORIAS" },
-      { codigo: "CB412A", descripcion: "IMP. HP LASERJET P1505", importe: "210.00", iva: "10.50", st: "2", compro: "0", entr: "0", linea: "HP", categoria: "IMPRESORAS" },
-      { codigo: "40017", descripcion: "AMD A64 X2 4600+BOX SAM2", importe: "85.00", iva: "10.50", st: "18", compro: "0", entr: "0", linea: "AMD", categoria: "MICROPROCESADORES" },
-      { codigo: "41080", descripcion: "DVDRW SLIM NB LG 8X (NOT. Y AIO) LGE-DMG10F", importe: "38.00", iva: "10.50", st: "14", compro: "4", entr: "-9", linea: "SAMSUNG", categoria: "OPTICOS" },
-      { codigo: "FS390LA", descripcion: "NB HP 6735S-FS390LA SEMPRON 2.0G/1G/15.4/120G/DVD/WEBCAM/FRE", importe: "650.00", iva: "10.50", st: "1", compro: "0", entr: "0", linea: "HP", categoria: "NOTEBOOK" },
-      { codigo: "41069", descripcion: "TV LCD SAMSUNG LN32A610 FULL HD L6 P1080", importe: "799.00", iva: "21.00", st: "4", compro: "0", entr: "0", linea: "SAMSUNG", categoria: "OFICINA" },
-      { codigo: "PRD-001245", descripcion: "Motor electrico 5HP", importe: "450.00", iva: "21.00", st: "23", compro: "0", entr: "0", linea: "SIEMENS", categoria: "MOTORES" },
-      { codigo: "PRD-000874", descripcion: "Banda transportadora 2m", importe: "1200.00", iva: "21.00", st: "8", compro: "0", entr: "0", linea: "FRENOS", categoria: "TRANSPORTE" },
-      { codigo: "PRD-002156", descripcion: "Rodamiento 6205-2RS", importe: "15.50", iva: "21.00", st: "152", compro: "0", entr: "0", linea: "SKF", categoria: "RODAMIENTOS" },
-      { codigo: "PRD-001564", descripcion: "Sensor inductivo M12", importe: "28.75", iva: "21.00", st: "5", compro: "0", entr: "0", linea: "SICK", categoria: "SENSORES" },
-      { codigo: "PRD-000332", descripcion: "PLC Siemens S7-1200", importe: "850.00", iva: "21.00", st: "12", compro: "0", entr: "0", linea: "SIEMENS", categoria: "PLC" },
-      { codigo: "PRD-001998", descripcion: "Variador de frecuencia 2HP", importe: "340.00", iva: "21.00", st: "0", compro: "0", entr: "0", linea: "WEG", categoria: "VARIADORES" },
-      { codigo: "PRD-000921", descripcion: "Cable THHN 12 AWG (metro)", importe: "1.25", iva: "21.00", st: "245", compro: "0", entr: "0", linea: "PRYSMIAN", categoria: "CABLES" },
-      { codigo: "PRD-001110", descripcion: "Interruptor termomagnetico 3P", importe: "45.00", iva: "21.00", st: "7", compro: "0", entr: "0", linea: "SCHNEIDER", categoria: "ELECTRICIDAD" }
-    ];
-
-    let filteredProducts = [...products];
+    let products = [];
+    let filteredProducts = [];
     let selectedIndex = 0;
     let currentRowId = "";
 
@@ -570,9 +310,7 @@ td{ border-color:var(--border) !important; }
     const btnSelect = document.getElementById("btnSelect");
     const btnNew = document.getElementById("btnNew");
     const btnExit = document.getElementById("btnExit");
-    const btnCloseWindow = document.getElementById("btnCloseWindow");
 
-    // Receive rowId from main process
     if (window.asimovProductSelection) {
       window.asimovProductSelection.onSetRowId((rowId) => {
         currentRowId = rowId;
@@ -593,34 +331,37 @@ td{ border-color:var(--border) !important; }
       });
     }
 
+    function escapeHtml(str) {
+      const d = document.createElement("div");
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
     function renderTable() {
       tableBody.innerHTML = "";
       filteredProducts.forEach((prod, index) => {
         const tr = document.createElement("tr");
-        if (index === selectedIndex) {
-          tr.className = "selected";
-        }
-        
+        if (index === selectedIndex) tr.className = "selected";
+
+        const srcBadge = (prod.source || "local") === "air"
+          ? '<span class="badge-air">AIR</span>'
+          : '<span class="badge-local">LOCAL</span>';
+
         tr.innerHTML = `
-          <td class="col-code">${prod.codigo}</td>
-          <td class="col-desc">${prod.descripcion}</td>
+          <td class="col-code">${escapeHtml(prod.codigo)}</td>
+          <td class="col-desc">${escapeHtml(prod.descripcion)}</td>
           <td class="col-price">$ ${parseFloat(prod.importe).toFixed(2)}</td>
-          <td class="col-iva">${prod.iva}</td>
-          <td class="col-stock">${prod.st}</td>
-          <td class="col-compro">${prod.compro}</td>
-          <td class="col-entr">${prod.entr}</td>
-          <td class="col-line">${prod.linea}</td>
-          <td class="col-cat">${prod.categoria}</td>
+          <td class="col-iva">${escapeHtml(prod.iva)}%</td>
+          <td class="col-stock">${escapeHtml(prod.st)}</td>
+          <td class="col-compro">${escapeHtml(prod.compro)}</td>
+          <td class="col-entr">${escapeHtml(prod.entr)}</td>
+          <td class="col-line">${escapeHtml(prod.linea)}</td>
+          <td class="col-cat">${escapeHtml(prod.categoria)}</td>
+          <td style="text-align:center;">${srcBadge}</td>
         `;
 
-        tr.addEventListener("click", () => {
-          selectIndex(index);
-        });
-
-        tr.addEventListener("dblclick", () => {
-          submitSelection();
-        });
-
+        tr.addEventListener("click", () => selectIndex(index));
+        tr.addEventListener("dblclick", () => submitSelection());
         tableBody.appendChild(tr);
       });
 
@@ -632,11 +373,8 @@ td{ border-color:var(--border) !important; }
         lblRecordCount.textContent = `0 / ${filteredProducts.length}`;
       }
 
-      // Scroll selected item into view if necessary
       const selectedRow = tableBody.querySelector(".selected");
-      if (selectedRow) {
-        selectedRow.scrollIntoView({ block: "nearest" });
-      }
+      if (selectedRow) selectedRow.scrollIntoView({ block: "nearest" });
     }
 
     function selectIndex(index) {
@@ -648,13 +386,12 @@ td{ border-color:var(--border) !important; }
 
     function filterAndRender() {
       const term = txtSearch.value.toUpperCase();
-      filteredProducts = products.filter(prod => 
-        prod.codigo.toUpperCase().includes(term) || 
-        prod.descripcion.toUpperCase().includes(term) || 
+      filteredProducts = products.filter(prod =>
+        prod.codigo.toUpperCase().includes(term) ||
+        prod.descripcion.toUpperCase().includes(term) ||
         prod.linea.toUpperCase().includes(term) ||
         prod.categoria.toUpperCase().includes(term)
       );
-
       selectedIndex = 0;
       renderTable();
     }
@@ -668,42 +405,25 @@ td{ border-color:var(--border) !important; }
 
     txtSearch.addEventListener("input", filterAndRender);
 
-    // Keyboard navigation
     window.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown") { e.preventDefault(); selectIndex(selectedIndex + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); selectIndex(selectedIndex - 1); }
+      else if (e.key === "Enter") { e.preventDefault(); submitSelection(); }
+      else if (e.key === "Escape") {
         e.preventDefault();
-        selectIndex(selectedIndex + 1);
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        selectIndex(selectedIndex - 1);
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        submitSelection();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        if (window.asimovProductSelection) {
-          window.asimovProductSelection.selectProduct(null, currentRowId);
-        }
+        if (window.asimovProductSelection) window.asimovProductSelection.selectProduct(null, currentRowId);
       }
     });
 
     btnSelect.addEventListener("click", submitSelection);
-    
     btnNew.addEventListener("click", () => {
-      if (window.asimovProductSelection) {
-        window.asimovProductSelection.openNewArticle();
-      }
+      if (window.asimovProductSelection) window.asimovProductSelection.openNewArticle();
     });
-
     const closeHandler = () => {
-      if (window.asimovProductSelection) {
-        window.asimovProductSelection.selectProduct(null, currentRowId);
-      }
+      if (window.asimovProductSelection) window.asimovProductSelection.selectProduct(null, currentRowId);
     };
     btnExit.addEventListener("click", closeHandler);
-    btnCloseWindow.addEventListener("click", closeHandler);
 
-    // Initial render
     filterAndRender();
   </script>
 </body>

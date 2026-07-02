@@ -567,6 +567,7 @@
     <div class="nav-section">
       <div class="nav-label">Sistema</div>
       <div class="nav-item" data-view="config"><span class="icon">🔧</span> Configuración</div>
+      <div class="nav-item" data-view="integraciones"><span class="icon">🔌</span> Integraciones</div>
       <div class="nav-item" data-view="usuarios"><span class="icon">👥</span> Usuarios y Roles</div>
       <div class="nav-item" data-view="knowledge"><span class="icon">📚</span> Base Conocimiento</div>
       <div class="nav-item" data-view="conversaciones"><span class="icon">💬</span> Conversaciones</div>
@@ -1064,6 +1065,82 @@
       </div>
     </div>
 
+    <!-- ── Integraciones ──────────────────────────────── -->
+    <div class="view" id="view-integraciones" style="flex-direction:column">
+      <div class="view-header"><h1>🔌 Integraciones</h1></div>
+      <div style="flex:1;overflow-y:auto;background:var(--bg)">
+
+        <!-- AIR S.R.L. Card -->
+        <div class="config-section" style="margin:18px;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <span style="font-size:22px">🏭</span>
+            <div>
+              <h3 style="margin:0;color:var(--text);font-size:15px;font-weight:700">AIR S.R.L.</h3>
+              <span style="font-size:11px;color:var(--text-muted)">Proveedor de artículos — api.air-intra.com</span>
+            </div>
+            <label class="cfg-check" style="margin-left:auto">
+              <input type="checkbox" id="air-enabled" /> Habilitada
+            </label>
+          </div>
+
+          <div class="config-grid" style="max-width:100%">
+            <div class="config-field">
+              <label>Usuario</label>
+              <input type="text" id="air-username" placeholder="tu_usuario_air" autocomplete="off" />
+            </div>
+            <div class="config-field">
+              <label>Contraseña</label>
+              <input type="password" id="air-password" placeholder="••••••••" autocomplete="off" />
+            </div>
+            <div class="config-field">
+              <label>URL Base</label>
+              <input type="text" id="air-base-url" placeholder="https://api.air-intra.com/v2" />
+            </div>
+            <div class="config-field">
+              <label>Intervalo de sync (min)</label>
+              <input type="number" id="air-sync-interval" placeholder="15" min="1" max="1440" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center">
+            <button class="btn btn-primary btn-sm" onclick="saveAirConfig()">💾 Guardar</button>
+            <button class="btn btn-outline btn-sm" onclick="testAirConnection()">🔗 Probar conexión</button>
+            <button class="btn btn-outline btn-sm" onclick="runAirSync()">🔄 Sincronizar ahora</button>
+            <span class="save-msg ok" id="air-save-msg" style="display:none">✓ Guardado</span>
+            <span id="air-status-msg" style="font-size:11px;color:var(--text-muted)"></span>
+          </div>
+
+          <!-- Stats -->
+          <div id="air-stats" style="margin-top:16px;padding:12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;display:none">
+            <div style="display:flex;gap:24px;flex-wrap:wrap">
+              <div><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700">Productos</span><br><span id="air-stat-total" style="font-size:18px;font-weight:700;color:var(--accent)">—</span></div>
+              <div><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700">Activos</span><br><span id="air-stat-active" style="font-size:18px;font-weight:700;color:#22c55e">—</span></div>
+              <div><span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:700">Última Sync</span><br><span id="air-stat-last-sync" style="font-size:13px;color:var(--text)">—</span></div>
+            </div>
+          </div>
+
+          <!-- Sync History -->
+          <div id="air-sync-history" style="margin-top:14px;display:none">
+            <h4 style="margin:0 0 8px;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em">Historial de Sincronización</h4>
+            <div class="table-wrap" style="max-height:200px;overflow-y:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:140px">Fecha</th>
+                    <th style="width:80px">Estado</th>
+                    <th style="width:80px">Productos</th>
+                    <th>Error</th>
+                  </tr>
+                </thead>
+                <tbody id="air-sync-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ── Atajos de teclado ──────────────────────────────── -->
     <div class="view" id="view-atajos" style="flex-direction:column">
       <div class="view-header"><h1>⌨️ Atajos de teclado</h1></div>
@@ -1332,6 +1409,7 @@
         { label: "Stock",     key: "stock_total",   w: "80px",  align: "right", fmt: fmtNum },
         { label: "Mín.",      key: "min_qty",       w: "70px",  align: "right", fmt: fmtNum },
         { label: "Precio",    key: "sale_price",    w: "110px", align: "right", fmt: fmtARS },
+        { label: "Origen",    key: "source",        w: "70px",  align: "center", fmt: fmtSource },
       ],
     },
     movimientos: {
@@ -1509,6 +1587,10 @@
     const cls = STATUS_MAP[v.toLowerCase().replace(/\s+/g,"_")] || "pill-borrador";
     return `<span class="pill ${cls}">${v}</span>`;
   }
+  function fmtSource(v) {
+    if (v === "air") return '<span style="display:inline-block;background:rgba(34,197,94,0.15);color:#4ade80;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;border:1px solid rgba(34,197,94,0.3);letter-spacing:0.5px">AIR</span>';
+    return '<span style="display:inline-block;background:rgba(148,163,184,0.1);color:#94a3b8;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid rgba(148,163,184,0.2);letter-spacing:0.5px">LOCAL</span>';
+  }
 
   // ── router ───────────────────────────────────────────────────────────
   let currentView = "dashboard";
@@ -1542,6 +1624,7 @@
     if (norm === "export-contable") { initExportContable(); return; }
     if (norm === "atajos") return;
     if (norm === "config") { loadConfig(); return; }
+    if (norm === "integraciones") { loadIntegraciones(); return; }
     if (norm === "usuarios") { loadUsuarios(); return; }
     if (norm === "knowledge") { loadKnowledge(); return; }
     if (norm === "conversaciones") { loadConversaciones(); return; }
@@ -2186,6 +2269,147 @@
     }
   }
   window.saveConfig = saveConfig;
+
+  // ── Integraciones (AIR S.R.L.) ───────────────────────────────────────────
+
+  async function loadIntegraciones() {
+    try {
+      const api = await waitForAsimov();
+      const cfg = await api.air.getConfig();
+
+      document.getElementById("air-enabled").checked = cfg.enabled;
+      document.getElementById("air-username").value   = cfg.username || "";
+      document.getElementById("air-password").value   = cfg.password || "";
+      document.getElementById("air-base-url").value   = cfg.baseUrl  || "";
+      document.getElementById("air-sync-interval").value = cfg.syncIntervalMinutes || 15;
+
+      if (cfg.enabled) {
+        await refreshAirStats();
+        await refreshAirHistory();
+      }
+    } catch (e) {
+      document.getElementById("air-status-msg").textContent = "Error cargando config: " + e.message;
+    }
+  }
+
+  async function refreshAirStats() {
+    try {
+      const api = await waitForAsimov();
+      const counts = await api.air.countProducts();
+      const statsEl = document.getElementById("air-stats");
+      statsEl.style.display = "block";
+      document.getElementById("air-stat-total").textContent  = String(counts.total ?? 0);
+      document.getElementById("air-stat-active").textContent = String(counts.active ?? 0);
+
+      const history = await api.air.syncHistory();
+      if (history.length > 0) {
+        const last = history[0];
+        const d = last.finished_at || last.started_at;
+        document.getElementById("air-stat-last-sync").textContent = d ? new Date(d).toLocaleString() : "—";
+      }
+    } catch (_) { /* silencioso */ }
+  }
+
+  async function refreshAirHistory() {
+    try {
+      const api = await waitForAsimov();
+      const runs = await api.air.syncHistory();
+      const tbody = document.getElementById("air-sync-tbody");
+      const wrap  = document.getElementById("air-sync-history");
+      if (runs.length === 0) { wrap.style.display = "none"; return; }
+      wrap.style.display = "block";
+      tbody.innerHTML = runs.map(r => {
+        const date = r.started_at ? new Date(r.started_at).toLocaleString() : "—";
+        const badge = r.status === "ok"
+          ? '<span style="color:#22c55e;font-weight:600">✓ OK</span>'
+          : r.status === "running"
+            ? '<span style="color:var(--accent);font-weight:600">⟳ …</span>'
+            : '<span style="color:var(--danger);font-weight:600">✗ Error</span>';
+        return `<tr>
+          <td>${esc(date)}</td>
+          <td>${badge}</td>
+          <td style="text-align:right">${r.products_synced ?? 0}</td>
+          <td style="font-size:11px;color:var(--text-muted)">${esc(r.error_message || "")}</td>
+        </tr>`;
+      }).join("");
+    } catch (_) { /* silencioso */ }
+  }
+
+  async function saveAirConfig() {
+    const msg = document.getElementById("air-save-msg");
+    msg.style.display = "none";
+    try {
+      const api = await waitForAsimov();
+      const fields = {
+        air_enabled:       document.getElementById("air-enabled").checked ? "true" : "false",
+        air_username:      document.getElementById("air-username").value.trim(),
+        air_password:      document.getElementById("air-password").value.trim(),
+        air_base_url:      document.getElementById("air-base-url").value.trim(),
+        air_sync_interval: document.getElementById("air-sync-interval").value || "15",
+      };
+      for (const [key, value] of Object.entries(fields)) {
+        await api.config.set(key, value);
+      }
+      msg.textContent = "✓ Guardado";
+      msg.className = "save-msg ok";
+      msg.style.display = "inline";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+
+      if (fields.air_enabled === "true") {
+        await api.air.startSyncTimer();
+        await refreshAirStats();
+        await refreshAirHistory();
+      } else {
+        await api.air.stopSyncTimer();
+      }
+    } catch (e) {
+      msg.textContent = "Error: " + e.message;
+      msg.className = "save-msg";
+      msg.style.display = "inline";
+    }
+  }
+  window.saveAirConfig = saveAirConfig;
+
+  async function testAirConnection() {
+    const statusEl = document.getElementById("air-status-msg");
+    statusEl.textContent = "Probando conexión…";
+    statusEl.style.color = "var(--text-muted)";
+    try {
+      const api = await waitForAsimov();
+      const result = await api.air.testConnection();
+      statusEl.textContent = result.ok
+        ? "✓ " + result.message
+        : "✗ " + result.message;
+      statusEl.style.color = result.ok ? "#22c55e" : "var(--danger)";
+    } catch (e) {
+      statusEl.textContent = "✗ " + e.message;
+      statusEl.style.color = "var(--danger)";
+    }
+  }
+  window.testAirConnection = testAirConnection;
+
+  async function runAirSync() {
+    const statusEl = document.getElementById("air-status-msg");
+    statusEl.textContent = "Sincronizando…";
+    statusEl.style.color = "var(--accent)";
+    try {
+      const api = await waitForAsimov();
+      const result = await api.air.runSync();
+      if (result.status === "ok") {
+        statusEl.textContent = "✓ Sync completado — " + result.itemsSynced + " productos.";
+        statusEl.style.color = "#22c55e";
+      } else {
+        statusEl.textContent = "✗ " + (result.error || "Error desconocido");
+        statusEl.style.color = "var(--danger)";
+      }
+      await refreshAirStats();
+      await refreshAirHistory();
+    } catch (e) {
+      statusEl.textContent = "✗ " + e.message;
+      statusEl.style.color = "var(--danger)";
+    }
+  }
+  window.runAirSync = runAirSync;
 
   // ── Usuarios y Roles ─────────────────────────────────────────────────────
   async function loadUsuarios() {

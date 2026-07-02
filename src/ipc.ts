@@ -19,6 +19,14 @@ import {
 } from "./config";
 import { setLaunchAtStartupEnabled } from "./tray";
 import {
+  getAirLocalConfig,
+  isAirEnabled,
+  runAirSync,
+  testAirConnection,
+  startAirSyncTimer,
+  stopAirSyncTimer,
+} from "./air";
+import {
   dbAll,
   dbGet,
   dbRun,
@@ -287,12 +295,25 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   // --- DB: Stock -----------------------------------------------------------
   ipcMain.handle("db:stock:list", (_event, search: unknown) => {
     const q = `%${safeStr(search)}%`;
-    return dbAll(`SELECT a.id, a.code, a.name, a.unit, a.sale_price,
-                         COALESCE(SUM(s.qty),0) as stock_total,
-                         COALESCE(MIN(s.min_qty),0) as min_qty
-                  FROM articles a LEFT JOIN article_stock s ON s.article_id = a.id
-                  WHERE a.active = 1 AND a.manages_stock = 1 AND (a.name LIKE ? OR a.code LIKE ?)
-                  GROUP BY a.id ORDER BY a.name LIMIT 500`, [q, q]);
+    const localRows = dbAll(
+      `SELECT a.id, a.code, a.name, a.unit, a.sale_price,
+              COALESCE(SUM(s.qty),0) as stock_total,
+              COALESCE(MIN(s.min_qty),0) as min_qty,
+              'local' as source
+       FROM articles a LEFT JOIN article_stock s ON s.article_id = a.id
+       WHERE a.active = 1 AND a.manages_stock = 1 AND (a.name LIKE ? OR a.code LIKE ?)
+       GROUP BY a.id ORDER BY a.name LIMIT 500`, [q, q]);
+
+    if (!isAirEnabled()) return localRows;
+
+    const airRows = dbAll(
+      `SELECT id, air_code as code, description as name, 'un' as unit, price_usd as sale_price,
+              stock as stock_total, 0 as min_qty, 'air' as source
+       FROM air_products
+       WHERE active = 1 AND (description LIKE ? OR air_code LIKE ?)
+       ORDER BY description LIMIT 5000`, [q, q]);
+
+    return [...(localRows as unknown[]), ...(airRows as unknown[])];
   });
 
   // --- DB: Movimientos de stock --------------------------------------------
@@ -625,4 +646,65 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     fs.writeFileSync(filePath, "﻿" + header + csv, "utf8");
     return { ok: true, filePath };
   });
+
+  // --- AIR S.R.L. Integration -----------------------------------------------
+
+  ipcMain.handle("air:config:get", () => getAirLocalConfig());
+
+  ipcMain.handle("air:enabled", () => isAirEnabled());
+
+  ipcMain.handle("air:products:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(
+      `SELECT id, air_code, description, brand, category, price_usd, price_ars, iva_pct, stock, active, synced_at
+       FROM air_products
+       WHERE active = 1 AND (air_code LIKE ? OR description LIKE ? OR brand LIKE ? OR category LIKE ?)
+       ORDER BY description LIMIT 500`,
+      [q, q, q, q],
+    );
+  });
+
+  ipcMain.handle("air:products:count", () => {
+    const row = dbGet<{ total: number; active: number }>(
+      `SELECT
+         COUNT(*) as total,
+         SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) as active
+       FROM air_products`,
+    );
+    return row ?? { total: 0, active: 0 };
+  });
+
+  ipcMain.handle("air:sync:history", () =>
+    dbAll(
+      `SELECT id, started_at, finished_at, status, products_synced, error_message
+       FROM air_sync_runs ORDER BY started_at DESC LIMIT 20`,
+    )
+  );
+
+  ipcMain.handle("air:sync:run", async () => {
+    try {
+      return await runAirSync();
+    } catch (err: unknown) {
+      return { status: "error", error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("air:test-connection", async () => {
+    try {
+      return await testAirConnection();
+    } catch (err: unknown) {
+      return { ok: false, message: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("air:sync-timer:start", () => {
+    startAirSyncTimer();
+    return { ok: true };
+  });
+
+  ipcMain.handle("air:sync-timer:stop", () => {
+    stopAirSyncTimer();
+    return { ok: true };
+  });
+
 }

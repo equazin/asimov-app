@@ -570,6 +570,36 @@ CREATE TABLE IF NOT EXISTS conversation_messages (
 );
 
 -- ============================================================
+-- INTEGRACIONES — AIR S.R.L.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS air_products (
+  id            TEXT PRIMARY KEY,
+  air_code      TEXT NOT NULL UNIQUE,
+  description   TEXT NOT NULL,
+  part_number   TEXT,
+  brand         TEXT,
+  category      TEXT,
+  unit          TEXT NOT NULL DEFAULT 'un',
+  price_usd     REAL NOT NULL DEFAULT 0,
+  price_ars     REAL NOT NULL DEFAULT 0,
+  iva_pct       REAL NOT NULL DEFAULT 21,
+  stock         REAL NOT NULL DEFAULT 0,
+  active        INTEGER NOT NULL DEFAULT 1,
+  raw_json      TEXT,
+  synced_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS air_sync_runs (
+  id            TEXT PRIMARY KEY,
+  started_at    TEXT NOT NULL DEFAULT (datetime('now')),
+  finished_at   TEXT,
+  status        TEXT NOT NULL DEFAULT 'running',
+  products_synced INTEGER NOT NULL DEFAULT 0,
+  error_message TEXT
+);
+
+-- ============================================================
 -- Índices
 -- ============================================================
 
@@ -584,8 +614,10 @@ CREATE INDEX IF NOT EXISTS idx_invoices_client       ON invoices(client_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_date         ON invoices(date);
 CREATE INDEX IF NOT EXISTS idx_stock_movements_article ON stock_movements(article_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_client        ON tickets(client_id);
+CREATE INDEX IF NOT EXISTS idx_air_products_code      ON air_products(air_code);
+CREATE INDEX IF NOT EXISTS idx_air_products_category  ON air_products(category);
+CREATE INDEX IF NOT EXISTS idx_air_sync_runs_status   ON air_sync_runs(status);
 `;
-
 // ---------------------------------------------------------------------------
 // Secuencias (autonumeración)
 // ---------------------------------------------------------------------------
@@ -610,6 +642,9 @@ export function initDb(): void {
   const dbPath = path.join(app.getPath("userData"), "asimov.db");
   _db = new Database(dbPath);
   _db.exec(SCHEMA_SQL);
+
+  // Migrations for existing tables
+  try { _db.exec("ALTER TABLE air_products ADD COLUMN part_number TEXT"); } catch {}
 
   // Datos iniciales: depósito y caja por defecto
   const warehouseExists = (_db.prepare("SELECT id FROM warehouses LIMIT 1").get() as any);

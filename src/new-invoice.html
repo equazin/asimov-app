@@ -214,7 +214,7 @@
     .items-count { margin-left: auto; font-size: 11px; font-weight: 600; }
 
     .items-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; background: var(--panel); }
-    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 940px; }
+    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 1100px; }
     .items-table thead th {
       position: sticky; top: 0; z-index: 10;
       background: var(--accent);
@@ -230,6 +230,8 @@
     .items-table thead th.th-code  { width: 96px; }
     .items-table thead th.th-unit  { width: 54px; }
     .items-table thead th.th-qty   { width: 74px; }
+    .items-table thead th.th-cost  { width: 90px; }
+    .items-table thead th.th-margin{ width: 68px; }
     .items-table thead th.th-price { width: 96px; }
     .items-table thead th.th-disc  { width: 60px; }
     .items-table thead th.th-iva   { width: 76px; }
@@ -697,6 +699,18 @@ td{ border-color:var(--border) !important; }
           </select>
         </div>
 
+        <div class="section-title">Comercial</div>
+        <div class="field">
+          <label>% Margen ganancia</label>
+          <input type="number" id="txtMargenGral" value="0" min="0" max="999" step="0.1" title="Se aplica como margen por defecto al agregar artículos" />
+        </div>
+        <div class="field">
+          <label>Vendedor</label>
+          <input type="text" id="txtVendedor" />
+        </div>
+        <div class="field"></div>
+        <div class="field"></div>
+
         <div class="section-title">Referencias</div>
         <div class="field">
           <label>Pedido origen</label>
@@ -710,10 +724,7 @@ td{ border-color:var(--border) !important; }
           <label>OC del cliente</label>
           <input type="text" placeholder="Orden de compra del cliente..." />
         </div>
-        <div class="field">
-          <label>Vendedor</label>
-          <input type="text" id="txtVendedor" />
-        </div>
+        <div class="field"></div>
       </div>
     </div>
 
@@ -733,6 +744,8 @@ td{ border-color:var(--border) !important; }
               <th class="th-desc">Descripción</th>
               <th class="th-unit">Unid.</th>
               <th class="th-qty">Cantidad</th>
+              <th class="th-cost">Costo</th>
+              <th class="th-margin">% Margen</th>
               <th class="th-price">Precio unit.</th>
               <th class="th-disc">% Desc.</th>
               <th class="th-iva">IVA</th>
@@ -742,7 +755,7 @@ td{ border-color:var(--border) !important; }
           </thead>
           <tbody id="itemsBody">
             <tr>
-              <td colspan="10" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4</td>
+              <td colspan="12" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4</td>
             </tr>
           </tbody>
         </table>
@@ -1082,7 +1095,11 @@ td{ border-color:var(--border) !important; }
         row.codigo = data.product.codigo || data.product.code || "";
         row.descripcion = data.product.descripcion || data.product.description || data.product.name || "";
         row.unidad = data.product.unidad || "UN";
-        row.precio = parseFloat(data.product.importe || data.product.price || "0") || 0;
+        var costo = parseFloat(data.product.importe || data.product.price || "0") || 0;
+        row.costo = costo;
+        var margenGral = parseFloat(document.getElementById("txtMargenGral").value) || 0;
+        row.margen = margenGral;
+        row.precio = costo * (1 + margenGral / 100);
         row.cantidad = 1;
         row.iva = parseFloat(data.product.iva || "21") || 21;
         renderItemsTable();
@@ -1106,7 +1123,8 @@ td{ border-color:var(--border) !important; }
     function addRow(prefill) {
       prefill = prefill || {};
       var rowId = nextRowId++;
-      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, precio: 0, descuento: 0, iva: 21 });
+      var margenGral = parseFloat(document.getElementById("txtMargenGral").value) || 0;
+      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, costo: 0, margen: margenGral, precio: 0, descuento: 0, iva: 21 });
       Object.assign(items[items.length - 1], prefill);
       renderItemsTable(); recalcTotals();
       setTimeout(function() {
@@ -1127,7 +1145,7 @@ td{ border-color:var(--border) !important; }
       tbody.innerHTML = "";
       if (count === 0) {
         var empty = document.createElement("tr");
-        empty.innerHTML = '<td colspan="10" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4</td>';
+        empty.innerHTML = '<td colspan="12" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4</td>';
         tbody.appendChild(empty);
         return;
       }
@@ -1150,7 +1168,9 @@ td{ border-color:var(--border) !important; }
           '<td><input class="cell-input" data-id="' + row.id + '" data-field="descripcion" value="' + esc(row.descripcion) + '" /></td>' +
           '<td><input class="cell-input" data-id="' + row.id + '" data-field="unidad" value="' + esc(row.unidad) + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" step="1" data-id="' + row.id + '" data-field="cantidad" value="' + row.cantidad + '" /></td>' +
-          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="precio" value="' + row.precio + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="costo" value="' + row.costo + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" max="999" step="0.1" data-id="' + row.id + '" data-field="margen" value="' + row.margen + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="precio" value="' + fmtDec(row.precio) + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" max="100" step="0.1" data-id="' + row.id + '" data-field="descuento" value="' + row.descuento + '" /></td>' +
           '<td><select class="cell-select" data-id="' + row.id + '" data-field="iva">' + ivaOpts + '</select></td>' +
           '<td class="td-sub">$ ' + fmtNum(sub) + '</td>' +
@@ -1179,10 +1199,20 @@ td{ border-color:var(--border) !important; }
       var field = el.dataset.field;
       var row = items.find(function(r) { return r.id === rowId; });
       if (!row) return;
-      if (field === "cantidad" || field === "precio" || field === "descuento" || field === "iva") {
+      if (field === "cantidad" || field === "precio" || field === "descuento" || field === "iva" || field === "costo" || field === "margen") {
         row[field] = parseFloat(el.value) || 0;
       } else {
         row[field] = el.value;
+      }
+      if (field === "costo" || field === "margen") {
+        row.precio = row.costo * (1 + row.margen / 100);
+        var precioInput = el.closest("tr").querySelector('[data-field="precio"]');
+        if (precioInput) precioInput.value = fmtDec(row.precio);
+      }
+      if (field === "precio" && row.costo > 0) {
+        row.margen = ((row.precio / row.costo) - 1) * 100;
+        var margenInput = el.closest("tr").querySelector('[data-field="margen"]');
+        if (margenInput) margenInput.value = fmtDec(row.margen);
       }
       var sub = row.cantidad * row.precio * (1 - row.descuento / 100);
       var tr = el.closest("tr");
@@ -1246,6 +1276,10 @@ td{ border-color:var(--border) !important; }
     }
     function fmtNum(n) {
       return isNaN(n) ? "0,00" : Number(n).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function fmtDec(n) {
+      return isNaN(n) ? "0" : parseFloat(Number(n).toFixed(2));
     }
 
     /* ─── Keyboard & toolbar ─── */

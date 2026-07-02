@@ -177,7 +177,7 @@
     .items-count { margin-left: auto; font-size: 11px; font-weight: 600; }
 
     .items-table-wrap { flex: 1; overflow-y: auto; overflow-x: auto; background: var(--panel); }
-    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 820px; }
+    .items-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 980px; }
     .items-table thead th {
       position: sticky; top: 0; z-index: 10;
       background: var(--accent);
@@ -194,6 +194,8 @@
     .items-table thead th.th-desc  { /* flex */ }
     .items-table thead th.th-unit  { width: 58px; }
     .items-table thead th.th-qty   { width: 80px; }
+    .items-table thead th.th-cost  { width: 90px; }
+    .items-table thead th.th-margin{ width: 68px; }
     .items-table thead th.th-price { width: 100px; }
     .items-table thead th.th-disc  { width: 68px; }
     .items-table thead th.th-sub   { width: 110px; text-align: right; }
@@ -631,6 +633,10 @@ td{ border-color:var(--border) !important; }
         </div>
 
         <div class="field">
+          <label>% Margen ganancia</label>
+          <input type="number" id="txtMargenGral" value="0" min="0" max="999" step="0.1" title="Se aplica como margen por defecto al agregar artículos" />
+        </div>
+        <div class="field">
           <label>% Descuento gral.</label>
           <input type="number" id="txtDescuentoGral" value="0" min="0" max="100" step="0.1" />
         </div>
@@ -675,6 +681,8 @@ td{ border-color:var(--border) !important; }
               <th class="th-desc">Descripción</th>
               <th class="th-unit">Unid.</th>
               <th class="th-qty">Cantidad</th>
+              <th class="th-cost">Costo</th>
+              <th class="th-margin">% Margen</th>
               <th class="th-price">Precio unit.</th>
               <th class="th-disc">% Desc.</th>
               <th class="th-sub">Subtotal</th>
@@ -683,7 +691,7 @@ td{ border-color:var(--border) !important; }
           </thead>
           <tbody id="itemsBody">
             <tr>
-              <td colspan="9" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4 para agregar artículos</td>
+              <td colspan="11" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4 para agregar artículos</td>
             </tr>
           </tbody>
         </table>
@@ -918,7 +926,11 @@ td{ border-color:var(--border) !important; }
         row.codigo = product.codigo || product.code || "";
         row.descripcion = product.descripcion || product.description || product.name || "";
         row.unidad = product.unidad || "UN";
-        row.precio = parseFloat(product.importe || product.price || "0") || 0;
+        var costo = parseFloat(product.importe || product.price || "0") || 0;
+        row.costo = costo;
+        var margenGral = parseFloat(document.getElementById("txtMargenGral").value) || 0;
+        row.margen = margenGral;
+        row.precio = costo * (1 + margenGral / 100);
         row.cantidad = 1;
         row.iva = parseFloat(product.iva || "21") || 21;
         renderItemsTable();
@@ -934,7 +946,8 @@ td{ border-color:var(--border) !important; }
     function addRow(prefill) {
       prefill = prefill || {};
       var rowId = nextRowId++;
-      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, precio: 0, descuento: 0, iva: 21 });
+      var margenGral = parseFloat(document.getElementById("txtMargenGral").value) || 0;
+      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, costo: 0, margen: margenGral, precio: 0, descuento: 0, iva: 21 });
       var row = items[items.length - 1];
       Object.keys(prefill).forEach(function(k) { row[k] = prefill[k]; });
       renderItemsTable();
@@ -959,7 +972,7 @@ td{ border-color:var(--border) !important; }
       tbody.innerHTML = "";
       if (count === 0) {
         var empty = document.createElement("tr");
-        empty.innerHTML = '<td colspan="9" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4 para agregar artículos</td>';
+        empty.innerHTML = '<td colspan="11" class="empty-items-msg">Sin ítems — presione "Agregar ítem" o F4 para agregar artículos</td>';
         tbody.appendChild(empty);
         return;
       }
@@ -976,7 +989,9 @@ td{ border-color:var(--border) !important; }
           '<td><input class="cell-input" data-id="' + row.id + '" data-field="descripcion" value="' + esc(row.descripcion) + '" /></td>' +
           '<td><input class="cell-input" data-id="' + row.id + '" data-field="unidad" value="' + esc(row.unidad) + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" step="1" data-id="' + row.id + '" data-field="cantidad" value="' + row.cantidad + '" /></td>' +
-          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="precio" value="' + row.precio + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="costo" value="' + row.costo + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" max="999" step="0.1" data-id="' + row.id + '" data-field="margen" value="' + row.margen + '" /></td>' +
+          '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="precio" value="' + fmtDec(row.precio) + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" max="100" step="0.1" data-id="' + row.id + '" data-field="descuento" value="' + row.descuento + '" /></td>' +
           '<td class="td-sub">$ ' + fmtNum(sub) + '</td>' +
           '<td style="text-align:center;"><button class="del-row-btn" data-rowid="' + row.id + '" title="Eliminar fila">×</button></td>';
@@ -1001,10 +1016,20 @@ td{ border-color:var(--border) !important; }
       var field = input.dataset.field;
       var row = items.find(function(r) { return r.id === rowId; });
       if (!row) return;
-      if (field === "cantidad" || field === "precio" || field === "descuento") {
+      if (field === "cantidad" || field === "precio" || field === "descuento" || field === "costo" || field === "margen") {
         row[field] = parseFloat(input.value) || 0;
       } else {
         row[field] = input.value;
+      }
+      if (field === "costo" || field === "margen") {
+        row.precio = row.costo * (1 + row.margen / 100);
+        var precioInput = input.closest("tr").querySelector('[data-field="precio"]');
+        if (precioInput) precioInput.value = fmtDec(row.precio);
+      }
+      if (field === "precio" && row.costo > 0) {
+        row.margen = ((row.precio / row.costo) - 1) * 100;
+        var margenInput = input.closest("tr").querySelector('[data-field="margen"]');
+        if (margenInput) margenInput.value = fmtDec(row.margen);
       }
       var sub = row.cantidad * row.precio * (1 - row.descuento / 100);
       var tr = input.closest("tr");
@@ -1064,6 +1089,10 @@ td{ border-color:var(--border) !important; }
 
     function fmtNum(n) {
       return isNaN(n) ? "0,00" : Number(n).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function fmtDec(n) {
+      return isNaN(n) ? "0" : parseFloat(Number(n).toFixed(2));
     }
 
     /* ─── Toolbar & keyboard ─── */
