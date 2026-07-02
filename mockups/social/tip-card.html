@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Asimov — tip card 1080×1350</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #14171D;
+    --graphite: #232833;
+    --orange: #FF6A2B;
+    --orange-ink: #5A1E06;
+    --cyan: #2FD4BE;
+    --cloud: #F4F5F3;
+    --n300: #A8ADB7;
+    --n500: #5B6270;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1080px; height: 1350px; overflow: hidden; }
+  .card {
+    width: 1080px;
+    height: 1350px;
+    position: relative;
+    background:
+      radial-gradient(circle at 88% 6%, rgba(255,106,43,0.14), transparent 500px),
+      radial-gradient(circle at 4% 96%, rgba(47,212,190,0.10), transparent 460px),
+      var(--ink);
+    color: var(--cloud);
+    font-family: Inter, sans-serif;
+    padding: 72px 84px;
+    display: flex;
+    flex-direction: column;
+  }
+  /* grid texture: estructura */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 90px 90px;
+    pointer-events: none;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .top svg { height: 64px; width: auto; }
+  .handle {
+    font: 500 26px/1 "JetBrains Mono", monospace;
+    color: var(--n300);
+  }
+
+  .eyebrow {
+    margin-top: 88px;
+    font: 500 30px/1 "JetBrains Mono", monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+
+  h1 {
+    margin-top: 36px;
+    font: 700 104px/1.08 "Space Grotesk", sans-serif;
+    letter-spacing: -0.015em;
+    max-width: 860px;
+  }
+  h1 em { font-style: normal; color: var(--cyan); }
+
+  .keys {
+    margin-top: 48px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .key {
+    font: 500 44px/1 "JetBrains Mono", monospace;
+    color: var(--cloud);
+    background: var(--graphite);
+    border: 2px solid rgba(255,255,255,0.18);
+    border-bottom-width: 8px;
+    border-radius: 18px;
+    padding: 26px 40px;
+  }
+  .keys .plus { font: 700 48px/1 "Space Grotesk", sans-serif; color: var(--n500); }
+
+  .body {
+    margin-top: 44px;
+    font: 400 40px/1.5 Inter, sans-serif;
+    color: var(--n300);
+    max-width: 600px;
+  }
+  .body b { color: var(--cloud); font-weight: 600; }
+
+  .cta {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 2px solid rgba(255,255,255,0.10);
+    padding-top: 48px;
+  }
+  .cta .btn {
+    font: 600 36px/1 Inter, sans-serif;
+    color: var(--orange-ink);
+    background: var(--orange);
+    border-radius: 16px;
+    padding: 30px 44px;
+  }
+  .cta .site { font: 500 30px/1 "JetBrains Mono", monospace; color: var(--n500); }
+
+  /* ---- el Nodo ---- */
+  .nodo {
+    position: absolute;
+    top: 790px;
+    right: 110px;
+    width: 220px;
+    height: 220px;
+  }
+  .nodo .orbit {
+    position: absolute;
+    inset: -46px;
+    border: 5px solid transparent;
+    border-top-color: rgba(47,212,190,0.85);
+    border-right-color: rgba(47,212,190,0.35);
+    border-radius: 50%;
+    transform: rotate(-28deg);
+  }
+  .nodo .ball {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 30%, #ff8d5c, var(--orange) 58%, #e5551a);
+    box-shadow: 0 30px 80px rgba(255,106,43,0.35);
+  }
+  .nodo .eye {
+    position: absolute;
+    top: 84px;
+    width: 22px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--orange-ink);
+  }
+  .nodo .eye.l { left: 70px; }
+  .nodo .eye.r { left: 128px; }
+  .nodo .satellite {
+    position: absolute;
+    top: -58px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cyan);
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <svg viewBox="0 0 430 120" role="img" aria-label="Asimov">
+        <path d="M60 37 L31 96" fill="none" stroke="#F4F5F3" stroke-width="15" stroke-linecap="round"/>
+        <path d="M60 37 L89 96" fill="none" stroke="#F4F5F3" stroke-width="15" stroke-linecap="round"/>
+        <path d="M43 76 H77" fill="none" stroke="#F4F5F3" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="60" cy="22" r="11" fill="#FF6A2B"/>
+        <text x="140" y="83" font-family="'Space Grotesk','Segoe UI',sans-serif" font-size="70" font-weight="700" letter-spacing="1" fill="#F4F5F3">asimov</text>
+      </svg>
+      <span class="handle">@asimov.erp</span>
+    </div>
+
+    <div class="nodo">
+      <div class="orbit"></div>
+      <div class="ball"></div>
+      <div class="eye l"></div>
+      <div class="eye r"></div>
+      <div class="satellite"></div>
+    </div>
+
+    <div class="eyebrow">Tip · multi-ventana</div>
+    <h1>Facturá en una ventana.<br />Mirá stock <em>en la otra</em>.</h1>
+
+    <div class="keys">
+      <span class="key">Ctrl</span>
+      <span class="plus">+</span>
+      <span class="key">N</span>
+    </div>
+
+    <p class="body">
+      Asimov abre <b>dos pantallas del ERP en paralelo</b>.
+      Sin pestañas, sin esperar a que cargue de nuevo.
+    </p>
+
+    <div class="cta">
+      <span class="btn">Descargala gratis</span>
+      <span class="site">asimoverp.com</span>
+    </div>
+  </div>
+</body>
+</html>

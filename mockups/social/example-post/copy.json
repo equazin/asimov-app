@@ -1,0 +1,15 @@
+{
+  "slug": "tip-multiventana",
+  "pillar": "producto",
+  "format": "imagen-feed-4x5",
+  "template": "tip-card.html",
+  "media": ["tip-card.png"],
+  "publishAt": "2026-07-07T18:00:00-03:00",
+  "instagram": {
+    "caption": "¿Facturás y mirás stock a la vez? En Asimov, Ctrl+N abre otra ventana del ERP. Dos pantallas, un solo sistema, cero pestañas.\n\nDescargala gratis → link en bio.\n\n#erp #pymes",
+    "altText": "Placa oscura de Asimov con el título 'Facturá en una ventana. Mirá stock en la otra', las teclas Ctrl+N y el personaje de la marca: una esfera naranja con órbita cyan."
+  },
+  "facebook": {
+    "caption": "¿Facturás y mirás stock a la vez?\n\nAsimov, la app de escritorio del ERP Bartez, abre dos pantallas del ERP en paralelo con Ctrl+N. Facturá en una ventana y controlá stock en la otra, sin pestañas y sin esperar a que cargue de nuevo.\n\nDescargala gratis: https://asimoverp.com"
+  }
+}

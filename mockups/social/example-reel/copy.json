@@ -1,0 +1,23 @@
+{
+  "slug": "reel-multiventana",
+  "pillar": "producto",
+  "format": "reel-9x16",
+  "template": "reel-multiventana.html",
+  "media": ["reel-multiventana.mp4"],
+  "durationSeconds": 13,
+  "publishAt": "2026-07-09T18:00:00-03:00",
+  "script": [
+    { "from": 0.0, "to": 3.0, "scene": "El Nodo rebota y aparece el titular", "text": "¿Facturás y mirás stock a la vez?" },
+    { "from": 3.0, "to": 6.2, "scene": "Teclas Ctrl y N aparecen y se pulsan", "caption": "Ctrl+N abre otra ventana del ERP" },
+    { "from": 6.2, "to": 10.2, "scene": "Dos ventanas (Facturación y Stock) entran en paralelo", "caption": "Dos pantallas. Un solo ERP." },
+    { "from": 10.2, "to": 13.0, "scene": "End card con logo, tagline y CTA", "caption": "Asimov · gratis para tu ERP Bartez" }
+  ],
+  "instagram": {
+    "caption": "Ctrl+N y listo: dos pantallas del ERP en paralelo. Facturá en una, mirá stock en la otra.\n\nAsimov, la app de escritorio de tu ERP Bartez. Gratis → link en bio.\n\n#erp #pymes",
+    "altText": "Reel animado de Asimov: el personaje de la marca presenta el atajo Ctrl+N, que abre dos ventanas del ERP en paralelo, y cierra con el logo y la descarga gratis.",
+    "shareToFeed": true
+  },
+  "facebook": {
+    "caption": "Dos pantallas. Un solo ERP.\n\nCon Asimov, Ctrl+N abre otra ventana del ERP: facturá en una y controlá stock en la otra, en paralelo y sin pestañas.\n\nDescargala gratis: https://asimoverp.com"
+  }
+}
