@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asimov ERP — Desde $59.900/mes con app de escritorio incluida | Bartez Tecnología</title>
+<meta name="description" content="ERP completo para pymes: 10 usuarios por menos de lo que Colppy cobra por 3. Facturación ARCA y Verifactu. Probalo gratis 14 días, sin tarjeta." />
+<link rel="stylesheet" href="theme.css" />
+<style>
+  /* ── Variante 3: conversión agresiva ── */
+
+  /* Barra sticky superior de urgencia */
+  .urgency-bar {
+    background: var(--color-gold-500); color: var(--color-gold-ink);
+    text-align: center; font-size: 12.5px; font-weight: 700; padding: 8px 16px;
+  }
+  .urgency-bar a { color: inherit; text-decoration: underline; }
+
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(6,43,25,0.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cream-14);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 16px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 16px; text-decoration: none; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--gradient-progress);
+    display: grid; place-items: center; color: var(--color-cream); font-weight: 900;
+    border: 1px solid var(--cream-22);
+  }
+  .nav-spacer { flex: 1; }
+  .nav .price-hook { font-size: 13px; color: var(--cream-72); }
+  .nav .price-hook b { color: var(--color-gold-400); }
+
+  /* Hero corto */
+  .hero { padding: 56px 0 40px; text-align: center; }
+  .hero h1 { font-size: clamp(30px, 4.8vw, 50px); font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; max-width: 800px; margin: 0 auto; }
+  .hero h1 em { font-style: normal; color: var(--color-gold-500); }
+  .hero p { max-width: 620px; margin: 16px auto 0; font-size: 16px; line-height: 1.6; color: var(--cream-72); }
+  .hero-ctas { margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .guarantee-row { margin-top: 18px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; font-size: 12.5px; color: var(--cream-58); }
+  .guarantee-row span::before { content: "✓ "; color: var(--color-success-2); font-weight: 800; }
+
+  /* Precios ARRIBA */
+  .section { padding: 64px 0; }
+  .section-head { text-align: center; max-width: 660px; margin: 0 auto 36px; }
+  .section-head h2 { font-size: clamp(24px, 3.4vw, 36px); font-weight: 800; }
+  .section-head p { margin-top: 10px; font-size: 15px; color: var(--cream-72); line-height: 1.6; }
+  .pricing-head { display: flex; justify-content: center; margin-bottom: 34px; }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .plan { padding: 26px 24px; border-radius: var(--radius-lg); display: flex; flex-direction: column; position: relative; }
+  .plan.recommended { border-color: var(--color-gold-500); box-shadow: var(--shadow-card); transform: scale(1.03); }
+  .plan .rec-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--color-gold-500); color: var(--color-gold-ink);
+    font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: var(--radius-pill);
+    text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .plan h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--cream-72); }
+  .plan .price { margin-top: 10px; font-size: 34px; font-weight: 800; }
+  .plan .price small { font-size: 12.5px; font-weight: 600; color: var(--cream-58); }
+  .plan .vs-note { margin-top: 6px; font-size: 11.5px; color: var(--color-success-2); font-weight: 600; min-height: 16px; }
+  .plan ul { list-style: none; margin: 18px 0; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .plan li { font-size: 13px; color: var(--cream-72); display: flex; gap: 8px; line-height: 1.35; }
+  .plan li::before { content: "✓"; color: var(--color-success-2); font-weight: 800; }
+  .plan li.no { opacity: 0.55; }
+  .plan li.no::before { content: "—"; }
+  .plan .btn { width: 100%; }
+
+  /* Comparativa prominente */
+  .compare-section { background: rgba(6,43,25,0.45); border-top: 1px solid var(--cream-14); border-bottom: 1px solid var(--cream-14); }
+  .compare-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+  .compare-table th, .compare-table td { padding: 13px 15px; font-size: 13.5px; text-align: center; border-bottom: 1px solid var(--cream-14); }
+  .compare-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cream-58); }
+  .compare-table td:first-child, .compare-table th:first-child { text-align: left; font-weight: 600; }
+  .compare-table .col-asimov { background: var(--gold-12); border-left: 1px solid var(--gold-24); border-right: 1px solid var(--gold-24); }
+  .compare-table th.col-asimov { color: var(--color-gold-400); font-weight: 800; font-size: 13px; }
+  .compare-ok { color: var(--color-success-2); font-weight: 800; }
+  .compare-no { color: var(--color-error); font-weight: 700; }
+  .savings-callout {
+    margin: 26px auto 0; max-width: 640px; text-align: center;
+    padding: 18px 24px; border-radius: var(--radius-lg);
+    background: var(--gold-16); border: 1px solid var(--gold-24);
+    font-size: 15px; line-height: 1.55;
+  }
+  .savings-callout b { color: var(--color-gold-400); }
+  .disclaimer { margin-top: 14px; font-size: 11px; color: var(--cream-58); line-height: 1.5; }
+
+  /* Diferenciales rápidos */
+  .diff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .diff-card { padding: 20px 18px; border-radius: var(--radius-lg); text-align: center; }
+  .diff-card .feature-icon { margin: 0 auto 12px; width: 42px; height: 42px; font-size: 19px; border-radius: 12px; }
+  .diff-card h3 { font-size: 14px; font-weight: 700; }
+  .diff-card p { margin-top: 7px; font-size: 12.5px; line-height: 1.5; color: var(--cream-72); }
+
+  /* Verifactu urgencia */
+  .deadline {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 860px; margin: 0 auto;
+  }
+  .deadline-card { padding: 24px; border-radius: var(--radius-lg); }
+  .deadline-card .flag { font-size: 26px; }
+  .deadline-card h3 { margin-top: 10px; font-size: 17px; font-weight: 800; }
+  .deadline-card p { margin-top: 8px; font-size: 13.5px; line-height: 1.6; color: var(--cream-72); }
+  .deadline-card .date { color: var(--color-gold-400); font-weight: 800; }
+
+  /* Mid CTA banda */
+  .band { text-align: center; padding: 46px 24px; background: var(--gold-08); border-top: 1px solid var(--cream-14); border-bottom: 1px solid var(--cream-14); }
+  .band h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 800; }
+  .band .btn { margin-top: 18px; }
+
+  /* FAQ compacto */
+  .faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+  .faq-list details { border-radius: var(--radius-md); }
+  .faq-list summary { padding: 14px 18px; font-size: 14px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; }
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary::after { content: "+"; color: var(--color-gold-400); }
+  .faq-list details[open] summary::after { content: "–"; }
+  .faq-list .faq-body { padding: 0 18px 14px; font-size: 13px; line-height: 1.6; color: var(--cream-72); }
+
+  .final { text-align: center; padding: 80px 0; }
+  .final h2 { font-size: clamp(26px, 4vw, 42px); font-weight: 800; }
+  .final p { margin-top: 12px; color: var(--cream-72); font-size: 15px; }
+  .final .hero-ctas { margin-top: 26px; }
+
+  footer { border-top: 1px solid var(--cream-14); padding: 28px 0; }
+  .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--cream-58); }
+  .footer-inner a { color: var(--cream-72); text-decoration: none; }
+
+  /* CTA flotante mobile */
+  .float-cta {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+    padding: 10px 14px; background: rgba(6,43,25,0.96); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--gold-24);
+  }
+  .float-cta .btn { width: 100%; }
+
+  @media (max-width: 900px) {
+    .plans { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    .plan.recommended { transform: none; }
+    .diff-grid { grid-template-columns: repeat(2, 1fr); }
+    .deadline { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .nav .price-hook { display: none; }
+    .diff-grid { grid-template-columns: 1fr; }
+    .float-cta { display: block; }
+    body { padding-bottom: 70px; }
+  }
+</style>
+</head>
+<body class="bg-grid">
+
+<div class="urgency-bar">
+  🇪🇸 Verifactu es obligatorio para sociedades desde el 1/1/2027 —
+  <a href="#verifactu">llegá con el sistema andando, no en diciembre</a>
+</div>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#"><span class="brand-mark">A</span> Asimov</a>
+    <span class="nav-spacer"></span>
+    <span class="price-hook">Planes desde <b>$ 59.900/mes</b> · <b>19 €/mes</b></span>
+    <a class="btn btn-gold btn-sm" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probar gratis</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>10 usuarios por menos de lo que otros cobran por 3. <em>Y con app de escritorio.</em></h1>
+    <p>
+      Asimov es el ERP de Bartez Tecnología: ventas, stock, facturación electrónica,
+      tesorería y contabilidad integrados. Emití tu primera factura el mismo día.
+    </p>
+    <div class="hero-ctas">
+      <a class="btn btn-gold btn-lg" href="#precios">Ver precios ahora ↓</a>
+      <a class="btn btn-secondary btn-lg" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probar gratis 14 días</a>
+    </div>
+    <div class="guarantee-row">
+      <span>Sin tarjeta</span>
+      <span>Sin permanencia</span>
+      <span>Exportás tus datos cuando quieras</span>
+      <span>Contador gratis</span>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="precios" style="padding-top: 34px;">
+  <div class="container">
+    <div class="pricing-head">
+      <div class="country-toggle">
+        <button class="active" data-country="ar">🇦🇷 Argentina (ARS)</button>
+        <button data-country="es">🇪🇸 España (EUR)</button>
+      </div>
+    </div>
+    <div class="plans" id="plansGrid"></div>
+    <p class="disclaimer" style="text-align:center;">Precios + IVA. Sin costos de licencia, instalación ni actualizaciones.</p>
+  </div>
+</section>
+
+<section class="section compare-section" id="comparativa">
+  <div class="container">
+    <div class="section-head">
+      <h2>Mismo mercado. Compará fila por fila.</h2>
+      <p>Plan medio de cada sistema con precios de lista publicados por cada proveedor.</p>
+    </div>
+    <div class="table-scroll">
+      <table class="compare-table" id="compareTable"></table>
+    </div>
+    <div class="savings-callout" id="savingsCallout"></div>
+    <p class="disclaimer">
+      * Precios orientativos de lista, relevados en julio 2026 de fuentes públicas
+      (xubio.com, colppy.com, contabilium.com, holded.com, rankiabusiness.com, banktrack.com).
+      No incluyen IVA. Pueden variar — verificá en el sitio de cada proveedor.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Lo que ningún otro te da a este precio</h2>
+    </div>
+    <div class="diff-grid">
+      <div class="diff-card card-dark">
+        <div class="feature-icon">🖥️</div>
+        <h3>App de escritorio</h3>
+        <p>Impresión directa sin diálogos, notificaciones de Windows y arranque automático. Incluida en todos los planes.</p>
+      </div>
+      <div class="diff-card card-dark">
+        <div class="feature-icon">📈</div>
+        <h3>Margen por ítem</h3>
+        <p>Costo + % margen = precio calculado solo. Nadie de tu equipo vuelve a vender al costo por error.</p>
+      </div>
+      <div class="diff-card card-dark">
+        <div class="feature-icon">🔌</div>
+        <h3>Catálogo mayorista</h3>
+        <p>Stock y costos de tu proveedor sincronizados cada 15 minutos, adentro de tu buscador de artículos.</p>
+      </div>
+      <div class="diff-card card-dark">
+        <div class="feature-icon">🔧</div>
+        <h3>Series + RMA</h3>
+        <p>Trazabilidad por unidad y gestión de garantías. Clave si vendés IT, electrónica o repuestos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <h2>14 días gratis. Tu primera factura, hoy.</h2>
+  <a class="btn btn-gold btn-lg" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Empezar la prueba gratis</a>
+</div>
+
+<section class="section" id="verifactu">
+  <div class="container">
+    <div class="section-head">
+      <h2>Facturación legal en los dos países</h2>
+      <p>No es una promesa: el motor de comprobantes ya emite con validación fiscal en tiempo real.</p>
+    </div>
+    <div class="deadline">
+      <div class="deadline-card card-dark">
+        <span class="flag">🇦🇷</span>
+        <h3>Argentina — ARCA (ex AFIP)</h3>
+        <p>
+          Facturas A, B, C y M, notas de crédito y débito con <b>CAE en tiempo real</b>.
+          El tipo de comprobante se sugiere solo según la condición de IVA del cliente.
+          Percepciones IIBB y retenciones incluidas.
+        </p>
+      </div>
+      <div class="deadline-card card-dark">
+        <span class="flag">🇪🇸</span>
+        <h3>España — Verifactu</h3>
+        <p>
+          Obligatorio para sociedades desde el <span class="date">1 de enero de 2027</span>
+          y autónomos desde el <span class="date">1 de julio de 2027</span>, con sanciones
+          de hasta 50.000 €. Migrar en diciembre es caro y con el sistema a mitad de aprender.
+          <b>Empezá ahora y llegá cómodo.</b>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq" style="padding-top: 20px;">
+  <div class="container">
+    <div class="section-head"><h2>Lo que preguntan antes de contratar</h2></div>
+    <div class="faq-list">
+      <details class="card-dark">
+        <summary>¿De verdad no hay permanencia?</summary>
+        <div class="faq-body">De verdad. Mes a mes, cancelás cuando quieras y exportás todos tus datos: comprobantes, clientes, stock y asientos contables.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Cuánto tardo en estar operativo?</summary>
+        <div class="faq-body">Importás clientes y artículos desde Excel y emitís tu primera factura el mismo día. No hay implementación de meses ni consultores.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Los precios incluyen IVA?</summary>
+        <div class="faq-body">No, son + IVA — igual que Xubio, Colppy, Contabilium y Holded. La comparación de la tabla es entre precios equivalentes.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Mi contador puede entrar?</summary>
+        <div class="faq-body">Sí, gratis, con su propio usuario. Ve reportes, libro diario y exporta todo lo que necesita sin pedirte planillas.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Qué pasa si crezco y me quedo corto de plan?</summary>
+        <div class="faq-body">Subís de plan desde el sistema y pagás la diferencia prorrateada. Nunca se corta el servicio por superar comprobantes: te avisamos antes.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="container">
+    <h2>¿Seguís facturando con Excel?</h2>
+    <p>Cada día que pasa es margen que no controlás y stock que no cierra. Arrancá hoy.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-gold btn-lg" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probalo gratis 14 días</a>
+      <a class="btn btn-secondary btn-lg" href="https://github.com/equazin/asimov-app/releases/latest">⤓ Descargar app para Windows</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© 2026 <strong>Bartez Tecnología</strong> — Asimov ERP</div>
+    <div>
+      <a href="https://bartez.com.ar">bartez.com.ar</a> ·
+      <a href="https://github.com/equazin/asimov-app/releases/latest">Descargar app</a> ·
+      <a href="mailto:ventas@bartez.com.ar">ventas@bartez.com.ar</a>
+    </div>
+  </div>
+</footer>
+
+<div class="float-cta">
+  <a class="btn btn-gold" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probar gratis 14 días →</a>
+</div>
+
+<script>
+  var PLANS = {
+    ar: { currency: "$", suffix: "/mes + IVA", plans: [
+      { name: "Emprendedor", price: "59.900", vs: "", features: [
+        "500 comprobantes/mes", "3 usuarios", "Facturación ARCA (CAE)",
+        "Stock + márgenes por ítem", "App de escritorio",
+        { no: true, t: "Compras, tesorería, contabilidad" } ]},
+      { name: "Pyme", rec: true, recLabel: "El que eligen las pymes", price: "119.900",
+        vs: "vs. $155.600 Xubio Estándar (5 usuarios)", features: [
+        "3.000 comprobantes/mes", "10 usuarios", "ERP completo: compras a contabilidad",
+        "CRM + multi-depósito", "Listas de precios", "App de escritorio" ]},
+      { name: "Distribuidora", price: "199.900", vs: "vs. $291.500 Colppy Enterprise (3 usuarios)", features: [
+        "Comprobantes y usuarios ilimitados", "Series + RMA",
+        "Catálogo de mayoristas (AIR)", "Multi-depósito avanzado", "Soporte prioritario" ]}
+    ]},
+    es: { currency: "€", suffix: "/mes + IVA · anual", plans: [
+      { name: "Emprendedor", price: "19", vs: "", features: [
+        "1.500 facturas/año", "3 usuarios", "Facturación Verifactu",
+        "Stock + márgenes por ítem", "App de escritorio",
+        { no: true, t: "Compras, tesorería, contabilidad" } ]},
+      { name: "Pyme", rec: true, recLabel: "El que eligen las pymes", price: "39",
+        vs: "10 usuarios — Holded Estándar da 4 por 29,50 €", features: [
+        "6.000 facturas/año", "10 usuarios", "ERP completo: compras a contabilidad",
+        "CRM + multi-almacén", "Listas de precios", "App de escritorio" ]},
+      { name: "Distribuidora", price: "69", vs: "vs. 99,50 € Holded Premium", features: [
+        "Facturas y usuarios ilimitados", "Series + RMA",
+        "Catálogo de mayoristas", "Multi-almacén avanzado", "Soporte prioritario" ]}
+    ]}
+  };
+
+  var COMPARE = {
+    ar: {
+      cols: ["", "Asimov Pyme", "Xubio Estándar", "Colppy Essential", "Contabilium Standard"],
+      rows: [
+        ["Precio de lista/mes*", "$ 119.900", "$ 155.600", "$ 120.500", "$ 122.000"],
+        ["Usuarios incluidos", "10", "5", "3", "2"],
+        ["Comprobantes/mes", "3.000", "1.000", "300", "2.500"],
+        ["App de escritorio nativa", "ok", "no", "no", "no"],
+        ["Márgenes por ítem", "ok", "no", "no", "no"],
+        ["Stock multi-depósito", "ok", "ok", "no", "ok"],
+        ["Series + RMA", "Distribuidora", "no", "no", "no"],
+        ["Catálogo de mayoristas", "Distribuidora", "no", "no", "no"]
+      ],
+      savings: "Contra Xubio Estándar pagás <b>$ 35.700 menos por mes</b> ($ 428.400 al año) con el doble de usuarios y el triple de comprobantes."
+    },
+    es: {
+      cols: ["", "Asimov Pyme", "Holded Estándar", "Quipu Solution", "Sage 50"],
+      rows: [
+        ["Precio de lista/mes*", "39 €", "29,50 €", "25 €", "desde 45 €"],
+        ["Usuarios incluidos", "10", "4", "—", "según licencia"],
+        ["Facturas/año", "6.000", "3.000", "—", "—"],
+        ["App de escritorio nativa", "ok", "no", "no", "ok"],
+        ["Márgenes por ítem", "ok", "no", "no", "no"],
+        ["Stock multi-almacén", "ok", "ok", "no", "ok"],
+        ["Verifactu", "ok", "ok", "ok", "ok"],
+        ["Catálogo de mayoristas", "Distribuidora", "no", "no", "no"]
+      ],
+      savings: "Por 9,50 € más que Holded Estándar te llevás <b>6 usuarios extra y el doble de facturas</b>. Y contra Holded Avanzado (49,50 €), ahorrás 126 € al año con más usuarios."
+    }
+  };
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  function renderPlans(c) {
+    var d = PLANS[c];
+    document.getElementById("plansGrid").innerHTML = d.plans.map(function (p) {
+      var feats = p.features.map(function (f) {
+        if (typeof f === "object") return '<li class="no">' + esc(f.t) + "</li>";
+        return "<li>" + esc(f) + "</li>";
+      }).join("");
+      return '<div class="plan card-dark' + (p.rec ? " recommended" : "") + '">' +
+        (p.rec ? '<span class="rec-badge">' + esc(p.recLabel || "Recomendado") + "</span>" : "") +
+        "<h3>" + esc(p.name) + "</h3>" +
+        '<div class="price">' + d.currency + " " + esc(p.price) + " <small>" + esc(d.suffix) + "</small></div>" +
+        '<div class="vs-note">' + (p.vs || "") + "</div>" +
+        "<ul>" + feats + "</ul>" +
+        '<a class="btn ' + (p.rec ? "btn-gold" : "btn-secondary") + '" href="mailto:ventas@bartez.com.ar?subject=Prueba%20Asimov%20' + encodeURIComponent(p.name) + '">Probar gratis 14 días</a></div>';
+    }).join("");
+  }
+
+  function renderCompare(c) {
+    var d = COMPARE[c];
+    var html = "<thead><tr>" + d.cols.map(function (col, i) {
+      return "<th" + (i === 1 ? ' class="col-asimov"' : "") + ">" + esc(col) + "</th>";
+    }).join("") + "</tr></thead><tbody>";
+    html += d.rows.map(function (row) {
+      return "<tr>" + row.map(function (cell, i) {
+        var cls = i === 1 ? ' class="col-asimov"' : "";
+        var v = cell === "ok" ? '<span class="compare-ok">✓</span>'
+              : cell === "no" ? '<span class="compare-no">✗</span>' : esc(cell);
+        return "<td" + cls + ">" + v + "</td>";
+      }).join("") + "</tr>";
+    }).join("") + "</tbody>";
+    document.getElementById("compareTable").innerHTML = html;
+    document.getElementById("savingsCallout").innerHTML = d.savings;
+  }
+
+  document.querySelectorAll(".country-toggle button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".country-toggle button").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderPlans(btn.dataset.country);
+      renderCompare(btn.dataset.country);
+    });
+  });
+
+  renderPlans("ar");
+  renderCompare("ar");
+</script>
+</body>
+</html>
