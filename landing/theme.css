@@ -1,323 +1,113 @@
 /* ============================================================
-   Asimov ERP — theme.css
-   Única fuente de estilos base para todas las variantes de landing.
+   Asimov — theme.css (sistema de marca para las landings)
 
-   TODOS los valores salen del sistema existente:
-   - picker.html / splash.html / offline.html  → identidad de marca
-     (verde profundo, dorado, crema, radios 10-28px, sombras profundas,
-      grilla dorada de fondo, degradado verde, barra de progreso verde→oro)
-   - shell.html / formularios de la app        → paleta de la UI interna
-     (fondo #14171D, tarjetas #232833, acento #FF6A2B) usada SOLO para
-     reproducir mockups fieles del producto.
-   Ningún valor fue inventado fuera de esas fuentes.
+   Fuente de verdad: branding/BRAND.md (identidad Asimov).
+   Ink #14171D · Graphite #232833 · Ion Orange #FF6A2B ·
+   Signal Cyan #2FD4BE · Space Grotesk / Inter / JetBrains Mono.
+
+   Nota: cada variante HTML embebe estos tokens para ser 100%
+   autocontenida (se pueden abrir sueltas, sin este archivo).
+   Este css queda como referencia canónica y para futuras páginas
+   que prefieran importarlo.
    ============================================================ */
 
 :root {
-  /* ── Marca (picker.html, splash.html, offline.html) ────────── */
-  --color-green-950: #062b19;   /* fondo degradado, extremo oscuro   */
-  --color-green-900: #0a3a22;   /* derivado intermedio del gradiente */
-  --color-green-700: #14532d;   /* verde primario (botones, hero)    */
-  --color-green-600: #17613a;   /* hover de botón primario           */
-  --color-gold-500:  #d4af37;   /* acento dorado                     */
-  --color-gold-400:  #e2c760;   /* hover dorado                      */
-  --color-gold-ink:  #302605;   /* texto sobre dorado                */
-  --color-cream:     #f5f5f0;   /* texto claro / superficie clara    */
-  --color-ink:       #333333;   /* texto sobre superficies claras    */
-  --color-ink-soft:  #72746f;   /* texto secundario sobre claro      */
-  --color-slate:     #475569;   /* íconos secundarios (picker)       */
-  --color-success:   #22c55e;   /* dot online (picker)               */
-  --color-success-2: #34d399;   /* status ok (picker)                */
-  --color-error:     #f87171;   /* status error (picker/offline)     */
+  /* Superficies */
+  --ink:        #0f1117;   /* fondo de página */
+  --ink-2:      #14171D;   /* fondo alterno / ventanas */
+  --graphite:   #1b1f27;   /* barras y headers */
+  --card:       #20242c;   /* tarjeta base */
+  --card-2:     #232833;   /* tarjeta elevada */
+  --border:     #2c333d;   /* hairline */
+  --border-2:   #343a43;   /* borde de control */
 
-  /* Transparencias de marca usadas en los archivos fuente */
-  --cream-72: rgba(245,245,240,0.72);
-  --cream-58: rgba(245,245,240,0.58);
-  --cream-22: rgba(245,245,240,0.22);
-  --cream-14: rgba(245,245,240,0.14);
-  --cream-05: rgba(245,245,240,0.05);
-  --gold-24:  rgba(212,175,55,0.24);
-  --gold-16:  rgba(212,175,55,0.16);
-  --gold-12:  rgba(212,175,55,0.12);
-  --gold-08:  rgba(212,175,55,0.08);
-  --green-08: rgba(20,83,45,0.08);
-  --green-18: rgba(20,83,45,0.18);
+  /* Marca */
+  --ion:        #FF6A2B;   /* Ion Orange — acción/acento */
+  --ion-hover:  #ff7d45;
+  --ion-dim:    rgba(255,106,43,0.14);
+  --ion-border: rgba(255,106,43,0.35);
+  --cyan:       #2FD4BE;   /* Signal Cyan — soporte/datos */
+  --cyan-dim:   rgba(47,212,190,0.12);
 
-  /* ── UI de la app (shell.html / formularios) — para mockups ── */
-  --app-bg:      #14171D;
-  --app-surface: #1b1f27;
-  --app-card:    #232833;
-  --app-accent:  #FF6A2B;
-  --app-border:  #343a43;
-  --app-text:    #f2f3f5;
-  --app-muted:   #9aa1ab;
-  --app-input:   #171b22;
+  /* Texto */
+  --text:       #f2f3f5;
+  --text-2:     #b9bfc9;
+  --text-3:     #858d99;
 
-  /* ── Tipografía (idéntica a los archivos fuente) ───────────── */
-  --font-sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-  --font-mono: "Fira Code", "Cascadia Code", Consolas, monospace;
+  /* Semánticos */
+  --ok:         #2FB47A;
+  --warn:       #F5A524;
+  --bad:        #E5484D;
 
-  /* ── Radios (picker: inputs 10, cards 10-16, logo 22-28) ───── */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
-  --radius-2xl: 28px;
-  --radius-pill: 999px;
+  /* Tipografía */
+  --sans:       "Inter", "Segoe UI", system-ui, sans-serif;
+  --display:    "Space Grotesk", "Inter", sans-serif;
+  --mono:       "JetBrains Mono", Consolas, monospace;
 
-  /* ── Sombras (splash/offline/picker) ───────────────────────── */
-  --shadow-logo: 0 22px 60px rgba(0,0,0,0.28), 0 0 0 8px var(--cream-05);
-  --shadow-deep: 0 24px 70px rgba(0,0,0,0.3);
-  --shadow-card: 0 16px 38px rgba(0,0,0,0.24);
-
-  /* ── Fondos compuestos (copiados de picker/splash) ─────────── */
-  --bg-brand-gradient: linear-gradient(180deg, var(--color-green-700) 0%, var(--color-green-950) 100%);
-  --bg-brand-glow: radial-gradient(circle at 50% 115%, rgba(212,175,55,0.18), transparent 20rem);
-  --bg-brand-grid:
-    linear-gradient(90deg, var(--gold-12) 1px, transparent 1px),
-    linear-gradient(180deg, var(--gold-08) 1px, transparent 1px);
-  --bg-grid-size: 44px 44px;
-
-  /* Barra degradada verde→oro (splash progress-bar) */
-  --gradient-progress: linear-gradient(90deg, var(--color-green-700), var(--color-gold-500));
-
-  /* ── Transiciones (valores de los archivos fuente) ─────────── */
-  --ease-brand: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --t-fast: 0.15s;
+  /* Radios / easing */
+  --r-md: 10px; --r-lg: 16px; --r-xl: 22px; --r-pill: 999px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-/* ============ Reset y base ============ */
+/* Base */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
-
 body {
-  font-family: var(--font-sans);
-  color: var(--color-cream);
-  background:
-    var(--bg-brand-glow),
-    var(--bg-brand-gradient);
-  background-attachment: fixed;
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
-
-/* Fondo con grilla dorada (picker.html) */
-.bg-grid {
-  background:
-    var(--bg-brand-grid),
-    var(--bg-brand-glow),
-    var(--bg-brand-gradient);
-  background-size: var(--bg-grid-size), var(--bg-grid-size), auto, auto;
-  background-attachment: fixed;
-}
-
-img { max-width: 100%; display: block; }
+h1, h2, h3, h4 { font-family: var(--display); }
 a { color: inherit; }
+::selection { background: var(--ion); color: #fff; }
 
-/* ============ Contenedor ============ */
-.container { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-
-/* ============ Botones (derivados de btn-start / btn-connect / save-btn) ============ */
+/* Botones */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  height: 48px; padding: 0 28px;
-  font-family: inherit; font-size: 15px; font-weight: 700;
+  height: 46px; padding: 0 26px;
+  font-family: var(--sans); font-size: 14.5px; font-weight: 600;
   border: none; border-radius: 12px; cursor: pointer;
   text-decoration: none; white-space: nowrap;
-  transition: background var(--t-fast), transform 0.05s, border-color var(--t-fast);
+  transition: background .18s, border-color .18s, transform .06s, box-shadow .18s;
 }
-.btn:active { transform: scale(0.99); }
+.btn:active { transform: scale(.985); }
+.btn-ion { background: var(--ion); color: #fff; box-shadow: 0 8px 24px rgba(255,106,43,0.25); }
+.btn-ion:hover { background: var(--ion-hover); }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border-2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.09); }
+.btn-sm { height: 38px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
+.btn-lg { height: 52px; padding: 0 32px; font-size: 15.5px; }
 
-.btn-primary { background: var(--color-green-700); color: var(--color-cream); }
-.btn-primary:hover { background: var(--color-green-600); }
-
-.btn-gold { background: var(--color-gold-500); color: var(--color-gold-ink); }
-.btn-gold:hover { background: var(--color-gold-400); }
-
-.btn-secondary {
-  background: rgba(245,245,240,0.13); color: var(--color-cream);
-  border: 1px solid var(--cream-14);
-}
-.btn-secondary:hover { background: rgba(245,245,240,0.2); }
-
-.btn-light { background: var(--color-cream); color: var(--color-green-700); }
-.btn-light:hover { background: #ffffff; }
-
-.btn-sm { height: 38px; padding: 0 18px; font-size: 13px; border-radius: var(--radius-md); }
-.btn-lg { height: 54px; padding: 0 34px; font-size: 16px; }
-
-/* ============ Tarjetas (server-card / offline card) ============ */
-.card-dark {
-  background: rgba(6,43,25,0.56);
-  border: 1px solid var(--cream-14);
-  border-radius: var(--radius-lg);
-}
-.card-light {
-  background: rgba(245,245,240,0.95);
-  border: 1px solid var(--gold-24);
-  border-radius: var(--radius-md);
-  color: var(--color-ink);
-}
-.card-light:hover { border-color: var(--color-gold-500); background: #fff; }
-
-/* ============ Texto ============ */
-.text-muted { color: var(--cream-72); }
-.text-dim { color: var(--cream-58); }
-.text-gold { color: var(--color-gold-500); }
-.mono { font-family: var(--font-mono); }
-
-/* ============ Divider con texto (picker.html) ============ */
-.divider { display: flex; align-items: center; gap: 12px; }
-.divider::before, .divider::after {
-  content: ""; flex: 1; height: 1px; background: rgba(245,245,240,0.18);
-}
-.divider-text {
-  font-size: 11px; color: var(--cream-58); font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.05em;
-}
-
-/* ============ Badges / dots ============ */
-.dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(20,83,45,0.32); }
-.dot.online { background: var(--color-success); }
-
+/* Badge / kicker */
 .badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 12px; border-radius: var(--radius-pill);
-  font-size: 12px; font-weight: 700;
-  background: var(--gold-16); color: var(--color-gold-400);
-  border: 1px solid var(--gold-24);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: var(--r-pill);
+  font-size: 12.5px; font-weight: 600;
+  background: var(--ion-dim); color: var(--ion);
+  border: 1px solid var(--ion-border);
+}
+.kicker {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ion);
 }
 
-/* ============ Barra de progreso (splash.html) ============ */
-.progress-wrap {
-  height: 3px; background: rgba(245,245,240,0.18);
-  border-radius: 4px; overflow: hidden;
-}
-.progress-bar { height: 100%; background: var(--gradient-progress); border-radius: 4px; }
-
-/* ============ Animación fadeUp (splash.html) ============ */
-@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-.fade-up {
-  opacity: 0; transform: translateY(12px);
-  animation: fadeUp 0.6s var(--ease-brand) forwards;
-}
-.fade-up.d1 { animation-delay: 0.1s; }
-.fade-up.d2 { animation-delay: 0.3s; }
-.fade-up.d3 { animation-delay: 0.5s; }
-
-/* ============ Feature rows (picker.html welcome) ============ */
-.feature-row { display: flex; align-items: center; gap: 12px; }
-.feature-icon {
-  width: 36px; height: 36px; border-radius: var(--radius-md);
-  background: rgba(6,43,25,0.58); border: 1px solid rgba(245,245,240,0.15);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.feature-text { font-size: 13px; color: rgba(245,245,240,0.78); }
-.feature-text strong { color: var(--color-cream); font-weight: 600; }
-
-/* ============ Mockup de la app (paleta shell.html) ============ */
-.app-mock {
-  background: var(--app-bg);
-  border: 1px solid var(--app-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-logo);
-  overflow: hidden;
-  font-size: 12px;
-  color: var(--app-text);
-  text-align: left;
-}
-.app-mock .mock-titlebar {
-  background: #0f1117; padding: 8px 14px;
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; color: var(--app-muted);
-  border-bottom: 1px solid #2c333d;
-}
-.app-mock .mock-titlebar .win-dots { display: flex; gap: 5px; margin-left: auto; }
-.app-mock .mock-titlebar .win-dots i {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--app-border); display: block;
-}
-.app-mock .mock-body { display: flex; min-height: 220px; }
-.app-mock .mock-sidebar {
-  width: 148px; flex-shrink: 0; background: var(--app-surface);
-  border-right: 1px solid #2c333d; padding: 10px 0;
-}
-.app-mock .mock-nav {
-  padding: 6px 14px; font-size: 11px; color: var(--app-muted);
-  display: flex; align-items: center; gap: 7px;
-}
-.app-mock .mock-nav.active {
-  color: var(--app-text); background: rgba(255,106,43,0.12);
-  border-left: 2px solid var(--app-accent);
-}
-.app-mock .mock-nav-label {
-  padding: 8px 14px 3px; font-size: 9px; font-weight: 800;
-  letter-spacing: 0.06em; color: #5b636e; text-transform: uppercase;
-}
-.app-mock .mock-main { flex: 1; padding: 14px; background: var(--app-bg); min-width: 0; }
-.app-mock .mock-kpi-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.app-mock .mock-kpi {
-  flex: 1; min-width: 90px; background: var(--app-card);
-  border: 1px solid var(--app-border); border-top: 2px solid var(--app-accent);
-  border-radius: 6px; padding: 10px 12px;
-}
-.app-mock .mock-kpi b { display: block; font-size: 16px; color: var(--app-text); }
-.app-mock .mock-kpi span {
-  font-size: 8.5px; font-weight: 800; letter-spacing: 0.05em;
-  color: var(--app-muted); text-transform: uppercase;
-}
-.app-mock table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-.app-mock th {
-  background: var(--app-card); color: var(--app-muted);
-  font-size: 9px; font-weight: 800; text-transform: uppercase;
-  letter-spacing: 0.04em; padding: 6px 8px; text-align: left;
-  border-bottom: 1px solid var(--app-border);
-}
-.app-mock td {
-  padding: 6px 8px; font-size: 10.5px; color: var(--app-text);
-  border-bottom: 1px solid #2c333d; background: var(--app-input);
-}
-.app-mock tr:nth-child(even) td { background: #1c2129; }
-.app-mock .tag-air {
-  display: inline-block; background: rgba(34,197,94,0.15); color: #4ade80;
-  font-size: 8px; font-weight: 800; padding: 1px 6px; border-radius: 4px;
-  border: 1px solid rgba(34,197,94,0.3); letter-spacing: 0.5px;
-}
-.app-mock .tag-ok {
-  display: inline-block; background: rgba(34,197,94,0.15); color: #4ade80;
-  font-size: 8px; font-weight: 800; padding: 1px 6px; border-radius: 4px;
-}
-.app-mock .accent { color: var(--app-accent); }
-
-/* ============ Tablas de comparación / precios ============ */
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-/* ============ Inputs (picker.html) ============ */
-.input {
-  width: 100%; height: 44px; padding: 0 14px; font-size: 14px;
-  font-family: inherit; color: var(--color-ink);
-  background: var(--color-cream); border: 1px solid var(--gold-24);
-  border-radius: var(--radius-md); outline: none;
-  transition: border-color var(--t-fast), box-shadow var(--t-fast);
-}
-.input:focus { border-color: var(--color-gold-500); box-shadow: 0 0 0 3px var(--gold-16); }
-
-/* ============ Toggle país (derivado de tabs/botones del sistema) ============ */
+/* Toggle de país */
 .country-toggle {
   display: inline-flex; padding: 4px; gap: 4px;
-  background: rgba(6,43,25,0.56); border: 1px solid var(--cream-14);
-  border-radius: var(--radius-pill);
+  background: var(--card); border: 1px solid var(--border-2);
+  border-radius: var(--r-pill);
 }
 .country-toggle button {
-  height: 36px; padding: 0 20px; font-family: inherit;
-  font-size: 13px; font-weight: 700; color: var(--cream-72);
-  background: transparent; border: none; border-radius: var(--radius-pill);
-  cursor: pointer; transition: background var(--t-fast), color var(--t-fast);
+  height: 38px; padding: 0 22px; font-family: var(--sans);
+  font-size: 13px; font-weight: 600; color: var(--text-2);
+  background: transparent; border: none; border-radius: var(--r-pill);
+  cursor: pointer; transition: background .18s, color .18s;
 }
-.country-toggle button.active { background: var(--color-gold-500); color: var(--color-gold-ink); }
+.country-toggle button.active { background: var(--ion); color: #fff; }
 
-/* ============ Responsive helpers ============ */
-@media (max-width: 760px) {
-  .container { padding: 0 16px; }
-  .hide-mobile { display: none !important; }
+/* Tablas scrolleables */
+.table-scroll {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border-2); border-radius: var(--r-lg); background: var(--card);
 }

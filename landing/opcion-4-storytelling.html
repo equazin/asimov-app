@@ -1,464 +1,445 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Asimov ERP — Del Excel que no cierra a un sistema que sí | Bartez Tecnología</title>
-<meta name="description" content="Si tu stock vive en una planilla y tus precios en la cabeza del vendedor, esto te va a sonar. Asimov ERP: la salida ordenada del Excel. Gratis 14 días." />
-<link rel="stylesheet" href="theme.css" />
+<title>Asimov — Así se te va el día con Excel (y así se recupera)</title>
+<meta name="description" content="La historia de un negocio que dejó las planillas: margen protegido, stock real, factura legal y contabilidad sola. Asimov, el ERP para pymes de Argentina y España." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <style>
-  /* ── Variante 4: storytelling problema→solución ── */
-  .nav {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(6,43,25,0.9); backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--cream-14);
-  }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 62px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; text-decoration: none; }
-  .brand-mark {
-    width: 30px; height: 30px; border-radius: 8px; background: var(--gradient-progress);
-    display: grid; place-items: center; color: var(--color-cream); font-weight: 900;
-    border: 1px solid var(--cream-22);
-  }
+/* ══ ASIMOV BRAND SYSTEM ══ */
+:root {
+  --ink:#0f1117; --ink-2:#14171D; --graphite:#1b1f27; --card:#20242c; --card-2:#232833;
+  --border:#2c333d; --border-2:#343a43;
+  --ion:#FF6A2B; --ion-hover:#ff7d45; --ion-dim:rgba(255,106,43,0.14); --ion-border:rgba(255,106,43,0.35);
+  --cyan:#2FD4BE; --text:#f2f3f5; --text-2:#b9bfc9; --text-3:#858d99; --ok:#2FB47A; --bad:#E5484D;
+  --sans:"Inter","Segoe UI",system-ui,sans-serif; --display:"Space Grotesk","Inter",sans-serif; --mono:"JetBrains Mono",Consolas,monospace;
+  --r-md:10px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+  --ease:cubic-bezier(0.2,0.7,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit} ::selection{background:var(--ion);color:#fff}
+.container{width:100%;max-width:980px;margin:0 auto;padding:0 24px}
+h1,h2,h3,h4{font-family:var(--display)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 26px;font-family:var(--sans);font-size:14.5px;font-weight:600;border:none;border-radius:12px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .18s,transform .06s,box-shadow .18s}
+.btn:active{transform:scale(.985)}
+.btn-ion{background:var(--ion);color:#fff;box-shadow:0 8px 24px rgba(255,106,43,0.25)}
+.btn-ion:hover{background:var(--ion-hover)}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border-2)}
+.btn-ghost:hover{background:rgba(255,255,255,0.09)}
+.btn-sm{height:38px;padding:0 16px;font-size:13px;border-radius:10px}
+.btn-lg{height:52px;padding:0 32px;font-size:15.5px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:var(--r-pill);font-size:12.5px;font-weight:600;background:var(--ion-dim);color:var(--ion);border:1px solid var(--ion-border)}
+.kicker{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ion);display:block;margin-bottom:14px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border-2);border-radius:var(--r-lg);background:var(--card)}
+.country-toggle{display:inline-flex;padding:4px;gap:4px;background:var(--card);border:1px solid var(--border-2);border-radius:var(--r-pill)}
+.country-toggle button{height:38px;padding:0 22px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-2);background:transparent;border:none;border-radius:var(--r-pill);cursor:pointer;transition:background .18s,color .18s}
+.country-toggle button.active{background:var(--ion);color:#fff}
 
-  /* Hero: el dolor */
-  .hero { padding: 92px 0 68px; }
-  .hero .container { max-width: 780px; }
-  .hero h1 { font-size: clamp(30px, 4.8vw, 50px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
-  .hero h1 em { font-style: normal; color: var(--color-gold-500); }
-  .hero p { margin-top: 20px; font-size: 17px; line-height: 1.7; color: var(--cream-72); }
-  .hero-ctas { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+/* ══ OPCIÓN 4 · STORYTELLING ══
+   línea que se dibuja al scrollear · capítulos numerados ·
+   antes/después cruzado · cifras grandes por capítulo */
+.nav{position:fixed;top:0;left:0;right:0;z-index:90;border-bottom:1px solid transparent;transition:background .25s,border-color .25s}
+.nav.scrolled{background:rgba(15,17,23,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--border)}
+.nav-inner{display:flex;align-items:center;height:66px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;text-decoration:none}
+.nav .btn{margin-left:auto}
 
-  /* Dolores */
-  .pains { padding: 20px 0 80px; }
-  .pains .container { max-width: 780px; }
-  .pain-list { display: flex; flex-direction: column; gap: 12px; }
-  .pain {
-    display: flex; gap: 14px; align-items: flex-start;
-    padding: 18px 22px; border-radius: var(--radius-md);
-  }
-  .pain .x { color: var(--color-error); font-weight: 800; font-size: 16px; flex-shrink: 0; }
-  .pain p { font-size: 15px; line-height: 1.6; color: var(--cream-72); }
-  .pain p b { color: var(--color-cream); }
-  .pains .divider { margin-top: 44px; }
+.hero{position:relative;padding:180px 0 96px;text-align:center;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-160px 0 auto 0;height:600px;pointer-events:none;background:radial-gradient(600px 320px at 50% 5%,rgba(255,106,43,0.15),transparent 70%)}
+.hero > .container{position:relative}
+.hero .badge{margin-bottom:28px}
+.hero h1{font-size:clamp(36px,6vw,68px);line-height:1.05;letter-spacing:-0.03em;font-weight:700;max-width:880px;margin:0 auto}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--ion),#ffa06e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:17px;color:var(--text-2);max-width:560px;margin:26px auto 0;line-height:1.7}
+.scroll-hint{margin:60px auto 0;width:26px;height:42px;border:2px solid var(--border-2);border-radius:14px;position:relative}
+.scroll-hint::after{content:"";position:absolute;left:50%;top:8px;width:4px;height:8px;margin-left:-2px;border-radius:2px;background:var(--ion);animation:wheel 1.8s var(--ease) infinite}
+@keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
 
-  /* Capítulos de la historia */
-  .chapter { padding: 76px 0; border-top: 1px solid var(--cream-14); }
-  .chapter:nth-child(even of .chapter) { background: rgba(6,43,25,0.35); }
-  .chapter .container { max-width: 860px; }
-  .chapter-tag {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 12px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
-    color: var(--color-gold-400);
-  }
-  .chapter-tag .n {
-    display: inline-grid; place-items: center; width: 26px; height: 26px;
-    border-radius: 50%; background: var(--gold-16); border: 1px solid var(--gold-24);
-    font-size: 13px;
-  }
-  .chapter h2 { margin-top: 14px; font-size: clamp(23px, 3.2vw, 33px); font-weight: 800; line-height: 1.2; }
-  .chapter .before {
-    margin-top: 18px; padding: 14px 18px; border-left: 3px solid var(--color-error);
-    background: rgba(248,113,113,0.06); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 14px; line-height: 1.65; color: var(--cream-72); font-style: italic;
-  }
-  .chapter .after { margin-top: 18px; font-size: 15px; line-height: 1.75; color: var(--cream-72); }
-  .chapter .after b { color: var(--color-cream); }
-  .chapter .proof {
-    margin-top: 18px; display: flex; gap: 22px; flex-wrap: wrap;
-  }
-  .chapter .proof span { font-size: 13px; color: var(--cream-58); }
-  .chapter .proof span::before { content: "✓ "; color: var(--color-success-2); font-weight: 800; }
+.story{position:relative;padding:40px 0 60px}
+.story-line{position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--border);transform:translateX(-50%)}
+.story-line i{display:block;width:100%;height:0;background:linear-gradient(180deg,var(--ion),var(--cyan))}
+.chapter{position:relative;padding:96px 0}
+.ch-num{position:relative;z-index:2;width:58px;height:58px;margin:0 auto 42px;border-radius:50%;background:var(--ink-2);border:2px solid var(--border-2);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:20px;color:var(--text-3);transition:border-color .4s,color .4s,box-shadow .4s}
+.chapter.in .ch-num{border-color:var(--ion);color:var(--ion);box-shadow:0 0 0 8px var(--ion-dim)}
+.ch-title{text-align:center;font-size:clamp(26px,3.6vw,42px);letter-spacing:-0.02em;font-weight:700;max-width:680px;margin:0 auto 16px}
+.ch-title mark{background:none;color:var(--ion)}
+.ch-sub{text-align:center;color:var(--text-2);font-size:15.5px;line-height:1.7;max-width:580px;margin:0 auto 48px}
 
-  /* Progreso visual entre capítulos (barra splash) */
-  .story-progress { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:880px;margin:0 auto}
+.ba-card{padding:26px;border-radius:var(--r-lg);border:1px solid var(--border-2)}
+.ba-card.bad{background:var(--ink-2)}
+.ba-card.good{background:linear-gradient(180deg,#262b35,var(--card));border-color:var(--ion-border)}
+.ba-tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;padding:4px 12px;border-radius:var(--r-pill)}
+.ba-card.bad .ba-tag{background:rgba(229,72,77,0.12);color:var(--bad)}
+.ba-card.good .ba-tag{background:var(--ion-dim);color:var(--ion)}
+.ba-card h4{font-size:16.5px;font-weight:600;margin-bottom:9px;letter-spacing:-0.01em}
+.ba-card p{font-size:13.5px;line-height:1.65;color:var(--text-2)}
+.rv-l,.rv-r{opacity:0;transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv-l{transform:translateX(-34px)} .rv-r{transform:translateX(34px)}
+.chapter.in .rv-l,.chapter.in .rv-r{opacity:1;transform:none}
 
-  /* Precios */
-  .section { padding: 84px 0; border-top: 1px solid var(--cream-14); }
-  .section-head { text-align: center; max-width: 640px; margin: 0 auto 40px; }
-  .section-head h2 { font-size: clamp(25px, 3.4vw, 36px); font-weight: 800; }
-  .section-head p { margin-top: 12px; font-size: 15px; color: var(--cream-72); line-height: 1.6; }
-  .pricing-head { display: flex; justify-content: center; margin-bottom: 36px; }
-  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .plan { padding: 26px 24px; border-radius: var(--radius-lg); display: flex; flex-direction: column; position: relative; }
-  .plan.recommended { border-color: var(--color-gold-500); box-shadow: var(--shadow-card); }
-  .plan .rec-badge {
-    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
-    background: var(--color-gold-500); color: var(--color-gold-ink);
-    font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: var(--radius-pill);
-    text-transform: uppercase; letter-spacing: 0.04em;
-  }
-  .plan h3 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--cream-72); }
-  .plan .price { margin-top: 12px; font-size: 33px; font-weight: 800; }
-  .plan .price small { font-size: 12.5px; font-weight: 600; color: var(--cream-58); }
-  .plan ul { list-style: none; margin: 20px 0; display: flex; flex-direction: column; gap: 9px; flex: 1; }
-  .plan li { font-size: 13px; color: var(--cream-72); display: flex; gap: 8px; line-height: 1.4; }
-  .plan li::before { content: "✓"; color: var(--color-success-2); font-weight: 800; }
-  .plan li.no { opacity: 0.55; }
-  .plan li.no::before { content: "—"; }
+.ch-fact{text-align:center;margin-top:44px}
+.ch-fact b{font-family:var(--display);font-size:clamp(32px,5vw,52px);font-weight:700;color:var(--ion);font-variant-numeric:tabular-nums}
+.ch-fact span{display:block;font-size:13px;color:var(--text-3);margin-top:8px}
 
-  /* Comparativa */
-  .compare-table { width: 100%; border-collapse: collapse; min-width: 660px; }
-  .compare-table th, .compare-table td { padding: 12px 14px; font-size: 13px; text-align: center; border-bottom: 1px solid var(--cream-14); }
-  .compare-table th { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cream-58); }
-  .compare-table td:first-child, .compare-table th:first-child { text-align: left; }
-  .compare-table .col-asimov { background: var(--gold-08); }
-  .compare-table th.col-asimov { color: var(--color-gold-400); }
-  .compare-ok { color: var(--color-success-2); font-weight: 800; }
-  .compare-no { color: var(--cream-58); }
-  .disclaimer { margin-top: 14px; font-size: 11.5px; color: var(--cream-58); line-height: 1.5; }
+.day1{padding:100px 0;border-top:1px solid var(--border);text-align:center;background:var(--ink-2)}
+.day1 h2{font-size:clamp(28px,3.8vw,44px);letter-spacing:-0.02em;font-weight:700;margin-bottom:48px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:940px;margin:0 auto}
+.step{padding:26px 20px;border-radius:var(--r-lg);background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border-2);text-align:left;transition:border-color .25s,transform .25s var(--ease)}
+.step:hover{border-color:var(--ion-border);transform:translateY(-4px)}
+.step b{display:block;font-family:var(--mono);font-size:12px;color:var(--ion);letter-spacing:.06em;margin-bottom:12px}
+.step h4{font-size:15px;font-weight:600;margin-bottom:7px}
+.step p{font-size:12.5px;color:var(--text-2);line-height:1.6}
 
-  /* FAQ */
-  .faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-  .faq-list details { border-radius: var(--radius-md); }
-  .faq-list summary { padding: 15px 20px; font-size: 14px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; }
-  .faq-list summary::-webkit-details-marker { display: none; }
-  .faq-list summary::after { content: "+"; color: var(--color-gold-400); }
-  .faq-list details[open] summary::after { content: "–"; }
-  .faq-list .faq-body { padding: 0 20px 16px; font-size: 13.5px; line-height: 1.6; color: var(--cream-72); }
+.pricing{padding:100px 0;border-top:1px solid var(--border)}
+.section-head{text-align:center;max-width:640px;margin:0 auto 46px}
+.section-head h2{font-size:clamp(28px,3.8vw,44px);letter-spacing:-0.02em;font-weight:700;margin-bottom:14px}
+.section-head p{color:var(--text-2);font-size:15.5px;line-height:1.65}
+.toggle-row{display:flex;justify-content:center;margin-bottom:40px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.plan{position:relative;padding:30px 26px;border-radius:var(--r-xl);background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border-2);text-align:center}
+.plan.featured{border-color:var(--ion);box-shadow:0 0 0 1px var(--ion),0 26px 60px rgba(255,106,43,0.12);background:linear-gradient(180deg,#262b35,var(--card))}
+.plan-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--ion);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 12px;border-radius:var(--r-pill);white-space:nowrap}
+.plan h3{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ion);margin-bottom:12px}
+.price{font-family:var(--display);font-size:36px;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.per{font-size:12px;color:var(--text-3);font-weight:500;display:block;margin-bottom:18px}
+.inc{font-size:13px;color:var(--text-2);line-height:1.75;margin-bottom:22px}
+.iva-note{text-align:center;font-size:12.5px;color:var(--text-3);margin-top:22px}
 
-  /* Final */
-  .final { padding: 90px 0; border-top: 1px solid var(--cream-14); }
-  .final .container { max-width: 720px; text-align: center; }
-  .final h2 { font-size: clamp(26px, 3.8vw, 40px); font-weight: 800; line-height: 1.2; }
-  .final p { margin-top: 14px; color: var(--cream-72); font-size: 15.5px; line-height: 1.7; }
-  .final .hero-ctas { justify-content: center; margin-top: 28px; }
+.section{padding:92px 0;border-top:1px solid var(--border)}
+.cmp table{width:100%;border-collapse:collapse;min-width:680px}
+.cmp th,.cmp td{padding:14px 16px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--border)}
+.cmp tbody tr:last-child td{border-bottom:none}
+.cmp th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);background:var(--graphite)}
+.cmp .col-asimov{background:rgba(255,106,43,0.06);border-inline:1px solid var(--ion-border)}
+.cmp thead .col-asimov{color:var(--ion)}
+.yes{color:var(--ok);font-weight:600} .no-x{color:var(--text-3)}
+.cmp-note{font-size:11.5px;color:var(--text-3);margin-top:16px;line-height:1.6}
 
-  footer { border-top: 1px solid var(--cream-14); padding: 30px 0; }
-  .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--cream-58); }
-  .footer-inner a { color: var(--cream-72); text-decoration: none; }
+.faq{max-width:720px;margin:0 auto;display:grid;gap:10px}
+.faq-item{border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--card);overflow:hidden}
+.faq-item[open]{border-color:var(--ion-border)}
+.faq-item summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:17px 22px;font-size:14.5px;font-weight:600}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary svg{flex-shrink:0;transition:transform .3s var(--ease);color:var(--ion)}
+.faq-item[open] summary svg{transform:rotate(45deg)}
+.faq-item .faq-body{padding:0 22px 20px;font-size:14px;color:var(--text-2);line-height:1.7}
 
-  @media (max-width: 900px) {
-    .plans { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
-  }
+.cta-final{position:relative;text-align:center;padding:112px 24px;border-top:1px solid var(--border);overflow:hidden}
+.cta-final::before{content:"";position:absolute;inset:0;background:radial-gradient(640px 340px at 50% 110%,rgba(255,106,43,0.18),transparent 70%);pointer-events:none}
+.cta-final h2{position:relative;font-size:clamp(30px,4.6vw,54px);letter-spacing:-0.025em;font-weight:700;margin-bottom:16px}
+.cta-final h2 em{font-style:normal;color:var(--ion)}
+.cta-final p{position:relative;color:var(--text-2);margin-bottom:32px}
+footer{border-top:1px solid var(--border);padding:40px 0;background:var(--ink-2)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--text-3)}
+.foot .fbrand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;color:var(--text);font-size:16px}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .rv,.rv-l,.rv-r{opacity:1!important;transform:none!important;transition:none}
+  .scroll-hint::after{animation:none}
+  html{scroll-behavior:auto}
+}
+@media (max-width:860px){
+  .ba{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .plans{grid-template-columns:1fr;max-width:420px;margin:0 auto}
+  .story-line{left:24px}
+  .ch-num{margin-left:0}
+  .ch-title,.ch-sub{text-align:left}
+}
+@media (max-width:600px){
+  .container{padding:0 18px}
+  .steps{grid-template-columns:1fr}
+  .hero{padding-top:136px}
+}
 </style>
 </head>
 <body>
 
-<nav class="nav">
+<header class="nav" id="nav">
   <div class="container nav-inner">
-    <a class="brand" href="#"><span class="brand-mark">A</span> Asimov <span class="text-dim" style="font-size:11px;font-weight:500;">by Bartez</span></a>
-    <a class="btn btn-gold btn-sm" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probar gratis</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="container">
-    <h1 class="fade-up d1">El lunes a las 8 ya sabés cómo termina: <em>la planilla no cierra.</em></h1>
-    <p class="fade-up d2">
-      El stock dice una cosa, el depósito otra. El vendedor nuevo cotizó al costo.
-      Tu contador espera "las ventas del mes" desde el día 3. Si algo de esto te suena,
-      seguí leyendo: son cinco minutos y es la historia de cómo se sale.
-    </p>
+    <a class="brand" href="#">
+      <svg width="28" height="28" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
+    </a>
+    <a class="btn btn-sm btn-ion" href="#precios">Probar gratis</a>
   </div>
 </header>
 
-<section class="pains">
+<!-- ══ HERO ══ -->
+<section class="hero">
   <div class="container">
-    <div class="pain-list">
-      <div class="pain card-dark">
-        <span class="x">✗</span>
-        <p><b>El precio vive en la cabeza del dueño.</b> Cuando no estás, tu equipo vende a ojo — y a veces, abajo del costo.</p>
+    <span class="badge">Una historia que quizás te suene</span>
+    <h1>El Excel aguantó todo.<br /><em>Hasta que el negocio creció.</em></h1>
+    <p class="sub">Esta es la historia de cómo se pierde plata sin darse cuenta — y de cómo se recupera. Capítulo por capítulo, módulo por módulo.</p>
+    <div class="scroll-hint" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- ══ HISTORIA ══ -->
+<div class="story" id="story">
+  <div class="story-line" aria-hidden="true"><i id="lineFill"></i></div>
+
+  <section class="chapter" data-ch>
+    <div class="container">
+      <div class="ch-num">1</div>
+      <h2 class="ch-title">El día que vendiste <mark>al costo</mark> sin saberlo</h2>
+      <p class="ch-sub">La lista de precios era de hace tres semanas. El dólar se movió, el proveedor ajustó, y la venta grande del viernes salió sin margen. Nadie se enteró hasta fin de mes.</p>
+      <div class="ba">
+        <div class="ba-card bad rv-l">
+          <span class="ba-tag">con excel</span>
+          <h4>Precios congelados en una planilla</h4>
+          <p>Actualizar precios es un trabajo de horas que siempre se posterga. Cada semana que pasa, el margen real se achica en silencio.</p>
+        </div>
+        <div class="ba-card good rv-r">
+          <span class="ba-tag">con asimov</span>
+          <h4>El precio nace del costo, siempre</h4>
+          <p>Cargás % de margen por ítem o por pedido y el precio se calcula sobre el costo vigente. Si el costo cambió, lo ves antes de confirmar.</p>
+        </div>
       </div>
-      <div class="pain card-dark">
-        <span class="x">✗</span>
-        <p><b>El stock se cuenta a fin de mes,</b> con el depósito parado y alguien gritando números desde una escalera.</p>
+      <div class="ch-fact rv"><b>+29,4%</b><span>margen visible en cada pedido, antes de confirmarlo</span></div>
+    </div>
+  </section>
+
+  <section class="chapter" data-ch>
+    <div class="container">
+      <div class="ch-num">2</div>
+      <h2 class="ch-title">El stock decía 8. <mark>Había 3.</mark></h2>
+      <p class="ch-sub">Vendiste algo que no estaba. El cliente esperó una semana. La planilla de stock se actualizaba "cuando había tiempo" — o sea, nunca.</p>
+      <div class="ba">
+        <div class="ba-card bad rv-l">
+          <span class="ba-tag">con excel</span>
+          <h4>El stock es una expresión de deseo</h4>
+          <p>Entradas y salidas anotadas a mano, dos depósitos en dos solapas, y la verdad solo la sabe el que está en el galpón.</p>
+        </div>
+        <div class="ba-card good rv-r">
+          <span class="ba-tag">con asimov</span>
+          <h4>La venta descuenta stock en el momento</h4>
+          <p>Multi-depósito, alertas de mínimo, números de serie por unidad. Y el catálogo de tu mayorista adentro, actualizado cada 15 minutos.</p>
+        </div>
       </div>
-      <div class="pain card-dark">
-        <span class="x">✗</span>
-        <p><b>Facturás en la web de ARCA a mano,</b> re-tipeando lo que ya escribiste en el presupuesto, con dos ventanas y tres contraseñas.</p>
+      <div class="ch-fact rv"><b>15 min</b><span>frecuencia de sincronización con el catálogo del mayorista</span></div>
+    </div>
+  </section>
+
+  <section class="chapter" data-ch>
+    <div class="container">
+      <div class="ch-num">3</div>
+      <h2 class="ch-title">Las 19:40 y todavía <mark>facturando a mano</mark></h2>
+      <p class="ch-sub">Terminar de vender y empezar el segundo trabajo: pasar todo al sistema de facturación, renglón por renglón, esperando que no se caiga.</p>
+      <div class="ba">
+        <div class="ba-card bad rv-l">
+          <span class="ba-tag">con excel</span>
+          <h4>Vender y facturar son dos trabajos</h4>
+          <p>El presupuesto en una planilla, la factura en otra página, el remito en Word. Tres veces los mismos datos, tres chances de error.</p>
+        </div>
+        <div class="ba-card good rv-r">
+          <span class="ba-tag">con asimov</span>
+          <h4>Del pedido a la factura legal en un clic</h4>
+          <p>Factura A/B/C/M con CAE de ARCA en tiempo real (Verifactu en España). El tipo de comprobante se sugiere solo según el IVA del cliente.</p>
+        </div>
       </div>
-      <div class="pain card-dark">
-        <span class="x">✗</span>
-        <p><b>La lista del mayorista llega por WhatsApp,</b> en un PDF del martes pasado. Cotizás con precios viejos y lo descubrís al facturar.</p>
+      <div class="ch-fact rv"><b>1 clic</b><span>del pedido confirmado a la factura electrónica autorizada</span></div>
+    </div>
+  </section>
+
+  <section class="chapter" data-ch>
+    <div class="container">
+      <div class="ch-num">4</div>
+      <h2 class="ch-title">El contador pidió "todo lo del trimestre" <mark>otra vez</mark></h2>
+      <p class="ch-sub">Y "todo" era: exportar, ordenar, explicar, corregir y volver a mandar. Dos días de trabajo que no le facturás a nadie.</p>
+      <div class="ba">
+        <div class="ba-card bad rv-l">
+          <span class="ba-tag">con excel</span>
+          <h4>La contabilidad se arma a fin de mes</h4>
+          <p>Tickets en cajas, ventas en planillas, pagos en el homebanking. Cada cierre es una arqueología.</p>
+        </div>
+        <div class="ba-card good rv-r">
+          <span class="ba-tag">con asimov</span>
+          <h4>Cada operación asienta sola</h4>
+          <p>Venta, cobro, compra y pago generan su asiento automáticamente. Tu contador entra gratis y encuentra el diario hecho.</p>
+        </div>
       </div>
+      <div class="ch-fact rv"><b>$0</b><span>costo del acceso para tu estudio contable</span></div>
     </div>
-    <div class="divider"><span class="divider-text">así se sale</span></div>
-  </div>
-</section>
+  </section>
 
-<section class="chapter">
+  <section class="chapter" data-ch>
+    <div class="container">
+      <div class="ch-num">5</div>
+      <h2 class="ch-title">Y el mostrador, <mark>más rápido que nunca</mark></h2>
+      <p class="ch-sub">La app de escritorio imprime la factura directo (sin diálogos del navegador), avisa con notificaciones de Windows y arranca sola con la PC. Está incluida en todos los planes.</p>
+      <div class="ba">
+        <div class="ba-card bad rv-l">
+          <span class="ba-tag">antes</span>
+          <h4>Ctrl+P, elegir impresora, aceptar, esperar…</h4>
+          <p>Cada impresión son cuatro clics y una fila de gente esperando. Multiplicalo por cien facturas al día.</p>
+        </div>
+        <div class="ba-card good rv-r">
+          <span class="ba-tag">con asimov</span>
+          <h4>La factura ya está saliendo</h4>
+          <p>Impresión silenciosa directa. Multi-ventana para operar dos pantallas a la vez. Cambio de empresa en dos clics.</p>
+        </div>
+      </div>
+      <div class="ch-fact rv"><b>0 diálogos</b><span>entre el botón "facturar" y el papel impreso</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ DÍA 1 ══ -->
+<section class="day1">
   <div class="container">
-    <span class="chapter-tag"><span class="n">1</span> Los precios</span>
-    <h2>De "más o menos esto" a un margen que se cumple solo</h2>
-    <div class="before">"¿A cuánto el teclado mecánico? Eh... ponele 50." — tu vendedor, ayer, vendiendo con 8% de margen sin saberlo.</div>
-    <p class="after">
-      En Asimov cada ítem del pedido tiene <b>costo, % de margen y precio conectados</b>:
-      definís el margen general (o por ítem) y el precio se calcula solo. Si alguien
-      toca el precio a mano, el sistema le muestra el margen resultante al instante.
-      <b>Nadie vuelve a vender al costo sin darse cuenta.</b>
-    </p>
-    <div class="proof">
-      <span>Margen general por documento</span>
-      <span>Margen fino por ítem</span>
-      <span>Funciona en pedidos y facturas</span>
+    <span class="kicker">// ¿y cómo se llega ahí?</span>
+    <h2>Tu primer día con Asimov</h2>
+    <div class="steps">
+      <div class="step rv"><b>10:00</b><h4>Creás la cuenta</h4><p>Sin tarjeta. Configurás tu empresa y punto de venta en 10 minutos.</p></div>
+      <div class="step rv"><b>10:30</b><h4>Importás tus datos</h4><p>Clientes y artículos suben desde tu Excel de siempre.</p></div>
+      <div class="step rv"><b>11:00</b><h4>Primer pedido con margen</h4><p>Cargás costo, ponés %, el precio sale solo.</p></div>
+      <div class="step rv"><b>11:15</b><h4>Primera factura legal</h4><p>CAE autorizada e impresa. Ya está: sistema andando.</p></div>
     </div>
   </div>
 </section>
 
-<section class="chapter">
-  <div class="container">
-    <span class="chapter-tag"><span class="n">2</span> El stock</span>
-    <h2>El depósito y el sistema dicen lo mismo, todos los días</h2>
-    <div class="before">"Según el Excel hay 12. Según Marcos, quedan 3. Según el cliente que espera, hay 0."</div>
-    <p class="after">
-      Cada venta descuenta stock. Cada recepción de compra lo suma. <b>Multi-depósito,
-      movimientos trazados, números de serie</b> para saber exactamente qué unidad se
-      vendió y alertas cuando un artículo toca el mínimo. El inventario deja de ser
-      un evento trimestral y pasa a ser un número en el que confiás.
-    </p>
-    <div class="proof">
-      <span>Multi-depósito</span>
-      <span>Números de serie</span>
-      <span>Alertas de mínimos</span>
-      <span>RMA y garantías</span>
-    </div>
-  </div>
-</section>
-
-<section class="chapter">
-  <div class="container">
-    <span class="chapter-tag"><span class="n">3</span> El mayorista</span>
-    <h2>La lista de precios del proveedor, siempre fresca y adentro del sistema</h2>
-    <div class="before">"Pasame la última lista" — mensaje enviado a las 9:12. El PDF llega a las 16:40. Ya cotizaste con la del martes.</div>
-    <p class="after">
-      Asimov sincroniza el catálogo completo de tu mayorista <b>cada 15 minutos</b>:
-      costos, part numbers y stock de todas sus sucursales. Los artículos del proveedor
-      aparecen en tu buscador con su badge de origen, y cotizás con margen sobre el
-      <b>costo real de hoy</b>, no el de la semana pasada.
-    </p>
-    <div class="proof">
-      <span>Sync automático cada 15 min</span>
-      <span>Stock por sucursal del proveedor</span>
-      <span>Cotizás y facturás con margen sobre costo real</span>
-    </div>
-  </div>
-</section>
-
-<section class="chapter">
-  <div class="container">
-    <span class="chapter-tag"><span class="n">4</span> La factura</span>
-    <h2>Del presupuesto a la factura con CAE, sin re-tipear nada</h2>
-    <div class="before">"Ahora paso todo a la web de ARCA..." — 20 minutos por factura, cada día, todos los días.</div>
-    <p class="after">
-      El pedido se convierte en factura. Asimov sugiere el tipo de comprobante (A, B, C, M)
-      según la condición de IVA del cliente y pide el <b>CAE a ARCA en tiempo real</b>.
-      Con la app de escritorio, la factura sale <b>directo a la impresora</b>, sin diálogos.
-      En España, el sistema está preparado para <b>Verifactu</b> (obligatorio desde 2027).
-    </p>
-    <div class="proof">
-      <span>CAE en segundos</span>
-      <span>Impresión directa</span>
-      <span>IVA 21% / 10,5% / exento por línea</span>
-    </div>
-  </div>
-</section>
-
-<section class="chapter">
-  <div class="container">
-    <span class="chapter-tag"><span class="n">5</span> El contador</span>
-    <h2>El día 3 ya no existe (para vos)</h2>
-    <div class="before">"¿Me pasás las ventas del mes? Y los gastos. Y la caja. Como el mes pasado, en Excel." — tu contador, cada mes.</div>
-    <p class="after">
-      Cada operación asienta en contabilidad automáticamente: <b>libro diario, reportes
-      y exportación contable</b> siempre al día. Tu contador entra con su propio usuario,
-      gratis, y se lleva lo que necesita. Vos volvés a usar los primeros días del mes
-      para vender.
-    </p>
-    <div class="proof">
-      <span>Asientos automáticos</span>
-      <span>Acceso gratis para el estudio contable</span>
-      <span>Export contable y auditoría</span>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="precios">
+<!-- ══ PRECIOS ══ -->
+<section class="pricing" id="precios">
   <div class="container">
     <div class="section-head">
-      <h2>El final de la historia cuesta menos de lo que pensás</h2>
-      <p>Todos los planes incluyen la app de escritorio para Windows y acceso gratis para tu contador. Sin permanencia.</p>
+      <span class="kicker">// el final lo escribís vos</span>
+      <h2>Elegí tu plan</h2>
+      <p>Todos incluyen la app de escritorio y márgenes por ítem. Sin permanencia.</p>
     </div>
-    <div class="pricing-head">
-      <div class="country-toggle">
-        <button class="active" data-country="ar">🇦🇷 Argentina (ARS)</button>
-        <button data-country="es">🇪🇸 España (EUR)</button>
+    <div class="toggle-row">
+      <div class="country-toggle" role="tablist" aria-label="País">
+        <button class="active" data-country="ar" role="tab" aria-selected="true">Argentina (ARS)</button>
+        <button data-country="es" role="tab" aria-selected="false">España (EUR)</button>
       </div>
     </div>
-    <div class="plans" id="plansGrid"></div>
-    <p class="disclaimer" style="text-align:center;">Precios + IVA, sin costos ocultos de licencias ni actualizaciones.</p>
+    <div class="plans">
+      <div class="plan rv">
+        <h3>Emprendedor</h3>
+        <div class="price"><span data-price-ar="$59.900" data-price-es="19 €">$59.900</span></div>
+        <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span>
+        <p class="inc"><span data-ar="500 comprobantes/mes · 3 usuarios · ventas + ARCA · stock (1 depósito) · app de escritorio" data-es="1.500 facturas/año · 3 usuarios · ventas + Verifactu · stock (1 depósito) · app de escritorio">500 comprobantes/mes · 3 usuarios · ventas + ARCA · stock (1 depósito) · app de escritorio</span></p>
+        <a class="btn btn-ghost" href="#">Empezar gratis</a>
+      </div>
+      <div class="plan featured rv">
+        <span class="plan-tag">El que eligen las pymes</span>
+        <h3>Pyme</h3>
+        <div class="price"><span data-price-ar="$119.900" data-price-es="39 €">$119.900</span></div>
+        <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span>
+        <p class="inc"><span data-ar="3.000 comprobantes/mes · 10 usuarios · multi-depósito · compras + tesorería + contabilidad · CRM" data-es="6.000 facturas/año · 10 usuarios · multi-depósito · compras + tesorería + contabilidad · CRM">3.000 comprobantes/mes · 10 usuarios · multi-depósito · compras + tesorería + contabilidad · CRM</span></p>
+        <a class="btn btn-ion" href="#">Probar 14 días gratis</a>
+      </div>
+      <div class="plan rv">
+        <h3>Distribuidora</h3>
+        <div class="price"><span data-price-ar="$199.900" data-price-es="69 €">$199.900</span></div>
+        <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span>
+        <p class="inc"><span data-ar="Ilimitado · números de serie + RMA · integración con mayoristas · soporte prioritario" data-es="Ilimitado · números de serie + RMA · integración con mayoristas · soporte prioritario">Ilimitado · números de serie + RMA · integración con mayoristas · soporte prioritario</span></p>
+        <a class="btn btn-ghost" href="#">Hablar con ventas</a>
+      </div>
+    </div>
+    <p class="iva-note" data-ar="Precios en pesos argentinos + IVA. Cancelás cuando quieras." data-es="Precios en euros + IVA (facturación anual). Cancelás cuando quieras.">Precios en pesos argentinos + IVA. Cancelás cuando quieras.</p>
   </div>
 </section>
 
-<section class="section" id="comparativa">
+<!-- ══ COMPARATIVA ══ -->
+<section class="section">
   <div class="container">
-    <div class="section-head">
-      <h2>¿Y contra los otros sistemas?</h2>
-      <p>Plan medio de cada uno, precios de lista públicos.</p>
+    <div class="section-head"><span class="kicker">// por si dudás</span><h2>Contra los de siempre</h2></div>
+    <div class="table-scroll cmp rv">
+      <table>
+        <thead><tr><th></th><th class="col-asimov">Asimov Pyme</th><th data-ar="Xubio Estándar" data-es="Holded Estándar">Xubio Estándar</th><th data-ar="Colppy Essential" data-es="Quipu Solution">Colppy Essential</th></tr></thead>
+        <tbody>
+          <tr><td>Precio de lista</td><td class="col-asimov"><b data-ar="$119.900" data-es="39 €">$119.900</b></td><td data-ar="$155.600" data-es="29,50 €">$155.600</td><td data-ar="$120.500" data-es="25 €">$120.500</td></tr>
+          <tr><td>Usuarios</td><td class="col-asimov"><b>10</b></td><td data-ar="5" data-es="4">5</td><td data-ar="3" data-es="—">3</td></tr>
+          <tr><td>App de escritorio</td><td class="col-asimov"><span class="yes">Incluida</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Margen por ítem</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Series + RMA + mayoristas</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+        </tbody>
+      </table>
     </div>
-    <div class="table-scroll">
-      <table class="compare-table" id="compareTable"></table>
-    </div>
-    <p class="disclaimer">
-      * Precios orientativos de lista relevados en julio 2026 de fuentes públicas
-      (xubio.com, colppy.com, contabilium.com, holded.com, rankiabusiness.com,
-      banktrack.com). No incluyen IVA y pueden variar — verificá en cada sitio.
-    </p>
+    <p class="cmp-note">Precios de lista públicos (julio 2026), orientativos. Fuentes: xubio.com, colppy.com, holded.com, getquipu.com. Las marcas pertenecen a sus dueños.</p>
   </div>
 </section>
 
-<section class="section" id="faq">
+<!-- ══ FAQ ══ -->
+<section class="section" style="background:var(--ink-2)">
   <div class="container">
-    <div class="section-head"><h2>Las dudas de siempre</h2></div>
-    <div class="faq-list">
-      <details class="card-dark">
-        <summary>Vengo de Excel. ¿Cuánto tardo en arrancar?</summary>
-        <div class="faq-body">Importás clientes, proveedores y artículos desde tus planillas y emitís tu primera factura el mismo día. No hay implementación de meses.</div>
-      </details>
-      <details class="card-dark">
-        <summary>¿La facturación es legal en mi país?</summary>
-        <div class="faq-body">Sí. Argentina: CAE de ARCA en tiempo real (facturas A/B/C/M, NC y ND). España: preparado para Verifactu, obligatorio para sociedades desde 1/1/2027 y autónomos desde 1/7/2027.</div>
-      </details>
-      <details class="card-dark">
-        <summary>¿Necesito instalar algo?</summary>
-        <div class="faq-body">No es obligatorio: funciona en el navegador. La app de escritorio (opcional y gratis) suma impresión directa, notificaciones y arranque con Windows.</div>
-      </details>
-      <details class="card-dark">
-        <summary>¿Hay permanencia? ¿Los precios tienen IVA?</summary>
-        <div class="faq-body">Sin permanencia, mes a mes. Los precios son + IVA como en todo el mercado. Si te vas, exportás todos tus datos.</div>
-      </details>
-      <details class="card-dark">
-        <summary>¿Sirve para varias sucursales o dos empresas?</summary>
-        <div class="faq-body">Sí: stock multi-depósito y, con la app de escritorio, cambiás de empresa o servidor al instante desde el selector.</div>
-      </details>
+    <div class="section-head"><span class="kicker">// faq</span><h2>Preguntas frecuentes</h2></div>
+    <div class="faq">
+      <details class="faq-item"><summary>¿La facturación es legal en mi país?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí. Argentina: comprobantes con CAE de ARCA en tiempo real. España: preparado para Verifactu (sociedades 1/1/2027, autónomos 1/7/2027).</div></details>
+      <details class="faq-item"><summary>¿Migrar desde Excel es un proyecto de meses?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">No: importás clientes y artículos desde tus planillas y facturás el mismo día. La historia del "día 1" de arriba es literal.</div></details>
+      <details class="faq-item"><summary>¿Hay permanencia? ¿Los precios incluyen IVA?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sin permanencia, cancelás cuando quieras y exportás todos tus datos. Los precios son + IVA, como todo el mercado.</div></details>
+      <details class="faq-item"><summary>¿Mi contador puede entrar?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí, gratis y sin ocupar usuario. Ve el diario, los reportes y el export contable.</div></details>
     </div>
   </div>
 </section>
 
-<section class="final">
-  <div class="container">
-    <h2>La planilla no se va a arreglar sola</h2>
-    <p>
-      Probá Asimov gratis 14 días con tus datos reales. Si no te convence,
-      exportás todo y seguís como estabas. Pero el lunes a las 8 podrías
-      abrir un dashboard que cierra, en vez de una planilla que no.
-    </p>
-    <div class="hero-ctas">
-      <a class="btn btn-gold btn-lg" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probalo gratis 14 días</a>
-      <a class="btn btn-secondary btn-lg" href="https://github.com/equazin/asimov-app/releases/latest">⤓ App para Windows</a>
-    </div>
+<!-- ══ CTA ══ -->
+<section class="cta-final">
+  <h2>Tu historia con Excel ya la conocés.<br /><em>Escribí la otra.</em></h2>
+  <p>14 días gratis, sin tarjeta, sin permanencia.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
+    <a class="btn btn-lg btn-ion" href="#precios">Probar Asimov gratis</a>
+    <a class="btn btn-lg btn-ghost" href="https://github.com/equazin/asimov-app/releases/latest">Descargar app para Windows</a>
   </div>
 </section>
 
 <footer>
-  <div class="container footer-inner">
-    <div>© 2026 <strong>Bartez Tecnología</strong> — Asimov ERP</div>
-    <div>
-      <a href="https://bartez.com.ar">bartez.com.ar</a> ·
-      <a href="https://github.com/equazin/asimov-app/releases/latest">Descargar app</a> ·
-      <a href="mailto:ventas@bartez.com.ar">ventas@bartez.com.ar</a>
+  <div class="container foot">
+    <div class="fbrand">
+      <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
     </div>
+    <div>Argentina · España — © 2026 Asimov. Todos los derechos reservados.</div>
   </div>
 </footer>
 
 <script>
-  var PLANS = {
-    ar: { currency: "$", suffix: "/mes + IVA", plans: [
-      { name: "Emprendedor", price: "59.900", features: [
-        "500 comprobantes/mes", "3 usuarios", "Facturación ARCA (CAE)",
-        "Stock + márgenes por ítem", "App de escritorio",
-        { no: true, t: "Compras, tesorería, contabilidad" } ]},
-      { name: "Pyme", rec: true, price: "119.900", features: [
-        "3.000 comprobantes/mes", "10 usuarios", "ERP completo hasta contabilidad",
-        "CRM + multi-depósito", "Listas de precios", "App de escritorio" ]},
-      { name: "Distribuidora", price: "199.900", features: [
-        "Comprobantes y usuarios ilimitados", "Series + RMA",
-        "Catálogo de mayoristas (AIR)", "Multi-depósito avanzado", "Soporte prioritario" ]}
-    ]},
-    es: { currency: "€", suffix: "/mes + IVA · anual", plans: [
-      { name: "Emprendedor", price: "19", features: [
-        "1.500 facturas/año", "3 usuarios", "Facturación Verifactu",
-        "Stock + márgenes por ítem", "App de escritorio",
-        { no: true, t: "Compras, tesorería, contabilidad" } ]},
-      { name: "Pyme", rec: true, price: "39", features: [
-        "6.000 facturas/año", "10 usuarios", "ERP completo hasta contabilidad",
-        "CRM + multi-almacén", "Listas de precios", "App de escritorio" ]},
-      { name: "Distribuidora", price: "69", features: [
-        "Facturas y usuarios ilimitados", "Series + RMA",
-        "Catálogo de mayoristas", "Multi-almacén avanzado", "Soporte prioritario" ]}
-    ]}
-  };
+(function () {
+  var nav = document.getElementById("nav");
+  var story = document.getElementById("story");
+  var fill = document.getElementById("lineFill");
 
-  var COMPARE = {
-    ar: {
-      cols: ["", "Asimov Pyme", "Xubio Estándar", "Colppy Essential", "Contabilium Standard"],
-      rows: [
-        ["Precio de lista/mes*", "$ 119.900", "$ 155.600", "$ 120.500", "$ 122.000"],
-        ["Usuarios", "10", "5", "3", "2"],
-        ["Márgenes por ítem", "ok", "no", "no", "no"],
-        ["App de escritorio", "ok", "no", "no", "no"],
-        ["Catálogo mayoristas", "Distribuidora", "no", "no", "no"],
-        ["Series + RMA", "Distribuidora", "no", "no", "no"]
-      ]
-    },
-    es: {
-      cols: ["", "Asimov Pyme", "Holded Estándar", "Quipu Solution", "Sage 50"],
-      rows: [
-        ["Precio de lista/mes*", "39 €", "29,50 €", "25 €", "desde 45 €"],
-        ["Usuarios", "10", "4", "—", "según licencia"],
-        ["Márgenes por ítem", "ok", "no", "no", "no"],
-        ["App de escritorio", "ok", "no", "no", "ok"],
-        ["Verifactu", "ok", "ok", "ok", "ok"],
-        ["Catálogo mayoristas", "Distribuidora", "no", "no", "no"]
-      ]
-    }
-  };
-
-  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-
-  function renderPlans(c) {
-    var d = PLANS[c];
-    document.getElementById("plansGrid").innerHTML = d.plans.map(function (p) {
-      var feats = p.features.map(function (f) {
-        if (typeof f === "object") return '<li class="no">' + esc(f.t) + "</li>";
-        return "<li>" + esc(f) + "</li>";
-      }).join("");
-      return '<div class="plan card-dark' + (p.rec ? " recommended" : "") + '">' +
-        (p.rec ? '<span class="rec-badge">Recomendado</span>' : "") +
-        "<h3>" + esc(p.name) + "</h3>" +
-        '<div class="price">' + d.currency + " " + esc(p.price) + " <small>" + esc(d.suffix) + "</small></div>" +
-        "<ul>" + feats + "</ul>" +
-        '<a class="btn ' + (p.rec ? "btn-gold" : "btn-secondary") + '" href="mailto:ventas@bartez.com.ar?subject=Prueba%20Asimov%20' + encodeURIComponent(p.name) + '">Probar gratis</a></div>';
-    }).join("");
+  function onScroll() {
+    var st = document.documentElement.scrollTop;
+    nav.classList.toggle("scrolled", st > 24);
+    var r = story.getBoundingClientRect();
+    var visible = Math.min(Math.max(window.innerHeight * 0.6 - r.top, 0), r.height);
+    fill.style.height = (visible / r.height * 100).toFixed(2) + "%";
   }
+  document.addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
-  function renderCompare(c) {
-    var d = COMPARE[c];
-    var html = "<thead><tr>" + d.cols.map(function (col, i) {
-      return "<th" + (i === 1 ? ' class="col-asimov"' : "") + ">" + esc(col) + "</th>";
-    }).join("") + "</tr></thead><tbody>";
-    html += d.rows.map(function (row) {
-      return "<tr>" + row.map(function (cell, i) {
-        var cls = i === 1 ? ' class="col-asimov"' : "";
-        var v = cell === "ok" ? '<span class="compare-ok">✓</span>'
-              : cell === "no" ? '<span class="compare-no">—</span>' : esc(cell);
-        return "<td" + cls + ">" + v + "</td>";
-      }).join("") + "</tr>";
-    }).join("") + "</tbody>";
-    document.getElementById("compareTable").innerHTML = html;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.22 });
+  document.querySelectorAll("[data-ch],.rv").forEach(function (el) { io.observe(el); });
+
+  var buttons = document.querySelectorAll(".country-toggle button");
+  function setCountry(c) {
+    buttons.forEach(function (b) {
+      var on = b.dataset.country === c;
+      b.classList.toggle("active", on); b.setAttribute("aria-selected", String(on));
+    });
+    document.querySelectorAll("[data-ar]").forEach(function (el) { var v = c === "ar" ? el.dataset.ar : el.dataset.es; if (v) el.textContent = v; });
+    document.querySelectorAll("[data-price-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.priceAr : el.dataset.priceEs; });
+    document.querySelectorAll("[data-per-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.perAr : el.dataset.perEs; });
   }
+  buttons.forEach(function (b) { b.addEventListener("click", function () { setCountry(b.dataset.country); }); });
 
-  document.querySelectorAll(".country-toggle button").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      document.querySelectorAll(".country-toggle button").forEach(function (b) { b.classList.remove("active"); });
-      btn.classList.add("active");
-      renderPlans(btn.dataset.country);
-      renderCompare(btn.dataset.country);
+  document.querySelectorAll(".faq-item").forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      if (d.open) document.querySelectorAll(".faq-item[open]").forEach(function (o) { if (o !== d) o.open = false; });
     });
   });
-
-  renderPlans("ar");
-  renderCompare("ar");
+})();
 </script>
 </body>
 </html>
