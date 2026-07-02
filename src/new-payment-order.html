@@ -875,8 +875,8 @@ td{ border-color:var(--border) !important; }
   }
 
   function abrirProveedorPicker(){
-    if(window.asimovNewPaymentOrder) window.asimovNewPaymentOrder.openClientSelection('op-proveedor');
-    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'op-proveedor',tipo:'proveedor'});
+    if(window.asimovNewPaymentOrder && window.asimovNewPaymentOrder.openSupplierSelection)
+      window.asimovNewPaymentOrder.openSupplierSelection('op-proveedor');
   }
 
   function onClientSelected(data){
@@ -888,12 +888,8 @@ td{ border-color:var(--border) !important; }
     if(data.cbu) document.getElementById('tr-cbu').value = esc(data.cbu);
   }
 
-  if(window.electronAPI){
-    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
-  }
-
   if(window.asimovNewPaymentOrder){
-    window.asimovNewPaymentOrder.onClientSelected = onClientSelected;
+    if(window.asimovNewPaymentOrder.onSupplierSelected) window.asimovNewPaymentOrder.onSupplierSelected(onClientSelected);
   }
 
   function validar(){
@@ -955,12 +951,11 @@ td{ border-color:var(--border) !important; }
       totalPago: totalPagoVal(),
       facturas: facturas
     };
-    if(window.electronAPI) window.electronAPI.send('shell:payment-order-saved', payload);
-    if(window.asimovNewPaymentOrder) window.asimovNewPaymentOrder.onSaved && window.asimovNewPaymentOrder.onSaved(payload);
+    if(window.asimovNewPaymentOrder) window.asimovNewPaymentOrder.savePaymentOrder(payload);
   }
 
   function imprimir(){
-    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'payment-order',nro:document.getElementById('nroOP').value});
+    window.print();
   }
 
   function anular(){

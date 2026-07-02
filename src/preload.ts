@@ -2,7 +2,7 @@
  * Preload de la ventana principal (shell.html).
  * Expone window.asimov con métodos de DB, print, notificaciones y shell.
  */
-import { ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
 // --- types ---------------------------------------------------------------
 
@@ -27,12 +27,11 @@ function applyBackground(bg: ShellBackground): void {
 
 // --- API exposed to renderer --------------------------------------------
 
-let _version = "";
-ipcRenderer.invoke("app:version").then((v: string) => { _version = v; }).catch(() => {});
-
 const api = {
   isDesktop: true as const,
-  get version() { return _version; },
+  // Bajo contextBridge los getters se evalúan una sola vez, así que la versión se
+  // expone como método asíncrono (se resuelve contra el main cada vez que se pide).
+  appVersion: () => ipcRenderer.invoke("app:version") as Promise<string>,
 
   // Navigation (shell-internal)
   onNavigate: (cb: (path: string) => void) => {
@@ -56,6 +55,12 @@ const api = {
   // Form result events (para refrescar listas después de guardar)
   onFormSaved: (channel: string, cb: () => void) => {
     ipcRenderer.on(channel, () => cb());
+  },
+
+  // Auth
+  auth: {
+    current: () => ipcRenderer.invoke("auth:current") as Promise<{ id: string; name: string; email: string; role: string } | null>,
+    logout: () => ipcRenderer.send("auth:logout"),
   },
 
   // App
@@ -84,6 +89,10 @@ const api = {
     addBookmark: (title: string, path: string) => ipcRenderer.invoke("shell:bookmark:add", { title, path }) as Promise<BookmarkEntry[]>,
     removeBookmark: (id: string) => ipcRenderer.invoke("shell:bookmark:remove", id) as Promise<BookmarkEntry[]>,
   },
+
+  // Documentos — anular desde la lista (revierte stock/caja y marca "anulado")
+  annulDocument: (type: string, id: string) =>
+    ipcRenderer.invoke("shell:document-annul", { type, id }) as Promise<{ ok: boolean; error?: string }>,
 
   // DB — KPIs
   kpis: () => ipcRenderer.invoke("db:kpis"),
@@ -278,8 +287,10 @@ const api = {
   },
 };
 
-// contextIsolation: false → asignación directa en window
-(window as unknown as Record<string, unknown>).asimov = api;
+// contextIsolation: true → puente seguro; no se toca el prototipo de window ni se
+// expone Node/Electron al renderer. El preload conserva acceso al DOM (world del
+// preload) para aplicar el fondo persistido, aunque el `api` viva aislado.
+contextBridge.exposeInMainWorld("asimov", api);
 
 // Apply background on load
 window.addEventListener("DOMContentLoaded", async () => {

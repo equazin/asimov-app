@@ -18,6 +18,8 @@ import {
   type ShellBackground,
 } from "./config";
 import { setLaunchAtStartupEnabled } from "./tray";
+import { hashPassword, type SessionUser } from "./auth";
+import { encryptSecret } from "./secrets";
 import {
   getAirLocalConfig,
   isAirEnabled,
@@ -34,10 +36,14 @@ import {
   getDashboardKpis,
   nextSequence,
   formatDocNumber,
+  upsertClient,
+  upsertSupplier,
+  upsertArticle,
 } from "./db";
 
 interface IpcDeps {
   getMainWindow: () => BrowserWindow | null;
+  getCurrentUser?: () => SessionUser | null;
 }
 
 function normalizeShellBackground(raw: unknown): ShellBackground {
@@ -54,6 +60,11 @@ function safeStr(v: unknown, max = 500): string {
 }
 
 export function registerIpcHandlers(deps: IpcDeps): void {
+
+  // Enforcement de rol en el proceso main (fuente de verdad; el gating del shell
+  // es solo UX). Sin sesión se niega por defecto para las acciones sensibles.
+  const isAdmin = (): boolean => deps.getCurrentUser?.()?.role === "admin";
+  const DENY_ADMIN = { ok: false, error: "Solo un administrador puede realizar esta acción." } as const;
 
   // --- App info ------------------------------------------------------------
   ipcMain.handle("app:version", () => app.getVersion());
@@ -133,11 +144,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:clients:get", (_event, id: unknown) => dbGet("SELECT * FROM clients WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:clients:save", (_event, row: unknown) => {
-    const r = row as Record<string, unknown>;
-    const id = safeStr(r.id) || crypto.randomUUID();
-    dbRun(`INSERT OR REPLACE INTO clients (id,code,business_name,cuit,fiscal_type,email,phone,address,city,province,credit_limit,active,notes,created_at,updated_at)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM clients WHERE id=?),datetime('now')),datetime('now'))`,
-      [id, r.code, r.business_name, r.cuit, r.fiscal_type, r.email, r.phone, r.address, r.city, r.province, r.credit_limit ?? 0, r.active ?? 1, r.notes, id]);
+    const { id } = upsertClient(row as Record<string, unknown>);
     return { ok: true, id };
   });
   ipcMain.handle("db:clients:delete", (_event, id: unknown) => {
@@ -152,11 +159,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:suppliers:get", (_event, id: unknown) => dbGet("SELECT * FROM suppliers WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:suppliers:save", (_event, row: unknown) => {
-    const r = row as Record<string, unknown>;
-    const id = safeStr(r.id) || crypto.randomUUID();
-    dbRun(`INSERT OR REPLACE INTO suppliers (id,code,business_name,cuit,email,phone,address,city,province,payment_term,active,notes,created_at,updated_at)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM suppliers WHERE id=?),datetime('now')),datetime('now'))`,
-      [id, r.code, r.business_name, r.cuit, r.email, r.phone, r.address, r.city, r.province, r.payment_term ?? 0, r.active ?? 1, r.notes, id]);
+    const { id } = upsertSupplier(row as Record<string, unknown>);
     return { ok: true, id };
   });
   ipcMain.handle("db:suppliers:delete", (_event, id: unknown) => {
@@ -172,11 +175,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:articles:get", (_event, id: unknown) => dbGet("SELECT * FROM articles WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:articles:save", (_event, row: unknown) => {
-    const r = row as Record<string, unknown>;
-    const id = safeStr(r.id) || crypto.randomUUID();
-    dbRun(`INSERT OR REPLACE INTO articles (id,code,name,description,category,unit,cost_price,sale_price,iva_pct,manages_stock,manages_serial,active,notes,created_at,updated_at)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM articles WHERE id=?),datetime('now')),datetime('now'))`,
-      [id, r.code, r.name, r.description, r.category, r.unit ?? "un", r.cost_price ?? 0, r.sale_price ?? 0, r.iva_pct ?? 21, r.manages_stock ?? 1, r.manages_serial ?? 0, r.active ?? 1, r.notes, id]);
+    const { id } = upsertArticle(row as Record<string, unknown>);
     return { ok: true, id };
   });
   ipcMain.handle("db:articles:delete", (_event, id: unknown) => {
@@ -534,13 +533,20 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
 
   // --- DB: Sistema Config --------------------------------------------------
+  // Claves cuyo valor son secretos: se cifran en reposo (safeStorage) y nunca se
+  // devuelven en el volcado genérico de configuración.
+  const SECRET_CONFIG_KEYS = new Set(["air_password"]);
   ipcMain.handle("db:config:get-all", () =>
-    dbAll("SELECT key, value FROM system_config ORDER BY key")
+    dbAll<{ key: string; value: string }>("SELECT key, value FROM system_config ORDER BY key")
+      .map((r) => (SECRET_CONFIG_KEYS.has(r.key) ? { key: r.key, value: "" } : r))
   );
   ipcMain.handle("db:config:set", (_event, raw: unknown) => {
     const r = (raw ?? {}) as { key?: unknown; value?: unknown };
-    dbRun("INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)",
-      [safeStr(r.key), safeStr(r.value, 2000)]);
+    const key = safeStr(r.key);
+    const value = safeStr(r.value, 2000);
+    // Los secretos se guardan cifrados; el resto tal cual.
+    const stored = SECRET_CONFIG_KEYS.has(key) ? encryptSecret(value) : value;
+    dbRun("INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)", [key, stored]);
     return { ok: true };
   });
 
@@ -549,17 +555,22 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     dbAll("SELECT id, name, email, role, active, created_at FROM users ORDER BY name")
   );
   ipcMain.handle("db:users:save", (_event, row: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
     const r = (row ?? {}) as Record<string, unknown>;
     const id = safeStr(r.id) || crypto.randomUUID();
+    // Si viene contraseña, se hashea; si no, se preserva la existente (COALESCE).
+    const pwd = safeStr(r.password);
+    const newHash = pwd ? hashPassword(pwd) : null;
     dbRun(`INSERT OR REPLACE INTO users (id, name, email, role, password_hash, active, created_at)
            VALUES (?, ?, ?, ?,
-             COALESCE((SELECT password_hash FROM users WHERE id=?), ''),
+             COALESCE(?, (SELECT password_hash FROM users WHERE id=?), ''),
              ?,
              COALESCE((SELECT created_at FROM users WHERE id=?), datetime('now')))`,
-      [id, safeStr(r.name), safeStr(r.email), safeStr(r.role) || "user", id, r.active ?? 1, id]);
+      [id, safeStr(r.name), safeStr(r.email), safeStr(r.role) || "user", newHash, id, r.active ?? 1, id]);
     return { ok: true, id };
   });
   ipcMain.handle("db:users:toggle", (_event, id: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
     dbRun("UPDATE users SET active = 1 - active WHERE id = ?", [safeStr(id)]);
     return { ok: true };
   });

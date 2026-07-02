@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Selección de Clientes</title>
+  <title>Selección de Proveedores</title>
   <style>
     :root {
       --bg: #14171D;
@@ -189,8 +189,8 @@
           <th class="col-cuit">CUIT</th>
         </tr>
       </thead>
-      <tbody id="clientTableBody">
-        <tr><td colspan="5" class="empty-msg">Cargando clientes...</td></tr>
+      <tbody id="supplierTableBody">
+        <tr><td colspan="5" class="empty-msg">Cargando proveedores...</td></tr>
       </tbody>
     </table>
   </div>
@@ -208,24 +208,24 @@
   </div>
 
   <script>
-    let clients = [];
-    let filteredClients = [];
+    let suppliers = [];
+    let filteredSuppliers = [];
     let selectedIndex = 0;
     let contextId = "";
 
     const txtSearch = document.getElementById("txtSearch");
-    const tableBody = document.getElementById("clientTableBody");
+    const tableBody = document.getElementById("supplierTableBody");
     const lblRecordCount = document.getElementById("lblRecordCount");
     const btnSelect = document.getElementById("btnSelect");
     const btnNew = document.getElementById("btnNew");
     const btnExit = document.getElementById("btnExit");
 
-    if (window.asimovClientSelection) {
-      window.asimovClientSelection.onInit((data) => {
+    if (window.asimovSupplierSelection) {
+      window.asimovSupplierSelection.onInit((data) => {
         contextId = (data && data.contextId) || "";
       });
-      window.asimovClientSelection.onClientsLoaded((loaded) => {
-        clients = loaded || [];
+      window.asimovSupplierSelection.onSuppliersLoaded((loaded) => {
+        suppliers = loaded || [];
         filterAndRender();
       });
     }
@@ -238,35 +238,35 @@
 
     function renderTable() {
       tableBody.innerHTML = "";
-      if (filteredClients.length === 0) {
+      if (filteredSuppliers.length === 0) {
         const tr = document.createElement("tr");
-        tr.innerHTML = '<td colspan="5" class="empty-msg">No se encontraron clientes.</td>';
+        tr.innerHTML = '<td colspan="5" class="empty-msg">No se encontraron proveedores.</td>';
         tableBody.appendChild(tr);
         lblRecordCount.textContent = "0 / 0";
         return;
       }
 
-      filteredClients.forEach((cli, index) => {
+      filteredSuppliers.forEach((sup, index) => {
         const tr = document.createElement("tr");
         if (index === selectedIndex) tr.className = "selected";
         tr.innerHTML =
-          '<td class="col-code">' + escapeHtml(cli.codigo || cli.id || "") + '</td>' +
-          '<td class="col-name">' + escapeHtml(cli.razonSocial || cli.name || "") + '</td>' +
-          '<td class="col-address">' + escapeHtml(cli.domicilio || cli.address || "") + '</td>' +
-          '<td class="col-phone">' + escapeHtml(cli.telefono || cli.phone || "") + '</td>' +
-          '<td class="col-cuit">' + escapeHtml(cli.cuit || "") + '</td>';
+          '<td class="col-code">' + escapeHtml(sup.codigo || sup.id || "") + '</td>' +
+          '<td class="col-name">' + escapeHtml(sup.razonSocial || sup.name || "") + '</td>' +
+          '<td class="col-address">' + escapeHtml(sup.domicilio || sup.address || "") + '</td>' +
+          '<td class="col-phone">' + escapeHtml(sup.telefono || sup.phone || "") + '</td>' +
+          '<td class="col-cuit">' + escapeHtml(sup.cuit || "") + '</td>';
         tr.addEventListener("click", () => selectIndex(index));
         tr.addEventListener("dblclick", () => submitSelection());
         tableBody.appendChild(tr);
       });
 
-      lblRecordCount.textContent = (selectedIndex + 1) + " / " + filteredClients.length;
+      lblRecordCount.textContent = (selectedIndex + 1) + " / " + filteredSuppliers.length;
       const selectedRow = tableBody.querySelector(".selected");
       if (selectedRow) selectedRow.scrollIntoView({ block: "nearest" });
     }
 
     function selectIndex(index) {
-      if (index >= 0 && index < filteredClients.length) {
+      if (index >= 0 && index < filteredSuppliers.length) {
         selectedIndex = index;
         renderTable();
       }
@@ -274,12 +274,12 @@
 
     function filterAndRender() {
       const term = txtSearch.value.toUpperCase();
-      filteredClients = clients.filter(function (cli) {
-        const name = (cli.razonSocial || cli.name || "").toUpperCase();
-        const code = String(cli.codigo || cli.id || "").toUpperCase();
-        const addr = (cli.domicilio || cli.address || "").toUpperCase();
-        const phone = (cli.telefono || cli.phone || "").toUpperCase();
-        const cuit = (cli.cuit || "").toUpperCase();
+      filteredSuppliers = suppliers.filter(function (sup) {
+        const name = (sup.razonSocial || sup.name || "").toUpperCase();
+        const code = String(sup.codigo || sup.id || "").toUpperCase();
+        const addr = (sup.domicilio || sup.address || "").toUpperCase();
+        const phone = (sup.telefono || sup.phone || "").toUpperCase();
+        const cuit = (sup.cuit || "").toUpperCase();
         return name.includes(term) || code.includes(term) || addr.includes(term) || phone.includes(term) || cuit.includes(term);
       });
       selectedIndex = 0;
@@ -287,9 +287,9 @@
     }
 
     function submitSelection() {
-      const selected = filteredClients[selectedIndex];
-      if (selected && window.asimovClientSelection) {
-        window.asimovClientSelection.selectClient(selected, contextId);
+      const selected = filteredSuppliers[selectedIndex];
+      if (selected && window.asimovSupplierSelection) {
+        window.asimovSupplierSelection.selectSupplier(selected, contextId);
       }
     }
 
@@ -301,16 +301,16 @@
       else if (e.key === "Enter") { e.preventDefault(); submitSelection(); }
       else if (e.key === "Escape") {
         e.preventDefault();
-        if (window.asimovClientSelection) window.asimovClientSelection.selectClient(null, contextId);
+        if (window.asimovSupplierSelection) window.asimovSupplierSelection.selectSupplier(null, contextId);
       }
     });
 
     btnSelect.addEventListener("click", submitSelection);
     btnNew.addEventListener("click", function () {
-      if (window.asimovClientSelection) window.asimovClientSelection.openNewClient();
+      if (window.asimovSupplierSelection) window.asimovSupplierSelection.openNewSupplier();
     });
     const closeHandler = function () {
-      if (window.asimovClientSelection) window.asimovClientSelection.selectClient(null, contextId);
+      if (window.asimovSupplierSelection) window.asimovSupplierSelection.selectSupplier(null, contextId);
     };
     btnExit.addEventListener("click", closeHandler);
 

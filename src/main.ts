@@ -17,15 +17,24 @@ import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
 import { isAirEnabled } from "./air";
+import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
+import { authenticate, seedDefaultAdmin, type SessionUser } from "./auth";
+import {
+  persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
+  persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
+  annulDocument,
+} from "./documents";
 
 // ---------------------------------------------------------------------------
 // File paths
 // ---------------------------------------------------------------------------
 const SHELL_FILE            = path.join(__dirname, "shell.html");
+const LOGIN_FILE            = path.join(__dirname, "login.html");
 const APP_ICON_FILE         = path.join(__dirname, "icon.png");
 const PRODUCT_SELECTION_FILE = path.join(__dirname, "product-selection.html");
 const NEW_ARTICLE_FILE      = path.join(__dirname, "new-article.html");
 const CLIENT_SELECTION_FILE = path.join(__dirname, "client-selection.html");
+const SUPPLIER_SELECTION_FILE = path.join(__dirname, "supplier-selection.html");
 const NEW_CLIENT_FILE       = path.join(__dirname, "new-client.html");
 const NEW_SUPPLIER_FILE     = path.join(__dirname, "new-supplier.html");
 const NEW_SALE_ORDER_FILE   = path.join(__dirname, "new-sale-order.html");
@@ -46,6 +55,8 @@ const TITLE_BAR_STYLE = "hidden" as const;
 // State
 // ---------------------------------------------------------------------------
 let mainWindow: BrowserWindow | null = null;
+let loginWindow: BrowserWindow | null = null;
+let currentUser: SessionUser | null = null;
 
 type NativeFormType =
   | "article" | "client" | "supplier"
@@ -55,6 +66,7 @@ type NativeFormType =
 let productSelectionWindow: BrowserWindow | null = null;
 let newArticleWindow: BrowserWindow | null = null;
 let clientSelectionWindow: BrowserWindow | null = null;
+let supplierSelectionWindow: BrowserWindow | null = null;
 let newClientWindow: BrowserWindow | null = null;
 let newSupplierWindow: BrowserWindow | null = null;
 let newSaleOrderWindow: BrowserWindow | null = null;
@@ -104,9 +116,9 @@ function createMainWindow(): BrowserWindow {
     icon: APP_ICON_FILE,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      contextIsolation: false,
+      contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
       spellcheck: false,
     },
   });
@@ -143,6 +155,65 @@ function createMainWindow(): BrowserWindow {
 
 export function getMainWindow(): BrowserWindow | null {
   return mainWindow;
+}
+
+// ---------------------------------------------------------------------------
+// Login (gate de acceso)
+// ---------------------------------------------------------------------------
+
+function createLoginWindow(): BrowserWindow {
+  if (loginWindow && !loginWindow.isDestroyed()) {
+    loginWindow.focus();
+    return loginWindow;
+  }
+  loginWindow = new BrowserWindow({
+    width: 420,
+    height: 560,
+    resizable: false,
+    maximizable: false,
+    show: false,
+    backgroundColor: "#14171D",
+    title: "Asimov — Ingreso",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "login-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  loginWindow.once("ready-to-show", () => loginWindow?.show());
+  loginWindow.on("closed", () => { loginWindow = null; });
+  loginWindow.setMenu(null);
+  loginWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  void loginWindow.loadFile(LOGIN_FILE);
+  return loginWindow;
+}
+
+/** Autenticado con éxito: abre el sistema y cierra el login. */
+function completeLogin(user: SessionUser): void {
+  currentUser = user;
+  mainWindow = createMainWindow();
+  if (!isDev()) initAutoUpdater();
+  if (loginWindow && !loginWindow.isDestroyed()) loginWindow.close();
+}
+
+/** Cierra la sesión: descarta la ventana principal y vuelve al login. */
+function logout(): void {
+  currentUser = null;
+  const previous = mainWindow;
+  mainWindow = null;
+  createLoginWindow();
+  if (previous && !previous.isDestroyed()) previous.destroy();
+}
+
+/** Avisa al shell principal que cambió un conjunto de datos, para que refresque la vista activa. */
+function notifyShell(channel: string): void {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(channel);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -214,26 +285,39 @@ if (!gotLock) {
   app.quit();
 } else {
   app.on("second-instance", () => {
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.show();
-      mainWindow.focus();
+    const w = (mainWindow && !mainWindow.isDestroyed()) ? mainWindow : loginWindow;
+    if (w && !w.isDestroyed()) {
+      if (w.isMinimized()) w.restore();
+      w.show();
+      w.focus();
     }
   });
 
   app.whenReady().then(() => {
     initDb();
 
-    registerIpcHandlers({ getMainWindow });
+    registerIpcHandlers({ getMainWindow, getCurrentUser: () => currentUser });
     // Sin barra de menú superior: la navegación vive en el sidebar del shell.
     Menu.setApplicationMenu(null);
     registerGlobalShortcuts();
     syncLaunchAtStartup();
     initTray({ getMainWindow });
 
-    mainWindow = createMainWindow();
+    // Asegura un usuario admin en el primer arranque (credenciales por defecto).
+    seedDefaultAdmin();
 
-    if (!isDev()) initAutoUpdater();
+    // --- Autenticación (gate de acceso) ---
+    ipcMain.handle("auth:login", (_event, creds: { username?: string; password?: string }) => {
+      const user = authenticate(String(creds?.username ?? ""), String(creds?.password ?? ""));
+      if (!user) return { ok: false, error: "Usuario o contraseña incorrectos." };
+      completeLogin(user);
+      return { ok: true };
+    });
+    ipcMain.handle("auth:current", () => currentUser);
+    ipcMain.on("auth:logout", () => logout());
+
+    // Arranca en el login; la ventana principal se crea al autenticar.
+    createLoginWindow();
 
     // --- Shell "Nuevo" buttons → abrir formularios nativos ---
     ipcMain.on("shell:open-form", (_event, type: NativeFormType) => {
@@ -264,6 +348,14 @@ if (!gotLock) {
     });
 
     ipcMain.on("shell:article-created", (_event, data: { article: unknown }) => {
+      if (data.article) {
+        try {
+          persistArticleForm(data.article as Record<string, unknown>);
+          notifyShell("shell:articles-changed");
+        } catch (err) {
+          console.error("[articles] no se pudo guardar:", err);
+        }
+      }
       if (productSelectionWindow && !productSelectionWindow.isDestroyed()) {
         productSelectionWindow.webContents.send("shell:new-article-added", data.article);
       }
@@ -290,10 +382,43 @@ if (!gotLock) {
     });
 
     ipcMain.on("shell:client-created", (_event, data: { client: unknown }) => {
-      if (data.client && clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
-        clientSelectionWindow.webContents.send("shell:new-client-added", data.client);
+      if (data.client) {
+        try {
+          persistClientForm(data.client as Record<string, unknown>);
+          // Refrescar la lista del shell y el picker de clientes si están abiertos.
+          notifyShell("shell:clients-changed");
+          if (clientSelectionWindow && !clientSelectionWindow.isDestroyed()) {
+            clientSelectionWindow.webContents.send("shell:new-client-added", data.client);
+            loadClientsForPicker();
+          }
+        } catch (err) {
+          console.error("[clients] no se pudo guardar:", err);
+        }
       }
       if (newClientWindow && !newClientWindow.isDestroyed()) newClientWindow.close();
+    });
+
+    // --- Supplier picker IPC ---
+    ipcMain.on("shell:open-supplier-selection", (event, data: { contextId: string }) => {
+      const sender = BrowserWindow.fromWebContents(event.sender);
+      if (sender) createSupplierSelectionWindow(sender, data?.contextId || "");
+    });
+
+    ipcMain.on("shell:supplier-selected-forward", (_event, data: { supplier: Record<string, unknown> | null; contextId: string }) => {
+      if (supplierSelectionWindow && !supplierSelectionWindow.isDestroyed()) {
+        const parent = supplierSelectionWindow.getParentWindow();
+        if (parent && !parent.isDestroyed()) {
+          const s = data.supplier;
+          parent.webContents.send("shell:supplier-selected", {
+            id: s?.id ?? "",
+            nombre: s?.razonSocial ?? s?.name ?? "",
+            cuit: s?.cuit ?? "",
+            condIva: s?.condIva ?? "",
+            contextId: data.contextId,
+          });
+        }
+        supplierSelectionWindow.close();
+      }
     });
 
     // --- Supplier IPC ---
@@ -303,6 +428,18 @@ if (!gotLock) {
     });
 
     ipcMain.on("shell:supplier-created", (_event, data: { supplier: unknown }) => {
+      if (data.supplier) {
+        try {
+          persistSupplierForm(data.supplier as Record<string, unknown>);
+          notifyShell("shell:suppliers-changed");
+          if (supplierSelectionWindow && !supplierSelectionWindow.isDestroyed()) {
+            supplierSelectionWindow.webContents.send("shell:new-supplier-added", data.supplier);
+            loadSuppliersForPicker();
+          }
+        } catch (err) {
+          console.error("[suppliers] no se pudo guardar:", err);
+        }
+      }
       if (newSupplierWindow && !newSupplierWindow.isDestroyed()) {
         const parent = newSupplierWindow.getParentWindow();
         if (parent && !parent.isDestroyed() && data.supplier) {
@@ -313,19 +450,113 @@ if (!gotLock) {
     });
 
     // --- Form save IPC (close window on save) ---
-    ipcMain.on("shell:sale-order-saved", () => { if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) newSaleOrderWindow.close(); });
-    ipcMain.on("shell:quote-saved", () => { if (newQuoteWindow && !newQuoteWindow.isDestroyed()) newQuoteWindow.close(); });
-    ipcMain.on("shell:invoice-saved", () => { if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) newInvoiceWindow.close(); });
-    ipcMain.on("shell:delivery-note-saved", () => { if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) newDeliveryNoteWindow.close(); });
-    ipcMain.on("shell:receipt-saved", () => { if (newReceiptWindow && !newReceiptWindow.isDestroyed()) newReceiptWindow.close(); });
-    ipcMain.on("shell:purchase-order-saved", () => { if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) newPurchaseOrderWindow.close(); });
-    ipcMain.on("shell:goods-receipt-saved", () => { if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) newGoodsReceiptWindow.close(); });
-    ipcMain.on("shell:purchase-invoice-saved", () => { if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) newPurchaseInvoiceWindow.close(); });
-    ipcMain.on("shell:payment-order-saved", () => { if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) newPaymentOrderWindow.close(); });
+    ipcMain.on("shell:sale-order-saved", (_event, data: { order?: unknown }) => {
+      if (data && data.order) {
+        try { persistSaleOrder(data.order as Record<string, unknown>); notifyShell("shell:sale-order-saved"); }
+        catch (err) { console.error("[sale-order] no se pudo guardar:", err); }
+      }
+      if (newSaleOrderWindow && !newSaleOrderWindow.isDestroyed()) newSaleOrderWindow.close();
+    });
+    ipcMain.on("shell:quote-saved", (_event, data: { quote?: unknown }) => {
+      if (data && data.quote) {
+        try { persistQuote(data.quote as Record<string, unknown>); notifyShell("shell:quote-saved"); }
+        catch (err) { console.error("[quote] no se pudo guardar:", err); }
+      }
+      if (newQuoteWindow && !newQuoteWindow.isDestroyed()) newQuoteWindow.close();
+    });
+    ipcMain.on("shell:invoice-saved", (_event, data: { invoice?: unknown }) => {
+      if (data && data.invoice) {
+        try { persistInvoice(data.invoice as Record<string, unknown>); notifyShell("shell:invoice-saved"); }
+        catch (err) { console.error("[invoice] no se pudo guardar:", err); }
+      }
+      if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) newInvoiceWindow.close();
+    });
+    ipcMain.on("shell:delivery-note-saved", (_event, data: { delivery?: unknown }) => {
+      if (data && data.delivery) {
+        try {
+          persistDeliveryNote(data.delivery as Record<string, unknown>);
+          notifyShell("shell:delivery-note-saved");
+          notifyShell("shell:articles-changed");
+        } catch (err) {
+          console.error("[delivery-note] no se pudo guardar:", err);
+        }
+      }
+      if (newDeliveryNoteWindow && !newDeliveryNoteWindow.isDestroyed()) newDeliveryNoteWindow.close();
+    });
+    ipcMain.on("shell:receipt-saved", (_event, data: { receipt?: unknown }) => {
+      if (data && data.receipt) {
+        try {
+          persistReceipt(data.receipt as Record<string, unknown>);
+          notifyShell("shell:receipt-saved");
+        } catch (err) {
+          console.error("[receipt] no se pudo guardar:", err);
+        }
+      }
+      if (newReceiptWindow && !newReceiptWindow.isDestroyed()) newReceiptWindow.close();
+    });
+    ipcMain.on("shell:purchase-order-saved", (_event, data: { order?: unknown }) => {
+      if (data && data.order) {
+        try { persistPurchaseOrder(data.order as Record<string, unknown>); notifyShell("shell:purchase-order-saved"); }
+        catch (err) { console.error("[purchase-order] no se pudo guardar:", err); }
+      }
+      if (newPurchaseOrderWindow && !newPurchaseOrderWindow.isDestroyed()) newPurchaseOrderWindow.close();
+    });
+    ipcMain.on("shell:goods-receipt-saved", (_event, data: { receipt?: unknown }) => {
+      if (data && data.receipt) {
+        try {
+          persistGoodsReceipt(data.receipt as Record<string, unknown>);
+          // Refresca la lista de recepciones y las vistas de stock/dashboard.
+          notifyShell("shell:goods-receipt-saved");
+          notifyShell("shell:articles-changed");
+        } catch (err) {
+          console.error("[goods-receipt] no se pudo guardar:", err);
+        }
+      }
+      if (newGoodsReceiptWindow && !newGoodsReceiptWindow.isDestroyed()) newGoodsReceiptWindow.close();
+    });
+    ipcMain.on("shell:purchase-invoice-saved", (_event, data: { invoice?: unknown }) => {
+      if (data && data.invoice) {
+        try { persistPurchaseInvoice(data.invoice as Record<string, unknown>); notifyShell("shell:purchase-invoice-saved"); }
+        catch (err) { console.error("[purchase-invoice] no se pudo guardar:", err); }
+      }
+      if (newPurchaseInvoiceWindow && !newPurchaseInvoiceWindow.isDestroyed()) newPurchaseInvoiceWindow.close();
+    });
+    ipcMain.on("shell:payment-order-saved", (_event, data: { order?: unknown }) => {
+      if (data && data.order) {
+        try {
+          persistPaymentOrder(data.order as Record<string, unknown>);
+          notifyShell("shell:payment-order-saved");
+        } catch (err) {
+          console.error("[payment-order] no se pudo guardar:", err);
+        }
+      }
+      if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) newPaymentOrderWindow.close();
+    });
+
+    // --- Anular un documento ya confirmado desde la lista (reversa explícita) ---
+    ipcMain.handle("shell:document-annul", (_event, payload: { type?: string; id?: string }) => {
+      // Un usuario de solo lectura no puede anular documentos.
+      if (currentUser?.role === "readonly") {
+        return { ok: false, error: "No tenés permisos para anular documentos." };
+      }
+      try {
+        const result = annulDocument(String(payload?.type ?? ""), String(payload?.id ?? ""));
+        if (result.ok) {
+          // Refresca la lista del documento y las vistas de efectos (stock/caja).
+          notifyShell("shell:articles-changed");
+        }
+        return result;
+      } catch (err) {
+        console.error("[annul] no se pudo anular:", err);
+        return { ok: false, error: err instanceof Error ? err.message : "Error al anular." };
+      }
+    });
 
     app.on("activate", () => {
-      if (!mainWindow || mainWindow.isDestroyed()) mainWindow = createMainWindow();
-      else { mainWindow.show(); mainWindow.focus(); }
+      if (mainWindow && !mainWindow.isDestroyed()) { mainWindow.show(); mainWindow.focus(); return; }
+      // Sin sesión activa no se recrea el sistema: se vuelve al login.
+      if (currentUser) mainWindow = createMainWindow();
+      else createLoginWindow();
     });
   });
 
@@ -480,6 +711,69 @@ function loadClientsForPicker(): void {
     clientSelectionWindow?.webContents.send("client-selection:loaded", mapped);
   } catch {
     clientSelectionWindow?.webContents.send("client-selection:loaded", []);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Supplier selection (modal — launched from within a form)
+// ---------------------------------------------------------------------------
+
+function createSupplierSelectionWindow(parentWindow: BrowserWindow, contextId: string) {
+  if (supplierSelectionWindow && !supplierSelectionWindow.isDestroyed()) {
+    supplierSelectionWindow.focus();
+    return;
+  }
+
+  supplierSelectionWindow = new BrowserWindow({
+    width: 860,
+    height: 540,
+    resizable: true,
+    parent: parentWindow,
+    modal: true,
+    show: false,
+    backgroundColor: "#14171D",
+    title: "Selección de Proveedores",
+    icon: APP_ICON_FILE,
+    titleBarStyle: TITLE_BAR_STYLE,
+    titleBarOverlay: TITLE_BAR_OVERLAY,
+    webPreferences: {
+      preload: path.join(__dirname, "supplier-selection-preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+
+  supplierSelectionWindow.once("ready-to-show", () => {
+    supplierSelectionWindow?.show();
+    supplierSelectionWindow?.webContents.send("supplier-selection:init", { contextId });
+    loadSuppliersForPicker();
+  });
+
+  supplierSelectionWindow.on("closed", () => { supplierSelectionWindow = null; });
+  supplierSelectionWindow.setMenu(null);
+  void supplierSelectionWindow.loadFile(SUPPLIER_SELECTION_FILE);
+}
+
+function loadSuppliersForPicker(): void {
+  if (!supplierSelectionWindow || supplierSelectionWindow.isDestroyed()) return;
+  try {
+    const rows = dbAll(
+      "SELECT id, code, business_name, cuit, phone, address FROM suppliers WHERE active = 1 ORDER BY business_name LIMIT 1000",
+      [],
+    ) as Array<Record<string, unknown>>;
+    const mapped = rows.map((s) => ({
+      id: s.id,
+      codigo: s.code ?? s.id,
+      razonSocial: s.business_name ?? "",
+      domicilio: s.address ?? "",
+      telefono: s.phone ?? "",
+      cuit: s.cuit ?? "",
+      condIva: "",
+    }));
+    supplierSelectionWindow?.webContents.send("supplier-selection:loaded", mapped);
+  } catch {
+    supplierSelectionWindow?.webContents.send("supplier-selection:loaded", []);
   }
 }
 

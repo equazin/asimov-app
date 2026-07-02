@@ -795,13 +795,12 @@ td{ border-color:var(--border) !important; }
   }
 
   function abrirProveedorPicker(){
-    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.openClientSelection('oc-proveedor');
-    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'oc-proveedor',tipo:'proveedor'});
+    if(window.asimovNewPurchaseOrder && window.asimovNewPurchaseOrder.openSupplierSelection)
+      window.asimovNewPurchaseOrder.openSupplierSelection('oc-proveedor');
   }
 
   function abrirProductoPicker(){
     if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.openProductSelection();
-    if(window.electronAPI) window.electronAPI.send('shell:open-product-selection',{contextId:'oc-item'});
   }
 
   function onClientSelected(data){
@@ -817,14 +816,9 @@ td{ border-color:var(--border) !important; }
     agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,precio:data.precioCompra||0});
   }
 
-  if(window.electronAPI){
-    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
-    window.electronAPI.on('shell:product-selected',function(_e,data){onProductSelected(data)});
-  }
-
   if(window.asimovNewPurchaseOrder){
-    window.asimovNewPurchaseOrder.onClientSelected = onClientSelected;
-    window.asimovNewPurchaseOrder.onProductSelected = onProductSelected;
+    if(window.asimovNewPurchaseOrder.onSupplierSelected) window.asimovNewPurchaseOrder.onSupplierSelected(onClientSelected);
+    if(window.asimovNewPurchaseOrder.onProductSelected) window.asimovNewPurchaseOrder.onProductSelected(onProductSelected);
   }
 
   function validar(){
@@ -877,12 +871,11 @@ td{ border-color:var(--border) !important; }
       aprobadoPor: document.getElementById('aprobadoPor').value,
       items: items
     };
-    if(window.electronAPI) window.electronAPI.send('shell:purchase-order-saved', payload);
-    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.onSaved && window.asimovNewPurchaseOrder.onSaved(payload);
+    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.savePurchaseOrder(payload);
   }
 
   function imprimir(){
-    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'purchase-order',nro:document.getElementById('nroOC').value});
+    window.print();
   }
 
   function anular(){

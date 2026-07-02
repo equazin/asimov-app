@@ -721,13 +721,12 @@ td{ border-color:var(--border) !important; }
   }
 
   function abrirProveedorPicker(){
-    if(window.asimovNewGoodsReceipt) window.asimovNewGoodsReceipt.openClientSelection('rmc-proveedor');
-    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'rmc-proveedor',tipo:'proveedor'});
+    if(window.asimovNewGoodsReceipt && window.asimovNewGoodsReceipt.openSupplierSelection)
+      window.asimovNewGoodsReceipt.openSupplierSelection('rmc-proveedor');
   }
 
   function abrirProductoPicker(){
     if(window.asimovNewGoodsReceipt) window.asimovNewGoodsReceipt.openProductSelection();
-    if(window.electronAPI) window.electronAPI.send('shell:open-product-selection',{contextId:'rmc-item'});
   }
 
   function onClientSelected(data){
@@ -741,14 +740,9 @@ td{ border-color:var(--border) !important; }
     agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,pedida:1});
   }
 
-  if(window.electronAPI){
-    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
-    window.electronAPI.on('shell:product-selected',function(_e,data){onProductSelected(data)});
-  }
-
   if(window.asimovNewGoodsReceipt){
-    window.asimovNewGoodsReceipt.onClientSelected = onClientSelected;
-    window.asimovNewGoodsReceipt.onProductSelected = onProductSelected;
+    if(window.asimovNewGoodsReceipt.onSupplierSelected) window.asimovNewGoodsReceipt.onSupplierSelected(onClientSelected);
+    if(window.asimovNewGoodsReceipt.onProductSelected) window.asimovNewGoodsReceipt.onProductSelected(onProductSelected);
   }
 
   function validar(){
@@ -806,12 +800,11 @@ td{ border-color:var(--border) !important; }
       fechaNextAction: document.getElementById('fechaNextAction').value,
       items: items
     };
-    if(window.electronAPI) window.electronAPI.send('shell:goods-receipt-saved', payload);
-    if(window.asimovNewGoodsReceipt) window.asimovNewGoodsReceipt.onSaved && window.asimovNewGoodsReceipt.onSaved(payload);
+    if(window.asimovNewGoodsReceipt) window.asimovNewGoodsReceipt.saveGoodsReceipt(payload);
   }
 
   function imprimir(){
-    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'goods-receipt',nro:document.getElementById('nroRmc').value});
+    window.print();
   }
 
   function anular(){

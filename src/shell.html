@@ -1187,6 +1187,7 @@
       <div class="user-form-bar" id="user-form-bar">
         <div class="uf-field"><label>Nombre</label><input id="uf-name" type="text" placeholder="Nombre completo" style="width:170px" /></div>
         <div class="uf-field"><label>Email</label><input id="uf-email" type="email" placeholder="email@empresa.com" style="width:180px" /></div>
+        <div class="uf-field"><label>Contraseña</label><input id="uf-password" type="password" placeholder="Contraseña de acceso" autocomplete="new-password" style="width:160px" /></div>
         <div class="uf-field"><label>Rol</label>
           <select id="uf-role">
             <option value="user">Usuario</option>
@@ -1297,6 +1298,10 @@
   <span class="sep"></span>
   <span id="status-count"></span>
   <span class="grow"></span>
+  <span id="status-user" title="Usuario en sesión">—</span>
+  <span class="sep"></span>
+  <span id="status-logout" onclick="doLogout()" title="Cerrar sesión" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">⎋ Salir</span>
+  <span class="sep"></span>
   <span id="status-update" onclick="checkUpdate()" title="Buscar actualizaciones" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">↑ v<span id="status-version">—</span></span>
   <span class="sep"></span>
   <span id="status-time">—</span>
@@ -1325,6 +1330,7 @@
     config: { title: "Configuración" },
     pedidos: {
       title: "Pedidos de Venta",
+      annul: "sale-order",
       load: (s) => asimov().saleOrders.list(s),
       cols: [
         { label: "Número",   key: "number",      w: "110px" },
@@ -1336,6 +1342,7 @@
     },
     cotizaciones: {
       title: "Cotizaciones",
+      annul: "quote",
       load: (s) => asimov().quotes.list(s),
       cols: [
         { label: "Número",   key: "number",       w: "110px" },
@@ -1369,6 +1376,7 @@
     },
     "ordenes-compra": {
       title: "Órdenes de Compra",
+      annul: "purchase-order",
       load: (s) => asimov().purchaseOrders.list(s),
       cols: [
         { label: "Número",    key: "number",        w: "110px" },
@@ -1380,6 +1388,7 @@
     },
     recepciones: {
       title: "Recepciones",
+      annul: "goods-receipt",
       load: (s) => asimov().goodsReceipts.list(s),
       cols: [
         { label: "Número",    key: "number",        w: "110px" },
@@ -1456,6 +1465,7 @@
     },
     facturas: {
       title: "Facturas de Venta",
+      annul: "invoice",
       load: (s) => asimov().invoices.list(s),
       cols: [
         { label: "Número",    key: "number",         w: "130px" },
@@ -1468,6 +1478,7 @@
     },
     remitos: {
       title: "Remitos",
+      annul: "delivery-note",
       load: (s) => asimov().deliveryNotes.list(s),
       cols: [
         { label: "Número",    key: "number",         w: "110px" },
@@ -1478,6 +1489,7 @@
     },
     recibos: {
       title: "Recibos",
+      annul: "receipt",
       load: (s) => asimov().receipts.list(s),
       cols: [
         { label: "Número",    key: "number",         w: "110px" },
@@ -1596,9 +1608,50 @@
   let currentView = "dashboard";
   const loadedViews = new Set();
 
+  // ── Permisos por rol ─────────────────────────────────────────────────
+  // Vistas sensibles: solo un administrador puede verlas. `readonly` además no
+  // puede ejecutar acciones de escritura (crear / anular). El gating del
+  // renderer es de UX; el enforcement real vive en el proceso main.
+  const ADMIN_ONLY_VIEWS = ["usuarios", "auditoria", "integraciones", "config"];
+  let currentRole = "admin";
+  let CAN_WRITE = true;
+
+  function canSeeView(viewId) {
+    if (currentRole === "admin") return true;
+    return !ADMIN_ONLY_VIEWS.includes(viewId);
+  }
+
+  function applyRolePolicy(role) {
+    currentRole = String(role || "user").toLowerCase();
+    CAN_WRITE = currentRole !== "readonly";
+
+    // Ocultar módulos sensibles a los no-admin.
+    ADMIN_ONLY_VIEWS.forEach((v) => {
+      const hide = !canSeeView(v);
+      document.querySelectorAll(`.nav-item[data-view="${v}"]`).forEach((n) => {
+        n.style.display = hide ? "none" : "";
+      });
+    });
+
+    // Modo solo lectura: ocultar toda acción de creación de documentos/maestros.
+    document.querySelectorAll('[onclick*="openNativeForm"]').forEach((b) => {
+      b.style.display = CAN_WRITE ? "" : "none";
+    });
+
+    // Ocultar las secciones del nav que quedaron sin ítems visibles.
+    document.querySelectorAll(".nav-section").forEach((sec) => {
+      const items = Array.from(sec.querySelectorAll(".nav-item"));
+      sec.style.display = (items.length && items.every((n) => n.style.display === "none")) ? "none" : "";
+    });
+
+    // Si la vista actual dejó de estar permitida, volver al dashboard.
+    if (!canSeeView(currentView)) navigate("dashboard");
+  }
+
   function navigate(viewId) {
-    const norm = pathToView(viewId);
+    let norm = pathToView(viewId);
     if (!norm) return;
+    if (!canSeeView(norm)) norm = "dashboard";   // módulo no permitido para el rol
     if (norm === currentView) {
       if (norm !== "dashboard") loadViewData(norm, "");
       return;
@@ -1687,10 +1740,31 @@
         window.asimov.openNativeForm(type);
       }
     },
+    annulDoc: (type, id, btn) => annulDoc(type, id, btn),
   };
 
+  // Anula un documento confirmado desde su lista: revierte efectos (stock/caja)
+  // en el main y marca el estado como "anulado". Refresca la vista al terminar.
+  async function annulDoc(type, id, btn) {
+    if (!id) return;
+    if (!confirm("¿Anular este documento? Se revertirán sus efectos de stock/caja y quedará marcado como anulado. Esta acción no se puede deshacer.")) return;
+    if (btn) { btn.disabled = true; btn.textContent = "…"; }
+    try {
+      const res = await asimov().annulDocument(type, id);
+      if (!res || !res.ok) {
+        alert((res && res.error) || "No se pudo anular el documento.");
+        if (btn) { btn.disabled = false; btn.textContent = "Anular"; }
+        return;
+      }
+      refreshCurrentView();
+    } catch (e) {
+      alert((e && e.message) || "Error al anular el documento.");
+      if (btn) { btn.disabled = false; btn.textContent = "Anular"; }
+    }
+  }
+
   // ── table renderer ───────────────────────────────────────────────────
-  function renderTable(containerId, badgeId, cols, rows) {
+  function renderTable(containerId, badgeId, cols, rows, annul) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -1704,7 +1778,7 @@
 
     const ths = cols.map(c =>
       `<th style="${c.w ? `width:${c.w};` : ""}${c.align ? `text-align:${c.align};` : ""}">${c.label}</th>`
-    ).join("");
+    ).join("") + (annul && CAN_WRITE ? `<th style="width:96px;text-align:center;">Acción</th>` : "");
 
     const trs = rows.map(row => {
       const tds = cols.map(c => {
@@ -1713,7 +1787,14 @@
         const style = c.align ? ` style="text-align:${c.align}"` : "";
         return `<td${style}>${val}</td>`;
       }).join("");
-      return `<tr>${tds}</tr>`;
+      let actionTd = "";
+      if (annul && CAN_WRITE) {
+        const anulado = /anul|cancel/i.test(String(row.status ?? ""));
+        actionTd = anulado
+          ? `<td style="text-align:center;color:var(--muted)">—</td>`
+          : `<td style="text-align:center"><button class="btn btn-outline btn-sm" onclick="A.annulDoc('${annul}','${esc(String(row.id ?? ""))}',this)">Anular</button></td>`;
+      }
+      return `<tr>${tds}${actionTd}</tr>`;
     }).join("");
 
     container.innerHTML = `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
@@ -1735,7 +1816,7 @@
     try {
       await waitForAsimov();
       const rows = await def.load(search);
-      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows);
+      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul);
     } catch (e) {
       const el = document.getElementById("table-" + viewId);
       if (el) el.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;
@@ -1827,6 +1908,13 @@
   // expose for status-bar update button (onclick="checkUpdate()")
   window.checkUpdate = checkUpdate;
 
+  // Cerrar sesión (onclick="doLogout()")
+  window.doLogout = async function doLogout() {
+    if (!confirm("¿Cerrar la sesión actual?")) return;
+    const api = await waitForAsimov();
+    if (api.auth) api.auth.logout();
+  };
+
   // ── Atajos de teclado ───────────────────────────────────────────────────
   function activeView() { return document.querySelector(".view.active"); }
   function clickActiveNew() {
@@ -1882,22 +1970,26 @@
       // Acciones (teclas F) llegan desde main vía shortcut:triggered.
       if (api.onShortcut) api.onShortcut(handleShortcut);
 
-      // Refresh list when a form is saved
-      const FORM_REFRESH_MAP = {
-        "shell:sale-order-saved":       "pedidos",
-        "shell:invoice-saved":          "facturas",
-        "shell:delivery-note-saved":    "remitos",
-        "shell:receipt-saved":          "recibos",
-        "shell:purchase-order-saved":   "ordenes-compra",
-        "shell:goods-receipt-saved":    "recepciones",
-        "shell:purchase-invoice-saved": "facturas",
-        "shell:payment-order-saved":    "caja",
-      };
-      Object.entries(FORM_REFRESH_MAP).forEach(([channel, view]) => {
-        api.onFormSaved(channel, () => {
-          if (currentView === view) loadViewData(view, "");
-          if (view === "dashboard") loadDashboard();
-        });
+      // Refrescar la vista activa al guardar un documento o al crear/actualizar
+      // un dato maestro desde un formulario nativo. Se refresca la vista actual
+      // sin importar cuál la disparó, para cubrir también los efectos colaterales
+      // de cada documento (stock, caja, cta. cte. y dashboard), no solo su propia
+      // lista.
+      [
+        "shell:sale-order-saved",
+        "shell:quote-saved",
+        "shell:invoice-saved",
+        "shell:delivery-note-saved",
+        "shell:receipt-saved",
+        "shell:purchase-order-saved",
+        "shell:goods-receipt-saved",
+        "shell:purchase-invoice-saved",
+        "shell:payment-order-saved",
+        "shell:clients-changed",
+        "shell:suppliers-changed",
+        "shell:articles-changed",
+      ].forEach((channel) => {
+        api.onFormSaved(channel, () => refreshCurrentView());
       });
 
       // Status bar clock
@@ -1909,8 +2001,19 @@
       setInterval(updateClock, 30000);
 
       // Show app version in status bar
-      const ver = api.version || "";
-      if (ver) document.getElementById("status-version").textContent = ver;
+      api.appVersion().then((ver) => {
+        if (ver) document.getElementById("status-version").textContent = ver;
+      }).catch(() => {});
+
+      // Usuario en sesión
+      if (api.auth) {
+        api.auth.current().then((u) => {
+          if (u) {
+            document.getElementById("status-user").textContent = "👤 " + (u.name || u.email) + " · " + u.role;
+            applyRolePolicy(u.role);
+          }
+        }).catch(() => {});
+      }
 
       // Initial load
       loadDashboard();
@@ -2448,12 +2551,14 @@
   async function saveUser() {
     const name  = document.getElementById("uf-name").value.trim();
     const email = document.getElementById("uf-email").value.trim();
+    const password = document.getElementById("uf-password").value;
     const role  = document.getElementById("uf-role").value;
     if (!name) { alert("El nombre es obligatorio."); return; }
     const api = await waitForAsimov();
-    await api.users.save({ name, email, role, active: 1 });
+    await api.users.save({ name, email, password, role, active: 1 });
     document.getElementById("uf-name").value  = "";
     document.getElementById("uf-email").value = "";
+    document.getElementById("uf-password").value = "";
     document.getElementById("user-form-bar").classList.remove("visible");
     await loadUsuarios();
   }

@@ -11,6 +11,7 @@
  */
 
 import { dbAll, dbRun } from "./db";
+import { decryptSecret } from "./secrets";
 import * as crypto from "node:crypto";
 
 // ─── Configuración ──────────────────────────────────────────────────────────
@@ -48,7 +49,7 @@ export function getAirLocalConfig(): AirLocalConfig {
   return {
     enabled: cfg.air_enabled === "true" || cfg.air_enabled === "1",
     username: cfg.air_username ?? "",
-    password: cfg.air_password ?? "",
+    password: decryptSecret(cfg.air_password ?? ""),
     baseUrl: cfg.air_base_url?.trim() || AIR_BASE_URL,
     syncIntervalMinutes: Math.max(1, parseInt(cfg.air_sync_interval ?? "15", 10) || 15),
   };

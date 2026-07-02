@@ -1,11 +1,11 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 const api = {
-  openSupplierSelection: () => {
-    ipcRenderer.send("shell:open-client-selection", { contextId: "op-proveedor" });
+  openSupplierSelection: (contextId: string = "op-proveedor") => {
+    ipcRenderer.send("shell:open-supplier-selection", { contextId });
   },
-  onSupplierSelected: (cb: (data: { client: any; contextId: string }) => void) => {
-    ipcRenderer.on("shell:client-selected", (_evt, data) => cb(data));
+  onSupplierSelected: (cb: (data: { id: string; nombre: string; cuit: string; condIva: string; contextId: string }) => void) => {
+    ipcRenderer.on("shell:supplier-selected", (_evt, data) => cb(data));
   },
   savePaymentOrder: (order: any) => {
     ipcRenderer.send("shell:payment-order-saved", { order });

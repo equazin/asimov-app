@@ -21,6 +21,9 @@
     "dist": "npm run build && electron-builder",
     "dist:dir": "npm run build && electron-builder --dir",
     "smoke-test": "npm run build && node scripts/smoke-test.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "release": "npm run build && electron-builder --publish always",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
@@ -32,11 +35,13 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^2.1.9",
     "cross-env": "^7.0.3",
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
     "png-to-ico": "^3.0.1",
     "sharp": "^0.35.3",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.9"
   }
 }

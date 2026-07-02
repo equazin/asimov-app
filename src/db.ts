@@ -8,6 +8,7 @@
 import Database from "better-sqlite3";
 import { app } from "electron";
 import * as path from "node:path";
+import { randomUUID } from "node:crypto";
 
 let _db: Database.Database | null = null;
 
@@ -671,6 +672,43 @@ export function dbGet<T = Record<string, unknown>>(sql: string, params: unknown[
 
 export function dbRun(sql: string, params: unknown[] = []): Database.RunResult {
   return getDb().prepare(sql).run(...params);
+}
+
+// ---------------------------------------------------------------------------
+// Upserts de datos maestros (compartidos por ipc.ts y main.ts)
+// ---------------------------------------------------------------------------
+
+/** Persiste un cliente (crea o actualiza). `row` usa nombres de columna del schema. */
+export function upsertClient(row: Record<string, unknown>): { id: string } {
+  const id = String(row.id ?? "").trim() || randomUUID();
+  dbRun(
+    `INSERT OR REPLACE INTO clients (id,code,business_name,cuit,fiscal_type,email,phone,address,city,province,credit_limit,active,notes,created_at,updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM clients WHERE id=?),datetime('now')),datetime('now'))`,
+    [id, row.code, row.business_name, row.cuit, row.fiscal_type, row.email, row.phone, row.address, row.city, row.province, row.credit_limit ?? 0, row.active ?? 1, row.notes, id],
+  );
+  return { id };
+}
+
+/** Persiste un proveedor (crea o actualiza). `row` usa nombres de columna del schema. */
+export function upsertSupplier(row: Record<string, unknown>): { id: string } {
+  const id = String(row.id ?? "").trim() || randomUUID();
+  dbRun(
+    `INSERT OR REPLACE INTO suppliers (id,code,business_name,cuit,email,phone,address,city,province,payment_term,active,notes,created_at,updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM suppliers WHERE id=?),datetime('now')),datetime('now'))`,
+    [id, row.code, row.business_name, row.cuit, row.email, row.phone, row.address, row.city, row.province, row.payment_term ?? 0, row.active ?? 1, row.notes, id],
+  );
+  return { id };
+}
+
+/** Persiste un artículo (crea o actualiza). `row` usa nombres de columna del schema. */
+export function upsertArticle(row: Record<string, unknown>): { id: string } {
+  const id = String(row.id ?? "").trim() || randomUUID();
+  dbRun(
+    `INSERT OR REPLACE INTO articles (id,code,name,description,category,unit,cost_price,sale_price,iva_pct,manages_stock,manages_serial,active,notes,created_at,updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM articles WHERE id=?),datetime('now')),datetime('now'))`,
+    [id, row.code, row.name, row.description, row.category, row.unit ?? "un", row.cost_price ?? 0, row.sale_price ?? 0, row.iva_pct ?? 21, row.manages_stock ?? 1, row.manages_serial ?? 0, row.active ?? 1, row.notes, id],
+  );
+  return { id };
 }
 
 // ---------------------------------------------------------------------------

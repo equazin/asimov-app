@@ -708,6 +708,7 @@ td{ border-color:var(--border) !important; }
         <select id="estadoCont">
           <option>Pendiente</option>
           <option>Contabilizada</option>
+          <option>Anulada</option>
         </select>
       </div>
     </div>
@@ -863,13 +864,12 @@ td{ border-color:var(--border) !important; }
   }
 
   function abrirProveedorPicker(){
-    if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.openClientSelection('fc-proveedor');
-    if(window.electronAPI) window.electronAPI.send('shell:open-client-selection',{contextId:'fc-proveedor',tipo:'proveedor'});
+    if(window.asimovNewPurchaseInvoice && window.asimovNewPurchaseInvoice.openSupplierSelection)
+      window.asimovNewPurchaseInvoice.openSupplierSelection('fc-proveedor');
   }
 
   function abrirProductoPicker(){
     if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.openProductSelection();
-    if(window.electronAPI) window.electronAPI.send('shell:open-product-selection',{contextId:'fc-item'});
   }
 
   function onClientSelected(data){
@@ -886,14 +886,9 @@ td{ border-color:var(--border) !important; }
     agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,precio:data.precioCompra||0});
   }
 
-  if(window.electronAPI){
-    window.electronAPI.on('shell:client-selected',function(_e,data){onClientSelected(data)});
-    window.electronAPI.on('shell:product-selected',function(_e,data){onProductSelected(data)});
-  }
-
   if(window.asimovNewPurchaseInvoice){
-    window.asimovNewPurchaseInvoice.onClientSelected = onClientSelected;
-    window.asimovNewPurchaseInvoice.onProductSelected = onProductSelected;
+    if(window.asimovNewPurchaseInvoice.onSupplierSelected) window.asimovNewPurchaseInvoice.onSupplierSelected(onClientSelected);
+    if(window.asimovNewPurchaseInvoice.onProductSelected) window.asimovNewPurchaseInvoice.onProductSelected(onProductSelected);
   }
 
   function validar(){
@@ -959,18 +954,17 @@ td{ border-color:var(--border) !important; }
       items: items,
       cuotas: cuotas
     };
-    if(window.electronAPI) window.electronAPI.send('shell:purchase-invoice-saved', payload);
-    if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.onSaved && window.asimovNewPurchaseInvoice.onSaved(payload);
+    if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.savePurchaseInvoice(payload);
   }
 
   function imprimir(){
-    if(window.electronAPI) window.electronAPI.send('shell:print-doc',{type:'purchase-invoice',tipo:tipoActual});
+    window.print();
   }
 
   function anular(){
     if(!confirm('¿Desea anular esta factura de compra?')) return;
-    var payload = {accion:'anular',tipo:tipoActual,nroFactura:document.getElementById('nroFactura').value};
-    if(window.electronAPI) window.electronAPI.send('shell:purchase-invoice-saved',Object.assign(payload,{anulada:true}));
+    document.getElementById('estadoCont').value = 'Anulada';
+    guardar();
   }
 
   document.addEventListener('keydown',function(e){
