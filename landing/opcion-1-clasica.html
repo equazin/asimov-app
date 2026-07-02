@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asimov ERP — Gestión comercial para pymes y distribuidoras | Bartez Tecnología</title>
+<meta name="description" content="Vendé, facturá y controlá el stock desde un solo lugar. ERP con facturación electrónica legal en Argentina (ARCA) y España (Verifactu). Probalo gratis 14 días." />
+<link rel="stylesheet" href="theme.css" />
+<style>
+  /* ── Variante 1: clásica SaaS ── */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(6,43,25,0.88); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cream-14);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; text-decoration: none; }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: var(--gradient-progress);
+    display: grid; place-items: center;
+    color: var(--color-cream); font-weight: 900; font-size: 15px;
+    border: 1px solid var(--cream-22);
+  }
+  .brand small { font-weight: 500; font-size: 10px; color: var(--cream-58); display: block; }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; }
+  .nav-links a { font-size: 13.5px; font-weight: 600; color: var(--cream-72); text-decoration: none; }
+  .nav-links a:hover { color: var(--color-cream); }
+  .nav .btn { margin-left: 8px; }
+  .nav-burger { display: none; margin-left: auto; background: none; border: none; color: var(--color-cream); font-size: 24px; cursor: pointer; }
+
+  /* Hero */
+  .hero { padding: 96px 0 72px; text-align: center; }
+  .hero h1 {
+    font-size: clamp(34px, 5.4vw, 58px); font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.02em; max-width: 820px; margin: 22px auto 0;
+  }
+  .hero h1 em { font-style: normal; color: var(--color-gold-500); }
+  .hero p.lead {
+    max-width: 640px; margin: 20px auto 0; font-size: 17px; line-height: 1.65;
+    color: var(--cream-72);
+  }
+  .hero-ctas { margin-top: 34px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-note { margin-top: 14px; font-size: 12.5px; color: var(--cream-58); }
+
+  /* Social strip */
+  .strip { border-top: 1px solid var(--cream-14); border-bottom: 1px solid var(--cream-14); background: rgba(6,43,25,0.4); }
+  .strip-inner { display: flex; gap: 18px; justify-content: space-between; flex-wrap: wrap; padding: 22px 0; }
+  .strip-item { text-align: center; flex: 1; min-width: 150px; }
+  .strip-item b { display: block; font-size: 22px; color: var(--color-gold-400); }
+  .strip-item span { font-size: 12px; color: var(--cream-58); }
+
+  /* Módulos */
+  .section { padding: 84px 0; }
+  .section-head { text-align: center; max-width: 660px; margin: 0 auto 48px; }
+  .section-head h2 { font-size: clamp(26px, 3.6vw, 38px); font-weight: 800; letter-spacing: -0.01em; }
+  .section-head p { margin-top: 14px; font-size: 15.5px; line-height: 1.6; color: var(--cream-72); }
+  .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .module-card { padding: 24px 22px; border-radius: var(--radius-lg); }
+  .module-card .feature-icon { width: 42px; height: 42px; font-size: 19px; border-radius: 12px; margin-bottom: 14px; }
+  .module-card h3 { font-size: 16px; font-weight: 700; }
+  .module-card p { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--cream-72); }
+
+  /* App desktop */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .split h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 800; }
+  .split .features { margin-top: 26px; display: flex; flex-direction: column; gap: 16px; }
+  .split .btn { margin-top: 28px; }
+
+  /* Precios */
+  .pricing-head { display: flex; flex-direction: column; align-items: center; gap: 22px; margin-bottom: 44px; }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
+  .plan { padding: 28px 26px; border-radius: var(--radius-lg); display: flex; flex-direction: column; position: relative; }
+  .plan.recommended { border-color: var(--color-gold-500); box-shadow: var(--shadow-card); }
+  .plan .rec-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--color-gold-500); color: var(--color-gold-ink);
+    font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: var(--radius-pill);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .plan h3 { font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--cream-72); }
+  .plan .price { margin-top: 14px; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; }
+  .plan .price small { font-size: 13px; font-weight: 600; color: var(--cream-58); }
+  .plan .price-note { font-size: 11.5px; color: var(--cream-58); margin-top: 2px; }
+  .plan ul { list-style: none; margin: 22px 0; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .plan li { font-size: 13.5px; color: var(--cream-72); display: flex; gap: 9px; align-items: flex-start; line-height: 1.4; }
+  .plan li::before { content: "✓"; color: var(--color-success-2); font-weight: 800; flex-shrink: 0; }
+  .plan li.no { color: var(--cream-58); opacity: 0.6; }
+  .plan li.no::before { content: "—"; color: var(--cream-58); }
+
+  /* Comparativa */
+  .compare-table { width: 100%; border-collapse: collapse; min-width: 680px; }
+  .compare-table th, .compare-table td { padding: 12px 14px; font-size: 13px; text-align: center; border-bottom: 1px solid var(--cream-14); }
+  .compare-table th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cream-58); }
+  .compare-table td:first-child, .compare-table th:first-child { text-align: left; }
+  .compare-table .col-asimov { background: var(--gold-08); border-left: 1px solid var(--gold-24); border-right: 1px solid var(--gold-24); }
+  .compare-table th.col-asimov { color: var(--color-gold-400); font-weight: 800; }
+  .compare-ok { color: var(--color-success-2); font-weight: 800; }
+  .compare-no { color: var(--cream-58); }
+  .disclaimer { margin-top: 16px; font-size: 11.5px; color: var(--cream-58); line-height: 1.5; max-width: 720px; }
+
+  /* FAQ */
+  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  .faq-list details { border-radius: var(--radius-md); overflow: hidden; }
+  .faq-list summary {
+    padding: 16px 20px; font-size: 14.5px; font-weight: 700; cursor: pointer;
+    list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary::after { content: "+"; font-size: 20px; color: var(--color-gold-400); }
+  .faq-list details[open] summary::after { content: "–"; }
+  .faq-list .faq-body { padding: 0 20px 18px; font-size: 13.5px; line-height: 1.65; color: var(--cream-72); }
+
+  /* CTA final */
+  .final-cta { text-align: center; padding: 90px 0; }
+  .final-cta h2 { font-size: clamp(26px, 3.8vw, 40px); font-weight: 800; }
+  .final-cta p { margin-top: 14px; color: var(--cream-72); font-size: 15.5px; }
+
+  footer { border-top: 1px solid var(--cream-14); padding: 34px 0; }
+  .footer-inner { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; font-size: 12.5px; color: var(--cream-58); }
+  .footer-inner a { color: var(--cream-72); text-decoration: none; }
+  .footer-inner a:hover { color: var(--color-cream); }
+
+  @media (max-width: 900px) {
+    .modules-grid { grid-template-columns: repeat(2, 1fr); }
+    .plans { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    .split { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 760px) {
+    .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; gap: 0; background: var(--color-green-950); border-bottom: 1px solid var(--cream-14); padding: 8px 0; }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 14px 24px; }
+    .nav .btn { display: none; }
+    .nav-burger { display: block; }
+    .modules-grid { grid-template-columns: 1fr; }
+    .hero { padding: 64px 0 52px; }
+  }
+</style>
+</head>
+<body class="bg-grid">
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#">
+      <span class="brand-mark">A</span>
+      <span>Asimov <small>by Bartez Tecnología</small></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#modulos">Módulos</a>
+      <a href="#escritorio">App de escritorio</a>
+      <a href="#precios">Precios</a>
+      <a href="#comparativa">Comparativa</a>
+      <a href="#faq">Preguntas</a>
+    </div>
+    <a class="btn btn-gold btn-sm" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probar gratis</a>
+    <button class="nav-burger" id="navBurger" aria-label="Menú">☰</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge fade-up d1">✓ Facturación legal en Argentina y España</span>
+    <h1 class="fade-up d1">Vendé, facturá y controlá el stock <em>desde un solo lugar</em></h1>
+    <p class="lead fade-up d2">
+      Asimov es el ERP de Bartez Tecnología para pymes y distribuidoras.
+      Una venta descuenta stock, genera la factura y asienta en contabilidad
+      automáticamente. Emití tu primera factura el mismo día.
+    </p>
+    <div class="hero-ctas fade-up d3">
+      <a class="btn btn-gold btn-lg" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probalo gratis 14 días</a>
+      <a class="btn btn-secondary btn-lg" href="https://github.com/equazin/asimov-app/releases/latest">⤓ App para Windows</a>
+    </div>
+    <div class="hero-note fade-up d3">Sin tarjeta. Sin permanencia. Cancelás cuando quieras.</div>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="container strip-inner">
+    <div class="strip-item"><b>18 años</b><span>de Bartez Tecnología en el mercado</span></div>
+    <div class="strip-item"><b>+10.000</b><span>clientes confían en Bartez</span></div>
+    <div class="strip-item"><b>9 módulos</b><span>ventas a contabilidad, integrados</span></div>
+    <div class="strip-item"><b>2 países</b><span>Argentina (ARCA) y España (Verifactu)</span></div>
+  </div>
+</div>
+
+<section class="section" id="modulos">
+  <div class="container">
+    <div class="section-head">
+      <h2>Todo el negocio, un solo sistema</h2>
+      <p>Cada módulo habla con el resto. Cargás el dato una vez y el sistema hace el resto: sin re-tipear, sin planillas paralelas.</p>
+    </div>
+    <div class="modules-grid">
+      <div class="module-card card-dark">
+        <div class="feature-icon">📋</div>
+        <h3>Ventas</h3>
+        <p>Pedidos, cotizaciones y oportunidades. Margen de ganancia por ítem: cargás el costo, definís el % y el precio se calcula solo. Nadie vende al costo por error.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">🧾</div>
+        <h3>Facturación electrónica</h3>
+        <p>Facturas A, B, C, M, notas de crédito y débito con CAE de ARCA en tiempo real. El tipo de comprobante se sugiere solo según la condición IVA del cliente.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">📦</div>
+        <h3>Stock</h3>
+        <p>Multi-depósito, movimientos, números de serie y alertas de mínimos. Cada venta y cada recepción de compra actualizan el stock al instante.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">🛒</div>
+        <h3>Compras</h3>
+        <p>Órdenes de compra, recepciones de mercadería y facturas de proveedor. Cuenta corriente de cada proveedor al día.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">🔌</div>
+        <h3>Catálogo de mayoristas</h3>
+        <p>El catálogo de tu proveedor mayorista adentro del ERP: precios, stock por sucursal y part numbers sincronizados cada 15 minutos. Pedís y facturás con margen sobre el costo real.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">💵</div>
+        <h3>Tesorería</h3>
+        <p>Caja, cuentas corrientes de clientes y proveedores, recibos y órdenes de pago. El saldo del día siempre a la vista en el dashboard.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">📚</div>
+        <h3>Contabilidad</h3>
+        <p>Libro diario, reportes, exportación contable y auditoría. Tu contador entra con su propio usuario y se lleva todo sin pedirte planillas.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">🤝</div>
+        <h3>CRM</h3>
+        <p>Cuentas, oportunidades y seguimiento comercial conectados con ventas. Un lead que cierra se convierte en pedido con dos clics.</p>
+      </div>
+      <div class="module-card card-dark">
+        <div class="feature-icon">🔧</div>
+        <h3>RMA y garantías</h3>
+        <p>Postventa con trazabilidad por número de serie. Sabés qué unidad vendiste, cuándo y en qué estado volvió. Clave para IT y electrónica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="escritorio" style="border-top: 1px solid var(--cream-14);">
+  <div class="container split">
+    <div>
+      <span class="badge">Incluida en todos los planes</span>
+      <h2 style="margin-top:16px;">La app de escritorio que el mostrador necesita</h2>
+      <div class="features">
+        <div class="feature-row">
+          <div class="feature-icon">🖨</div>
+          <div class="feature-text"><strong>Impresión directa</strong> — facturas y presupuestos salen a la impresora sin diálogos del navegador.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🔔</div>
+          <div class="feature-text"><strong>Notificaciones de Windows</strong> — leads y alertas de stock llegan al escritorio, aunque la ventana esté cerrada.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-text"><strong>Arranca con Windows</strong> — prendés la PC y el sistema ya está listo para el primer cliente.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🏢</div>
+          <div class="feature-text"><strong>Multi-empresa</strong> — ¿dos CUITs? Cambiás de empresa desde el selector, sin volver a loguearte.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🔄</div>
+          <div class="feature-text"><strong>Siempre actualizada</strong> — se actualiza sola. Nunca más "bajate la versión nueva".</div>
+        </div>
+      </div>
+      <a class="btn btn-primary" href="https://github.com/equazin/asimov-app/releases/latest">⤓ Descargar para Windows</a>
+    </div>
+    <div class="app-mock">
+      <div class="mock-titlebar">▲ Asimov ERP — Dashboard <span class="win-dots"><i></i><i></i><i></i></span></div>
+      <div class="mock-body">
+        <div class="mock-sidebar">
+          <div class="mock-nav active">🏠 Dashboard</div>
+          <div class="mock-nav-label">Ventas</div>
+          <div class="mock-nav">📋 Pedidos</div>
+          <div class="mock-nav">💰 Cotizaciones</div>
+          <div class="mock-nav-label">Stock</div>
+          <div class="mock-nav">📦 Stock</div>
+          <div class="mock-nav">⚠️ Alertas</div>
+          <div class="mock-nav-label">Facturación</div>
+          <div class="mock-nav">🧾 Facturas</div>
+        </div>
+        <div class="mock-main">
+          <div class="mock-kpi-row">
+            <div class="mock-kpi"><b>$ 1.284.500</b><span>Ventas hoy</span></div>
+            <div class="mock-kpi"><b>7</b><span>Fact. pendientes</span></div>
+            <div class="mock-kpi"><b>3</b><span>Alertas stock</span></div>
+          </div>
+          <table>
+            <tr><th>Comprobante</th><th>Cliente</th><th>Total</th><th>CAE</th></tr>
+            <tr><td class="accent">FA-A 0001-00004512</td><td>Distribuidora Norte SA</td><td>$ 412.300</td><td><span class="tag-ok">AUTORIZADA</span></td></tr>
+            <tr><td class="accent">FA-B 0001-00004513</td><td>Kiosco El Águila</td><td>$ 58.900</td><td><span class="tag-ok">AUTORIZADA</span></td></tr>
+            <tr><td class="accent">PV-2607-46245</td><td>TecnoSur SRL</td><td>$ 813.200</td><td>—</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="precios">
+  <div class="container">
+    <div class="section-head">
+      <h2>Precios claros, sin permanencia</h2>
+      <p>Elegí tu país. Todos los planes incluyen la app de escritorio, actualizaciones y acceso gratis para tu contador.</p>
+    </div>
+    <div class="pricing-head">
+      <div class="country-toggle" role="tablist">
+        <button class="active" data-country="ar">🇦🇷 Argentina (ARS)</button>
+        <button data-country="es">🇪🇸 España (EUR)</button>
+      </div>
+    </div>
+    <div class="plans" id="plansGrid"></div>
+    <p class="disclaimer" style="margin: 18px auto 0; text-align: center;">
+      Precios + IVA. En Argentina se facturan en pesos; en España en euros con facturación anual.
+    </p>
+  </div>
+</section>
+
+<section class="section" id="comparativa" style="border-top: 1px solid var(--cream-14);">
+  <div class="container">
+    <div class="section-head">
+      <h2>Comparalo antes de decidir</h2>
+      <p>Plan medio de cada sistema, con precios de lista publicados por cada proveedor.</p>
+    </div>
+    <div class="table-scroll">
+      <table class="compare-table" id="compareTable"></table>
+    </div>
+    <p class="disclaimer">
+      * Precios orientativos de lista relevados en julio 2026 de los sitios públicos de cada
+      proveedor (xubio.com, colppy.com, contabilium.com, holded.com y comparativas de
+      rankiabusiness.com / banktrack.com). Pueden variar; verificá en cada sitio.
+      Los precios no incluyen IVA.
+    </p>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <h2>Preguntas frecuentes</h2>
+    </div>
+    <div class="faq-list">
+      <details class="card-dark">
+        <summary>¿La facturación electrónica es legal en mi país?</summary>
+        <div class="faq-body">Sí. En Argentina, Asimov emite facturas A, B, C y M con CAE de ARCA (ex AFIP) en tiempo real. En España está preparado para Verifactu, que será obligatorio para sociedades desde el 1/1/2027 y para autónomos desde el 1/7/2027 — llegás con el sistema ya andando, no a último momento.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Necesito instalar algo?</summary>
+        <div class="faq-body">No es obligatorio: el ERP funciona en el navegador. La app de escritorio para Windows es opcional y suma impresión directa, notificaciones y arranque automático. Se descarga en un minuto y se actualiza sola.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Puedo migrar desde Excel u otro sistema?</summary>
+        <div class="faq-body">Sí. Importás clientes, proveedores y artículos desde planillas. La mayoría de los negocios cargan sus datos y emiten su primera factura el mismo día.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Los precios incluyen IVA?</summary>
+        <div class="faq-body">No, son + IVA, igual que todo el mercado (Xubio, Colppy, Holded publican igual). Lo que ves en la tabla es el precio final antes de impuestos, sin costos ocultos de licencias ni actualizaciones.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Hay permanencia mínima?</summary>
+        <div class="faq-body">No. Es mes a mes y cancelás cuando quieras. Si te vas, exportás todos tus datos (clientes, comprobantes, stock, asientos).</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Mi contador puede entrar al sistema?</summary>
+        <div class="faq-body">Sí, con su propio usuario y sin costo extra. Ve el libro diario, los reportes y exporta lo que necesita. Se acabó el "pasame las ventas del mes".</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Sirve para varias sucursales o empresas?</summary>
+        <div class="faq-body">Sí. Stock multi-depósito en los planes Pyme y Distribuidora, y la app de escritorio permite cambiar entre empresas o servidores al instante.</div>
+      </details>
+      <details class="card-dark">
+        <summary>¿Qué soporte tengo?</summary>
+        <div class="faq-body">Email en todos los planes, chat desde Pyme y soporte prioritario en Distribuidora. Detrás está el equipo de Bartez Tecnología, 18 años en el rubro.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="container">
+    <h2>Empezá hoy. Facturá hoy.</h2>
+    <p>14 días gratis, con tus datos reales. Si no te sirve, exportás todo y listo.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-gold btn-lg" href="mailto:ventas@bartez.com.ar?subject=Prueba%20gratis%20Asimov%20ERP">Probalo gratis 14 días</a>
+      <a class="btn btn-secondary btn-lg" href="https://github.com/equazin/asimov-app/releases/latest">⤓ Descargar app para Windows</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© 2026 <strong>Bartez Tecnología</strong> — Asimov ERP. Rosario, Argentina.</div>
+    <div>
+      <a href="https://bartez.com.ar">bartez.com.ar</a> ·
+      <a href="https://github.com/equazin/asimov-app/releases/latest">Descargar app</a> ·
+      <a href="mailto:ventas@bartez.com.ar">ventas@bartez.com.ar</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Menú mobile ──
+  document.getElementById("navBurger").addEventListener("click", function () {
+    document.getElementById("navLinks").classList.toggle("open");
+  });
+
+  // ── Datos de planes por país ──
+  var PLANS = {
+    ar: {
+      currency: "$", suffix: "/mes + IVA", note: "",
+      plans: [
+        { name: "Emprendedor", price: "59.900", features: [
+          "500 comprobantes por mes", "3 usuarios",
+          "Ventas + facturación ARCA (CAE)", "Stock (1 depósito)",
+          "Márgenes de ganancia por ítem", "App de escritorio Windows",
+          { no: true, t: "Compras, tesorería y contabilidad" },
+          { no: true, t: "Números de serie y RMA" }
+        ]},
+        { name: "Pyme", rec: true, price: "119.900", features: [
+          "3.000 comprobantes por mes", "10 usuarios",
+          "Todo Emprendedor, más:", "Compras + tesorería + contabilidad",
+          "CRM y oportunidades", "Stock multi-depósito",
+          "Listas de precios", { no: true, t: "Integración con mayoristas" }
+        ]},
+        { name: "Distribuidora", price: "199.900", features: [
+          "Comprobantes ilimitados", "Usuarios ilimitados",
+          "Todo Pyme, más:", "Números de serie + RMA",
+          "Catálogo de mayoristas integrado (AIR)", "Multi-depósito avanzado",
+          "Soporte prioritario"
+        ]}
+      ]
+    },
+    es: {
+      currency: "€", suffix: "/mes + IVA", note: "Facturación anual",
+      plans: [
+        { name: "Emprendedor", price: "19", features: [
+          "1.500 facturas por año", "3 usuarios",
+          "Ventas + facturación Verifactu", "Stock (1 almacén)",
+          "Márgenes de ganancia por ítem", "App de escritorio Windows",
+          { no: true, t: "Compras, tesorería y contabilidad" },
+          { no: true, t: "Números de serie y RMA" }
+        ]},
+        { name: "Pyme", rec: true, price: "39", features: [
+          "6.000 facturas por año", "10 usuarios",
+          "Todo Emprendedor, más:", "Compras + tesorería + contabilidad",
+          "CRM y oportunidades", "Stock multi-almacén",
+          "Listas de precios", { no: true, t: "Integración con mayoristas" }
+        ]},
+        { name: "Distribuidora", price: "69", features: [
+          "Facturas ilimitadas", "Usuarios ilimitados",
+          "Todo Pyme, más:", "Números de serie + RMA",
+          "Catálogo de mayoristas integrado", "Multi-almacén avanzado",
+          "Soporte prioritario"
+        ]}
+      ]
+    }
+  };
+
+  var COMPARE = {
+    ar: {
+      cols: ["", "Asimov Pyme", "Xubio Estándar", "Colppy Essential", "Contabilium Standard"],
+      rows: [
+        ["Precio de lista/mes*", "$ 119.900", "$ 155.600", "$ 120.500", "$ 122.000"],
+        ["Usuarios", "10", "5", "3", "2"],
+        ["Comprobantes/mes", "3.000", "1.000", "300", "2.500"],
+        ["App de escritorio", "ok", "no", "no", "no"],
+        ["Stock multi-depósito", "ok", "ok", "no", "ok"],
+        ["Márgenes por ítem", "ok", "no", "no", "no"],
+        ["Series + RMA", "Plan Distribuidora", "no", "no", "no"],
+        ["Catálogo mayoristas", "Plan Distribuidora", "no", "no", "no"]
+      ]
+    },
+    es: {
+      cols: ["", "Asimov Pyme", "Holded Estándar", "Quipu Solution", "Sage 50"],
+      rows: [
+        ["Precio de lista/mes*", "39 €", "29,50 €", "25 €", "desde 45 €"],
+        ["Usuarios", "10", "4", "—", "según licencia"],
+        ["Facturas/año", "6.000", "3.000", "—", "—"],
+        ["App de escritorio", "ok", "no", "no", "ok"],
+        ["Stock multi-almacén", "ok", "ok", "no", "ok"],
+        ["Márgenes por ítem", "ok", "no", "no", "no"],
+        ["Verifactu", "ok", "ok", "ok", "ok"],
+        ["Catálogo mayoristas", "Plan Distribuidora", "no", "no", "no"]
+      ]
+    }
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderPlans(country) {
+    var data = PLANS[country];
+    var html = data.plans.map(function (p) {
+      var feats = p.features.map(function (f) {
+        if (typeof f === "object") return '<li class="no">' + esc(f.t) + "</li>";
+        return "<li>" + esc(f) + "</li>";
+      }).join("");
+      return '<div class="plan card-dark' + (p.rec ? " recommended" : "") + '">' +
+        (p.rec ? '<span class="rec-badge">Recomendado</span>' : "") +
+        "<h3>" + esc(p.name) + "</h3>" +
+        '<div class="price">' + data.currency + " " + esc(p.price) + " <small>" + esc(data.suffix) + "</small></div>" +
+        (data.note ? '<div class="price-note">' + esc(data.note) + "</div>" : "") +
+        "<ul>" + feats + "</ul>" +
+        '<a class="btn ' + (p.rec ? "btn-gold" : "btn-secondary") + '" href="mailto:ventas@bartez.com.ar?subject=Prueba%20Asimov%20' + encodeURIComponent(p.name) + '">Probar gratis</a>' +
+        "</div>";
+    }).join("");
+    document.getElementById("plansGrid").innerHTML = html;
+  }
+
+  function renderCompare(country) {
+    var data = COMPARE[country];
+    var html = "<thead><tr>" + data.cols.map(function (c, i) {
+      return "<th" + (i === 1 ? ' class="col-asimov"' : "") + ">" + esc(c) + "</th>";
+    }).join("") + "</tr></thead><tbody>";
+    html += data.rows.map(function (row) {
+      return "<tr>" + row.map(function (cell, i) {
+        var cls = i === 1 ? ' class="col-asimov"' : "";
+        var v = cell === "ok" ? '<span class="compare-ok">✓</span>'
+              : cell === "no" ? '<span class="compare-no">—</span>' : esc(cell);
+        return "<td" + cls + ">" + v + "</td>";
+      }).join("") + "</tr>";
+    }).join("") + "</tbody>";
+    document.getElementById("compareTable").innerHTML = html;
+  }
+
+  var currentCountry = "ar";
+  document.querySelectorAll(".country-toggle button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".country-toggle button").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      currentCountry = btn.dataset.country;
+      renderPlans(currentCountry);
+      renderCompare(currentCountry);
+    });
+  });
+
+  renderPlans(currentCountry);
+  renderCompare(currentCountry);
+</script>
+</body>
+</html>
