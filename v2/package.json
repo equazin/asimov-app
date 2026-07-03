@@ -1,0 +1,24 @@
+{
+  "name": "asimov-v2",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm -w @asimov/api run dev",
+    "dev:admin": "npm -w @asimov/admin run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:generate": "npm -w @asimov/api run db:generate",
+    "db:migrate": "npm -w @asimov/api run db:migrate",
+    "db:studio": "npm -w @asimov/api run db:studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
