@@ -68,12 +68,19 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - Tema dark Ink/Ion consistente con admin panel
 - Configurado para Android (com.asimov.erp) + iOS (camera permission)
 
-### Fase 5 — AFIP + Reportes + Personalización Avanzada ⬚ PENDIENTE
-- Integración AFIP: factura electrónica, CAE/CAEA
-- Reportes PDF: facturas, remitos, recibos con membrete personalizado
-- Exportación Excel/CSV
-- Dashboard analytics por tenant
-- Templates de impresión personalizables (drag & drop)
+### Fase 5 — AFIP + Reportes + Personalización Avanzada ✅ COMPLETADA
+- AFIP Module: autenticación WSAA, solicitud CAE via WSFE, último número autorizado
+  - Soporte para tipos de comprobante (A, B, C) según condición fiscal
+  - Endpoints: POST /afip/cae, GET /afip/last-number, POST /afip/test-auth
+- Reports Module: reportes de ventas (top clientes, top productos, totales diarios),
+  stock (por categoría, por depósito, alertas), cuentas corrientes (saldos clientes/proveedores)
+  - Exportación CSV: clientes, productos, documentos con filtros
+  - Endpoints: GET /reports/sales, /reports/stock, /reports/accounts, /reports/export
+- Customization Module: branding por tenant (logo, color, membrete, pie de página),
+  templates de impresión HTML con interpolación de variables, render de documentos
+  - Endpoints: GET/PATCH /customization/branding, CRUD /customization/templates,
+    GET /customization/render/:documentId
+- Template engine con variables: {{company.*}}, {{document.*}}, {{client.*}}, {{items}}
 
 ### Fase 6 — Billing, QA y Lanzamiento ⬚ PENDIENTE
 - Integración Mercado Pago (Argentina) + Stripe (internacional)
