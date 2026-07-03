@@ -72,7 +72,9 @@ export function registerIpcHandlers(deps: IpcDeps): void {
 
   // Enforcement de rol en el proceso main (fuente de verdad; el gating del shell
   // es solo UX). Sin sesión se niega por defecto para las acciones sensibles.
-  const isAdmin = (): boolean => deps.getCurrentUser?.()?.role === "admin";
+  const isAdmin = (): boolean => ["admin", "owner", "superadmin"].includes(
+    String(deps.getCurrentUser?.()?.role ?? "").toLowerCase(),
+  );
   const DENY_ADMIN = { ok: false, error: "Solo un administrador puede realizar esta acción." } as const;
 
   // --- App info ------------------------------------------------------------

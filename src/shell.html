@@ -1639,7 +1639,7 @@
   let CAN_WRITE = true;
 
   function canSeeView(viewId) {
-    if (["admin", "owner"].includes(currentRole)) return true;
+    if (["admin", "owner", "superadmin"].includes(currentRole)) return true;
     return !ADMIN_ONLY_VIEWS.includes(viewId);
   }
 
