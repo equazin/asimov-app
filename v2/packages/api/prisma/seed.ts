@@ -180,6 +180,7 @@ async function main() {
       update: {},
       create: {
         id: tpl.id,
+        tenantId: demoTenant.id,
         name: tpl.name,
         type: tpl.type,
         html: `<div class="template ${tpl.type}">{{content}}</div>`,
