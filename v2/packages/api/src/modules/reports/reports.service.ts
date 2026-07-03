@@ -229,7 +229,7 @@ export class ReportsService {
         });
         const header = 'Código,Código Barras,Nombre,Unidad,Categoría,Precio Venta,Precio Costo,IVA %\n';
         const rows = products.map((p) =>
-          `"${p.code}","${p.barcode ?? ''}","${p.name}","${p.unit}","${p.category ?? ''}",${p.salePrice},${p.costPrice},${p.ivaRate}`,
+          `"${p.code}","${p.barcode ?? ''}","${p.name}","${p.unit}","${p.category ?? ''}",${p.salePrice},${p.costPrice},${p.ivaPct}`,
         );
         return header + rows.join('\n');
       }
@@ -251,7 +251,7 @@ export class ReportsService {
 
         const header = 'Tipo,Número,Fecha,Cliente,Subtotal,IVA,Total,Estado\n';
         const rows = docs.map((d) =>
-          `"${d.type}","${d.number}","${d.createdAt.toISOString().slice(0, 10)}","${d.client?.businessName ?? ''}",${d.subtotal},${d.totalIva},${d.total},"${d.status}"`,
+          `"${d.type}","${d.number}","${d.createdAt.toISOString().slice(0, 10)}","${d.client?.businessName ?? ''}",${d.subtotal},${d.ivaAmount},${d.total},"${d.status}"`,
         );
         return header + rows.join('\n');
       }

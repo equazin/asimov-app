@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post, Body, Param, Header, Res } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Param, Res } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { CustomizationService } from './customization.service';

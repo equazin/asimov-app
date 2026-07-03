@@ -170,9 +170,10 @@ export class SyncService {
         tenantId,
         userId,
         action: `sync_${action}`,
-        entity,
+        entityType: entity,
         entityId: id,
-        details: JSON.stringify({ source: 'desktop_sync' }),
+        origin: 'desktop',
+        newValues: { source: 'desktop_sync' },
       },
     });
   }

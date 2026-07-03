@@ -69,8 +69,9 @@ export class AfipService {
     // In production, this would:
     // 1. Generate a LoginTicketRequest XML
     // 2. Sign it with the tenant's private key (CMS/PKCS#7)
-    // 3. POST to WSAA LoginCms endpoint
+    // 3. POST to WSAA LoginCms endpoint (this.wsaaUrl)
     // 4. Parse the LoginTicketResponse to extract token + sign
+    void this.wsaaUrl;
     return {
       token: `AFIP_TOKEN_${tenantId}_${Date.now()}`,
       sign: `AFIP_SIGN_${tenantId}_${Date.now()}`,
@@ -82,13 +83,14 @@ export class AfipService {
     tenantId: string,
     invoiceData: AfipInvoiceData,
   ): Promise<CaeResult> {
-    const auth = await this.authenticate(tenantId);
+    await this.authenticate(tenantId);
 
     // In production, this would:
-    // 1. Call FECAESolicitar on WSFE
+    // 1. Call FECAESolicitar on WSFE (this.wsfeUrl)
     // 2. Send the invoice data in AFIP's XML format
     // 3. Parse the response for CAE + expiration
     // 4. Handle errors (duplicate, invalid data, etc.)
+    void this.wsfeUrl;
 
     const lastNumber = await this.getLastInvoiceNumber(
       tenantId,

@@ -12,6 +12,7 @@ import { SyncModule } from './modules/sync/sync.module';
 import { AfipModule } from './modules/afip/afip.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { CustomizationModule } from './modules/customization/customization.module';
+import { BillingModule } from './modules/billing/billing.module';
 import { HealthController } from './common/health.controller';
 
 @Module({
@@ -29,6 +30,7 @@ import { HealthController } from './common/health.controller';
     AfipModule,
     ReportsModule,
     CustomizationModule,
+    BillingModule,
   ],
   controllers: [HealthController],
 })

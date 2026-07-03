@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
-import { Decimal } from '@prisma/client/runtime/library';
 
 interface CreateDocumentDto {
   type: string;

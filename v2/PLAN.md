@@ -82,12 +82,47 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
     GET /customization/render/:documentId
 - Template engine con variables: {{company.*}}, {{document.*}}, {{client.*}}, {{items}}
 
-### Fase 6 — Billing, QA y Lanzamiento ⬚ PENDIENTE
-- Integración Mercado Pago (Argentina) + Stripe (internacional)
-- Webhooks de pago → actualización automática de suscripción
-- Ciclo completo de morosidad automatizado
-- E2E tests con Playwright
-- CI/CD: GitHub Actions → deploy API (Railway/Fly.io), Admin (Vercel), Mobile (EAS)
+### Fase 6 — Billing, QA y Lanzamiento 🔧 EN PROGRESO
+
+#### 6.1 — Billing (Mercado Pago + Stripe) ✅ COMPLETADA
+- BillingModule registrado en app.module (antes quedó sin cablear)
+- `createPaymentPreference`: elige gateway según país del tenant (AR → Mercado Pago, resto → Stripe)
+- Checkout: crea `SubscriptionPayment` en estado `pending` y devuelve URL de pago
+- Webhooks públicos: `/billing/webhook/mercadopago` y `/billing/webhook/stripe`
+  - Mapeo de estados → `paid`/`failed`/`pending`
+  - Pago aprobado → activa suscripción (nuevo período +1 mes) y reactiva tenant
+- `GET /billing/history`: historial de pagos por suscripción
+- Alineado a schema real: `paymentProvider`, `externalPaymentId` (antes usaba nombres inexistentes)
+
+#### 6.2 — Ciclo de morosidad automatizado ✅ COMPLETADA
+- `BillingScheduler` con `@nestjs/schedule` (cron diario 3 AM)
+- `runMorosidadCheck`: recorre suscripciones vencidas y aplica timeline
+  (grace_period → read_only → blocked) según `MOROSIDAD_TIMELINE`
+- Endpoint manual `POST /billing/morosidad/check` (rol owner)
+
+#### 6.3 — Build verde + tooling monorepo ✅ COMPLETADA
+- Corregidos 37 errores de compilación preexistentes en toda la API (nunca se había buildeado)
+  - customization: campos `type`/`html`/`tenantId` alineados al modelo + fix de template literal
+  - reports: `ivaPct`/`ivaAmount` (antes `ivaRate`/`totalIva`)
+  - sync: `entityType`/`newValues` en AuditLog
+  - AFIP: limpieza de variables sin usar; imports muertos varios
+- `tsconfig` API: `declaration: false` (es app, no librería) → elimina errores TS4053
+- Schema: `PrintTemplate` ahora es multi-tenant (`tenantId` + relación + índice)
+- `pnpm-workspace.yaml` + lockfile generado → monorepo instalable
+- `pnpm turbo build` de API pasa con 0 errores
+
+#### 6.4 — CI/CD ✅ SCAFFOLDEADO
+- `.github/workflows/ci.yml`: lint+typecheck, api-tests (Postgres service), admin-build
+- `.github/workflows/deploy.yml`: deploy API/Admin/Mobile gated por mensaje de commit
+- Pendiente: descomentar/activar deploy real (Railway/Fly, Vercel, EAS) con secrets
+
+#### 6.5 — Tests ⬚ PENDIENTE
+- Unit/integration tests API (Jest configurado con `--passWithNoTests` por ahora)
+- E2E con Playwright (admin panel + flujos críticos)
+- Migraciones Prisma iniciales (`prisma migrate` para `migrate deploy` en CI)
+
+#### 6.6 — Lanzamiento ⬚ PENDIENTE
+- Config real de deploy + secrets de producción
 - Beta cerrada → beta abierta → GA
 
 ---

@@ -52,7 +52,7 @@ export class CustomizationService {
   async getPrintTemplates(tenantId: string) {
     return this.prisma.printTemplate.findMany({
       where: { tenantId },
-      orderBy: { documentType: 'asc' },
+      orderBy: { type: 'asc' },
     });
   }
 
@@ -78,7 +78,7 @@ export class CustomizationService {
 
     if (data.isDefault) {
       await this.prisma.printTemplate.updateMany({
-        where: { tenantId, documentType: template.documentType },
+        where: { tenantId, type: template.type },
         data: { isDefault: false },
       });
     }
@@ -87,7 +87,7 @@ export class CustomizationService {
       where: { id },
       data: {
         name: data.name,
-        htmlTemplate: data.htmlTemplate,
+        html: data.htmlTemplate,
         isDefault: data.isDefault,
       },
     });
@@ -99,7 +99,7 @@ export class CustomizationService {
   ) {
     if (data.isDefault) {
       await this.prisma.printTemplate.updateMany({
-        where: { tenantId, documentType: data.documentType },
+        where: { tenantId, type: data.documentType },
         data: { isDefault: false },
       });
     }
@@ -107,9 +107,9 @@ export class CustomizationService {
     return this.prisma.printTemplate.create({
       data: {
         tenantId,
-        documentType: data.documentType,
+        type: data.documentType,
         name: data.name,
-        htmlTemplate: data.htmlTemplate,
+        html: data.htmlTemplate,
         isDefault: data.isDefault ?? false,
       },
     });
@@ -128,12 +128,12 @@ export class CustomizationService {
     if (!document) throw new NotFoundException('Documento no encontrado');
 
     const template = await this.prisma.printTemplate.findFirst({
-      where: { tenantId, documentType: document.type, isDefault: true },
+      where: { tenantId, type: document.type, isDefault: true },
     });
 
     const branding = await this.getTenantBranding(tenantId);
 
-    const html = template?.htmlTemplate ?? this.getDefaultTemplate(document.type);
+    const html = template?.html ?? this.getDefaultTemplate(document.type);
 
     return this.interpolateTemplate(html, {
       document,
@@ -163,7 +163,7 @@ export class CustomizationService {
       .replace(/\{\{document\.number\}\}/g, String(doc?.number ?? ''))
       .replace(/\{\{document\.date\}\}/g, doc?.createdAt ? new Date(doc.createdAt as string).toLocaleDateString('es-AR') : '')
       .replace(/\{\{document\.subtotal\}\}/g, String(doc?.subtotal ?? '0'))
-      .replace(/\{\{document\.totalIva\}\}/g, String(doc?.totalIva ?? '0'))
+      .replace(/\{\{document\.totalIva\}\}/g, String(doc?.ivaAmount ?? '0'))
       .replace(/\{\{document\.total\}\}/g, String(doc?.total ?? '0'))
       .replace(/\{\{document\.notes\}\}/g, String(doc?.notes ?? ''))
       .replace(/\{\{client\.name\}\}/g, String(client?.businessName ?? ''))
@@ -177,7 +177,7 @@ export class CustomizationService {
         <td>${item.description ?? ''}</td>
         <td style="text-align:right">${item.qty}</td>
         <td style="text-align:right">$${item.unitPrice}</td>
-        <td style="text-align:right">${item.ivaRate}%</td>
+        <td style="text-align:right">${item.ivaPct}%</td>
         <td style="text-align:right">$${item.subtotal}</td>
       </tr>
     `).join('');
@@ -229,9 +229,9 @@ td { padding: 6px 8px; border-bottom: 1px solid #eee; }
 <table><thead><tr><th>Código</th><th>Descripción</th><th>Cant.</th><th>P. Unit.</th><th>IVA</th><th>Subtotal</th></tr></thead>
 <tbody>{{items}}</tbody></table>
 <div class="totals">
-  <div class="total-row">Subtotal: ${{document.subtotal}}</div>
-  <div class="total-row">IVA: ${{document.totalIva}}</div>
-  <div class="total-final">TOTAL: ${{document.total}}</div>
+  <div class="total-row">Subtotal: \${{document.subtotal}}</div>
+  <div class="total-row">IVA: \${{document.totalIva}}</div>
+  <div class="total-final">TOTAL: \${{document.total}}</div>
 </div>
 <div class="footer">{{footer}}</div>
 </body></html>`;

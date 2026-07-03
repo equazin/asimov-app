@@ -6,3 +6,7 @@ release/
 .DS_Store
 .env
 .env.*
+
+# Local SQLite DBs / dev artifacts
+*.db
+.turbo/

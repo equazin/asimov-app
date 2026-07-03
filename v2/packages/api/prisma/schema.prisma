@@ -75,6 +75,7 @@ model Tenant {
   accountMovements AccountMovement[]
   auditLogs     AuditLog[]
   cashAccounts  CashAccount[]
+  printTemplates PrintTemplate[]
 
   @@index([status])
   @@index([planId])
@@ -589,6 +590,7 @@ model Sequence {
 
 model PrintTemplate {
   id        String   @id @default(uuid())
+  tenantId  String
   name      String
   type      String   // invoice, delivery_note, quote, receipt, purchase_order, etc.
   html      String   @db.Text
@@ -596,6 +598,9 @@ model PrintTemplate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
   @@map("print_templates")
 }
 

@@ -1,7 +1,6 @@
 import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantService } from './tenant.service';
-import { Roles } from '../../common/decorators';
 
 @ApiTags('Tenants (Master)')
 @ApiBearerAuth()
