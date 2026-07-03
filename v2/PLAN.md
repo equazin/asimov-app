@@ -125,9 +125,15 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - ✅ `.spec.ts` excluidos del `nest build`
 - ⬚ Pendiente: tests de auth/registerTenant, documentos (IVA/totales), E2E Playwright (admin)
 
-#### 6.6 — Lanzamiento ⬚ PENDIENTE
-- Config real de deploy + secrets de producción
-- Beta cerrada → beta abierta → GA
+#### 6.6 — Lanzamiento 🔧 EN PROGRESO
+- ✅ Cuenta principal `superadmin` + panel maestro protegido por rol
+- ✅ API lista para PaaS: bind 0.0.0.0, `start:prod` corre `migrate deploy`,
+  Prisma `binaryTargets` para Debian, CORS por env
+- ✅ `Dockerfile` + `.dockerignore` (Railway) para la API monorepo
+- ✅ `vercel.json` del admin (build de shared antes que admin)
+- ⬚ Pendiente (requiere cuentas del usuario): crear proyecto Railway (API + Postgres),
+  proyecto Vercel (admin), cargar secrets, correr seed, apuntar CORS/API_URL
+- ⬚ Beta cerrada → beta abierta → GA
 
 ---
 

@@ -32,8 +32,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT ?? 3001;
-  await app.listen(port);
-  console.log(`Asimov API running on http://localhost:${port}`);
+  // Bind 0.0.0.0 para que funcione en contenedores/PaaS (Railway, Fly, etc.).
+  await app.listen(port, '0.0.0.0');
+  console.log(`Asimov API running on port ${port}`);
   console.log(`Swagger docs: http://localhost:${port}/api/docs`);
 }
 bootstrap();

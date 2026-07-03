@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.expo
+**/*.tsbuildinfo
+packages/mobile
+**/.env
+**/.env.*
+!**/.env.example
+.git
