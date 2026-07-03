@@ -1,4 +1,6 @@
-export type UserRole = 'owner' | 'admin' | 'seller' | 'warehouse' | 'accountant' | 'readonly';
+// 'superadmin' es un rol de plataforma (panel maestro SaaS), no de un tenant.
+// El resto son roles internos de cada empresa.
+export type UserRole = 'superadmin' | 'owner' | 'admin' | 'seller' | 'warehouse' | 'accountant' | 'readonly';
 export type DeviceOrigin = 'desktop' | 'mobile' | 'web';
 
 export interface User {

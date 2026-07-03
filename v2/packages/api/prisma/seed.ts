@@ -83,6 +83,36 @@ async function main() {
     }),
   ]);
 
+  // --- Cuenta principal de plataforma (superadmin del panel maestro) ---
+  // Credenciales configurables por entorno; el default DEBE cambiarse en producción.
+  const superEmail = process.env.SUPERADMIN_EMAIL ?? 'superadmin@asimov.app';
+  const superPassword = process.env.SUPERADMIN_PASSWORD ?? 'ChangeMe2026!';
+
+  const masterTenant = await prisma.tenant.upsert({
+    where: { slug: 'asimov-master' },
+    update: {},
+    create: {
+      id: 'tenant-master',
+      name: 'Asimov (Plataforma)',
+      slug: 'asimov-master',
+      planId: 'plan-enterprise',
+      country: 'AR',
+      currency: 'ARS',
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { tenantId_email: { tenantId: masterTenant.id, email: superEmail } },
+    update: {},
+    create: {
+      tenantId: masterTenant.id,
+      email: superEmail,
+      name: 'Super Admin',
+      passwordHash: await hash(superPassword, 12),
+      role: 'superadmin',
+    },
+  });
+
   const passwordHash = await hash('asimov2026', 12);
 
   const demoTenant = await prisma.tenant.upsert({
