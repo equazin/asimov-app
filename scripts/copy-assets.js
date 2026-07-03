@@ -21,6 +21,14 @@ for (const file of files) {
   }
 }
 
+// Scripts de renderer externalizados (src/*.js). No los procesa tsc: son JS
+// plano que las ventanas cargan vía <script src> bajo CSP estricta.
+for (const file of fs.readdirSync(srcDir)) {
+  if (!file.endsWith(".js")) continue;
+  fs.copyFileSync(path.join(srcDir, file), path.join(distDir, file));
+  console.log(`[copy-assets] ${file} → dist/`);
+}
+
 const brandIcon = path.join(root, "build", "bartez-isologo.png");
 const brandIconOut = path.join(distDir, "bartez-isologo.png");
 if (fs.existsSync(brandIcon)) {
