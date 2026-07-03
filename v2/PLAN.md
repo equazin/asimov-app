@@ -116,10 +116,14 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - `.github/workflows/deploy.yml`: deploy API/Admin/Mobile gated por mensaje de commit
 - Pendiente: descomentar/activar deploy real (Railway/Fly, Vercel, EAS) con secrets
 
-#### 6.5 — Tests ⬚ PENDIENTE
-- Unit/integration tests API (Jest configurado con `--passWithNoTests` por ahora)
-- E2E con Playwright (admin panel + flujos críticos)
-- Migraciones Prisma iniciales (`prisma migrate` para `migrate deploy` en CI)
+#### 6.5 — Tests 🔧 EN PROGRESO
+- ✅ Migración Prisma inicial (`prisma/migrations/0000_init`) + `migration_lock.toml`
+  → `prisma migrate deploy` ya funciona en CI y en despliegue real
+- ✅ Vitest configurado en la API (reemplaza Jest) + suite de billing
+  - 9 tests: selección de gateway por país, webhooks MP/Stripe (paid/failed/no-op),
+    ciclo de morosidad (warned/grace/read_only/blocked), reactivación de suscripción
+- ✅ `.spec.ts` excluidos del `nest build`
+- ⬚ Pendiente: tests de auth/registerTenant, documentos (IVA/totales), E2E Playwright (admin)
 
 #### 6.6 — Lanzamiento ⬚ PENDIENTE
 - Config real de deploy + secrets de producción
