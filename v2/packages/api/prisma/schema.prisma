@@ -6,6 +6,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  // Usar la conexión DIRECTA de Neon (sin "-pooler"): el pooler (pgBouncer) no
+  // soporta los advisory locks que usa `prisma migrate deploy`.
   url      = env("DATABASE_URL")
 }
 

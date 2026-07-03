@@ -54,13 +54,13 @@ export default function SubscriptionsPage() {
         </CardHeader>
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
           {[
-            { label: `Warning -${Math.abs(MOROSIDAD_TIMELINE.WARNING_DAYS)}d`, color: 'bg-yellow-100 text-yellow-800' },
-            { label: `Reminder -${Math.abs(MOROSIDAD_TIMELINE.REMINDER_DAYS)}d`, color: 'bg-amber-100 text-amber-800' },
+            { label: `Aviso -${Math.abs(MOROSIDAD_TIMELINE.warningDays[0])}d`, color: 'bg-yellow-100 text-yellow-800' },
+            { label: `Aviso -${Math.abs(MOROSIDAD_TIMELINE.warningDays[MOROSIDAD_TIMELINE.warningDays.length - 1])}d`, color: 'bg-amber-100 text-amber-800' },
             { label: 'Cobro Día 0', color: 'bg-blue-100 text-blue-800' },
-            { label: `Grace +${MOROSIDAD_TIMELINE.GRACE_PERIOD_DAYS}d`, color: 'bg-orange-100 text-orange-800' },
-            { label: `Read-Only +${MOROSIDAD_TIMELINE.READ_ONLY_DAYS}d`, color: 'bg-red-100 text-red-800' },
-            { label: `Block +${MOROSIDAD_TIMELINE.BLOCK_DAYS}d`, color: 'bg-red-200 text-red-900' },
-            { label: `Delete +${MOROSIDAD_TIMELINE.DELETE_DAYS}d`, color: 'bg-ink-800 text-white' },
+            { label: `Grace +${MOROSIDAD_TIMELINE.gracePeriodDays}d`, color: 'bg-orange-100 text-orange-800' },
+            { label: `Read-Only +${MOROSIDAD_TIMELINE.readOnlyAfterDays}d`, color: 'bg-red-100 text-red-800' },
+            { label: `Block +${MOROSIDAD_TIMELINE.blockedAfterDays}d`, color: 'bg-red-200 text-red-900' },
+            { label: `Delete +${MOROSIDAD_TIMELINE.deleteAfterDays}d`, color: 'bg-ink-800 text-white' },
           ].map((step, i) => (
             <div key={i} className="flex items-center gap-2">
               {i > 0 && <div className="h-0.5 w-6 bg-ink-200" />}
