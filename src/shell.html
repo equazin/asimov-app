@@ -255,6 +255,24 @@
     #statusbar .ok { color: #6ed49a; font-weight: 700; }
     #statusbar .grow { flex: 1; }
     #statusbar #status-count { color: #a8d8b8; font-weight: 700; }
+    #statusbar #status-sync {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 0 8px; height: 16px; border-radius: 8px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      transition: background 120ms;
+    }
+    #statusbar #status-sync .sdot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #6b7280;
+    }
+    #statusbar #status-sync.ok { color: #6ed49a; background: rgba(46,163,110,0.14); }
+    #statusbar #status-sync.ok .sdot { background: #6ed49a; }
+    #statusbar #status-sync.warn { color: #f5a524; background: rgba(245,165,36,0.14); }
+    #statusbar #status-sync.warn .sdot { background: #f5a524; }
+    #statusbar #status-sync.busy { color: #ff6a2b; background: rgba(255,106,43,0.14); }
+    #statusbar #status-sync.busy .sdot { background: #ff6a2b; animation: pulse 1.2s ease infinite; }
+    #statusbar #status-sync.off { color: #9aa1ab; }
+    @keyframes pulse { 50% { opacity: 0.3; } }
 
     /* ── Dashboard ───────────────────────────────────────────── */
     #view-dashboard { background: var(--bg); overflow-y: auto; }
@@ -1298,6 +1316,10 @@
   <span class="sep"></span>
   <span id="status-count"></span>
   <span class="grow"></span>
+  <span id="status-sync" class="off" onclick="runCloudSync()" title="Sincronización con la nube">
+    <span class="sdot"></span><span id="sync-label">Sin conexión</span>
+  </span>
+  <span class="sep"></span>
   <span id="status-user" title="Usuario en sesión">—</span>
   <span class="sep"></span>
   <span id="status-logout" onclick="doLogout()" title="Cerrar sesión" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">⎋ Salir</span>
@@ -1999,6 +2021,60 @@
       }
       updateClock();
       setInterval(updateClock, 30000);
+
+      // ── Estado de sincronización con la nube ─────────────────────────────
+      const syncBadge = document.getElementById("status-sync");
+      const syncLabel = document.getElementById("sync-label");
+      function fmtLast(iso) {
+        if (!iso) return "";
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return "";
+        const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+        if (mins < 1) return "recién";
+        if (mins < 60) return `hace ${mins} min`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `hace ${hrs} h`;
+        return d.toLocaleDateString("es-AR");
+      }
+      async function refreshSyncBadge() {
+        if (!api.cloudSync) return;
+        try {
+          const s = await api.cloudSync.status();
+          if (!s.connected) {
+            syncBadge.className = "off";
+            syncLabel.textContent = "Sólo local";
+            syncBadge.title = "Trabajando en modo local. Ingresá con una cuenta de la nube para sincronizar.";
+            return;
+          }
+          if (s.syncing) {
+            syncBadge.className = "busy";
+            syncLabel.textContent = "Sincronizando…";
+            syncBadge.title = "Enviando cambios a la nube";
+            return;
+          }
+          if (s.pendingChanges > 0) {
+            syncBadge.className = "warn";
+            syncLabel.textContent = `${s.pendingChanges} pendiente${s.pendingChanges === 1 ? "" : "s"}`;
+            syncBadge.title = "Cambios pendientes de sincronizar. Click para forzar.";
+            return;
+          }
+          syncBadge.className = "ok";
+          const last = fmtLast(s.lastSync);
+          syncLabel.textContent = "Sincronizado" + (last ? " · " + last : "");
+          syncBadge.title = "Todos los cambios están en la nube. Click para forzar sincronización.";
+        } catch { /* silencio */ }
+      }
+      window.runCloudSync = async function () {
+        if (!api.cloudSync) return;
+        try {
+          syncBadge.className = "busy";
+          syncLabel.textContent = "Sincronizando…";
+          await api.cloudSync.run();
+        } catch { /* silencio */ }
+        refreshSyncBadge();
+      };
+      refreshSyncBadge();
+      setInterval(refreshSyncBadge, 5000);
 
       // Show app version in status bar
       api.appVersion().then((ver) => {

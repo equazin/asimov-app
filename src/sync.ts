@@ -228,39 +228,144 @@ async function pullChanges(): Promise<number> {
   }
 }
 
+/**
+ * Traduce el shape del server (camelCase, Prisma) al del SQLite local (snake_case).
+ * Solo se copian las columnas conocidas; el resto se ignora para no romper el schema.
+ */
+type RemoteRow = Record<string, unknown>;
+function mapClient(d: RemoteRow): RemoteRow {
+  return {
+    id: d.id,
+    code: d.code ?? null,
+    name: d.name ?? d.razonSocial ?? '',
+    tax_id: d.taxId ?? d.cuit ?? null,
+    email: d.email ?? null,
+    phone: d.phone ?? null,
+    address: d.address ?? null,
+    city: d.city ?? null,
+    province: d.province ?? null,
+    postal_code: d.postalCode ?? null,
+    country: d.country ?? null,
+    iva_condition: d.ivaCondition ?? d.condicionIva ?? null,
+    price_list: d.priceList ?? null,
+    notes: d.notes ?? null,
+    active: d.active === false || d.deletedAt ? 0 : 1,
+    created_at: d.createdAt ?? null,
+    updated_at: d.updatedAt ?? null,
+  };
+}
+function mapSupplier(d: RemoteRow): RemoteRow {
+  return {
+    id: d.id,
+    code: d.code ?? null,
+    name: d.name ?? '',
+    tax_id: d.taxId ?? d.cuit ?? null,
+    email: d.email ?? null,
+    phone: d.phone ?? null,
+    address: d.address ?? null,
+    city: d.city ?? null,
+    province: d.province ?? null,
+    country: d.country ?? null,
+    iva_condition: d.ivaCondition ?? null,
+    notes: d.notes ?? null,
+    active: d.active === false || d.deletedAt ? 0 : 1,
+    created_at: d.createdAt ?? null,
+    updated_at: d.updatedAt ?? null,
+  };
+}
+function mapArticle(d: RemoteRow): RemoteRow {
+  return {
+    id: d.id,
+    code: d.code ?? d.sku ?? null,
+    barcode: d.barcode ?? null,
+    name: d.name ?? d.description ?? '',
+    description: d.description ?? null,
+    category: d.category ?? null,
+    brand: d.brand ?? null,
+    unit: d.unit ?? null,
+    cost: d.cost ?? 0,
+    price: d.price ?? 0,
+    iva_rate: d.ivaRate ?? d.ivaPct ?? 21,
+    stock: d.stock ?? 0,
+    stock_min: d.stockMin ?? 0,
+    active: d.active === false || d.deletedAt ? 0 : 1,
+    created_at: d.createdAt ?? null,
+    updated_at: d.updatedAt ?? null,
+  };
+}
+
+/** Descubre columnas reales del SQLite local para filtrar el payload mapeado. */
+function tableColumns(table: string): Set<string> {
+  const rows = dbAll(`PRAGMA table_info(${table})`, []) as Array<{ name: string }>;
+  return new Set(rows.map((r) => r.name));
+}
+
+function upsertRow(table: string, id: string, data: RemoteRow): void {
+  const db = getDb();
+  const allowed = tableColumns(table);
+  const cols = Object.keys(data).filter((k) => allowed.has(k) && data[k] !== undefined);
+  if (cols.length === 0) return;
+  const values = cols.map((c) => data[c] as string | number | null);
+  const placeholders = cols.map(() => '?').join(', ');
+  const updates = cols.filter((c) => c !== 'id').map((c) => `${c} = excluded.${c}`).join(', ');
+  db.prepare(
+    `INSERT INTO ${table} (${cols.join(', ')}) VALUES (${placeholders})
+     ON CONFLICT(id) DO UPDATE SET ${updates}`,
+  ).run(...values);
+  void id;
+}
+
+function softDeleteRow(table: string, id: string): void {
+  const db = getDb();
+  const allowed = tableColumns(table);
+  if (allowed.has('active')) {
+    db.prepare(`UPDATE ${table} SET active = 0 WHERE id = ?`).run(id);
+  } else {
+    db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id);
+  }
+}
+
+/**
+ * Aplica un cambio remoto en la base local. El server manda entidades lógicas:
+ *   client → clients, supplier → suppliers, product → articles.
+ *
+ * NOTA: los documentos (facturas, remitos, etc.) tienen shape complejo (cabecera
+ * + líneas + numeración) y hoy quedan fuera del pull automático — se sincronizan
+ * en otra iteración (PR-D/E) cuando se defina el mapeo por type.
+ */
 function applyRemoteChange(change: {
   entity: string;
   action: string;
   id: string;
   data: Record<string, unknown>;
 }): void {
-  const db = getDb();
-  const tableMap: Record<string, string> = {
-    client: 'clients',
-    supplier: 'suppliers',
-    product: 'articles',
-    document: 'sale_orders',
-  };
-
-  const table = tableMap[change.entity];
-  if (!table) return;
-
-  switch (change.action) {
-    case 'create':
-    case 'update': {
-      const columns = Object.keys(change.data);
-      const placeholders = columns.map(() => '?').join(', ');
-      const values = columns.map((c) => change.data[c]);
-
-      db.prepare(
-        `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`,
-      ).run(...values);
+  switch (change.entity) {
+    case 'client': {
+      const row = mapClient(change.data);
+      row.id = change.id;
+      if (change.action === 'delete') softDeleteRow('clients', change.id);
+      else upsertRow('clients', change.id, row);
       break;
     }
-    case 'delete': {
-      db.prepare(`UPDATE ${table} SET active = 0 WHERE id = ?`).run(change.id);
+    case 'supplier': {
+      const row = mapSupplier(change.data);
+      row.id = change.id;
+      if (change.action === 'delete') softDeleteRow('suppliers', change.id);
+      else upsertRow('suppliers', change.id, row);
       break;
     }
+    case 'product': {
+      const row = mapArticle(change.data);
+      row.id = change.id;
+      if (change.action === 'delete') softDeleteRow('articles', change.id);
+      else upsertRow('articles', change.id, row);
+      break;
+    }
+    case 'document':
+      // TODO(PR-D/E): mapeo por type (invoice/receipt/quote/etc.) con cabecera + líneas.
+      break;
+    default:
+      break;
   }
 }
 

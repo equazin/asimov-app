@@ -22,8 +22,19 @@ export interface ApiUser {
   tenantId: string;
 }
 
+/**
+ * URL de la API v2 en producción (Render). Se puede override:
+ *   1) Guardando otra URL con setApiBaseUrl() desde la UI.
+ *   2) En desarrollo, exportando ASIMOV_API_URL en el entorno del proceso.
+ */
+const DEFAULT_API_URL = 'https://asimov-api-lwci.onrender.com/api/v1';
+
 export function getApiBaseUrl(): string {
-  return (store.get(API_URL_KEY) as string) || 'http://localhost:3000/api/v1';
+  const stored = store.get(API_URL_KEY) as string | undefined;
+  if (stored) return stored;
+  const env = process.env.ASIMOV_API_URL;
+  if (env && env.startsWith('http')) return env;
+  return DEFAULT_API_URL;
 }
 
 export function setApiBaseUrl(url: string): void {

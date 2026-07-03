@@ -20,6 +20,14 @@ import {
 import { setLaunchAtStartupEnabled } from "./tray";
 import { hashPassword, type SessionUser } from "./auth";
 import { encryptSecret } from "./secrets";
+import { enqueueChange } from "./sync";
+import { isCloudConnected } from "./api-client";
+
+/** Encola un cambio (create/update/delete) sólo si hay sesión cloud activa. */
+function enqueueIfCloud(entity: string, id: string, action: "create" | "update" | "delete", payload?: Record<string, unknown>) {
+  if (!isCloudConnected() || !id) return;
+  try { enqueueChange(entity, id, action, payload); } catch { /* best-effort */ }
+}
 import {
   getAirLocalConfig,
   isAirEnabled,
@@ -144,11 +152,24 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:clients:get", (_event, id: unknown) => dbGet("SELECT * FROM clients WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:clients:save", (_event, row: unknown) => {
-    const { id } = upsertClient(row as Record<string, unknown>);
+    const r = row as Record<string, unknown>;
+    const wasExisting = !!safeStr(r.id);
+    const { id } = upsertClient(r);
+    enqueueIfCloud("client", id, wasExisting ? "update" : "create", {
+      code: (r.code as string | null) ?? null,
+      name: safeStr(r.business_name),
+      taxId: safeStr(r.cuit) || null,
+      ivaCondition: safeStr(r.fiscal_type) || null,
+      email: safeStr(r.email) || null,
+      phone: safeStr(r.phone) || null,
+      address: safeStr(r.address) || null,
+    });
     return { ok: true, id };
   });
   ipcMain.handle("db:clients:delete", (_event, id: unknown) => {
-    dbRun("UPDATE clients SET active = 0 WHERE id = ?", [safeStr(id)]);
+    const s = safeStr(id);
+    dbRun("UPDATE clients SET active = 0 WHERE id = ?", [s]);
+    enqueueIfCloud("client", s, "delete");
     return { ok: true };
   });
 
@@ -159,11 +180,23 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:suppliers:get", (_event, id: unknown) => dbGet("SELECT * FROM suppliers WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:suppliers:save", (_event, row: unknown) => {
-    const { id } = upsertSupplier(row as Record<string, unknown>);
+    const r = row as Record<string, unknown>;
+    const wasExisting = !!safeStr(r.id);
+    const { id } = upsertSupplier(r);
+    enqueueIfCloud("supplier", id, wasExisting ? "update" : "create", {
+      code: (r.code as string | null) ?? null,
+      name: safeStr(r.business_name),
+      taxId: safeStr(r.cuit) || null,
+      email: safeStr(r.email) || null,
+      phone: safeStr(r.phone) || null,
+      address: safeStr(r.address) || null,
+    });
     return { ok: true, id };
   });
   ipcMain.handle("db:suppliers:delete", (_event, id: unknown) => {
-    dbRun("UPDATE suppliers SET active = 0 WHERE id = ?", [safeStr(id)]);
+    const s = safeStr(id);
+    dbRun("UPDATE suppliers SET active = 0 WHERE id = ?", [s]);
+    enqueueIfCloud("supplier", s, "delete");
     return { ok: true };
   });
 
@@ -175,11 +208,23 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:articles:get", (_event, id: unknown) => dbGet("SELECT * FROM articles WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:articles:save", (_event, row: unknown) => {
-    const { id } = upsertArticle(row as Record<string, unknown>);
+    const r = row as Record<string, unknown>;
+    const wasExisting = !!safeStr(r.id);
+    const { id } = upsertArticle(r);
+    enqueueIfCloud("product", id, wasExisting ? "update" : "create", {
+      code: safeStr(r.code),
+      name: safeStr(r.name),
+      category: safeStr(r.category) || null,
+      unit: safeStr(r.unit) || "un",
+      price: Number(r.sale_price) || 0,
+      ivaRate: Number(r.iva_pct) || 21,
+    });
     return { ok: true, id };
   });
   ipcMain.handle("db:articles:delete", (_event, id: unknown) => {
-    dbRun("UPDATE articles SET active = 0 WHERE id = ?", [safeStr(id)]);
+    const s = safeStr(id);
+    dbRun("UPDATE articles SET active = 0 WHERE id = ?", [s]);
+    enqueueIfCloud("product", s, "delete");
     return { ok: true };
   });
 

@@ -13,6 +13,8 @@ import {
   type WindowBounds,
 } from "./config";
 import { registerIpcHandlers } from "./ipc";
+import { registerCloudIpcHandlers } from "./ipc-cloud";
+import { getStoredUser } from "./api-client";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
@@ -168,7 +170,7 @@ function createLoginWindow(): BrowserWindow {
   }
   loginWindow = new BrowserWindow({
     width: 420,
-    height: 560,
+    height: 620,
     resizable: false,
     maximizable: false,
     show: false,
@@ -297,6 +299,9 @@ if (!gotLock) {
     initDb();
 
     registerIpcHandlers({ getMainWindow, getCurrentUser: () => currentUser });
+    // Cloud + sync (v2): IPC handlers para login contra la API de Render,
+    // cola de sync offline-first y timer de push/pull cada 30 s.
+    registerCloudIpcHandlers();
     // Sin barra de menú superior: la navegación vive en el sidebar del shell.
     Menu.setApplicationMenu(null);
     registerGlobalShortcuts();
@@ -323,6 +328,26 @@ if (!gotLock) {
     });
     ipcMain.handle("auth:current", () => currentUser);
     ipcMain.on("auth:logout", () => logout());
+
+    // Login vía nube (v2): tras cloud:login OK, la ventana de login llama
+    // acá para que el main abra el shell principal, igual que auth:login.
+    ipcMain.handle("cloud:complete-login", () => {
+      // Cargamos los datos del store para armar el SessionUser equivalente.
+      // getStoredUser() devuelve { userId, email, name, role, tenantId }.
+      try {
+        const stored = getStoredUser();
+        if (!stored) return { ok: false };
+        completeLogin({
+          id: stored.userId,
+          name: stored.name,
+          email: stored.email,
+          role: stored.role,
+        });
+        return { ok: true };
+      } catch {
+        return { ok: false };
+      }
+    });
 
     // Arranca en el login; la ventana principal se crea al autenticar.
     createLoginWindow();

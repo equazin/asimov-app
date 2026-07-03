@@ -285,6 +285,14 @@ const api = {
     startSyncTimer: () => ipcRenderer.invoke("air:sync-timer:start"),
     stopSyncTimer: () => ipcRenderer.invoke("air:sync-timer:stop"),
   },
+
+  // Sincronización con la API v2 (Render). Sirve para el badge de estado
+  // en el status bar y para forzar un push/pull manual desde la UI.
+  cloudSync: {
+    status: () => ipcRenderer.invoke("sync:status") as Promise<{ connected: boolean; pendingChanges: number; lastSync: string | null; syncing: boolean }>,
+    run: () => ipcRenderer.invoke("sync:run") as Promise<{ ok: boolean; pushed?: number; pulled?: number; errors?: number; error?: string }>,
+    cloudStatus: () => ipcRenderer.invoke("cloud:status") as Promise<{ connected: boolean; user: { email: string; name: string; role: string; tenantId: string } | null; apiUrl: string }>,
+  },
 };
 
 // contextIsolation: true → puente seguro; no se toca el prototipo de window ni se

@@ -8,6 +8,8 @@
  * main reenviaba a un picker, y el registro nunca se escribía en SQLite.
  */
 import { upsertClient, upsertSupplier, upsertArticle } from "./db";
+import { enqueueChange } from "./sync";
+import { isCloudConnected } from "./api-client";
 
 function str(v: unknown, max = 500): string {
   return String(v ?? "").slice(0, max).trim();
@@ -16,6 +18,20 @@ function str(v: unknown, max = 500): string {
 function num(v: unknown): number {
   const n = typeof v === "number" ? v : parseFloat(String(v ?? "").replace(",", "."));
   return Number.isFinite(n) ? n : 0;
+}
+
+/**
+ * Encola un cambio para push a la nube. Nunca lanza (offline-first): si algo
+ * falla en la cola, el guardado local ya se hizo y no queremos abortar.
+ * `payload` va en el shape que espera la API v2 (camelCase, nombres del server).
+ */
+function tryEnqueue(entity: string, id: string, action: "create" | "update" | "delete", payload?: Record<string, unknown>) {
+  if (!isCloudConnected()) return;
+  try {
+    enqueueChange(entity, id, action, payload);
+  } catch {
+    // best-effort: si la cola falla no rompemos el flujo del usuario
+  }
 }
 
 // ─── Cliente ──────────────────────────────────────────────────────────────
@@ -32,7 +48,8 @@ export interface ClientForm {
 }
 
 export function persistClientForm(form: ClientForm): { id: string } {
-  return upsertClient({
+  const isNew = !str(form.id);
+  const saved = upsertClient({
     id: str(form.id),
     code: str(form.codigo) || null,
     business_name: str(form.razonSocial),
@@ -43,6 +60,16 @@ export function persistClientForm(form: ClientForm): { id: string } {
     address: str(form.domicilio),
     active: 1,
   });
+  tryEnqueue("client", saved.id, isNew ? "create" : "update", {
+    code: str(form.codigo) || null,
+    name: str(form.razonSocial),
+    taxId: str(form.cuit) || null,
+    ivaCondition: str(form.condicionIva) || null,
+    email: str(form.email) || null,
+    phone: str(form.telefono) || null,
+    address: str(form.domicilio) || null,
+  });
+  return saved;
 }
 
 // ─── Proveedor ──────────────────────────────────────────────────────────────
@@ -58,7 +85,8 @@ export interface SupplierForm {
 }
 
 export function persistSupplierForm(form: SupplierForm): { id: string } {
-  return upsertSupplier({
+  const isNew = !str(form.id);
+  const saved = upsertSupplier({
     id: str(form.id),
     code: str(form.codigo) || null,
     business_name: str(form.razonSocial),
@@ -68,6 +96,15 @@ export function persistSupplierForm(form: SupplierForm): { id: string } {
     address: str(form.domicilio),
     active: 1,
   });
+  tryEnqueue("supplier", saved.id, isNew ? "create" : "update", {
+    code: str(form.codigo) || null,
+    name: str(form.razonSocial),
+    taxId: str(form.cuit) || null,
+    email: str(form.email) || null,
+    phone: str(form.telefono) || null,
+    address: str(form.domicilio) || null,
+  });
+  return saved;
 }
 
 // ─── Artículo ──────────────────────────────────────────────────────────────
@@ -83,9 +120,11 @@ export interface ArticleForm {
 }
 
 export function persistArticleForm(form: ArticleForm): { id: string } {
-  return upsertArticle({
+  const isNew = !str(form.id);
+  const code = str(form.codigo) || `ART-${Date.now()}`;
+  const saved = upsertArticle({
     id: str(form.id),
-    code: str(form.codigo) || `ART-${Date.now()}`,
+    code,
     name: str(form.descripcion),
     category: str(form.categoria),
     unit: "un",
@@ -93,4 +132,13 @@ export function persistArticleForm(form: ArticleForm): { id: string } {
     iva_pct: num(form.iva) || 21,
     active: 1,
   });
+  tryEnqueue("product", saved.id, isNew ? "create" : "update", {
+    code,
+    name: str(form.descripcion),
+    category: str(form.categoria) || null,
+    unit: "un",
+    price: num(form.importe),
+    ivaRate: num(form.iva) || 21,
+  });
+  return saved;
 }
