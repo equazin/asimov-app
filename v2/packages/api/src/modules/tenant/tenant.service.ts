@@ -6,7 +6,7 @@ export class TenantService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(filters?: { status?: string; planId?: string; search?: string }) {
-    return this.prisma.tenant.findMany({
+    const tenants = await this.prisma.tenant.findMany({
       where: {
         ...(filters?.status && { status: filters.status }),
         ...(filters?.planId && { planId: filters.planId }),
@@ -30,6 +30,21 @@ export class TenantService {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    // Shape que espera el panel: cuit (=fiscalId) y subscription singular con plan.
+    return tenants.map((t) => ({
+      id: t.id,
+      name: t.name,
+      slug: t.slug,
+      cuit: t.fiscalId ?? '',
+      status: t.status,
+      createdAt: t.createdAt,
+      plan: t.plan,
+      _count: t._count,
+      subscription: t.subscriptions[0]
+        ? { plan: { name: t.plan.name }, currentPeriodEnd: t.subscriptions[0].currentPeriodEnd }
+        : undefined,
+    }));
   }
 
   async getAuditLogs(filters?: { action?: string }) {
@@ -157,16 +172,48 @@ export class TenantService {
       },
     });
 
+    const trialTenants = await this.prisma.subscription.count({
+      where: { status: 'trialing' },
+    });
+
+    const recent = await this.prisma.tenant.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        createdAt: true,
+        subscriptions: {
+          where: { status: { in: ['active', 'trialing', 'past_due'] } },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { plan: { select: { name: true } } },
+        },
+      },
+    });
+
+    const recentTenants = recent.map((t) => ({
+      id: t.id,
+      name: t.name,
+      status: t.status,
+      createdAt: t.createdAt,
+      subscription: t.subscriptions[0] ?? undefined,
+    }));
+
     return {
       totalTenants,
       activeTenants,
+      trialTenants,
       blockedTenants,
       totalUsers,
       docsToday,
+      mrr: mrrArs,
+      arr: mrrArs * 12,
       mrrArs,
       mrrUsd,
-      arrArs: mrrArs * 12,
       expiringCount,
+      recentTenants,
     };
   }
 }
