@@ -16,6 +16,7 @@ import {
   getApiBaseUrl,
 } from './api-client';
 import { net } from 'electron';
+import { encryptSecret } from './secrets';
 
 const SYNC_INTERVAL_MS = 30_000;
 let syncTimer: ReturnType<typeof setInterval> | null = null;
@@ -102,7 +103,14 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
   const token = getAccessToken();
   if (!token) return { pushed: 0, errors: pending.length };
 
-  for (const entry of pending) {
+  const cloudNative = pending.filter((entry) => isCloudNativeEntity(entry.entity));
+  if (cloudNative.length > 0) {
+    const result = await pushCloudNativeChanges(cloudNative, baseUrl, token);
+    pushed += result.pushed;
+    errors += result.errors;
+  }
+
+  for (const entry of pending.filter((item) => !isCloudNativeEntity(item.entity))) {
     try {
       const entityPath = entityToApiPath(entry.entity);
       let method: string;
@@ -166,6 +174,68 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
   }
 
   return { pushed, errors };
+}
+
+function isCloudNativeEntity(entity: string): boolean {
+  return entity === 'integration_config' || entity === 'external_catalog_product';
+}
+
+async function pushCloudNativeChanges(
+  entries: QueueEntry[],
+  baseUrl: string,
+  token: string,
+): Promise<{ pushed: number; errors: number }> {
+  const changes = entries.map((entry) => ({
+    entity: entry.entity,
+    action: entry.action,
+    id: entry.entity_id,
+    data: entry.payload ? JSON.parse(entry.payload) as Record<string, unknown> : {},
+  }));
+
+  try {
+    const response = await net.fetch(`${baseUrl}/sync/push`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ changes }),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text().catch(() => 'Unknown error');
+      for (const entry of entries) {
+        dbRun('UPDATE sync_queue SET error = ? WHERE id = ?', [errBody.slice(0, 500), entry.id]);
+      }
+      return { pushed: 0, errors: entries.length };
+    }
+
+    const result = await response.json() as {
+      success: boolean;
+      data?: { conflicts?: string[] };
+    };
+    const conflicts = new Set(result.data?.conflicts ?? []);
+    let pushed = 0;
+    let errors = 0;
+
+    for (const entry of entries) {
+      if (conflicts.has(entry.entity_id)) {
+        dbRun('UPDATE sync_queue SET error = ? WHERE id = ?', ['sync_conflict', entry.id]);
+        errors++;
+      } else {
+        dbRun("UPDATE sync_queue SET synced_at = datetime('now') WHERE id = ?", [entry.id]);
+        pushed++;
+      }
+    }
+
+    return { pushed, errors };
+  } catch (err) {
+    const message = String(err).slice(0, 500);
+    for (const entry of entries) {
+      dbRun('UPDATE sync_queue SET error = ? WHERE id = ?', [message, entry.id]);
+    }
+    return { pushed: 0, errors: entries.length };
+  }
 }
 
 function entityToApiPath(entity: string): string {
@@ -294,6 +364,47 @@ function mapArticle(d: RemoteRow): RemoteRow {
   };
 }
 
+function mapAirProduct(d: RemoteRow): RemoteRow {
+  return {
+    id: d.id ?? `air-${d.externalCode ?? d.external_code ?? d.air_code}`,
+    air_code: d.externalCode ?? d.external_code ?? d.air_code ?? '',
+    description: d.description ?? d.name ?? '',
+    part_number: d.partNumber ?? d.part_number ?? null,
+    brand: d.brand ?? null,
+    category: d.category ?? null,
+    unit: d.unit ?? 'un',
+    price_usd: d.priceUsd ?? d.price_usd ?? 0,
+    price_ars: d.priceArs ?? d.price_ars ?? 0,
+    iva_pct: d.ivaPct ?? d.iva_pct ?? 21,
+    stock: d.stock ?? 0,
+    active: d.active === false || d.deletedAt ? 0 : 1,
+    raw_json: typeof d.rawJson === 'string'
+      ? d.rawJson
+      : JSON.stringify(d.rawJson ?? d.raw_json ?? {}),
+    synced_at: d.syncedAt ?? d.synced_at ?? d.updatedAt ?? new Date().toISOString(),
+  };
+}
+
+function applyAirConfig(data: RemoteRow): void {
+  const provider = String(data.provider ?? '');
+  if (provider !== 'air') return;
+  const rawConfig = data.config;
+  if (!rawConfig || typeof rawConfig !== 'object') return;
+  const cfg = rawConfig as Record<string, unknown>;
+  const entries: Array<[string, string]> = [
+    ['air_enabled', cfg.enabled === true ? 'true' : 'false'],
+    ['air_username', String(cfg.username ?? '')],
+    ['air_base_url', String(cfg.baseUrl ?? cfg.base_url ?? '')],
+    ['air_sync_interval', String(cfg.syncIntervalMinutes ?? cfg.sync_interval ?? '15')],
+  ];
+  const password = String(cfg.password ?? '');
+  if (password) entries.push(['air_password', encryptSecret(password)]);
+
+  for (const [key, value] of entries) {
+    dbRun('INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)', [key, value]);
+  }
+}
+
 /** Descubre columnas reales del SQLite local para filtrar el payload mapeado. */
 function tableColumns(table: string): Set<string> {
   const rows = dbAll(`PRAGMA table_info(${table})`, []) as Array<{ name: string }>;
@@ -323,6 +434,51 @@ function softDeleteRow(table: string, id: string): void {
   } else {
     db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id);
   }
+}
+
+function upsertAirProduct(data: RemoteRow): void {
+  const row = mapAirProduct(data);
+  if (!row.air_code) return;
+  getDb().prepare(
+    `INSERT INTO air_products (
+       id, air_code, description, part_number, brand, category, unit,
+       price_usd, price_ars, iva_pct, stock, active, raw_json, synced_at
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(air_code) DO UPDATE SET
+       description = excluded.description,
+       part_number = excluded.part_number,
+       brand = excluded.brand,
+       category = excluded.category,
+       unit = excluded.unit,
+       price_usd = excluded.price_usd,
+       price_ars = excluded.price_ars,
+       iva_pct = excluded.iva_pct,
+       stock = excluded.stock,
+       active = excluded.active,
+       raw_json = excluded.raw_json,
+       synced_at = excluded.synced_at`,
+  ).run(
+    row.id,
+    row.air_code,
+    row.description,
+    row.part_number,
+    row.brand,
+    row.category,
+    row.unit,
+    row.price_usd,
+    row.price_ars,
+    row.iva_pct,
+    row.stock,
+    row.active,
+    row.raw_json,
+    row.synced_at,
+  );
+}
+
+function softDeleteAirProduct(data: RemoteRow): void {
+  const code = String(data.externalCode ?? data.external_code ?? data.air_code ?? '');
+  if (!code) return;
+  dbRun('UPDATE air_products SET active = 0 WHERE air_code = ?', [code]);
 }
 
 /**
@@ -359,6 +515,16 @@ function applyRemoteChange(change: {
       row.id = change.id;
       if (change.action === 'delete') softDeleteRow('articles', change.id);
       else upsertRow('articles', change.id, row);
+      break;
+    }
+    case 'integration_config':
+      if (change.action !== 'delete') applyAirConfig(change.data);
+      break;
+    case 'external_catalog_product': {
+      const provider = String(change.data.provider ?? '');
+      if (provider !== 'air') break;
+      if (change.action === 'delete') softDeleteAirProduct(change.data);
+      else upsertAirProduct(change.data);
       break;
     }
     case 'document':

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../common/prisma.service';
 
 interface SyncChange {
@@ -22,7 +23,14 @@ export class SyncService {
 
     const changes: SyncChange[] = [];
 
-    const [clients, suppliers, products, documents] = await Promise.all([
+    const [
+      clients,
+      suppliers,
+      products,
+      documents,
+      integrationConfigs,
+      externalCatalogProducts,
+    ] = await Promise.all([
       this.prisma.client.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
@@ -35,6 +43,12 @@ export class SyncService {
       this.prisma.document.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
         include: { items: true },
+      }),
+      this.prisma.integrationConfig.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.externalCatalogProduct.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
     ]);
 
@@ -75,6 +89,26 @@ export class SyncService {
         id: d.id,
         data: d as unknown as Record<string, unknown>,
         updatedAt: d.updatedAt.toISOString(),
+      });
+    }
+
+    for (const cfg of integrationConfigs) {
+      changes.push({
+        entity: 'integration_config',
+        action: cfg.deletedAt ? 'delete' : 'update',
+        id: cfg.provider,
+        data: cfg as unknown as Record<string, unknown>,
+        updatedAt: cfg.updatedAt.toISOString(),
+      });
+    }
+
+    for (const p of externalCatalogProducts) {
+      changes.push({
+        entity: 'external_catalog_product',
+        action: p.deletedAt ? 'delete' : 'update',
+        id: `${p.provider}:${p.externalCode}`,
+        data: p as unknown as Record<string, unknown>,
+        updatedAt: p.updatedAt.toISOString(),
       });
     }
 
@@ -161,6 +195,50 @@ export class SyncService {
         }
         break;
 
+      case 'integration_config': {
+        const sanitized = this.sanitizeIntegrationConfigData(data);
+        if (action === 'delete') {
+          await this.prisma.integrationConfig.updateMany({
+            where: { tenantId, provider: sanitized.provider },
+            data: { deletedAt: new Date(), active: false },
+          });
+        } else {
+          await this.prisma.integrationConfig.upsert({
+            where: { tenantId_provider: { tenantId, provider: sanitized.provider } },
+            create: { id: data.id ? String(data.id) : undefined, tenantId, ...sanitized },
+            update: sanitized,
+          });
+        }
+        break;
+      }
+
+      case 'external_catalog_product': {
+        const sanitized = this.sanitizeExternalCatalogProductData(data);
+        if (action === 'delete') {
+          await this.prisma.externalCatalogProduct.updateMany({
+            where: {
+              tenantId,
+              provider: sanitized.provider,
+              externalCode: sanitized.externalCode,
+            },
+            data: { deletedAt: new Date(), active: false },
+          });
+        } else {
+          await this.prisma.externalCatalogProduct.upsert({
+            where: {
+              tenantId_provider_externalCode: {
+                tenantId,
+                provider: sanitized.provider,
+                externalCode: sanitized.externalCode,
+              },
+            },
+            create: { id: data.id ? String(data.id) : undefined, tenantId, ...sanitized },
+            update: sanitized,
+          });
+        }
+        break;
+      }
+
       default:
         throw new Error(`Entidad no soportada para sync: ${entity}`);
     }
@@ -215,6 +293,42 @@ export class SyncService {
       salePrice: Number(data.salePrice ?? data.sale_price ?? 0),
       costPrice: Number(data.costPrice ?? data.cost_price ?? 0),
       ivaRate: Number(data.ivaRate ?? data.iva_rate ?? 21),
+    };
+  }
+
+  private sanitizeIntegrationConfigData(data: Record<string, unknown>) {
+    const rawConfig = data.config && typeof data.config === 'object'
+      ? data.config
+      : {};
+
+    return {
+      provider: String(data.provider ?? 'air'),
+      config: rawConfig as Prisma.InputJsonObject,
+      active: data.active === false ? false : true,
+      deletedAt: data.deletedAt ? new Date(String(data.deletedAt)) : null,
+    };
+  }
+
+  private sanitizeExternalCatalogProductData(data: Record<string, unknown>) {
+    const rawJson = data.rawJson ?? data.raw_json ?? null;
+    const syncedAt = data.syncedAt ?? data.synced_at ?? null;
+
+    return {
+      provider: String(data.provider ?? 'air'),
+      externalCode: String(data.externalCode ?? data.external_code ?? data.air_code ?? ''),
+      description: String(data.description ?? data.name ?? ''),
+      partNumber: data.partNumber || data.part_number ? String(data.partNumber ?? data.part_number) : null,
+      brand: data.brand ? String(data.brand) : null,
+      category: data.category ? String(data.category) : null,
+      unit: String(data.unit ?? 'un'),
+      priceUsd: Number(data.priceUsd ?? data.price_usd ?? 0),
+      priceArs: Number(data.priceArs ?? data.price_ars ?? 0),
+      ivaPct: Number(data.ivaPct ?? data.iva_pct ?? 21),
+      stock: Number(data.stock ?? 0),
+      active: data.active === false || data.active === 0 ? false : true,
+      rawJson: rawJson === null ? Prisma.JsonNull : rawJson as Prisma.InputJsonValue,
+      syncedAt: syncedAt ? new Date(String(syncedAt)) : null,
+      deletedAt: data.deletedAt ? new Date(String(data.deletedAt)) : null,
     };
   }
 }

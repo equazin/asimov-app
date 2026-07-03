@@ -80,6 +80,8 @@ model Tenant {
   auditLogs     AuditLog[]
   cashAccounts  CashAccount[]
   printTemplates PrintTemplate[]
+  integrationConfigs IntegrationConfig[]
+  externalCatalogProducts ExternalCatalogProduct[]
 
   @@index([status])
   @@index([planId])
@@ -621,4 +623,54 @@ model Notification {
 
   @@index([tenantId, userId, read])
   @@map("notifications")
+}
+
+// ============================================================
+// INTEGRACIONES EXTERNAS
+// ============================================================
+
+model IntegrationConfig {
+  id        String   @id @default(uuid())
+  tenantId  String
+  provider  String
+  config    Json
+  active    Boolean  @default(true)
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, provider])
+  @@index([tenantId, provider])
+  @@map("integration_configs")
+}
+
+model ExternalCatalogProduct {
+  id           String   @id @default(uuid())
+  tenantId     String
+  provider     String
+  externalCode String
+  description  String
+  partNumber   String?
+  brand        String?
+  category     String?
+  unit         String   @default("un")
+  priceUsd     Decimal  @default(0) @db.Decimal(14, 2)
+  priceArs     Decimal  @default(0) @db.Decimal(14, 2)
+  ivaPct       Decimal  @default(21) @db.Decimal(5, 2)
+  stock        Decimal  @default(0) @db.Decimal(14, 3)
+  active       Boolean  @default(true)
+  rawJson      Json?
+  syncedAt     DateTime?
+  deletedAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, provider, externalCode])
+  @@index([tenantId, provider, active])
+  @@index([tenantId, provider, externalCode])
+  @@map("external_catalog_products")
 }

@@ -35,6 +35,7 @@ import {
   testAirConnection,
   startAirSyncTimer,
   stopAirSyncTimer,
+  enqueueAirConfigCloudSync,
 } from "./air";
 import {
   dbAll,
@@ -592,6 +593,9 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     // Los secretos se guardan cifrados; el resto tal cual.
     const stored = SECRET_CONFIG_KEYS.has(key) ? encryptSecret(value) : value;
     dbRun("INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)", [key, stored]);
+    if (key.startsWith("air_")) {
+      try { enqueueAirConfigCloudSync(); } catch { /* best-effort */ }
+    }
     return { ok: true };
   });
 

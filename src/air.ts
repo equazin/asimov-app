@@ -12,6 +12,7 @@
 
 import { dbAll, dbRun } from "./db";
 import { decryptSecret } from "./secrets";
+import { enqueueChange } from "./sync";
 import * as crypto from "node:crypto";
 
 // ─── Configuración ──────────────────────────────────────────────────────────
@@ -57,6 +58,20 @@ export function getAirLocalConfig(): AirLocalConfig {
 
 export function isAirEnabled(): boolean {
   return getAirLocalConfig().enabled;
+}
+
+export function enqueueAirConfigCloudSync(): void {
+  const cfg = getAirLocalConfig();
+  enqueueChange("integration_config", "air", "update", {
+    provider: "air",
+    config: {
+      enabled: cfg.enabled,
+      username: cfg.username,
+      password: cfg.password,
+      baseUrl: cfg.baseUrl,
+      syncIntervalMinutes: cfg.syncIntervalMinutes,
+    },
+  });
 }
 
 // ─── Extracción de token ────────────────────────────────────────────────────
@@ -342,6 +357,22 @@ export async function runAirSync(): Promise<AirSyncResult> {
             now,
           ],
         );
+        enqueueChange("external_catalog_product", `air:${p.codiart}`, "update", {
+          provider: "air",
+          externalCode: p.codiart,
+          description: p.name,
+          partNumber: p.partNumber,
+          brand: p.rubro,
+          category: p.categoria ?? p.grupo,
+          unit: "un",
+          priceUsd: p.price ?? 0,
+          priceArs: 0,
+          ivaPct: 21,
+          stock: p.stockDisp,
+          active: p.active,
+          rawJson: rawItem as Record<string, unknown>,
+          syncedAt: now,
+        });
         itemsSynced++;
       }
       page++;
