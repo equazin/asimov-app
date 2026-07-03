@@ -5,6 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Asimov — Vendé, facturá y controlá el stock desde un solo lugar</title>
 <meta name="description" content="Asimov es el ERP para pymes de Argentina y España. Ventas con margen, stock real, facturación ARCA y Verifactu, tesorería y contabilidad integradas. App de escritorio incluida." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Asimov" />
+<meta property="og:title" content="Asimov — Vendé, facturá y controlá el stock desde un solo lugar" />
+<meta property="og:description" content="ERP para pymes de Argentina y España. Una venta descuenta stock, factura legal (ARCA / Verifactu) y asienta en contabilidad. Desde $39.900/mes. Probalo gratis 14 días." />
+<meta property="og:locale" content="es_AR" />
+<meta property="og:locale:alternate" content="es_ES" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Asimov — El ERP para pymes de Argentina y España" />
+<meta name="twitter:description" content="Ventas con margen, stock, facturación legal y contabilidad integradas. Desde $39.900/mes + IVA. 14 días gratis." />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Asimov",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web, Windows",
+  "description": "ERP para pymes: ventas con margen por ítem, stock multi-depósito, facturación electrónica legal (ARCA en Argentina, Verifactu en España), tesorería, contabilidad, CRM y RMA. App de escritorio incluida.",
+  "inLanguage": ["es-AR", "es-ES"],
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "ARS",
+    "lowPrice": "39900",
+    "highPrice": "149900",
+    "offerCount": "3"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿La facturación es legal en mi país?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. En Argentina emitimos comprobantes A/B/C/M con CAE de ARCA en tiempo real. En España el sistema está preparado para Verifactu, obligatorio para sociedades desde el 1/1/2027 y autónomos desde el 1/7/2027." } },
+    { "@type": "Question", "name": "¿Necesito instalar algo?", "acceptedAnswer": { "@type": "Answer", "text": "No es obligatorio: Asimov funciona en el navegador. La app de escritorio para Windows está incluida en todos los planes y se instala desde tu cuenta al activar la prueba." } },
+    { "@type": "Question", "name": "¿Puedo migrar desde Excel u otro sistema?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Importás clientes y artículos desde planillas y arrancás a facturar el mismo día. Si venís de otro sistema, te acompañamos en la migración." } },
+    { "@type": "Question", "name": "¿Los precios incluyen IVA?", "acceptedAnswer": { "@type": "Answer", "text": "No, son + IVA, igual que todo el mercado." } },
+    { "@type": "Question", "name": "¿Hay permanencia mínima?", "acceptedAnswer": { "@type": "Answer", "text": "No. Es mes a mes y cancelás cuando quieras. Si te vas, exportás todos tus datos sin costo." } },
+    { "@type": "Question", "name": "¿Mi contador puede entrar?", "acceptedAnswer": { "@type": "Answer", "text": "Sí, el acceso para tu estudio contable no cuenta como usuario y no tiene costo." } },
+    { "@type": "Question", "name": "¿Sirve para varias sucursales o empresas?", "acceptedAnswer": { "@type": "Answer", "text": "Sí: stock multi-depósito por sucursal y cambio de empresa en dos clics desde la app de escritorio." } },
+    { "@type": "Question", "name": "¿Puedo conectar el catálogo de mi proveedor?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Si tu proveedor o mayorista expone una API, la vinculamos: su catálogo, stock y costos aparecen en tu buscador de artículos. Disponible en el plan Distribuidora." } }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
@@ -241,6 +284,54 @@ h1,h2,h3 { font-family: var(--display); }
 .faq-item[open] summary svg { transform: rotate(45deg); }
 .faq-item .faq-body { padding: 0 22px 20px; font-size: 14px; color: var(--text-2); line-height: 1.7; }
 
+/* Demo interactiva */
+.demo-steps { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+.demo-step { position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: var(--r-pill); border: 1px solid var(--border-2); background: var(--card); cursor: pointer; font-family: var(--sans); font-size: 13.5px; font-weight: 600; color: var(--text-2); transition: border-color .2s, color .2s; }
+.demo-step b { font-family: var(--mono); color: var(--ion); font-size: 12px; }
+.demo-step .db { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--ion); }
+.demo-step.active { border-color: var(--ion-border); color: var(--text); }
+.demo-step.active .db { width: 100%; transition: width 4s linear; }
+.demo-stage { max-width: 880px; margin: 0 auto; }
+.demo-pane { display: none; }
+.demo-pane.active { display: block; animation: fadeUp .5s var(--ease); }
+.demo-caption { text-align: center; font-size: 13.5px; color: var(--text-3); margin-top: 18px; }
+
+/* Migración */
+.mig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 940px; margin: 0 auto; }
+.mig-card { padding: 28px 24px; border-radius: var(--r-lg); background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1px solid var(--border-2); }
+.mig-card b { display: block; font-family: var(--mono); font-size: 13px; color: var(--ion); margin-bottom: 14px; }
+.mig-card h3 { font-size: 16.5px; font-weight: 600; margin-bottom: 9px; letter-spacing: -0.01em; }
+.mig-card p { font-size: 13.5px; color: var(--text-2); line-height: 1.65; }
+.mig-note { text-align: center; font-size: 13px; color: var(--text-3); margin-top: 22px; }
+
+/* Seguridad */
+.sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.sec-card { padding: 28px 22px; border-radius: var(--r-lg); background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1px solid var(--border-2); text-align: center; }
+.sec-card svg { color: var(--cyan); margin-bottom: 14px; }
+.sec-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 7px; }
+.sec-card p { font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+
+/* Formulario de leads */
+.lead-form { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+.lead-form input, .lead-form select { height: 50px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-2); background: var(--card); color: var(--text); font-family: var(--sans); font-size: 14px; outline: none; transition: border-color .18s, box-shadow .18s; width: 100%; }
+.lead-form input::placeholder { color: var(--text-3); }
+.lead-form input:focus, .lead-form select:focus { border-color: var(--ion); box-shadow: 0 0 0 3px var(--ion-dim); }
+.lead-form .full { grid-column: 1 / -1; }
+.lead-ok { display: none; max-width: 560px; margin: 0 auto; padding: 26px; border-radius: var(--r-lg); border: 1px solid rgba(47,180,122,0.4); background: rgba(47,180,122,0.08); color: var(--text); font-size: 15px; line-height: 1.6; }
+.lead-note { font-size: 12px; color: var(--text-3); margin-top: 14px; text-align: center; }
+
+/* WhatsApp flotante */
+.wa-float { position: fixed; right: 22px; bottom: 22px; z-index: 85; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: grid; place-items: center; box-shadow: 0 12px 32px rgba(0,0,0,0.45); transition: transform .2s var(--ease); }
+.wa-float:hover { transform: scale(1.08); }
+.wa-float svg { width: 28px; height: 28px; fill: #fff; }
+
+/* Footer legal */
+.foot-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 34px; border-bottom: 1px solid var(--border); margin-bottom: 26px; }
+.foot-cols h4 { font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; }
+.foot-cols a { display: block; font-size: 13.5px; color: var(--text-2); text-decoration: none; padding: 5px 0; }
+.foot-cols a:hover { color: var(--text); }
+.foot-cols .fdesc { font-size: 13px; color: var(--text-3); line-height: 1.65; margin-top: 12px; max-width: 280px; }
+
 /* CTA final */
 .cta-final { position: relative; text-align: center; padding: 110px 24px; overflow: hidden; }
 .cta-final::before { content: ""; position: absolute; inset: 0; background: radial-gradient(640px 340px at 50% 110%, rgba(255,106,43,0.18), transparent 70%); pointer-events: none; }
@@ -271,6 +362,9 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
   .plans { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
   .plan.featured { transform: none; }
   .split { grid-template-columns: 1fr; gap: 40px; }
+  .sec-grid { grid-template-columns: 1fr 1fr; }
+  .mig-grid { grid-template-columns: 1fr; max-width: 460px; }
+  .foot-cols { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 760px) {
   .container { padding: 0 18px; }
@@ -281,6 +375,8 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
   .appwin .side { display: none; }
   .proof > div + div { border-left: none; border-top: 1px solid var(--border); }
   .proof > div { min-width: 100%; }
+  .sec-grid, .lead-form, .foot-cols { grid-template-columns: 1fr; }
+  .wa-float { right: 16px; bottom: 16px; }
 }
 </style>
 </head>
@@ -295,6 +391,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
       asimov
     </a>
     <nav class="nav-links">
+      <a href="#demo">Demo</a>
       <a href="#modulos">Módulos</a>
       <a href="#escritorio">App de escritorio</a>
       <a href="#precios">Precios</a>
@@ -310,6 +407,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
     </button>
   </div>
   <div class="mobile-menu" id="mmenu">
+    <a href="#demo">Demo</a>
     <a href="#modulos">Módulos</a>
     <a href="#escritorio">App de escritorio</a>
     <a href="#precios">Precios</a>
@@ -395,8 +493,75 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
   </div>
 </div>
 
+<!-- ══ DEMO INTERACTIVA ══ -->
+<section class="section" id="demo">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// miralo funcionando</span>
+      <h2>Del pedido a la factura, en 3 pasos</h2>
+      <p>Así se ve el flujo real. Los pasos avanzan solos — o hacé clic en cada uno.</p>
+    </div>
+    <div class="demo-steps rv" role="tablist" aria-label="Pasos de la demo">
+      <button class="demo-step active" data-demo="d1" role="tab" aria-selected="true"><b>01</b> Cargás el ítem<span class="db"></span></button>
+      <button class="demo-step" data-demo="d2" role="tab" aria-selected="false"><b>02</b> Ponés el margen<span class="db"></span></button>
+      <button class="demo-step" data-demo="d3" role="tab" aria-selected="false"><b>03</b> Sale la factura<span class="db"></span></button>
+    </div>
+    <div class="demo-stage rv">
+      <div class="demo-pane active" id="d1">
+        <div class="appwin">
+          <div class="tbar">Asimov — Nuevo pedido · buscador de artículos (F4) <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main" style="padding:18px">
+            <table>
+              <thead><tr><th>Artículo</th><th>Stock</th><th>Costo</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Notebook 15,6" i5 16GB</td><td>24</td><td>$820.000</td><td><span class="tag tag-ok">AGREGADO</span></td></tr>
+                <tr><td>SSD NVMe 1TB</td><td>58</td><td>$74.500</td><td><span class="tag tag-ok">AGREGADO</span></td></tr>
+                <tr><td>Memoria 16GB DDR5</td><td>112</td><td>$52.300</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="demo-caption">Buscás por nombre o código y agregás con Enter. El costo vigente viene solo.</p>
+      </div>
+      <div class="demo-pane" id="d2">
+        <div class="appwin">
+          <div class="tbar">Asimov — Pedido PV-0342 · márgenes <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main" style="padding:18px">
+            <table>
+              <thead><tr><th>Ítem</th><th>Costo</th><th>Margen %</th><th>Precio</th></tr></thead>
+              <tbody>
+                <tr><td>Notebook 15,6" i5 16GB</td><td>$820.000</td><td class="m-orange">25</td><td><b>$1.025.000</b></td></tr>
+                <tr><td>SSD NVMe 1TB</td><td>$74.500</td><td class="m-orange">38</td><td><b>$102.810</b></td></tr>
+              </tbody>
+            </table>
+            <div class="kpis" style="margin-top:14px">
+              <div class="kpi hot"><b>+26,1%</b><span>Margen del pedido</span></div>
+              <div class="kpi"><b>$1.127.810</b><span>Total</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-caption">Escribís el % y el precio se calcula sobre el costo. Nunca vendés al costo por error.</p>
+      </div>
+      <div class="demo-pane" id="d3">
+        <div class="appwin">
+          <div class="tbar">Asimov — Factura A · FA-0001-00081235 <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main" style="padding:18px">
+            <div class="kpis">
+              <div class="kpi hot"><b style="font-size:13px">CAE autorizada</b><span>ARCA · en tiempo real</span></div>
+              <div class="kpi"><b style="font-size:13px">Stock descontado</b><span>automático</span></div>
+              <div class="kpi"><b style="font-size:13px">Asiento generado</b><span>contabilidad al día</span></div>
+              <div class="kpi"><b style="font-size:13px">Imprimiendo…</b><span>directo, sin diálogos</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-caption">Un clic: factura legal, stock actualizado, asiento contable y papel saliendo de la impresora.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ══ MÓDULOS (bento) ══ -->
-<section class="section" id="modulos">
+<section class="section" id="modulos" style="border-top:1px solid var(--border)">
   <div class="container">
     <div class="section-head rv">
       <span class="kicker">// módulos</span>
@@ -494,6 +659,68 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MIGRACIÓN ══ -->
+<section class="section" id="migracion">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// migración</span>
+      <h2>¿Venís de Tango o de Excel? Mejor.</h2>
+      <p>Migrar no es un proyecto de meses. Son tres pasos y facturás el mismo día.</p>
+    </div>
+    <div class="mig-grid">
+      <div class="mig-card rv" style="--i:0">
+        <b>PASO 01</b>
+        <h3>Exportá lo que ya tenés</h3>
+        <p>Sacá tus clientes y artículos como planilla desde Tango, Excel o el sistema que uses. Con lo que tengas alcanza: nosotros la ordenamos con vos.</p>
+      </div>
+      <div class="mig-card rv" style="--i:1">
+        <b>PASO 02</b>
+        <h3>Importá con la plantilla</h3>
+        <p>Subís la planilla a Asimov. Detectamos duplicados, validamos CUIT y condición de IVA, y te mostramos qué entró antes de confirmar.</p>
+      </div>
+      <div class="mig-card rv" style="--i:2">
+        <b>PASO 03</b>
+        <h3>Facturá el mismo día</h3>
+        <p>Configurás tu punto de venta y emitís tu primera factura legal. Te acompañamos en la puesta en marcha, sin implementadores ni costos extra.</p>
+      </div>
+    </div>
+    <p class="mig-note rv">También cargamos saldos iniciales de cuentas corrientes y stock por depósito, para que no arranques de cero.</p>
+  </div>
+</section>
+
+<!-- ══ SEGURIDAD ══ -->
+<section class="section" id="seguridad" style="background:var(--ink-2)">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// tus datos, seguros</span>
+      <h2>La nube bien hecha</h2>
+      <p>Si venís de un sistema de escritorio, esta es la parte que te importa.</p>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-card rv" style="--i:0">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9"/><path d="M21 3v6h-6"/><path d="M21 3l-9 9"/></svg>
+        <h3>Backups automáticos</h3>
+        <p>Copias de seguridad diarias y redundantes. Se te quema la PC y no pasa nada: tus datos no viven ahí.</p>
+      </div>
+      <div class="sec-card rv" style="--i:1">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h3>Cifrado de punta a punta</h3>
+        <p>Conexión cifrada (HTTPS) y datos cifrados en reposo. Cada usuario entra con su clave y su rol.</p>
+      </div>
+      <div class="sec-card rv" style="--i:2">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        <h3>Tus datos son tuyos</h3>
+        <p>Export completo en un clic: clientes, ventas, stock y asientos. Sin secuestro de datos si un día te vas.</p>
+      </div>
+      <div class="sec-card rv" style="--i:3">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <h3>Siempre actualizado</h3>
+        <p>Mejoras y cambios fiscales llegan solos, sin técnicos ni reinstalaciones. La app de escritorio también se actualiza sola.</p>
       </div>
     </div>
   </div>
@@ -636,27 +863,70 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
   </div>
 </section>
 
-<!-- ══ CTA FINAL ══ -->
-<section class="cta-final">
+<!-- ══ CTA FINAL + LEADS ══ -->
+<section class="cta-final" id="empezar">
   <div class="rv">
     <h2>Empezá hoy. <em>Facturá hoy.</em></h2>
-    <p>14 días gratis con todos los módulos. Sin tarjeta, sin permanencia.</p>
-    <div class="hero-ctas" style="justify-content:center">
-      <a class="btn btn-lg btn-ion" href="#precios">Crear mi cuenta gratis</a>
-      <a class="btn btn-lg btn-ghost" href="#comparativa">Ver la comparativa</a>
+    <p>Dejanos tus datos y te activamos la prueba de 14 días con todos los módulos. Sin tarjeta, sin permanencia.</p>
+    <form class="lead-form" id="leadForm" novalidate>
+      <input type="text" name="nombre" placeholder="Tu nombre y empresa" required autocomplete="organization" />
+      <input type="email" name="email" placeholder="Email" required autocomplete="email" />
+      <select name="pais" aria-label="País">
+        <option value="ar">Argentina</option>
+        <option value="es">España</option>
+      </select>
+      <input type="tel" name="whatsapp" placeholder="WhatsApp (opcional)" autocomplete="tel" />
+      <button type="submit" class="btn btn-lg btn-ion full">Crear mi cuenta gratis</button>
+    </form>
+    <div class="lead-ok" id="leadOk">
+      <strong>¡Listo!</strong> Recibimos tus datos. En el día te llega el acceso a tu cuenta y el link para instalar la app de escritorio. Si querés arrancar ya, escribinos por WhatsApp.
     </div>
+    <p class="lead-note">También podés escribirnos directo por WhatsApp con el botón de abajo a la derecha.</p>
   </div>
 </section>
 
 <footer>
-  <div class="container foot">
-    <div class="fbrand">
-      <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
-      asimov
+  <div class="container">
+    <div class="foot-cols">
+      <div>
+        <div class="fbrand">
+          <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+          asimov
+        </div>
+        <p class="fdesc">El ERP para pymes y distribuidoras de Argentina y España. Ventas, stock, facturación legal y contabilidad en un solo lugar.</p>
+      </div>
+      <div>
+        <h4>Producto</h4>
+        <a href="#demo">Demo</a>
+        <a href="#modulos">Módulos</a>
+        <a href="#precios">Precios</a>
+        <a href="#comparativa">Comparativa</a>
+        <a href="novedades.html">Novedades</a>
+      </div>
+      <div>
+        <h4>Recursos</h4>
+        <a href="#migracion">Migrar desde Tango o Excel</a>
+        <a href="#seguridad">Seguridad y datos</a>
+        <a href="#faq">Preguntas frecuentes</a>
+      </div>
+      <div>
+        <h4>Legal y contacto</h4>
+        <a href="legal.html#terminos">Términos y condiciones</a>
+        <a href="legal.html#privacidad">Política de privacidad</a>
+        <a href="https://wa.me/5493416684350?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20de%20Asimov" rel="noopener">Ventas por WhatsApp</a>
+      </div>
     </div>
-    <div>Argentina · España — © 2026 Asimov. Todos los derechos reservados.</div>
+    <div class="foot">
+      <div>© 2026 Asimov. Todos los derechos reservados.</div>
+      <div>Argentina · España — Facturación ARCA (CAE) y Verifactu.</div>
+    </div>
   </div>
 </footer>
+
+<!-- WhatsApp flotante -->
+<a class="wa-float" href="https://wa.me/5493416684350?text=Hola%2C%20quiero%20probar%20Asimov" rel="noopener" aria-label="Escribinos por WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</a>
 
 <script>
 (function () {
@@ -722,6 +992,61 @@ footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(-
     d.addEventListener("toggle", function () {
       if (d.open) document.querySelectorAll(".faq-item[open]").forEach(function (o) { if (o !== d) o.open = false; });
     });
+  });
+
+  /* Demo interactiva: autoplay + click */
+  var demoIds = ["d1", "d2", "d3"];
+  var demoIdx = 0, demoTimer = null;
+  var demoSection = document.getElementById("demo");
+  function showDemo(id) {
+    demoIdx = demoIds.indexOf(id);
+    document.querySelectorAll(".demo-step").forEach(function (b) {
+      var on = b.dataset.demo === id;
+      b.classList.remove("active");
+      // reiniciar la barra de progreso forzando reflow
+      var db = b.querySelector(".db");
+      db.style.transition = "none"; db.style.width = "0";
+      void db.offsetWidth;
+      db.style.transition = "";
+      if (on) b.classList.add("active");
+      b.setAttribute("aria-selected", String(on));
+    });
+    document.querySelectorAll(".demo-pane").forEach(function (p) {
+      p.classList.toggle("active", p.id === id);
+    });
+  }
+  function nextDemo() { showDemo(demoIds[(demoIdx + 1) % demoIds.length]); }
+  function startDemoAuto() {
+    if (reduced || demoTimer) return;
+    demoTimer = setInterval(nextDemo, 4000);
+  }
+  function stopDemoAuto() { clearInterval(demoTimer); demoTimer = null; }
+  document.querySelectorAll(".demo-step").forEach(function (b) {
+    b.addEventListener("click", function () {
+      stopDemoAuto();
+      showDemo(b.dataset.demo);
+      startDemoAuto();
+    });
+  });
+  var dio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { e.isIntersecting ? startDemoAuto() : stopDemoAuto(); });
+  }, { threshold: 0.35 });
+  dio.observe(demoSection);
+
+  /* Formulario de leads.
+     TODO: conectar a un endpoint real (Formspree / API propia). Mientras
+     tanto guarda la intención y deriva a WhatsApp con los datos cargados. */
+  var leadForm = document.getElementById("leadForm");
+  leadForm.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (!leadForm.reportValidity()) return;
+    var f = new FormData(leadForm);
+    var msg = "Hola, quiero probar Asimov.\nNombre/Empresa: " + (f.get("nombre") || "-") +
+      "\nEmail: " + (f.get("email") || "-") +
+      "\nPaís: " + (f.get("pais") === "es" ? "España" : "Argentina");
+    leadForm.style.display = "none";
+    document.getElementById("leadOk").style.display = "block";
+    window.open("https://wa.me/5493416684350?text=" + encodeURIComponent(msg), "_blank", "noopener");
   });
 })();
 </script>
