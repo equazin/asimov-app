@@ -1,0 +1,26 @@
+# Render Blueprint — API Asimov v2 (gratis, Docker).
+# En Render: New → Blueprint → elegí este repo. Detecta este archivo.
+# La base de datos va aparte en Neon (free) → cargás DATABASE_URL como secreto.
+services:
+  - type: web
+    name: asimov-api
+    runtime: docker
+    dockerfilePath: ./v2/Dockerfile
+    dockerContext: ./v2
+    plan: free
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true          # Render genera uno seguro
+      - key: DATABASE_URL
+        sync: false                  # pegás la connection string de Neon
+      - key: SUPERADMIN_EMAIL
+        sync: false
+      - key: SUPERADMIN_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false                  # URL del panel en Vercel

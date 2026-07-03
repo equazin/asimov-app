@@ -129,10 +129,12 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - ✅ Cuenta principal `superadmin` + panel maestro protegido por rol
 - ✅ API lista para PaaS: bind 0.0.0.0, `start:prod` corre `migrate deploy`,
   Prisma `binaryTargets` para Debian, CORS por env
-- ✅ `Dockerfile` + `.dockerignore` (Railway) para la API monorepo
+- ✅ `Dockerfile` + `.dockerignore` para la API monorepo (Render/Railway/Fly)
+- ✅ `render.yaml` (blueprint Render, plan free) + health endpoint público
 - ✅ `vercel.json` del admin (build de shared antes que admin)
-- ⬚ Pendiente (requiere cuentas del usuario): crear proyecto Railway (API + Postgres),
-  proyecto Vercel (admin), cargar secrets, correr seed, apuntar CORS/API_URL
+- ✅ Stack gratis: Neon (Postgres) + Render (API) + Vercel (admin)
+- ⬚ Pendiente (requiere cuentas del usuario): crear DB Neon, deploy Render,
+  proyecto Vercel, cargar secrets, correr seed, apuntar CORS/API_URL
 - ⬚ Beta cerrada → beta abierta → GA
 
 ---
