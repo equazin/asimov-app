@@ -8,8 +8,24 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { TenantStatusBadge } from '@/components/tenants/tenant-status-badge';
 import { useAuthStore } from '@/lib/auth-store';
-import { apiGet } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import { formatDate } from '@/lib/format';
+
+const emptyForm = {
+  tenantName: '',
+  ownerName: '',
+  ownerEmail: '',
+  password: '',
+  country: 'AR',
+  planTier: 'trial',
+};
+
+const planOptions = [
+  { value: 'trial', label: 'Trial (14 días)' },
+  { value: 'basic', label: 'Basic' },
+  { value: 'pro', label: 'Pro' },
+  { value: 'enterprise', label: 'Enterprise' },
+];
 
 interface TenantRow {
   id: string;
@@ -40,6 +56,13 @@ export default function TenantsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [reload, setReload] = useState(0);
+
+  // Alta de empresa
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -56,7 +79,24 @@ export default function TenantsPage() {
       .then((res) => setTenants(res.data))
       .catch(() => setTenants([]))
       .finally(() => setLoading(false));
-  }, [token, search, statusFilter]);
+  }, [token, search, statusFilter, reload]);
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!token) return;
+    setCreating(true);
+    setCreateError(null);
+    try {
+      await apiPost('/master/tenants', form, token);
+      setShowCreate(false);
+      setForm(emptyForm);
+      setReload((n) => n + 1);
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'No se pudo crear la empresa');
+    } finally {
+      setCreating(false);
+    }
+  }
 
   return (
     <div>
@@ -65,7 +105,7 @@ export default function TenantsPage() {
           <h1 className="text-2xl font-bold text-ink-900">Empresas</h1>
           <p className="text-sm text-ink-500">Gestión de tenants contratantes</p>
         </div>
-        <Button size="md">
+        <Button size="md" onClick={() => setShowCreate(true)}>
           <Plus className="h-4 w-4" />
           Nueva empresa
         </Button>
@@ -144,6 +184,73 @@ export default function TenantsPage() {
           </tbody>
         </table>
       </div>
+
+      {showCreate && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/50 p-4"
+          onClick={() => !creating && setShowCreate(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="mb-1 text-lg font-bold text-ink-900">Nueva empresa</h2>
+            <p className="mb-4 text-sm text-ink-500">
+              Crea el tenant, su usuario dueño y la suscripción inicial.
+            </p>
+            <form onSubmit={handleCreate} className="space-y-3">
+              <Input
+                label="Nombre de la empresa"
+                value={form.tenantName}
+                onChange={(e) => setForm({ ...form, tenantName: e.target.value })}
+                required
+              />
+              <Input
+                label="Nombre del dueño"
+                value={form.ownerName}
+                onChange={(e) => setForm({ ...form, ownerName: e.target.value })}
+                required
+              />
+              <Input
+                label="Email del dueño"
+                type="email"
+                value={form.ownerEmail}
+                onChange={(e) => setForm({ ...form, ownerEmail: e.target.value })}
+                required
+              />
+              <Input
+                label="Contraseña inicial"
+                type="password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                required
+              />
+              <Select
+                label="Plan"
+                options={planOptions}
+                value={form.planTier}
+                onChange={(e) => setForm({ ...form, planTier: e.target.value })}
+              />
+              {createError && (
+                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{createError}</p>
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setShowCreate(false)}
+                  disabled={creating}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={creating}>
+                  {creating ? 'Creando…' : 'Crear empresa'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

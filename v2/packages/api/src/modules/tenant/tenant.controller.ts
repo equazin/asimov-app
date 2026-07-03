@@ -1,6 +1,7 @@
-import { Controller, Get, Patch, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantService } from './tenant.service';
+import { AuthService } from '../auth/auth.service';
 import { Roles } from '../../common/decorators';
 
 @ApiTags('Tenants (Master)')
@@ -8,7 +9,34 @@ import { Roles } from '../../common/decorators';
 @Roles('superadmin')
 @Controller('master/tenants')
 export class TenantController {
-  constructor(private readonly tenantService: TenantService) {}
+  constructor(
+    private readonly tenantService: TenantService,
+    private readonly authService: AuthService,
+  ) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Alta de empresa (crea tenant + owner + suscripción)' })
+  async create(
+    @Body()
+    body: {
+      tenantName: string;
+      ownerName: string;
+      ownerEmail: string;
+      password: string;
+      country?: string;
+      planTier?: string;
+    },
+  ) {
+    const data = await this.authService.registerTenant({
+      tenantName: body.tenantName,
+      ownerName: body.ownerName,
+      ownerEmail: body.ownerEmail,
+      password: body.password,
+      country: body.country ?? 'AR',
+      planTier: body.planTier ?? 'trial',
+    });
+    return { success: true, data };
+  }
 
   @Get('dashboard')
   @ApiOperation({ summary: 'Dashboard del panel maestro' })
