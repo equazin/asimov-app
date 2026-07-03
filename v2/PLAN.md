@@ -46,12 +46,15 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - API client: apiFetch, apiGet, apiPost, apiPatch, apiDelete
 - 21 archivos creados en packages/admin/
 
-### Fase 3 — Migración Desktop Electron → API Client ⬚ PENDIENTE
-- Refactorizar Electron app para consumir API REST en vez de SQLite local
-- Sync offline-first: event log local → push → merge → pull
-- Login/logout con JWT
-- Detección de conectividad y modo offline
-- Cache local con sincronización incremental
+### Fase 3 — Migración Desktop Electron → API Client ✅ COMPLETADA
+- API client (api-client.ts): login/logout JWT, auto-refresh tokens, net.fetch
+- Sync engine (sync.ts): offline-first con sync_queue + sync_state en SQLite
+- Estrategia: write-local-first → enqueue → push → pull → apply
+- IPC handlers cloud (ipc-cloud.ts): cloud:login/logout/status/test, sync:run/status
+- Cloud preload bridge: window.cloud + window.sync para renderer
+- Backend: SyncModule con pull (changes since timestamp) y push (batch apply)
+- Conflict resolution: last-write-wins (server wins)
+- Auto-sync timer: 30s interval cuando conectado
 
 ### Fase 4 — App Móvil Android + iOS (Expo) ⬚ PENDIENTE
 - Expo (React Native) con navegación tab + stack
