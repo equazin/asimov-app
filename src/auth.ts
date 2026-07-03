@@ -73,3 +73,21 @@ export function seedDefaultAdmin(): boolean {
 export function setUserPassword(userId: string, plain: string): void {
   dbRun("UPDATE users SET password_hash = ? WHERE id = ?", [hashPassword(plain), String(userId)]);
 }
+
+/**
+ * Asegura que un usuario exista (create-if-missing por email, case-insensitive).
+ * No sobrescribe la contraseña si el usuario ya está: permite cambiarla desde la app.
+ * Devuelve true si lo creó.
+ */
+export function ensureUser(user: { name: string; email: string; password: string; role?: string }): boolean {
+  const existing = dbGet<{ id: string }>(
+    "SELECT id FROM users WHERE lower(email) = lower(?)",
+    [user.email],
+  );
+  if (existing) return false;
+  dbRun(
+    "INSERT INTO users (id, name, email, role, password_hash, active) VALUES (?,?,?,?,?,1)",
+    [randomUUID(), user.name, user.email, user.role ?? "user", hashPassword(user.password)],
+  );
+  return true;
+}

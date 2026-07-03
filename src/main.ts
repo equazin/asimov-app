@@ -18,7 +18,7 @@ import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
 import { isAirEnabled } from "./air";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
-import { authenticate, seedDefaultAdmin, type SessionUser } from "./auth";
+import { authenticate, seedDefaultAdmin, ensureUser, type SessionUser } from "./auth";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
@@ -305,6 +305,14 @@ if (!gotLock) {
 
     // Asegura un usuario admin en el primer arranque (credenciales por defecto).
     seedDefaultAdmin();
+
+    // Usuario de acceso provisto (Bartez). Se crea una sola vez; cambiar la clave desde la app.
+    ensureUser({
+      name: "Ventas Bartez",
+      email: "ventas@bartez.com.ar",
+      password: "3418",
+      role: "admin",
+    });
 
     // --- Autenticación (gate de acceso) ---
     ipcMain.handle("auth:login", (_event, creds: { username?: string; password?: string }) => {
