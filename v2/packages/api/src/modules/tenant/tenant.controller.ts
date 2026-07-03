@@ -13,7 +13,8 @@ export class TenantController {
   @Get('dashboard')
   @ApiOperation({ summary: 'Dashboard del panel maestro' })
   async dashboard() {
-    return this.tenantService.getMasterDashboard();
+    const data = await this.tenantService.getMasterDashboard();
+    return { success: true, data };
   }
 
   @Get()
@@ -23,25 +24,36 @@ export class TenantController {
     @Query('planId') planId?: string,
     @Query('search') search?: string,
   ) {
-    return this.tenantService.findAll({ status, planId, search });
+    const data = await this.tenantService.findAll({ status, planId, search });
+    return { success: true, data };
+  }
+
+  @Get('audit')
+  @ApiOperation({ summary: 'Logs de auditoría de toda la plataforma' })
+  async audit(@Query('action') action?: string) {
+    const data = await this.tenantService.getAuditLogs({ action });
+    return { success: true, data };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Detalle de un tenant' })
   async findById(@Param('id') id: string) {
-    return this.tenantService.findById(id);
+    const data = await this.tenantService.findById(id);
+    return { success: true, data };
   }
 
   @Patch(':id/status')
   @ApiOperation({ summary: 'Cambiar estado de un tenant (bloquear, reactivar, dar de baja)' })
   async updateStatus(@Param('id') id: string, @Body() body: { status: string }) {
-    return this.tenantService.updateStatus(id, body.status);
+    const data = await this.tenantService.updateStatus(id, body.status);
+    return { success: true, data };
   }
 
   @Patch(':id/customization')
   @ApiOperation({ summary: 'Actualizar personalización (logo, colores, membrete)' })
   async updateCustomization(@Param('id') id: string, @Body() body: Record<string, string>) {
-    return this.tenantService.updateCustomization(id, body);
+    const data = await this.tenantService.updateCustomization(id, body);
+    return { success: true, data };
   }
 
   @Patch(':id/features/:feature')
@@ -51,6 +63,7 @@ export class TenantController {
     @Param('feature') feature: string,
     @Body() body: { enabled: boolean },
   ) {
-    return this.tenantService.setFeatureFlag(id, feature, body.enabled);
+    const data = await this.tenantService.setFeatureFlag(id, feature, body.enabled);
+    return { success: true, data };
   }
 }

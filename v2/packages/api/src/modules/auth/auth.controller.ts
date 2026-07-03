@@ -16,7 +16,8 @@ export class AuthController {
     @Body() body: { email: string; password: string; totpCode?: string },
     @Headers('x-device-origin') origin?: string,
   ) {
-    return this.auth.login(body.email, body.password, origin ?? 'web');
+    const data = await this.auth.login(body.email, body.password, origin ?? 'web');
+    return { success: true, data };
   }
 
   @Public()
@@ -32,7 +33,7 @@ export class AuthController {
       planTier?: string;
     },
   ) {
-    return this.auth.registerTenant({
+    const data = await this.auth.registerTenant({
       tenantName: body.tenantName,
       ownerName: body.ownerName,
       ownerEmail: body.ownerEmail,
@@ -40,6 +41,7 @@ export class AuthController {
       country: body.country ?? 'AR',
       planTier: body.planTier ?? 'trial',
     });
+    return { success: true, data };
   }
 
   @Public()
@@ -47,7 +49,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Renovar access token con refresh token' })
   async refresh(@Body() body: { refreshToken: string }) {
-    return this.auth.refreshToken(body.refreshToken);
+    const data = await this.auth.refreshToken(body.refreshToken);
+    return { success: true, data };
   }
 
   @Post('logout')

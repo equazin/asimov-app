@@ -32,6 +32,31 @@ export class TenantService {
     });
   }
 
+  async getAuditLogs(filters?: { action?: string }) {
+    const logs = await this.prisma.auditLog.findMany({
+      where: { ...(filters?.action && { action: filters.action }) },
+      include: {
+        user: { select: { name: true, email: true } },
+        tenant: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+
+    // Mapeo al shape que espera el panel (entity/details).
+    return logs.map((log) => ({
+      id: log.id,
+      action: log.action,
+      entity: log.entityType,
+      entityId: log.entityId,
+      details: log.newValues ? JSON.stringify(log.newValues) : null,
+      ipAddress: log.ipAddress,
+      createdAt: log.createdAt,
+      user: log.user ?? undefined,
+      tenant: log.tenant ?? undefined,
+    }));
+  }
+
   async findById(id: string) {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id },
