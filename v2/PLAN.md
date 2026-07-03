@@ -33,14 +33,18 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - Stock: movimientos, alertas de stock bajo, consulta por depósito/producto
 - Tenant: gestión maestro, dashboard KPIs (MRR, ARR, tenants)
 
-### Fase 2 — Panel Maestro Admin (Next.js) 🔄 EN PROGRESO
-- Next.js 15 + App Router + shadcn/ui + Tailwind
-- Dashboard: KPIs (MRR, ARR, tenants activos, por vencer)
-- Gestión de tenants: listado, filtros, detalle, bloqueo/desbloqueo
-- Gestión de planes y suscripciones
-- Ciclo de morosidad: warning → grace → read_only → blocked → delete
-- Personalización por tenant: logo, membrete, colores
-- Logs de auditoría
+### Fase 2 — Panel Maestro Admin (Next.js) ✅ COMPLETADA
+- Next.js 15 + App Router + Tailwind CSS con colores Ink/Ion
+- Login con JWT + Zustand store para auth
+- Dashboard: KPIs (MRR, ARR, tenants activos, por vencer, distribución por plan)
+- Gestión de tenants: listado con búsqueda/filtros, detalle con acciones (bloquear/desbloquear/cancelar)
+- Detalle de tenant: info empresa, suscripción, historial de pagos, métricas
+- Vista de suscripciones: tabla + visualización del ciclo de morosidad
+- Auditoría: logs de actividad con filtros por acción
+- Settings: planes/límites, ciclo morosidad, notificaciones
+- Componentes UI: Button, Input, Select, Badge, Card, KpiCard, Sidebar, Shell
+- API client: apiFetch, apiGet, apiPost, apiPatch, apiDelete
+- 21 archivos creados en packages/admin/
 
 ### Fase 3 — Migración Desktop Electron → API Client ⬚ PENDIENTE
 - Refactorizar Electron app para consumir API REST en vez de SQLite local
