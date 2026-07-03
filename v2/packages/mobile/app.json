@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Asimov ERP",
+    "slug": "asimov-erp",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "asimov",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d1017"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.asimov.erp",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Asimov ERP necesita acceso a la cámara para escanear códigos de barras"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0d1017"
+      },
+      "package": "com.asimov.erp",
+      "permissions": ["CAMERA"]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-camera",
+      "expo-local-authentication",
+      "expo-secure-store",
+      "expo-notifications"
+    ]
+  }
+}

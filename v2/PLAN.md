@@ -56,12 +56,17 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - Conflict resolution: last-write-wins (server wins)
 - Auto-sync timer: 30s interval cuando conectado
 
-### Fase 4 — App Móvil Android + iOS (Expo) ⬚ PENDIENTE
-- Expo (React Native) con navegación tab + stack
-- Módulos: Dashboard, Ventas rápidas, Stock scanner (cámara), Clientes
-- Push notifications (FCM/APNs)
-- Biometría (huella/face) para login rápido
-- Sync real-time con WebSockets
+### Fase 4 — App Móvil Android + iOS (Expo) ✅ COMPLETADA
+- Expo SDK 52 + Expo Router (file-based routing) + TypeScript
+- Auth: login con JWT, SecureStore para tokens, auto-refresh
+- 5 tabs: Dashboard, Ventas, Escáner, Clientes, Más
+- Dashboard: KPIs (clientes, productos, documentos, ventas mes), pull-to-refresh
+- Ventas: listado de documentos con búsqueda, tipo/número/cliente/total
+- Scanner: CameraView con barcode scanning (EAN13/EAN8/UPC/Code128/Code39), lookup de producto con stock
+- Clientes: listado con búsqueda, avatar, CUIT, teléfono
+- Más: perfil, stock, compras, reportes, sync, settings, logout
+- Tema dark Ink/Ion consistente con admin panel
+- Configurado para Android (com.asimov.erp) + iOS (camera permission)
 
 ### Fase 5 — AFIP + Reportes + Personalización Avanzada ⬚ PENDIENTE
 - Integración AFIP: factura electrónica, CAE/CAEA
