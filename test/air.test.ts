@@ -1,5 +1,29 @@
-import { describe, it, expect } from "vitest";
-import { mapAirProduct, mapAirProducts } from "../src/air";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { airRequest, mapAirProduct, mapAirProducts } from "../src/air";
+import { closeDb, dbRun, initDb } from "../src/db";
+import { encryptSecret } from "../src/secrets";
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: () => Promise.resolve(body),
+    text: () => Promise.resolve(typeof body === "string" ? body : JSON.stringify(body)),
+  } as Response;
+}
+
+function seedAirConfig(): void {
+  initDb(":memory:");
+  dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_enabled", "true"]);
+  dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_username", "R19119"]);
+  dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_password", encryptSecret("secret")]);
+  dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_base_url", "https://api.air-intra.com/v2"]);
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  closeDb();
+});
 
 describe("air — mapAirProduct", () => {
   it("devuelve null si no hay código o el input no es objeto", () => {
@@ -50,5 +74,25 @@ describe("air — mapAirProducts", () => {
   it("filtra las filas inválidas y conserva el orden", () => {
     const out = mapAirProducts([{ cod: "G1" }, { sinCodigo: 1 }, null, { codigo: "G2" }]);
     expect(out.map((p) => p.codiart)).toEqual(["G1", "G2"]);
+  });
+});
+
+describe("air — transporte HTTP", () => {
+  it("reintenta con GET bearer si AIR rechaza el POST bearer con 403", async () => {
+    seedAirConfig();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
+      .mockResolvedValueOnce(jsonResponse("Forbidden", 403))
+      .mockResolvedValueOnce(jsonResponse([{ codiart: "A1", descripcion: "Router" }]));
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=0")).resolves.toEqual([
+      { codiart: "A1", descripcion: "Router" },
+    ]);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
+    expect(fetchMock.mock.calls[2][1]).toMatchObject({ method: "GET" });
   });
 });

@@ -125,27 +125,83 @@ function asArray(json: unknown): unknown[] {
   return [];
 }
 
-async function airRequest(query: string): Promise<unknown[]> {
+type AirFetchAttempt = {
+  label: string;
+  method: "GET" | "POST";
+  headers: Record<string, string>;
+  body?: string;
+};
+
+function buildAirFetchAttempts(token: string): AirFetchAttempt[] {
+  const bearerHeaders = {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/json",
+  };
+  const tokenHeaders = {
+    Token: token,
+    Accept: "application/json",
+  };
+  return [
+    {
+      label: "POST bearer",
+      method: "POST",
+      headers: { ...bearerHeaders, "Content-Type": "application/json" },
+      body: "{}",
+    },
+    {
+      label: "GET bearer",
+      method: "GET",
+      headers: bearerHeaders,
+    },
+    {
+      label: "POST token",
+      method: "POST",
+      headers: { ...tokenHeaders, "Content-Type": "application/json" },
+      body: "{}",
+    },
+    {
+      label: "GET token",
+      method: "GET",
+      headers: tokenHeaders,
+    },
+  ];
+}
+
+async function readSafeErrorBody(res: Response): Promise<string> {
+  const body = await res.text().catch(() => "");
+  return body.replace(/\s+/g, " ").slice(0, 160);
+}
+
+export async function airRequest(query: string): Promise<unknown[]> {
   const cfg = getAirLocalConfig();
   const base = cfg.baseUrl.replace(/\/+$/, "");
   const sep = query.startsWith("?") ? "" : "/";
   const url = `${base}${sep}${query}`;
-  const doFetch = (token: string): Promise<Response> =>
-    fetch(url, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: "{}",
-    });
 
   let token = await getToken();
-  let res = await doFetch(token);
-  if (res.status === 401) {
-    token = await getToken(true);
-    res = await doFetch(token);
+  const errors: string[] = [];
+
+  for (let round = 0; round < 2; round++) {
+    for (const attempt of buildAirFetchAttempts(token)) {
+      const res = await fetch(url, {
+        method: attempt.method,
+        headers: attempt.headers,
+        body: attempt.body,
+      });
+
+      if (res.ok) {
+        const json: unknown = await res.json().catch(() => null);
+        return asArray(json);
+      }
+
+      errors.push(`${attempt.label}: HTTP ${res.status}${res.status === 403 ? " (sin permiso)" : ""} ${await readSafeErrorBody(res)}`.trim());
+
+    }
+
+    if (round === 0) token = await getToken(true);
   }
-  if (!res.ok) throw new Error(`AIR ${query} HTTP ${res.status}`);
-  const json: unknown = await res.json().catch(() => null);
-  return asArray(json);
+
+  throw new Error(`AIR ${query}: no se pudo obtener catálogo. ${errors.join(" | ")}`);
 }
 
 export function fetchArticulosPage(page: number): Promise<unknown[]> {
