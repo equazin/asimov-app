@@ -1634,12 +1634,12 @@
   // Vistas sensibles: solo un administrador puede verlas. `readonly` además no
   // puede ejecutar acciones de escritura (crear / anular). El gating del
   // renderer es de UX; el enforcement real vive en el proceso main.
-  const ADMIN_ONLY_VIEWS = ["usuarios", "auditoria", "integraciones", "config"];
+  const ADMIN_ONLY_VIEWS = ["usuarios", "auditoria", "config"];
   let currentRole = "admin";
   let CAN_WRITE = true;
 
   function canSeeView(viewId) {
-    if (currentRole === "admin") return true;
+    if (["admin", "owner"].includes(currentRole)) return true;
     return !ADMIN_ONLY_VIEWS.includes(viewId);
   }
 
