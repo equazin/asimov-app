@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
+  annulDocument,
 } from "../src/documents";
 import { getDb } from "../src/db";
 import { initTestDb, seedArticle } from "./helpers";
@@ -171,5 +172,55 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "COD1", cantidad: 2, precio: 100 }], totales: { total: 242 } });
     expect(stockOf("art-COD1")).toBe(0);
     expect(cashBalance()).toBe(0);
+  });
+});
+
+describe("documents — anulación (reversa de efectos)", () => {
+  it("anular una recepción devuelve el stock y marca 'anulado'", () => {
+    seedArticle("COD1", 1);
+    const gr = persistGoodsReceipt({ proveedorNombre: "P", estado: "Recibido", items: [{ codigo: "COD1", cantRecibida: 7 }] });
+    expect(stockOf("art-COD1")).toBe(7);
+    expect(annulDocument("goods-receipt", gr.id).ok).toBe(true);
+    expect(stockOf("art-COD1")).toBe(0);
+    expect(one("SELECT status FROM goods_receipts WHERE id=?", gr.id).status).toBe("anulado");
+  });
+
+  it("anular un remito reingresa el stock entregado", () => {
+    seedArticle("COD1", 1);
+    persistGoodsReceipt({ proveedorNombre: "P", estado: "Recibido", items: [{ codigo: "COD1", cantRecibida: 10 }] });
+    const dn = persistDeliveryNote({ clienteNombre: "C", estado: "Entregado", items: [{ codigo: "COD1", cantEntregada: 3 }] });
+    expect(stockOf("art-COD1")).toBe(7);
+    expect(annulDocument("delivery-note", dn.id).ok).toBe(true);
+    expect(stockOf("art-COD1")).toBe(10);
+  });
+
+  it("anular un recibo revierte la caja", () => {
+    const rec = persistReceipt({ clienteNombre: "C", totalCobrado: 5000, facturas: [{ nroFact: "A-1", cobrado: 5000 }] });
+    expect(cashBalance()).toBe(5000);
+    expect(annulDocument("receipt", rec.id).ok).toBe(true);
+    expect(cashBalance()).toBe(0);
+  });
+
+  it("anular una orden de pago revierte la caja", () => {
+    persistReceipt({ clienteNombre: "C", totalCobrado: 5000, facturas: [{ nroFact: "A-1", cobrado: 5000 }] });
+    const op = persistPaymentOrder({ proveedorNombre: "P", estado: "Ejecutada", totalPago: 2000, facturas: [] });
+    expect(cashBalance()).toBe(3000);
+    expect(annulDocument("payment-order", op.id).ok).toBe(true);
+    expect(cashBalance()).toBe(5000);
+  });
+
+  it("anular un documento sin efecto (factura) solo cambia el estado", () => {
+    const inv = persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "X", cantidad: 1, precio: 100 }], totales: { total: 121 } });
+    expect(annulDocument("invoice", inv.id).ok).toBe(true);
+    expect(one("SELECT status FROM invoices WHERE id=?", inv.id).status).toBe("anulado");
+  });
+
+  it("rechaza doble anulación, tipo inválido e id inexistente", () => {
+    const rec = persistReceipt({ clienteNombre: "C", totalCobrado: 100, facturas: [{ nroFact: "A-1", cobrado: 100 }] });
+    expect(annulDocument("receipt", rec.id).ok).toBe(true);
+    expect(annulDocument("receipt", rec.id).ok).toBe(false);      // ya anulado
+    expect(annulDocument("tipo-raro", rec.id).ok).toBe(false);    // tipo no anulable
+    expect(annulDocument("receipt", "no-existe").ok).toBe(false); // id inexistente
+    expect(cashBalance()).toBe(0);                                 // no se revirtió de más
   });
 });
