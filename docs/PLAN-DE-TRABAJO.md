@@ -151,18 +151,21 @@ que el bug de datos maestros).
 - [~] **CSP sin `unsafe-inline` (EN CURSO en rama `harden/csp-inline`).**
   Se construyó un **harness de validación real bajo Electron** (`scripts/verify-csp.js`)
   que carga cada ventana y verifica 0 violaciones de CSP + 0 handlers inline en el
-  DOM. Progreso **11/17 ventanas endurecidas y validadas** (`script-src 'self'`,
-  script externalizado):
+  DOM. Progreso **16/17 ventanas endurecidas y validadas** (`script-src 'self'`,
+  script externalizado, `csp=0 inline=0`):
   - Tier 1 (0 handlers): `login`, `client/supplier/product-selection`,
     `new-article/quote/delivery-note`.
-  - Tier 2a (handlers estáticos): `new-client/supplier/sale-order/invoice`.
-  - Herramientas: `scripts/harden-window.js` (externaliza el `<script>` + inyecta
-    CSP), `copy-assets.js` copia `src/*.js`.
-  - **Pendiente:** 5 fichas con handlers estáticos (`new-receipt`,
-    `new-goods-receipt`, `new-purchase-order`, `new-purchase-invoice`,
-    `new-payment-order`) — mecánicas y validables por el harness; y **`shell.html`
-    (88 handlers, algunos generados dinámicamente)** — el único que además necesita
-    prueba manual clickeando la app. La rama no se mergea a `main` hasta validar
+  - Tier 2a (handlers estáticos, quitados redundantes/muertos):
+    `new-client/supplier/sale-order/invoice`.
+  - Tier 2b (estáticos → data-attrs + delegación, `convert-handlers.js`):
+    `new-receipt/goods-receipt/purchase-order/purchase-invoice/payment-order`.
+  - Herramientas: `scripts/harden-window.js`, `scripts/convert-handlers.js`,
+    `scripts/verify-csp.js` (harness); `copy-assets.js` copia `src/*.js`.
+  - **Pendiente: solo `shell.html`** (102 handlers, ~14 con args generados
+    dinámicamente, ej. `toggleUser('${id}')`). Requiere delegación real a nivel
+    documento con args por `data-*` **y prueba manual clickeando la app** (el
+    harness valida CSP al cargar, no el comportamiento de handlers de filas
+    dinámicas). La rama `harden/csp-inline` no se mergea a `main` hasta validar
     el shell corriendo la app.
 - [ ] (Opcional) DB cifrada (SQLCipher).
 
