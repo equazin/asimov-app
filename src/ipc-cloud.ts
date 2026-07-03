@@ -1,0 +1,96 @@
+/**
+ * IPC handlers for cloud/API connectivity and sync.
+ * Separados del ipc.ts original para mantener backwards compatibility.
+ */
+import { ipcMain } from 'electron';
+import {
+  apiLogin,
+  apiLogout,
+  apiTestConnection,
+  isCloudConnected,
+  getStoredUser,
+  getApiBaseUrl,
+  setApiBaseUrl,
+} from './api-client';
+import {
+  initSyncTables,
+  runSync,
+  getSyncStatus,
+  startSyncTimer,
+  stopSyncTimer,
+} from './sync';
+
+export function registerCloudIpcHandlers(): void {
+  initSyncTables();
+
+  // --- Cloud auth ---
+  ipcMain.handle('cloud:status', () => ({
+    connected: isCloudConnected(),
+    user: getStoredUser(),
+    apiUrl: getApiBaseUrl(),
+  }));
+
+  ipcMain.handle('cloud:login', async (_event, payload: unknown) => {
+    const data = (payload ?? {}) as { email?: string; password?: string };
+    if (!data.email || !data.password) {
+      return { ok: false, error: 'Email y contraseña requeridos' };
+    }
+    try {
+      const result = await apiLogin(data.email, data.password);
+      startSyncTimer();
+      return { ok: true, user: result.user, tenantId: result.tenantId };
+    } catch (e) {
+      return { ok: false, error: String(e instanceof Error ? e.message : e) };
+    }
+  });
+
+  ipcMain.handle('cloud:logout', async () => {
+    stopSyncTimer();
+    await apiLogout();
+    return { ok: true };
+  });
+
+  ipcMain.handle('cloud:test', async () => {
+    try {
+      const reachable = await apiTestConnection();
+      return { ok: true, reachable };
+    } catch {
+      return { ok: false, reachable: false };
+    }
+  });
+
+  ipcMain.handle('cloud:set-url', (_event, url: unknown) => {
+    if (typeof url !== 'string' || !url.startsWith('http')) {
+      return { ok: false, error: 'URL inválida' };
+    }
+    setApiBaseUrl(url);
+    return { ok: true, url };
+  });
+
+  // --- Sync ---
+  ipcMain.handle('sync:status', () => getSyncStatus());
+
+  ipcMain.handle('sync:run', async () => {
+    try {
+      const result = await runSync();
+      return { ok: true, ...result };
+    } catch (e) {
+      return { ok: false, error: String(e instanceof Error ? e.message : e) };
+    }
+  });
+
+  ipcMain.handle('sync:start-auto', () => {
+    startSyncTimer();
+    return { ok: true };
+  });
+
+  ipcMain.handle('sync:stop-auto', () => {
+    stopSyncTimer();
+    return { ok: true };
+  });
+
+  // Auto-start sync if user was previously logged in
+  if (isCloudConnected()) {
+    startSyncTimer();
+  }
+}

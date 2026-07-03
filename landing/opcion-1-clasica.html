@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asimov — Vendé, facturá y controlá el stock desde un solo lugar</title>
+<meta name="description" content="Asimov es el ERP para pymes de Argentina y España. Ventas con margen, stock real, facturación ARCA y Verifactu, tesorería y contabilidad integradas. App de escritorio incluida." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Asimov" />
+<meta property="og:title" content="Asimov — Vendé, facturá y controlá el stock desde un solo lugar" />
+<meta property="og:description" content="ERP para pymes de Argentina y España. Una venta descuenta stock, factura legal (ARCA / Verifactu) y asienta en contabilidad. Desde $39.900/mes. Probalo gratis 14 días." />
+<meta property="og:locale" content="es_AR" />
+<meta property="og:locale:alternate" content="es_ES" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Asimov — El ERP para pymes de Argentina y España" />
+<meta name="twitter:description" content="Ventas con margen, stock, facturación legal y contabilidad integradas. Desde $39.900/mes + IVA. 14 días gratis." />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Asimov",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web, Windows",
+  "description": "ERP para pymes: ventas con margen por ítem, stock multi-depósito, facturación electrónica legal (ARCA en Argentina, Verifactu en España), tesorería, contabilidad, CRM y RMA. App de escritorio incluida.",
+  "inLanguage": ["es-AR", "es-ES"],
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "ARS",
+    "lowPrice": "39900",
+    "highPrice": "149900",
+    "offerCount": "3"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿La facturación es legal en mi país?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. En Argentina emitimos comprobantes A/B/C/M con CAE de ARCA en tiempo real. En España el sistema está preparado para Verifactu, obligatorio para sociedades desde el 1/1/2027 y autónomos desde el 1/7/2027." } },
+    { "@type": "Question", "name": "¿Necesito instalar algo?", "acceptedAnswer": { "@type": "Answer", "text": "No es obligatorio: Asimov funciona en el navegador. La app de escritorio para Windows está incluida en todos los planes y se instala desde tu cuenta al activar la prueba." } },
+    { "@type": "Question", "name": "¿Puedo migrar desde Excel u otro sistema?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Importás clientes y artículos desde planillas y arrancás a facturar el mismo día. Si venís de otro sistema, te acompañamos en la migración." } },
+    { "@type": "Question", "name": "¿Los precios incluyen IVA?", "acceptedAnswer": { "@type": "Answer", "text": "No, son + IVA, igual que todo el mercado." } },
+    { "@type": "Question", "name": "¿Hay permanencia mínima?", "acceptedAnswer": { "@type": "Answer", "text": "No. Es mes a mes y cancelás cuando quieras. Si te vas, exportás todos tus datos sin costo." } },
+    { "@type": "Question", "name": "¿Mi contador puede entrar?", "acceptedAnswer": { "@type": "Answer", "text": "Sí, el acceso para tu estudio contable no cuenta como usuario y no tiene costo." } },
+    { "@type": "Question", "name": "¿Sirve para varias sucursales o empresas?", "acceptedAnswer": { "@type": "Answer", "text": "Sí: stock multi-depósito por sucursal y cambio de empresa en dos clics desde la app de escritorio." } },
+    { "@type": "Question", "name": "¿Puedo conectar el catálogo de mi proveedor?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Si tu proveedor o mayorista expone una API, la vinculamos: su catálogo, stock y costos aparecen en tu buscador de artículos. Disponible en el plan Distribuidora." } }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+/* ════════════════════════════════════════════════════════════
+   ASIMOV BRAND SYSTEM (BRAND.md)
+   Ink #14171D · Graphite #232833 · Ion Orange #FF6A2B
+   Signal Cyan #2FD4BE · Space Grotesk / Inter / JetBrains Mono
+   ════════════════════════════════════════════════════════════ */
+:root {
+  --ink:        #0f1117;
+  --ink-2:      #14171D;
+  --graphite:   #1b1f27;
+  --card:       #20242c;
+  --card-2:     #232833;
+  --border:     #2c333d;
+  --border-2:   #343a43;
+  --ion:        #FF6A2B;
+  --ion-hover:  #ff7d45;
+  --ion-dim:    rgba(255,106,43,0.14);
+  --ion-border: rgba(255,106,43,0.35);
+  --cyan:       #2FD4BE;
+  --cyan-dim:   rgba(47,212,190,0.12);
+  --text:       #f2f3f5;
+  --text-2:     #b9bfc9;
+  --text-3:     #858d99;
+  --ok:         #2FB47A;
+  --bad:        #E5484D;
+  --sans:       "Inter", "Segoe UI", system-ui, sans-serif;
+  --display:    "Space Grotesk", "Inter", sans-serif;
+  --mono:       "JetBrains Mono", Consolas, monospace;
+  --r-md: 10px; --r-lg: 16px; --r-xl: 22px; --r-pill: 999px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+::selection { background: var(--ion); color: #fff; }
+.container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+h1,h2,h3 { font-family: var(--display); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; padding: 0 26px;
+  font-family: var(--sans); font-size: 14.5px; font-weight: 600;
+  border: none; border-radius: 12px; cursor: pointer;
+  text-decoration: none; white-space: nowrap;
+  transition: background .18s, border-color .18s, transform .06s, box-shadow .18s;
+}
+.btn:active { transform: scale(.985); }
+.btn-ion { background: var(--ion); color: #fff; box-shadow: 0 8px 24px rgba(255,106,43,0.25); }
+.btn-ion:hover { background: var(--ion-hover); box-shadow: 0 10px 28px rgba(255,106,43,0.35); }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border-2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.09); border-color: #454c57; }
+.btn-sm { height: 38px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
+.btn-lg { height: 52px; padding: 0 32px; font-size: 15.5px; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: var(--r-pill);
+  font-size: 12.5px; font-weight: 600;
+  background: var(--ion-dim); color: var(--ion);
+  border: 1px solid var(--ion-border);
+}
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ion); animation: blink 2.2s ease infinite; }
+@keyframes blink { 50% { opacity: .35; } }
+
+/* ── Barra de progreso ── */
+#scrollbar { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: linear-gradient(90deg, var(--ion), var(--cyan)); z-index: 95; }
+
+/* ── Nav ── */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 90; border-bottom: 1px solid transparent; transition: background .25s var(--ease), border-color .25s; }
+.nav.scrolled { background: rgba(15,17,23,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--border); }
+.nav-inner { display: flex; align-items: center; gap: 28px; height: 68px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 19px; letter-spacing: -0.01em; text-decoration: none; }
+.brand svg { flex-shrink: 0; }
+.nav-links { display: flex; gap: 26px; margin-left: auto; }
+.nav-links a { font-size: 13.5px; font-weight: 500; color: var(--text-2); text-decoration: none; transition: color .18s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta { display: flex; gap: 10px; }
+.burger { display: none; margin-left: auto; width: 42px; height: 42px; border: 1px solid var(--border-2); background: transparent; border-radius: 10px; cursor: pointer; color: var(--text); align-items: center; justify-content: center; }
+.mobile-menu { display: none; position: fixed; inset: 68px 0 auto 0; z-index: 89; background: rgba(15,17,23,0.97); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 16px 24px 26px; flex-direction: column; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { padding: 14px 8px; font-size: 15px; font-weight: 500; color: var(--text); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+/* ── Hero ── */
+.hero { position: relative; padding: 168px 0 80px; text-align: center; }
+.hero::before {
+  content: ""; position: absolute; inset: -200px 0 auto 0; height: 640px; pointer-events: none;
+  background:
+    radial-gradient(560px 320px at 50% 8%, rgba(255,106,43,0.16), transparent 70%),
+    radial-gradient(900px 480px at 50% -10%, rgba(47,212,190,0.05), transparent 70%);
+}
+.hero > .container { position: relative; }
+.hero h1 { font-size: clamp(38px, 5.8vw, 68px); line-height: 1.03; letter-spacing: -0.03em; font-weight: 700; max-width: 900px; margin: 26px auto 22px; }
+.hero h1 em { font-style: normal; background: linear-gradient(100deg, var(--ion), #ffa06e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .lead { font-size: clamp(16px, 1.9vw, 18.5px); color: var(--text-2); max-width: 640px; margin: 0 auto 34px; line-height: 1.65; }
+.hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+.hero-note { font-size: 13px; color: var(--text-3); }
+.proof { display: flex; gap: 0; justify-content: center; flex-wrap: wrap; margin-top: 52px; border: 1px solid var(--border); border-radius: var(--r-lg); background: rgba(32,36,44,0.5); backdrop-filter: blur(8px); overflow: hidden; }
+.proof > div { flex: 1; min-width: 150px; padding: 20px 26px; text-align: center; }
+.proof > div + div { border-left: 1px solid var(--border); }
+.proof b { display: block; font-family: var(--display); font-size: 30px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.proof b i { font-style: normal; color: var(--ion); }
+.proof span { font-size: 11.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+
+/* Ventana de producto (glass) */
+.hero-mock { max-width: 960px; margin: 60px auto 0; position: relative; }
+.hero-mock::before { content: ""; position: absolute; inset: 40px -60px -40px; background: radial-gradient(60% 70% at 50% 40%, rgba(255,106,43,0.13), transparent 70%); pointer-events: none; }
+.appwin {
+  position: relative;
+  background: var(--ink-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  box-shadow: 0 40px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  overflow: hidden; text-align: left; font-size: 12.5px;
+}
+.appwin .tbar { display: flex; align-items: center; gap: 10px; background: var(--graphite); border-bottom: 1px solid var(--border); padding: 10px 16px; font-size: 12px; color: var(--text-3); }
+.appwin .tbar .amark { display: inline-flex; }
+.appwin .tbar .dots { margin-left: auto; display: flex; gap: 6px; }
+.appwin .tbar .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--border-2); }
+.appwin .wbody { display: flex; min-height: 280px; }
+.appwin .side { width: 172px; flex-shrink: 0; background: var(--graphite); border-right: 1px solid var(--border); padding: 12px 0; }
+.appwin .nvl { padding: 10px 16px 4px; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; color: #5b636e; text-transform: uppercase; }
+.appwin .nv { padding: 7px 16px; font-size: 12px; color: var(--text-3); display: flex; align-items: center; gap: 8px; }
+.appwin .nv.on { color: var(--text); background: var(--ion-dim); border-left: 2px solid var(--ion); }
+.appwin .main { flex: 1; padding: 18px; min-width: 0; }
+.kpis { display: flex; gap: 10px; flex-wrap: wrap; }
+.kpi { flex: 1; min-width: 120px; background: var(--card-2); border: 1px solid var(--border-2); border-radius: 10px; padding: 12px 14px; }
+.kpi b { display: block; font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--text); }
+.kpi span { font-size: 9px; font-weight: 700; letter-spacing: .06em; color: var(--text-3); text-transform: uppercase; }
+.kpi.hot { border-color: var(--ion-border); background: linear-gradient(180deg, rgba(255,106,43,0.10), var(--card-2)); }
+.kpi.hot b { color: var(--ion); }
+.appwin table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+.appwin th { color: var(--text-3); font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-2); }
+.appwin td { padding: 9px 10px; font-size: 12px; color: var(--text-2); border-bottom: 1px solid var(--border); }
+.appwin td:first-child { font-family: var(--mono); font-size: 11px; color: var(--text); }
+.tag { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 5px; letter-spacing: .04em; }
+.tag-ok { background: rgba(47,180,122,0.15); color: #4ade80; }
+.tag-air { background: var(--cyan-dim); color: var(--cyan); }
+.m-orange { color: var(--ion); font-family: var(--mono); font-size: 11.5px; }
+
+/* ── Secciones ── */
+.section { padding: 104px 0; position: relative; }
+.section-head { text-align: center; max-width: 660px; margin: 0 auto 58px; }
+.kicker { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ion); display: block; margin-bottom: 14px; }
+.section-head h2 { font-size: clamp(28px, 3.8vw, 44px); letter-spacing: -0.02em; font-weight: 700; margin-bottom: 16px; }
+.section-head p { color: var(--text-2); font-size: 16px; line-height: 1.65; }
+
+/* Marquee */
+.marquee { overflow: hidden; border-block: 1px solid var(--border); padding: 18px 0; background: var(--ink-2); }
+.marquee-track { display: flex; gap: 12px; width: max-content; animation: marquee 34s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: var(--r-pill); border: 1px solid var(--border-2); background: var(--card); font-size: 13px; font-weight: 500; color: var(--text-2); white-space: nowrap; }
+.chip svg { color: var(--ion); flex-shrink: 0; }
+
+/* Bento de módulos */
+.bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.bcard {
+  position: relative; overflow: hidden;
+  padding: 28px 26px; border-radius: var(--r-lg);
+  background: linear-gradient(180deg, var(--card-2), var(--card));
+  border: 1px solid var(--border-2);
+  transition: border-color .25s, transform .25s var(--ease), box-shadow .25s;
+  grid-column: span 2;
+}
+.bcard:hover { border-color: var(--ion-border); transform: translateY(-4px); box-shadow: 0 22px 44px rgba(0,0,0,0.4); }
+.bcard.w3 { grid-column: span 3; }
+.bcard::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent); }
+.bicon { width: 44px; height: 44px; border-radius: 12px; background: var(--ion-dim); border: 1px solid var(--ion-border); display: grid; place-items: center; color: var(--ion); margin-bottom: 18px; }
+.bcard.cyan .bicon { background: var(--cyan-dim); border-color: rgba(47,212,190,0.3); color: var(--cyan); }
+.bcard h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 9px; }
+.bcard p { font-size: 13.5px; color: var(--text-2); line-height: 1.65; }
+
+/* Split escritorio */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.split h2 { font-size: clamp(26px, 3.2vw, 40px); letter-spacing: -0.02em; font-weight: 700; margin: 14px 0 18px; }
+.split > div > p { color: var(--text-2); line-height: 1.7; margin-bottom: 26px; font-size: 15.5px; }
+.check-list { list-style: none; display: grid; gap: 15px; }
+.check-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
+.check-list li svg { flex-shrink: 0; margin-top: 2px; color: var(--ok); }
+.check-list li strong { color: var(--text); font-weight: 600; }
+
+/* Pricing */
+.toggle-row { display: flex; justify-content: center; margin-bottom: 44px; }
+.country-toggle { display: inline-flex; padding: 4px; gap: 4px; background: var(--card); border: 1px solid var(--border-2); border-radius: var(--r-pill); }
+.country-toggle button { height: 38px; padding: 0 22px; font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--text-2); background: transparent; border: none; border-radius: var(--r-pill); cursor: pointer; transition: background .18s, color .18s; }
+.country-toggle button.active { background: var(--ion); color: #fff; }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
+.plan { position: relative; padding: 32px 28px; border-radius: var(--r-xl); background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1px solid var(--border-2); display: flex; flex-direction: column; }
+.plan.featured { border-color: var(--ion); box-shadow: 0 0 0 1px var(--ion), 0 30px 70px rgba(255,106,43,0.13); background: linear-gradient(180deg, #262b35, var(--card)); transform: scale(1.02); }
+.plan-tag { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--ion); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 5px 14px; border-radius: var(--r-pill); white-space: nowrap; }
+.plan h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--ion); margin-bottom: 8px; }
+.plan.featured h3 { color: var(--ion); }
+.plan-desc { font-size: 13px; color: var(--text-3); margin-bottom: 20px; min-height: 34px; }
+.price { font-family: var(--display); font-size: 40px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.price .per { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text-3); }
+.plan ul { list-style: none; margin: 24px 0 28px; display: grid; gap: 11px; flex: 1; }
+.plan ul li { display: flex; gap: 10px; font-size: 13.5px; color: var(--text-2); align-items: flex-start; line-height: 1.5; }
+.plan ul li svg { flex-shrink: 0; margin-top: 2px; }
+.plan ul li.no { opacity: .38; }
+.iva-note { text-align: center; font-size: 12.5px; color: var(--text-3); margin-top: 26px; }
+
+/* Comparativa */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-2); border-radius: var(--r-lg); background: var(--card); }
+.cmp table { width: 100%; border-collapse: collapse; min-width: 700px; }
+.cmp th, .cmp td { padding: 15px 18px; text-align: left; font-size: 13.5px; border-bottom: 1px solid var(--border); }
+.cmp tbody tr:last-child td { border-bottom: none; }
+.cmp th { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); background: var(--graphite); }
+.cmp td:first-child { color: var(--text-2); }
+.cmp .col-asimov { background: rgba(255,106,43,0.06); border-inline: 1px solid var(--ion-border); }
+.cmp thead .col-asimov { color: var(--ion); }
+.yes { color: var(--ok); font-weight: 600; }
+.no-x { color: var(--text-3); }
+.cmp-note { font-size: 11.5px; color: var(--text-3); margin-top: 16px; line-height: 1.6; }
+
+/* FAQ */
+.faq { max-width: 740px; margin: 0 auto; display: grid; gap: 10px; }
+.faq-item { border: 1px solid var(--border-2); border-radius: var(--r-md); background: var(--card); overflow: hidden; transition: border-color .25s; }
+.faq-item[open] { border-color: var(--ion-border); }
+.faq-item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 18px 22px; font-size: 14.5px; font-weight: 600; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary svg { flex-shrink: 0; transition: transform .3s var(--ease); color: var(--ion); }
+.faq-item[open] summary svg { transform: rotate(45deg); }
+.faq-item .faq-body { padding: 0 22px 20px; font-size: 14px; color: var(--text-2); line-height: 1.7; }
+
+/* Demo interactiva */
+.demo-steps { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+.demo-step { position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: var(--r-pill); border: 1px solid var(--border-2); background: var(--card); cursor: pointer; font-family: var(--sans); font-size: 13.5px; font-weight: 600; color: var(--text-2); transition: border-color .2s, color .2s; }
+.demo-step b { font-family: var(--mono); color: var(--ion); font-size: 12px; }
+.demo-step .db { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--ion); }
+.demo-step.active { border-color: var(--ion-border); color: var(--text); }
+.demo-step.active .db { width: 100%; transition: width 4s linear; }
+.demo-stage { max-width: 880px; margin: 0 auto; }
+.demo-pane { display: none; }
+.demo-pane.active { display: block; animation: fadeUp .5s var(--ease); }
+.demo-caption { text-align: center; font-size: 13.5px; color: var(--text-3); margin-top: 18px; }
+
+/* Migración */
+.mig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 940px; margin: 0 auto; }
+.mig-card { padding: 28px 24px; border-radius: var(--r-lg); background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1px solid var(--border-2); }
+.mig-card b { display: block; font-family: var(--mono); font-size: 13px; color: var(--ion); margin-bottom: 14px; }
+.mig-card h3 { font-size: 16.5px; font-weight: 600; margin-bottom: 9px; letter-spacing: -0.01em; }
+.mig-card p { font-size: 13.5px; color: var(--text-2); line-height: 1.65; }
+.mig-note { text-align: center; font-size: 13px; color: var(--text-3); margin-top: 22px; }
+
+/* Seguridad */
+.sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.sec-card { padding: 28px 22px; border-radius: var(--r-lg); background: linear-gradient(180deg, var(--card-2), var(--card)); border: 1px solid var(--border-2); text-align: center; }
+.sec-card svg { color: var(--cyan); margin-bottom: 14px; }
+.sec-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 7px; }
+.sec-card p { font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+
+/* Formulario de leads */
+.lead-form { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+.lead-form input, .lead-form select { height: 50px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border-2); background: var(--card); color: var(--text); font-family: var(--sans); font-size: 14px; outline: none; transition: border-color .18s, box-shadow .18s; width: 100%; }
+.lead-form input::placeholder { color: var(--text-3); }
+.lead-form input:focus, .lead-form select:focus { border-color: var(--ion); box-shadow: 0 0 0 3px var(--ion-dim); }
+.lead-form .full { grid-column: 1 / -1; }
+.lead-ok { display: none; max-width: 560px; margin: 0 auto; padding: 26px; border-radius: var(--r-lg); border: 1px solid rgba(47,180,122,0.4); background: rgba(47,180,122,0.08); color: var(--text); font-size: 15px; line-height: 1.6; }
+.lead-note { font-size: 12px; color: var(--text-3); margin-top: 14px; text-align: center; }
+
+/* WhatsApp flotante */
+.wa-float { position: fixed; right: 22px; bottom: 22px; z-index: 85; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: grid; place-items: center; box-shadow: 0 12px 32px rgba(0,0,0,0.45); transition: transform .2s var(--ease); }
+.wa-float:hover { transform: scale(1.08); }
+.wa-float svg { width: 28px; height: 28px; fill: #fff; }
+
+/* Footer legal */
+.foot-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 34px; border-bottom: 1px solid var(--border); margin-bottom: 26px; }
+.foot-cols h4 { font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; }
+.foot-cols a { display: block; font-size: 13.5px; color: var(--text-2); text-decoration: none; padding: 5px 0; }
+.foot-cols a:hover { color: var(--text); }
+.foot-cols .fdesc { font-size: 13px; color: var(--text-3); line-height: 1.65; margin-top: 12px; max-width: 280px; }
+
+/* CTA final */
+.cta-final { position: relative; text-align: center; padding: 110px 24px; overflow: hidden; }
+.cta-final::before { content: ""; position: absolute; inset: 0; background: radial-gradient(640px 340px at 50% 110%, rgba(255,106,43,0.18), transparent 70%); pointer-events: none; }
+.cta-final h2 { position: relative; font-size: clamp(30px, 4.4vw, 52px); letter-spacing: -0.025em; font-weight: 700; margin-bottom: 16px; }
+.cta-final h2 em { font-style: normal; color: var(--ion); }
+.cta-final p { position: relative; color: var(--text-2); margin-bottom: 34px; font-size: 16px; }
+
+footer { border-top: 1px solid var(--border); padding: 40px 0; background: var(--ink-2); }
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-3); }
+.foot .fbrand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; color: var(--text); font-size: 16px; }
+
+/* Reveal system */
+.rv { opacity: 0; transform: translateY(28px); transition: opacity .75s var(--ease), transform .75s var(--ease); transition-delay: calc(var(--i, 0) * 90ms); }
+.rv.in { opacity: 1; transform: none; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+.fade-up { opacity: 0; transform: translateY(16px); animation: fadeUp .8s var(--ease) forwards; }
+.fade-up.d1 { animation-delay: .1s; } .fade-up.d2 { animation-delay: .25s; } .fade-up.d3 { animation-delay: .42s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv, .fade-up { opacity: 1; transform: none; transition: none; animation: none; }
+  .marquee-track { animation: none; }
+  .badge .dot { animation: none; }
+  html { scroll-behavior: auto; }
+}
+@media (max-width: 1000px) {
+  .bento { grid-template-columns: 1fr 1fr; }
+  .bcard, .bcard.w3 { grid-column: span 1; }
+  .plans { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+  .plan.featured { transform: none; }
+  .split { grid-template-columns: 1fr; gap: 40px; }
+  .sec-grid { grid-template-columns: 1fr 1fr; }
+  .mig-grid { grid-template-columns: 1fr; max-width: 460px; }
+  .foot-cols { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .container { padding: 0 18px; }
+  .nav-links, .nav-cta { display: none; }
+  .burger { display: inline-flex; }
+  .bento { grid-template-columns: 1fr; }
+  .hero { padding-top: 128px; }
+  .appwin .side { display: none; }
+  .proof > div + div { border-left: none; border-top: 1px solid var(--border); }
+  .proof > div { min-width: 100%; }
+  .sec-grid, .lead-form, .foot-cols { grid-template-columns: 1fr; }
+  .wa-float { right: 16px; bottom: 16px; }
+}
+</style>
+</head>
+<body>
+<div id="scrollbar"></div>
+
+<!-- ══ NAV ══ -->
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#">
+      <svg width="30" height="30" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
+    </a>
+    <nav class="nav-links">
+      <a href="#demo">Demo</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#escritorio">App de escritorio</a>
+      <a href="#precios">Precios</a>
+      <a href="#comparativa">Comparativa</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-sm btn-ghost" href="#comparativa">Comparar precios</a>
+      <a class="btn btn-sm btn-ion" href="#precios">Probar gratis</a>
+    </div>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mmenu">
+    <a href="#demo">Demo</a>
+    <a href="#modulos">Módulos</a>
+    <a href="#escritorio">App de escritorio</a>
+    <a href="#precios">Precios</a>
+    <a href="#comparativa">Comparativa</a>
+    <a href="#faq">FAQ</a>
+    <a class="btn btn-ion" style="margin-top:16px" href="#precios">Probar gratis 14 días</a>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="container">
+    <span class="badge fade-up"><span class="dot"></span> Facturación legal: ARCA (Argentina) · Verifactu (España)</span>
+    <h1 class="fade-up d1">Vendé, facturá y controlá el stock <em>desde un solo lugar</em></h1>
+    <p class="lead fade-up d2">Una venta descuenta stock, genera la factura electrónica y asienta en contabilidad automáticamente. Sin Excel, sin doble carga, sin vender al costo por error.</p>
+    <div class="hero-ctas fade-up d2">
+      <a class="btn btn-lg btn-ion" href="#precios">Probar gratis 14 días</a>
+      <a class="btn btn-lg btn-ghost" href="#comparativa">Comparar con Tango y otros</a>
+    </div>
+    <div class="hero-note fade-up d3">Sin tarjeta · Sin permanencia · Tu contador entra gratis · App de escritorio incluida</div>
+
+    <div class="proof fade-up d3">
+      <div><b data-count="9">0</b><span>módulos integrados</span></div>
+      <div><b data-count="2">0</b><span>países con factura legal</span></div>
+      <div><b><i data-count="1">0</i> clic</b><span>del pedido a la factura</span></div>
+      <div><b data-count="14">0</b><span>días de prueba gratis</span></div>
+    </div>
+
+    <div class="hero-mock rv in">
+      <div class="appwin">
+        <div class="tbar">
+          <span class="amark"><svg width="15" height="15" viewBox="0 0 120 120"><path d="M60 37 L31 96" fill="none" stroke="#9aa1ab" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#9aa1ab" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#9aa1ab" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg></span>
+          Asimov — Dashboard
+          <span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="wbody">
+          <div class="side">
+            <div class="nv on">Dashboard</div>
+            <div class="nvl">Ventas</div>
+            <div class="nv">Pedidos</div>
+            <div class="nv">Cotizaciones</div>
+            <div class="nv">Clientes</div>
+            <div class="nvl">Stock</div>
+            <div class="nv">Artículos</div>
+            <div class="nv">Depósitos</div>
+            <div class="nvl">Facturación</div>
+            <div class="nv">Facturas</div>
+          </div>
+          <div class="main">
+            <div class="kpis">
+              <div class="kpi hot"><b data-mock-count="184230" data-prefix="$">$0</b><span>Ventas hoy</span></div>
+              <div class="kpi"><b data-mock-count="12">0</b><span>Facturas pendientes</span></div>
+              <div class="kpi"><b data-mock-count="7">0</b><span>Alertas de stock</span></div>
+              <div class="kpi"><b data-mock-count="642180" data-prefix="$">$0</b><span>Saldo en caja</span></div>
+            </div>
+            <table>
+              <thead><tr><th>Pedido</th><th>Cliente</th><th>Margen</th><th>Total</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>PV-0341</td><td>Distribuidora Sur</td><td class="m-orange">+32%</td><td>$412.300</td><td><span class="tag tag-ok">FACTURADA</span></td></tr>
+                <tr><td>PV-0340</td><td>Núcleo SA</td><td class="m-orange">+28%</td><td>$96.800</td><td><span class="tag tag-ok">CAE OK</span></td></tr>
+                <tr><td>PV-0339</td><td>Tecno Rosario</td><td class="m-orange">+41%</td><td>$210.550</td><td><span class="tag tag-ok">ENTREGADA</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ══ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg> Ventas y pedidos</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V21H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg> Stock multi-depósito</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg> Factura ARCA / Verifactu</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Tesorería y caja</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Contabilidad</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> CRM y oportunidades</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> RMA y garantías</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg> API de tu proveedor</span>
+    <span class="chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> App de escritorio</span>
+  </div>
+</div>
+
+<!-- ══ DEMO INTERACTIVA ══ -->
+<section class="section" id="demo">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// miralo funcionando</span>
+      <h2>Del pedido a la factura, en 3 pasos</h2>
+      <p>Así se ve el flujo real. Los pasos avanzan solos — o hacé clic en cada uno.</p>
+    </div>
+    <div class="demo-steps rv" role="tablist" aria-label="Pasos de la demo">
+      <button class="demo-step active" data-demo="d1" role="tab" aria-selected="true"><b>01</b> Cargás el ítem<span class="db"></span></button>
+      <button class="demo-step" data-demo="d2" role="tab" aria-selected="false"><b>02</b> Ponés el margen<span class="db"></span></button>
+      <button class="demo-step" data-demo="d3" role="tab" aria-selected="false"><b>03</b> Sale la factura<span class="db"></span></button>
+    </div>
+    <div class="demo-stage rv">
+      <div class="demo-pane active" id="d1">
+        <div class="appwin">
+          <div class="tbar">Asimov — Nuevo pedido · buscador de artículos (F4) <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main" style="padding:18px">
+            <table>
+              <thead><tr><th>Artículo</th><th>Stock</th><th>Costo</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Notebook 15,6" i5 16GB</td><td>24</td><td>$820.000</td><td><span class="tag tag-ok">AGREGADO</span></td></tr>
+                <tr><td>SSD NVMe 1TB</td><td>58</td><td>$74.500</td><td><span class="tag tag-ok">AGREGADO</span></td></tr>
+                <tr><td>Memoria 16GB DDR5</td><td>112</td><td>$52.300</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="demo-caption">Buscás por nombre o código y agregás con Enter. El costo vigente viene solo.</p>
+      </div>
+      <div class="demo-pane" id="d2">
+        <div class="appwin">
+          <div class="tbar">Asimov — Pedido PV-0342 · márgenes <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main" style="padding:18px">
+            <table>
+              <thead><tr><th>Ítem</th><th>Costo</th><th>Margen %</th><th>Precio</th></tr></thead>
+              <tbody>
+                <tr><td>Notebook 15,6" i5 16GB</td><td>$820.000</td><td class="m-orange">25</td><td><b>$1.025.000</b></td></tr>
+                <tr><td>SSD NVMe 1TB</td><td>$74.500</td><td class="m-orange">38</td><td><b>$102.810</b></td></tr>
+              </tbody>
+            </table>
+            <div class="kpis" style="margin-top:14px">
+              <div class="kpi hot"><b>+26,1%</b><span>Margen del pedido</span></div>
+              <div class="kpi"><b>$1.127.810</b><span>Total</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-caption">Escribís el % y el precio se calcula sobre el costo. Nunca vendés al costo por error.</p>
+      </div>
+      <div class="demo-pane" id="d3">
+        <div class="appwin">
+          <div class="tbar">Asimov — Factura A · FA-0001-00081235 <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main" style="padding:18px">
+            <div class="kpis">
+              <div class="kpi hot"><b style="font-size:13px">CAE autorizada</b><span>ARCA · en tiempo real</span></div>
+              <div class="kpi"><b style="font-size:13px">Stock descontado</b><span>automático</span></div>
+              <div class="kpi"><b style="font-size:13px">Asiento generado</b><span>contabilidad al día</span></div>
+              <div class="kpi"><b style="font-size:13px">Imprimiendo…</b><span>directo, sin diálogos</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-caption">Un clic: factura legal, stock actualizado, asiento contable y papel saliendo de la impresora.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MÓDULOS (bento) ══ -->
+<section class="section" id="modulos" style="border-top:1px solid var(--border)">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// módulos</span>
+      <h2>Todo el negocio, un solo sistema</h2>
+      <p>Cada módulo habla con los demás. Cargás la venta una vez y el resto se resuelve solo.</p>
+    </div>
+    <div class="bento">
+      <div class="bcard w3 rv" style="--i:0">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></div>
+        <h3>Ventas con margen protegido</h3>
+        <p>Pedidos y presupuestos que parten del costo: cargás % de margen por ítem o general y el precio se calcula solo. Nadie vende al costo por error.</p>
+      </div>
+      <div class="bcard w3 rv" style="--i:1">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg></div>
+        <h3>Facturación electrónica legal</h3>
+        <p>Facturas A/B/C/M, notas de crédito y débito con CAE de ARCA en tiempo real. En España, listo para Verifactu antes de que sea obligatorio.</p>
+      </div>
+      <div class="bcard rv" style="--i:0">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V21H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></div>
+        <h3>Stock que no miente</h3>
+        <p>Multi-depósito, mínimos con alertas, series por unidad. La venta descuenta stock en el momento.</p>
+      </div>
+      <div class="bcard cyan rv" style="--i:1">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8L7 17M17 7l2.8-2.8"/></svg></div>
+        <h3>¿Tu proveedor tiene API?</h3>
+        <p>Lo vinculamos: su catálogo, stock y costos aparecen en tu buscador de artículos, siempre al día, listos para vender con margen.</p>
+      </div>
+      <div class="bcard rv" style="--i:2">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Tesorería al día</h3>
+        <p>Caja en tiempo real, cuentas corrientes, órdenes de pago y cobros por cualquier medio.</p>
+      </div>
+      <div class="bcard rv" style="--i:0">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h3>Contabilidad sola</h3>
+        <p>Cada operación asienta automáticamente. Tu contador entra gratis y encuentra el diario hecho.</p>
+      </div>
+      <div class="bcard rv" style="--i:1">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>Compras y recepciones</h3>
+        <p>Órdenes de compra, recepción de mercadería y facturas de proveedor con cuenta corriente.</p>
+      </div>
+      <div class="bcard rv" style="--i:2">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        <h3>RMA y garantías</h3>
+        <p>Devoluciones y garantías con trazabilidad por número de serie. Lo que los ERP contables no tienen.</p>
+      </div>
+      <div class="bcard rv" style="--i:0">
+        <div class="bicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>CRM y oportunidades</h3>
+        <p>Pipeline conectado a ventas: de la oportunidad al pedido sin recargar datos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ APP ESCRITORIO ══ -->
+<section class="section" id="escritorio" style="border-top:1px solid var(--border); background: var(--ink-2);">
+  <div class="container split">
+    <div class="rv">
+      <span class="kicker">// app de escritorio · incluida en todos los planes</span>
+      <h2>El mostrador atiende más rápido con una app de verdad</h2>
+      <p>Los otros sistemas viven en una pestaña del navegador. Asimov también se instala: imprime directo, avisa con notificaciones de Windows y arranca solo con la PC.</p>
+      <ul class="check-list">
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Impresión silenciosa:</strong> la factura sale directo a la impresora, sin diálogos del navegador.</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Notificaciones de Windows:</strong> leads y alertas de stock llegan al escritorio.</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Multi-empresa:</strong> cambiás de empresa o servidor en dos clics.</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Se actualiza sola:</strong> siempre estás en la última versión.</span></li>
+      </ul>
+      <div style="margin-top:28px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <a class="btn btn-ion" href="#precios">Probar gratis 14 días</a>
+        <span style="font-size:12.5px;color:var(--text-3)">La app se instala desde tu cuenta al activar la prueba.</span>
+      </div>
+    </div>
+    <div class="rv" style="--i:1">
+      <div class="appwin">
+        <div class="tbar">
+          <span class="amark"><svg width="15" height="15" viewBox="0 0 120 120"><path d="M60 37 L31 96" fill="none" stroke="#9aa1ab" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#9aa1ab" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#9aa1ab" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg></span>
+          Asimov — Nueva factura
+          <span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="wbody" style="min-height:260px">
+          <div class="main">
+            <div class="kpis">
+              <div class="kpi"><b style="font-size:13px">FA-0001-00081234</b><span>Factura A · CAE autorizada</span></div>
+              <div class="kpi hot"><b style="font-size:13px">Imprimiendo…</b><span>HP LaserJet — directo</span></div>
+            </div>
+            <table>
+              <thead><tr><th>Ítem</th><th>Costo</th><th>Margen</th><th>Precio</th></tr></thead>
+              <tbody>
+                <tr><td>Notebook 15,6" i5</td><td>$820.000</td><td class="m-orange">+25%</td><td>$1.025.000</td></tr>
+                <tr><td>Mouse inalámbrico</td><td>$18.400</td><td class="m-orange">+45%</td><td>$26.680</td></tr>
+                <tr><td>Teclado mecánico</td><td>$96.200</td><td class="m-orange">+30%</td><td>$125.060</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MIGRACIÓN ══ -->
+<section class="section" id="migracion">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// migración</span>
+      <h2>¿Venís de Tango o de Excel? Mejor.</h2>
+      <p>Migrar no es un proyecto de meses. Son tres pasos y facturás el mismo día.</p>
+    </div>
+    <div class="mig-grid">
+      <div class="mig-card rv" style="--i:0">
+        <b>PASO 01</b>
+        <h3>Exportá lo que ya tenés</h3>
+        <p>Sacá tus clientes y artículos como planilla desde Tango, Excel o el sistema que uses. Con lo que tengas alcanza: nosotros la ordenamos con vos.</p>
+      </div>
+      <div class="mig-card rv" style="--i:1">
+        <b>PASO 02</b>
+        <h3>Importá con la plantilla</h3>
+        <p>Subís la planilla a Asimov. Detectamos duplicados, validamos CUIT y condición de IVA, y te mostramos qué entró antes de confirmar.</p>
+      </div>
+      <div class="mig-card rv" style="--i:2">
+        <b>PASO 03</b>
+        <h3>Facturá el mismo día</h3>
+        <p>Configurás tu punto de venta y emitís tu primera factura legal. Te acompañamos en la puesta en marcha, sin implementadores ni costos extra.</p>
+      </div>
+    </div>
+    <p class="mig-note rv">También cargamos saldos iniciales de cuentas corrientes y stock por depósito, para que no arranques de cero.</p>
+  </div>
+</section>
+
+<!-- ══ SEGURIDAD ══ -->
+<section class="section" id="seguridad" style="background:var(--ink-2)">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// tus datos, seguros</span>
+      <h2>La nube bien hecha</h2>
+      <p>Si venís de un sistema de escritorio, esta es la parte que te importa.</p>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-card rv" style="--i:0">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9"/><path d="M21 3v6h-6"/><path d="M21 3l-9 9"/></svg>
+        <h3>Backups automáticos</h3>
+        <p>Copias de seguridad diarias y redundantes. Se te quema la PC y no pasa nada: tus datos no viven ahí.</p>
+      </div>
+      <div class="sec-card rv" style="--i:1">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h3>Cifrado de punta a punta</h3>
+        <p>Conexión cifrada (HTTPS) y datos cifrados en reposo. Cada usuario entra con su clave y su rol.</p>
+      </div>
+      <div class="sec-card rv" style="--i:2">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        <h3>Tus datos son tuyos</h3>
+        <p>Export completo en un clic: clientes, ventas, stock y asientos. Sin secuestro de datos si un día te vas.</p>
+      </div>
+      <div class="sec-card rv" style="--i:3">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <h3>Siempre actualizado</h3>
+        <p>Mejoras y cambios fiscales llegan solos, sin técnicos ni reinstalaciones. La app de escritorio también se actualiza sola.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRECIOS ══ -->
+<section class="section" id="precios">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// precios</span>
+      <h2>Precios claros, sin permanencia</h2>
+      <p>Elegí tu país. Todos los planes incluyen la app de escritorio y márgenes por ítem.</p>
+    </div>
+    <div class="toggle-row rv">
+      <div class="country-toggle" role="tablist" aria-label="País">
+        <button class="active" data-country="ar" role="tab" aria-selected="true">Argentina (ARS)</button>
+        <button data-country="es" role="tab" aria-selected="false">España (EUR)</button>
+      </div>
+    </div>
+    <div class="plans">
+      <div class="plan rv" style="--i:0">
+        <h3>Emprendedor</h3>
+        <p class="plan-desc">Para facturar legal y dejar el Excel.</p>
+        <div class="price"><span data-price-ar="$39.900" data-price-es="14 €">$39.900</span> <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="500 comprobantes/mes · 3 usuarios" data-es="1.500 facturas/año · 3 usuarios">500 comprobantes/mes · 3 usuarios</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="Ventas + facturación ARCA (CAE)" data-es="Ventas + facturación Verifactu">Ventas + facturación ARCA (CAE)</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Stock (1 depósito) con alertas</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>App de escritorio + márgenes por ítem</li>
+          <li class="no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>Compras, tesorería y contabilidad</li>
+          <li class="no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>Series, RMA y API de proveedores</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Empezar gratis</a>
+      </div>
+      <div class="plan featured rv" style="--i:1">
+        <span class="plan-tag">El que eligen las pymes</span>
+        <h3>Pyme</h3>
+        <p class="plan-desc">El negocio completo: de la venta al balance.</p>
+        <div class="price"><span data-price-ar="$89.900" data-price-es="29 €">$89.900</span> <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="3.000 comprobantes/mes · 10 usuarios" data-es="6.000 facturas/año · 10 usuarios">3.000 comprobantes/mes · 10 usuarios</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Todo lo de Emprendedor</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Stock multi-depósito</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Compras + tesorería + contabilidad</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>CRM + oportunidades</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Soporte por email y chat</li>
+        </ul>
+        <a class="btn btn-ion" href="#">Probar 14 días gratis</a>
+      </div>
+      <div class="plan rv" style="--i:2">
+        <h3>Distribuidora</h3>
+        <p class="plan-desc">Para operaciones con series, RMA y proveedores conectados.</p>
+        <div class="price"><span data-price-ar="$149.900" data-price-es="49 €">$149.900</span> <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="Comprobantes y usuarios ilimitados" data-es="Facturas y usuarios ilimitados">Comprobantes y usuarios ilimitados</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Todo lo de Pyme</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Números de serie + RMA</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Vinculación con la API de tu proveedor</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Soporte prioritario</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Hablar con ventas</a>
+      </div>
+    </div>
+    <p class="iva-note" data-ar="Precios en pesos argentinos + IVA. Sin permanencia: cancelás cuando quieras." data-es="Precios en euros + IVA con facturación anual. Sin permanencia: cancelás cuando quieras.">Precios en pesos argentinos + IVA. Sin permanencia: cancelás cuando quieras.</p>
+  </div>
+</section>
+
+<!-- ══ COMPARATIVA ══ -->
+<section class="section" id="comparativa" style="border-top:1px solid var(--border); background: var(--ink-2);">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// comparativa</span>
+      <h2>Comparalo antes de decidir</h2>
+      <p>El plan Pyme de Asimov contra Tango y los sistemas de siempre, con precios de lista públicos.</p>
+    </div>
+    <div class="table-scroll cmp rv">
+      <table>
+        <thead>
+          <tr><th></th><th class="col-asimov">Asimov Pyme</th><th data-ar="Tango Gestión" data-es="Sage 50">Tango Gestión</th><th data-ar="Xubio Estándar" data-es="Holded Estándar">Xubio Estándar</th><th data-ar="Colppy Essential" data-es="Quipu Solution">Colppy Essential</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Precio de lista mensual</td><td class="col-asimov"><b data-ar="$89.900" data-es="29 €">$89.900</b></td><td data-ar="desde ~$528.000" data-es="~45 €">desde ~$528.000</td><td data-ar="$155.600" data-es="29,50 €">$155.600</td><td data-ar="$120.500" data-es="25 €">$120.500</td></tr>
+          <tr><td>Usuarios incluidos</td><td class="col-asimov"><b>10</b></td><td data-ar="según licencia" data-es="1">según licencia</td><td data-ar="5" data-es="4">5</td><td data-ar="3" data-es="—">3</td></tr>
+          <tr><td>Web + app de escritorio</td><td class="col-asimov"><span class="yes">Ambas</span></td><td><span class="no-x">Solo escritorio</span></td><td><span class="no-x">Solo web</span></td><td><span class="no-x">Solo web</span></td></tr>
+          <tr><td>Empezás a facturar el mismo día</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="no-x">Semanas + implementador</span></td><td><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td></tr>
+          <tr><td>Actualizaciones y soporte incluidos</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="no-x">Costo extra</span></td><td><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td></tr>
+          <tr><td>Margen por ítem (costo → precio)</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Números de serie + RMA</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">Parcial</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Integración con API de proveedores</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td data-ar="Facturación ARCA (CAE)" data-es="Verifactu">Facturación ARCA (CAE)</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="rv" style="text-align:center;margin-top:22px;font-size:16px;font-weight:600;color:var(--ion)" data-ar="Contra Tango Gestión, Asimov Pyme cuesta un 83% menos: más de $5.200.000 de ahorro por año — sin implementadores ni licencias por puesto." data-es="Contra Sage 50, Asimov Pyme cuesta un 35% menos — sin implementadores ni curva de aprendizaje.">Contra Tango Gestión, Asimov Pyme cuesta un 83% menos: más de $5.200.000 de ahorro por año — sin implementadores ni licencias por puesto.</p>
+    <p class="cmp-note rv">Precios de lista publicados por cada proveedor (julio 2026), orientativos y sujetos a cambio. Fuentes públicas: axoft.com y comparativas de mercado (Tango), xubio.com, colppy.com, holded.com, getquipu.com, sage.com. Las marcas pertenecen a sus dueños.</p>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// faq</span>
+      <h2>Las dudas de siempre, respondidas</h2>
+    </div>
+    <div class="faq">
+      <details class="faq-item rv" style="--i:0">
+        <summary>¿La facturación es legal en mi país?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">Sí. En Argentina emitimos comprobantes A/B/C/M con CAE de ARCA (ex AFIP) en tiempo real. En España el sistema está preparado para Verifactu, obligatorio para sociedades desde el 1/1/2027 y autónomos desde el 1/7/2027 — llegás con el sistema andando, no en diciembre.</div>
+      </details>
+      <details class="faq-item rv" style="--i:1">
+        <summary>¿Necesito instalar algo?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">No es obligatorio: Asimov funciona en el navegador. La app de escritorio para Windows está incluida en todos los planes y se instala desde tu cuenta al activar la prueba — suma impresión directa, notificaciones y arranque automático. Se actualiza sola.</div>
+      </details>
+      <details class="faq-item rv" style="--i:2">
+        <summary>¿Puedo migrar desde Excel u otro sistema?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">Sí. Importás clientes y artículos desde planillas y arrancás a facturar el mismo día. Si venís de otro sistema, te acompañamos en la migración.</div>
+      </details>
+      <details class="faq-item rv" style="--i:3">
+        <summary>¿Los precios incluyen IVA?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">No, son + IVA, igual que todo el mercado. Lo que ves es lo que se factura, sin sorpresas después.</div>
+      </details>
+      <details class="faq-item rv" style="--i:4">
+        <summary>¿Hay permanencia mínima?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">No. Es mes a mes y cancelás cuando quieras. Si te vas, exportás todos tus datos (clientes, ventas, stock, asientos) sin costo.</div>
+      </details>
+      <details class="faq-item rv" style="--i:5">
+        <summary>¿Mi contador puede entrar?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">Sí, el acceso para tu estudio contable no cuenta como usuario y no tiene costo. Ve el diario, los reportes y el export contable directamente.</div>
+      </details>
+      <details class="faq-item rv" style="--i:6">
+        <summary>¿Sirve para varias sucursales o empresas?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">Sí: stock multi-depósito por sucursal y, desde la app de escritorio, cambio de empresa en dos clics sin pagar licencias extra.</div>
+      </details>
+      <details class="faq-item rv" style="--i:7">
+        <summary>¿Puedo conectar el catálogo de mi proveedor?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <div class="faq-body">Sí. Si tu proveedor o mayorista expone una API, la vinculamos: su catálogo, stock y costos aparecen en tu buscador de artículos, siempre actualizados y listos para vender con tu margen. Disponible en el plan Distribuidora — contanos qué proveedor usás y lo evaluamos sin cargo.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA FINAL + LEADS ══ -->
+<section class="cta-final" id="empezar">
+  <div class="rv">
+    <h2>Empezá hoy. <em>Facturá hoy.</em></h2>
+    <p>Dejanos tus datos y te activamos la prueba de 14 días con todos los módulos. Sin tarjeta, sin permanencia.</p>
+    <form class="lead-form" id="leadForm" novalidate>
+      <input type="text" name="nombre" placeholder="Tu nombre y empresa" required autocomplete="organization" />
+      <input type="email" name="email" placeholder="Email" required autocomplete="email" />
+      <select name="pais" aria-label="País">
+        <option value="ar">Argentina</option>
+        <option value="es">España</option>
+      </select>
+      <input type="tel" name="whatsapp" placeholder="WhatsApp (opcional)" autocomplete="tel" />
+      <button type="submit" class="btn btn-lg btn-ion full">Crear mi cuenta gratis</button>
+    </form>
+    <div class="lead-ok" id="leadOk">
+      <strong>¡Listo!</strong> Recibimos tus datos. En el día te llega el acceso a tu cuenta y el link para instalar la app de escritorio. Si querés arrancar ya, escribinos por WhatsApp.
+    </div>
+    <p class="lead-note">También podés escribirnos directo por WhatsApp con el botón de abajo a la derecha.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-cols">
+      <div>
+        <div class="fbrand">
+          <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+          asimov
+        </div>
+        <p class="fdesc">El ERP para pymes y distribuidoras de Argentina y España. Ventas, stock, facturación legal y contabilidad en un solo lugar.</p>
+      </div>
+      <div>
+        <h4>Producto</h4>
+        <a href="#demo">Demo</a>
+        <a href="#modulos">Módulos</a>
+        <a href="#precios">Precios</a>
+        <a href="#comparativa">Comparativa</a>
+        <a href="novedades.html">Novedades</a>
+      </div>
+      <div>
+        <h4>Recursos</h4>
+        <a href="#migracion">Migrar desde Tango o Excel</a>
+        <a href="#seguridad">Seguridad y datos</a>
+        <a href="#faq">Preguntas frecuentes</a>
+      </div>
+      <div>
+        <h4>Legal y contacto</h4>
+        <a href="legal.html#terminos">Términos y condiciones</a>
+        <a href="legal.html#privacidad">Política de privacidad</a>
+        <a href="https://wa.me/5493416684350?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20de%20Asimov" rel="noopener">Ventas por WhatsApp</a>
+      </div>
+    </div>
+    <div class="foot">
+      <div>© 2026 Asimov. Todos los derechos reservados.</div>
+      <div>Argentina · España — Facturación ARCA (CAE) y Verifactu.</div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a class="wa-float" href="https://wa.me/5493416684350?text=Hola%2C%20quiero%20probar%20Asimov" rel="noopener" aria-label="Escribinos por WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+</a>
+
+<script>
+(function () {
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var bar = document.getElementById("scrollbar"), nav = document.getElementById("nav");
+  function onScroll() {
+    var h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100).toFixed(2) + "%";
+    nav.classList.toggle("scrolled", h.scrollTop > 24);
+  }
+  document.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  var burger = document.getElementById("burger"), mmenu = document.getElementById("mmenu");
+  burger.addEventListener("click", function () {
+    var open = mmenu.classList.toggle("open");
+    burger.setAttribute("aria-expanded", String(open));
+  });
+  mmenu.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { mmenu.classList.remove("open"); }); });
+
+  var track = document.getElementById("marqueeTrack");
+  track.innerHTML += track.innerHTML;
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.13 });
+  document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+
+  function animateCount(el, target, prefix) {
+    if (reduced) { el.textContent = (prefix || "") + target.toLocaleString("es-AR"); return; }
+    var t0 = null, dur = 1400;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var k = Math.min((ts - t0) / dur, 1); k = 1 - Math.pow(1 - k, 3);
+      el.textContent = (prefix || "") + Math.round(target * k).toLocaleString("es-AR");
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var cio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      animateCount(el, parseInt(el.dataset.count || el.dataset.mockCount, 10), el.dataset.prefix || "");
+      cio.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll("[data-count],[data-mock-count]").forEach(function (el) { cio.observe(el); });
+
+  var buttons = document.querySelectorAll(".country-toggle button");
+  function setCountry(c) {
+    buttons.forEach(function (b) {
+      var on = b.dataset.country === c;
+      b.classList.toggle("active", on); b.setAttribute("aria-selected", String(on));
+    });
+    document.querySelectorAll("[data-ar]").forEach(function (el) { var v = c === "ar" ? el.dataset.ar : el.dataset.es; if (v) el.textContent = v; });
+    document.querySelectorAll("[data-price-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.priceAr : el.dataset.priceEs; });
+    document.querySelectorAll("[data-per-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.perAr : el.dataset.perEs; });
+  }
+  buttons.forEach(function (b) { b.addEventListener("click", function () { setCountry(b.dataset.country); }); });
+
+  document.querySelectorAll(".faq-item").forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      if (d.open) document.querySelectorAll(".faq-item[open]").forEach(function (o) { if (o !== d) o.open = false; });
+    });
+  });
+
+  /* Demo interactiva: autoplay + click */
+  var demoIds = ["d1", "d2", "d3"];
+  var demoIdx = 0, demoTimer = null;
+  var demoSection = document.getElementById("demo");
+  function showDemo(id) {
+    demoIdx = demoIds.indexOf(id);
+    document.querySelectorAll(".demo-step").forEach(function (b) {
+      var on = b.dataset.demo === id;
+      b.classList.remove("active");
+      // reiniciar la barra de progreso forzando reflow
+      var db = b.querySelector(".db");
+      db.style.transition = "none"; db.style.width = "0";
+      void db.offsetWidth;
+      db.style.transition = "";
+      if (on) b.classList.add("active");
+      b.setAttribute("aria-selected", String(on));
+    });
+    document.querySelectorAll(".demo-pane").forEach(function (p) {
+      p.classList.toggle("active", p.id === id);
+    });
+  }
+  function nextDemo() { showDemo(demoIds[(demoIdx + 1) % demoIds.length]); }
+  function startDemoAuto() {
+    if (reduced || demoTimer) return;
+    demoTimer = setInterval(nextDemo, 4000);
+  }
+  function stopDemoAuto() { clearInterval(demoTimer); demoTimer = null; }
+  document.querySelectorAll(".demo-step").forEach(function (b) {
+    b.addEventListener("click", function () {
+      stopDemoAuto();
+      showDemo(b.dataset.demo);
+      startDemoAuto();
+    });
+  });
+  var dio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { e.isIntersecting ? startDemoAuto() : stopDemoAuto(); });
+  }, { threshold: 0.35 });
+  dio.observe(demoSection);
+
+  /* Formulario de leads.
+     TODO: conectar a un endpoint real (Formspree / API propia). Mientras
+     tanto guarda la intención y deriva a WhatsApp con los datos cargados. */
+  var leadForm = document.getElementById("leadForm");
+  leadForm.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (!leadForm.reportValidity()) return;
+    var f = new FormData(leadForm);
+    var msg = "Hola, quiero probar Asimov.\nNombre/Empresa: " + (f.get("nombre") || "-") +
+      "\nEmail: " + (f.get("email") || "-") +
+      "\nPaís: " + (f.get("pais") === "es" ? "España" : "Argentina");
+    leadForm.style.display = "none";
+    document.getElementById("leadOk").style.display = "block";
+    window.open("https://wa.me/5493416684350?text=" + encodeURIComponent(msg), "_blank", "noopener");
+  });
+})();
+</script>
+</body>
+</html>

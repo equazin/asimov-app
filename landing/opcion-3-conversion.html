@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asimov — Facturá legal hoy. Desde $59.900/mes</title>
+<meta name="description" content="Precios claros y sin permanencia. Más usuarios y más módulos que Xubio, Colppy y Holded, con app de escritorio incluida. Probalo gratis 14 días." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+/* ══ ASIMOV BRAND SYSTEM ══ */
+:root {
+  --ink:#0f1117; --ink-2:#14171D; --graphite:#1b1f27; --card:#20242c; --card-2:#232833;
+  --border:#2c333d; --border-2:#343a43;
+  --ion:#FF6A2B; --ion-hover:#ff7d45; --ion-dim:rgba(255,106,43,0.14); --ion-border:rgba(255,106,43,0.35);
+  --cyan:#2FD4BE; --text:#f2f3f5; --text-2:#b9bfc9; --text-3:#858d99; --ok:#2FB47A;
+  --sans:"Inter","Segoe UI",system-ui,sans-serif; --display:"Space Grotesk","Inter",sans-serif; --mono:"JetBrains Mono",Consolas,monospace;
+  --r-md:10px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+  --ease:cubic-bezier(0.2,0.7,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit} ::selection{background:var(--ion);color:#fff}
+.container{width:100%;max-width:1080px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 26px;font-family:var(--sans);font-size:14.5px;font-weight:600;border:none;border-radius:12px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .18s,transform .06s,box-shadow .18s}
+.btn:active{transform:scale(.985)}
+.btn-ion{background:var(--ion);color:#fff;box-shadow:0 8px 24px rgba(255,106,43,0.25)}
+.btn-ion:hover{background:var(--ion-hover)}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border-2)}
+.btn-ghost:hover{background:rgba(255,255,255,0.09)}
+.btn-sm{height:38px;padding:0 16px;font-size:13px;border-radius:10px}
+.btn-lg{height:52px;padding:0 32px;font-size:15.5px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:var(--r-pill);font-size:12.5px;font-weight:600;background:var(--ion-dim);color:var(--ion);border:1px solid var(--ion-border)}
+.kicker{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ion);display:block;margin-bottom:14px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border-2);border-radius:var(--r-lg);background:var(--card)}
+.country-toggle{display:inline-flex;padding:4px;gap:4px;background:var(--card);border:1px solid var(--border-2);border-radius:var(--r-pill)}
+.country-toggle button{height:38px;padding:0 22px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-2);background:transparent;border:none;border-radius:var(--r-pill);cursor:pointer;transition:background .18s,color .18s}
+.country-toggle button.active{background:var(--ion);color:#fff}
+
+/* ══ OPCIÓN 3 · CONVERSIÓN ══
+   countdown en vivo · pricing arriba · contador de ahorro ·
+   CTA con pulso · sticky bottom bar · scroll progress */
+#scrollbar{position:fixed;top:0;left:0;height:2px;width:0;background:linear-gradient(90deg,var(--ion),var(--cyan));z-index:95}
+
+.urgency{background:linear-gradient(90deg,var(--ion),#ff8c52);color:#fff;text-align:center;padding:10px 16px;font-size:13px;font-weight:600}
+.urgency b{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.nav{position:sticky;top:0;z-index:90;background:rgba(15,17,23,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;gap:14px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;text-decoration:none}
+
+.hero{position:relative;padding:70px 0 44px;text-align:center;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-120px 0 auto 0;height:480px;pointer-events:none;background:radial-gradient(560px 300px at 50% 0%,rgba(255,106,43,0.15),transparent 70%)}
+.hero > .container{position:relative}
+.hero h1{font-size:clamp(32px,4.8vw,54px);line-height:1.06;letter-spacing:-0.03em;font-weight:700;max-width:800px;margin:18px auto 16px}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--ion),#ffa06e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--text-2);font-size:16.5px;max-width:580px;margin:0 auto;line-height:1.65}
+.trust-row{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:24px;font-size:13px;color:var(--text-3)}
+.trust-row span{display:inline-flex;align-items:center;gap:6px}
+.trust-row svg{color:var(--ok)}
+
+@keyframes pulse{0%,100%{box-shadow:0 8px 24px rgba(255,106,43,0.25),0 0 0 0 rgba(255,106,43,0.4)}50%{box-shadow:0 8px 24px rgba(255,106,43,0.25),0 0 0 12px rgba(255,106,43,0)}}
+.pulse{animation:pulse 2.6s var(--ease) infinite}
+
+.pricing{padding:48px 0 84px}
+.toggle-row{display:flex;justify-content:center;margin-bottom:40px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.plan{position:relative;padding:32px 28px;border-radius:var(--r-xl);background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border-2);display:flex;flex-direction:column}
+.plan.featured{border-color:var(--ion);box-shadow:0 0 0 1px var(--ion),0 30px 70px rgba(255,106,43,0.13);background:linear-gradient(180deg,#262b35,var(--card));transform:scale(1.03)}
+.plan-tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--ion);color:#fff;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 14px;border-radius:var(--r-pill);white-space:nowrap}
+.plan h3{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ion);margin-bottom:8px}
+.plan-desc{font-size:13px;color:var(--text-3);margin-bottom:18px;min-height:32px}
+.price{font-family:var(--display);font-size:38px;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.price .per{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text-3)}
+.plan ul{list-style:none;margin:22px 0 26px;display:grid;gap:10px;flex:1}
+.plan ul li{display:flex;gap:10px;font-size:13.5px;color:var(--text-2);align-items:flex-start;line-height:1.5}
+.plan ul li svg{flex-shrink:0;margin-top:2px}
+.plan ul li.no{opacity:.38}
+.iva-note{text-align:center;font-size:12.5px;color:var(--text-3);margin-top:24px}
+
+.savings{margin:72px auto 0;max-width:780px;text-align:center;padding:38px 32px;border-radius:var(--r-xl);background:linear-gradient(180deg,#262b35,var(--card));border:1px solid var(--ion-border);position:relative;overflow:hidden}
+.savings::before{content:"";position:absolute;inset:auto 0 -80px;height:200px;background:radial-gradient(400px 160px at 50% 100%,rgba(255,106,43,0.16),transparent 70%)}
+.savings b{position:relative;font-family:var(--display);font-size:clamp(34px,5vw,52px);font-weight:700;color:var(--ion);font-variant-numeric:tabular-nums;display:block;margin:10px 0}
+.savings p{position:relative;color:var(--text-2);font-size:14.5px;line-height:1.65;max-width:560px;margin:0 auto}
+
+.section{padding:88px 0;border-top:1px solid var(--border)}
+.section-head{text-align:center;max-width:660px;margin:0 auto 46px}
+.section-head h2{font-size:clamp(28px,3.8vw,44px);letter-spacing:-0.02em;font-weight:700;margin-bottom:14px}
+.section-head p{color:var(--text-2);font-size:15.5px;line-height:1.65}
+.cmp table{width:100%;border-collapse:collapse;min-width:700px}
+.cmp th,.cmp td{padding:15px 18px;text-align:left;font-size:14px;border-bottom:1px solid var(--border)}
+.cmp tbody tr:last-child td{border-bottom:none}
+.cmp th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);background:var(--graphite)}
+.cmp .col-asimov{background:rgba(255,106,43,0.06);border-inline:1px solid var(--ion-border)}
+.cmp thead .col-asimov{color:var(--ion)}
+.yes{color:var(--ok);font-weight:600} .no-x{color:var(--text-3)}
+.cmp-note{font-size:11.5px;color:var(--text-3);margin-top:16px;line-height:1.6}
+
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.quote{padding:28px 26px;border-radius:var(--r-lg);background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border-2)}
+.quote p{font-size:14px;line-height:1.7;color:var(--text-2);margin-bottom:18px}
+.quote p::before{content:"“";color:var(--ion);font-family:var(--display);font-size:28px;line-height:0;margin-right:3px}
+.quote .who{font-size:12.5px;color:var(--text-3)}
+.quote .who b{color:var(--text);display:block;font-size:13.5px;font-family:var(--sans)}
+
+.assure{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.assure div{text-align:center;padding:26px 16px;border-radius:var(--r-lg);border:1px solid var(--border-2);background:var(--card)}
+.assure svg{color:var(--ion);margin-bottom:12px}
+.assure b{display:block;font-size:14px;margin-bottom:5px;font-family:var(--sans)}
+.assure span{font-size:12.5px;color:var(--text-3);line-height:1.5}
+
+.cta-strip{position:relative;text-align:center;padding:64px 24px;border-top:1px solid var(--border);overflow:hidden}
+.cta-strip h2{font-size:clamp(24px,3.2vw,36px);letter-spacing:-0.02em;font-weight:700;margin-bottom:22px}
+.cta-strip h2 em{font-style:normal;color:var(--ion)}
+
+.faq{max-width:740px;margin:0 auto;display:grid;gap:10px}
+.faq-item{border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--card);overflow:hidden}
+.faq-item[open]{border-color:var(--ion-border)}
+.faq-item summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:17px 22px;font-size:14.5px;font-weight:600}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary svg{flex-shrink:0;transition:transform .3s var(--ease);color:var(--ion)}
+.faq-item[open] summary svg{transform:rotate(45deg)}
+.faq-item .faq-body{padding:0 22px 20px;font-size:14px;color:var(--text-2);line-height:1.7}
+
+.sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:85;background:rgba(15,17,23,0.95);backdrop-filter:blur(14px);border-top:1px solid var(--ion-border);padding:12px 18px;display:flex;align-items:center;justify-content:center;gap:18px;transform:translateY(110%);transition:transform .4s var(--ease)}
+.sticky-cta.show{transform:none}
+.sticky-cta .sc-text{font-size:13.5px;font-weight:600}
+.sticky-cta .sc-text small{display:block;font-weight:400;color:var(--text-3);font-size:11.5px}
+
+footer{border-top:1px solid var(--border);padding:40px 0 100px;background:var(--ink-2)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--text-3)}
+.foot .fbrand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;color:var(--text);font-size:16px}
+
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:calc(var(--i,0)*80ms)}
+.rv.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  .pulse{animation:none}
+  .sticky-cta{transition:none}
+  html{scroll-behavior:auto}
+}
+@media (max-width:960px){
+  .plans{grid-template-columns:1fr;max-width:440px;margin:0 auto}
+  .plan.featured{transform:none}
+  .quotes{grid-template-columns:1fr}
+  .assure{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .container{padding:0 18px}
+  .nav .btn-ghost{display:none}
+  .sticky-cta .sc-text small{display:none}
+}
+</style>
+</head>
+<body>
+<div id="scrollbar"></div>
+
+<div class="urgency" id="urgency">
+  España: Verifactu es obligatorio en <b id="cdown">—</b>. Llegá con el sistema andando, no en diciembre.
+</div>
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#">
+      <svg width="28" height="28" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
+    </a>
+    <a class="btn btn-sm btn-ghost" style="margin-left:auto" href="https://github.com/equazin/asimov-app/releases/latest">Descargar app</a>
+    <a class="btn btn-sm btn-ion" href="#precios">Probar gratis</a>
+  </div>
+</header>
+
+<!-- ══ MINI HERO ══ -->
+<section class="hero">
+  <div class="container">
+    <span class="badge">Desde <b id="heroPrice" style="font-family:var(--mono)">$59.900/mes</b> + IVA · sin permanencia</span>
+    <h1>Dejá el Excel. <em>Facturá legal hoy</em> y no vendas nunca más al costo.</h1>
+    <p>Ventas, stock, facturación electrónica, tesorería y contabilidad integradas. Más usuarios y más módulos que los de siempre, por menos plata.</p>
+    <div class="trust-row">
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> 14 días gratis</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Sin tarjeta</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Sin permanencia</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Contador gratis</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRECIOS PRIMERO ══ -->
+<section class="pricing" id="precios">
+  <div class="container">
+    <div class="toggle-row">
+      <div class="country-toggle" role="tablist" aria-label="País">
+        <button class="active" data-country="ar" role="tab" aria-selected="true">Argentina (ARS)</button>
+        <button data-country="es" role="tab" aria-selected="false">España (EUR)</button>
+      </div>
+    </div>
+    <div class="plans">
+      <div class="plan rv" style="--i:0">
+        <h3>Emprendedor</h3>
+        <p class="plan-desc">Facturar legal y dejar el Excel.</p>
+        <div class="price"><span data-price-ar="$59.900" data-price-es="19 €">$59.900</span> <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="500 comprobantes/mes · 3 usuarios" data-es="1.500 facturas/año · 3 usuarios">500 comprobantes/mes · 3 usuarios</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="Facturación ARCA (CAE)" data-es="Facturación Verifactu">Facturación ARCA (CAE)</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Stock (1 depósito) + app de escritorio</li>
+          <li class="no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>Compras, tesorería y contabilidad</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Empezar gratis</a>
+      </div>
+      <div class="plan featured rv" style="--i:1">
+        <span class="plan-tag">Mejor precio/módulos</span>
+        <h3>Pyme</h3>
+        <p class="plan-desc">Todo el negocio: de la venta al balance.</p>
+        <div class="price"><span data-price-ar="$119.900" data-price-es="39 €">$119.900</span> <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="3.000 comprobantes/mes · 10 usuarios" data-es="6.000 facturas/año · 10 usuarios">3.000 comprobantes/mes · 10 usuarios</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Multi-depósito + compras + tesorería</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Contabilidad + CRM</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Soporte email + chat</li>
+        </ul>
+        <a class="btn btn-ion pulse" href="#">Probar 14 días gratis</a>
+      </div>
+      <div class="plan rv" style="--i:2">
+        <h3>Distribuidora</h3>
+        <p class="plan-desc">Series, RMA y catálogo de mayoristas.</p>
+        <div class="price"><span data-price-ar="$199.900" data-price-es="69 €">$199.900</span> <span class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</span></div>
+        <ul>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg><span data-ar="Comprobantes y usuarios ilimitados" data-es="Facturas y usuarios ilimitados">Comprobantes y usuarios ilimitados</span></li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Números de serie + RMA</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Integración con mayoristas IT</li>
+          <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2FB47A" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Soporte prioritario</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Hablar con ventas</a>
+      </div>
+    </div>
+    <p class="iva-note" data-ar="Precios + IVA. Sin permanencia: cancelás cuando quieras y exportás tus datos." data-es="Precios + IVA (facturación anual). Sin permanencia: cancelás cuando quieras y exportás tus datos.">Precios + IVA. Sin permanencia: cancelás cuando quieras y exportás tus datos.</p>
+
+    <div class="savings rv">
+      <span class="kicker">// cuenta rápida</span>
+      <b><span id="savings" data-target-ar="428400" data-target-es="126">$0</span> /año</b>
+      <p id="savingsCopy">es lo que te ahorrás en un año eligiendo Asimov Pyme en vez de Xubio Estándar — y encima pasás de 5 a 10 usuarios, con app de escritorio incluida.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COMPARATIVA ══ -->
+<section class="section" id="comparativa">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// comparativa directa</span>
+      <h2>Mismos números, distinta vara</h2>
+      <p>Plan Pyme de Asimov contra los planes equivalentes. Precios de lista públicos, julio 2026.</p>
+    </div>
+    <div class="table-scroll cmp rv">
+      <table>
+        <thead>
+          <tr><th></th><th class="col-asimov">Asimov Pyme</th><th data-ar="Xubio Estándar" data-es="Holded Estándar">Xubio Estándar</th><th data-ar="Colppy Essential" data-es="Quipu Solution">Colppy Essential</th><th data-ar="Contabilium Standard" data-es="Sage 50">Contabilium Standard</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Precio de lista</td><td class="col-asimov"><b data-ar="$119.900" data-es="39 €">$119.900</b></td><td data-ar="$155.600" data-es="29,50 €">$155.600</td><td data-ar="$120.500" data-es="25 €">$120.500</td><td data-ar="$122.000" data-es="~45 €">$122.000</td></tr>
+          <tr><td>Usuarios incluidos</td><td class="col-asimov"><b>10</b></td><td data-ar="5" data-es="4">5</td><td data-ar="3" data-es="—">3</td><td data-ar="2" data-es="s/plan">2</td></tr>
+          <tr><td>App de escritorio con impresión directa</td><td class="col-asimov"><span class="yes">Incluida</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Margen por ítem (nunca vender al costo)</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Números de serie + RMA</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Catálogo de mayoristas en el buscador</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td data-ar="Facturación ARCA (CAE)" data-es="Verifactu listo">Facturación ARCA (CAE)</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td><td><span class="yes">Sí</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cmp-note rv">Precios de lista publicados por cada proveedor (julio 2026), orientativos y sujetos a cambio. Fuentes públicas: xubio.com, colppy.com, contabilium.com, holded.com, getquipu.com, sage.com. Las marcas pertenecen a sus dueños.</p>
+  </div>
+</section>
+
+<section class="cta-strip">
+  <h2>Los números cierran. <em>Probalo con los tuyos.</em></h2>
+  <a class="btn btn-lg btn-ion pulse" href="#precios">Empezar mi prueba gratis</a>
+</section>
+
+<!-- ══ TESTIMONIOS ══ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head rv">
+      <span class="kicker">// casos reales</span>
+      <h2>Negocios que ya cambiaron</h2>
+    </div>
+    <div class="quotes">
+      <div class="quote rv" style="--i:0">
+        <p>Antes armaba el presupuesto en Excel y la factura en otra página. Ahora cargo el pedido con el margen y sale la factura con CAE en el momento.</p>
+        <div class="who"><b>Marcela</b>Distribuidora de insumos, Rosario</div>
+      </div>
+      <div class="quote rv" style="--i:1">
+        <p>Vendíamos al costo sin saberlo por lo menos una vez por semana. Con el margen por ítem eso se terminó el primer día.</p>
+        <div class="who"><b>Javier</b>Casa de computación, Córdoba</div>
+      </div>
+      <div class="quote rv" style="--i:2">
+        <p>La impresión directa parece un detalle hasta que atendés un mostrador. Son dos horas por semana que no vuelven más.</p>
+        <div class="who"><b>Rodrigo</b>Repuestos, Madrid</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ GARANTÍAS ══ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head rv"><span class="kicker">// sin riesgo</span><h2>Probás tranquilo</h2></div>
+    <div class="assure">
+      <div class="rv" style="--i:0">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <b>14 días gratis</b><span>Todos los módulos, sin tarjeta.</span>
+      </div>
+      <div class="rv" style="--i:1">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <b>Sin permanencia</b><span>Cancelás cuando quieras, sin multas.</span>
+      </div>
+      <div class="rv" style="--i:2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        <b>Tus datos son tuyos</b><span>Export completo si te vas.</span>
+      </div>
+      <div class="rv" style="--i:3">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <b>Contador gratis</b><span>El estudio entra sin costo extra.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head rv"><span class="kicker">// faq</span><h2>Lo que preguntan antes de comprar</h2></div>
+    <div class="faq">
+      <details class="faq-item rv"><summary>¿La facturación es legal en mi país?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí. Argentina: A/B/C/M con CAE de ARCA en tiempo real. España: preparado para Verifactu (sociedades 1/1/2027, autónomos 1/7/2027). Las sanciones por no cumplir llegan a 50.000 € por ejercicio: conviene llegar antes.</div></details>
+      <details class="faq-item rv"><summary>¿Cuánto tardo en empezar a facturar?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">El mismo día: importás clientes y artículos desde Excel, conectás tu punto de venta y emitís. Te acompañamos en la puesta en marcha.</div></details>
+      <details class="faq-item rv"><summary>¿Los precios incluyen IVA? ¿Suben todos los meses?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Son + IVA, como todo el mercado. El precio de lista se ajusta como máximo trimestralmente, nunca dentro de tu período ya pagado.</div></details>
+      <details class="faq-item rv"><summary>¿Qué pasa con mis datos si me voy?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Exportás todo (clientes, ventas, stock, asientos) sin costo. Sin secuestro de datos.</div></details>
+      <details class="faq-item rv"><summary>¿Sirve para varias sucursales o empresas?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí: multi-depósito por sucursal y cambio de empresa en dos clics desde la app de escritorio, sin licencias extra.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA FINAL ══ -->
+<section class="cta-strip" style="padding:92px 24px">
+  <h2 style="font-size:clamp(28px,4.2vw,46px)">Cada mes sin sistema <em>es margen que se pierde</em></h2>
+  <p style="color:var(--text-2);margin:0 0 28px">Configurá tu cuenta en 10 minutos. Facturá hoy.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a class="btn btn-lg btn-ion pulse" href="#precios">Crear mi cuenta gratis</a>
+    <a class="btn btn-lg btn-ghost" href="https://github.com/equazin/asimov-app/releases/latest">Descargar app para Windows</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <div class="fbrand">
+      <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
+    </div>
+    <div>Argentina · España — © 2026 Asimov. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<div class="sticky-cta" id="stickyCta">
+  <div class="sc-text">Probá Asimov gratis 14 días<small>Sin tarjeta · sin permanencia · <span id="stickyPrice">desde $59.900/mes</span></small></div>
+  <a class="btn btn-sm btn-ion" href="#precios">Empezar ahora</a>
+</div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var country = "ar";
+
+  var cd = document.getElementById("cdown");
+  function tick() {
+    var diff = new Date("2027-01-01T00:00:00") - new Date();
+    if (diff <= 0) { cd.textContent = "vigencia"; return; }
+    var d = Math.floor(diff / 864e5);
+    var h = Math.floor(diff % 864e5 / 36e5);
+    var m = Math.floor(diff % 36e5 / 6e4);
+    cd.textContent = d + " días, " + h + " h " + m + " min";
+  }
+  tick(); setInterval(tick, 30000);
+
+  var bar = document.getElementById("scrollbar"), sticky = document.getElementById("stickyCta");
+  function onScroll() {
+    var h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100).toFixed(2) + "%";
+    sticky.classList.toggle("show", h.scrollTop > 900);
+  }
+  document.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.14 });
+  document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+
+  var savingsEl = document.getElementById("savings");
+  function fmtMoney(v) {
+    return country === "ar" ? "$" + v.toLocaleString("es-AR") : v.toLocaleString("es-ES") + " €";
+  }
+  function runSavings() {
+    var target = parseInt(country === "ar" ? savingsEl.dataset.targetAr : savingsEl.dataset.targetEs, 10);
+    if (reduced) { savingsEl.textContent = fmtMoney(target); return; }
+    var t0 = null, dur = 1600;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var k = Math.min((ts - t0) / dur, 1); k = 1 - Math.pow(1 - k, 3);
+      savingsEl.textContent = fmtMoney(Math.round(target * k));
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var sio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { runSavings(); sio.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  sio.observe(savingsEl);
+
+  var buttons = document.querySelectorAll(".country-toggle button");
+  var savingsCopy = document.getElementById("savingsCopy");
+  function setCountry(c) {
+    country = c;
+    buttons.forEach(function (b) {
+      var on = b.dataset.country === c;
+      b.classList.toggle("active", on); b.setAttribute("aria-selected", String(on));
+    });
+    document.querySelectorAll("[data-ar]").forEach(function (el) { var v = c === "ar" ? el.dataset.ar : el.dataset.es; if (v) el.textContent = v; });
+    document.querySelectorAll("[data-price-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.priceAr : el.dataset.priceEs; });
+    document.querySelectorAll("[data-per-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.perAr : el.dataset.perEs; });
+    document.getElementById("heroPrice").textContent = c === "ar" ? "$59.900/mes" : "19 €/mes";
+    document.getElementById("stickyPrice").textContent = c === "ar" ? "desde $59.900/mes" : "desde 19 €/mes";
+    savingsCopy.textContent = c === "ar"
+      ? "es lo que te ahorrás en un año eligiendo Asimov Pyme en vez de Xubio Estándar — y encima pasás de 5 a 10 usuarios, con app de escritorio incluida."
+      : "es lo que te ahorrás en un año eligiendo Asimov Pyme (39 €) frente a Holded Avanzado (49,50 €) — con 10 usuarios contra 7 y app de escritorio incluida.";
+    runSavings();
+  }
+  buttons.forEach(function (b) { b.addEventListener("click", function () { setCountry(b.dataset.country); }); });
+
+  document.querySelectorAll(".faq-item").forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      if (d.open) document.querySelectorAll(".faq-item[open]").forEach(function (o) { if (o !== d) o.open = false; });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+/* ============================================================
+   Asimov — theme.css (sistema de marca para las landings)
+
+   Fuente de verdad: branding/BRAND.md (identidad Asimov).
+   Ink #14171D · Graphite #232833 · Ion Orange #FF6A2B ·
+   Signal Cyan #2FD4BE · Space Grotesk / Inter / JetBrains Mono.
+
+   Nota: cada variante HTML embebe estos tokens para ser 100%
+   autocontenida (se pueden abrir sueltas, sin este archivo).
+   Este css queda como referencia canónica y para futuras páginas
+   que prefieran importarlo.
+   ============================================================ */
+
+:root {
+  /* Superficies */
+  --ink:        #0f1117;   /* fondo de página */
+  --ink-2:      #14171D;   /* fondo alterno / ventanas */
+  --graphite:   #1b1f27;   /* barras y headers */
+  --card:       #20242c;   /* tarjeta base */
+  --card-2:     #232833;   /* tarjeta elevada */
+  --border:     #2c333d;   /* hairline */
+  --border-2:   #343a43;   /* borde de control */
+
+  /* Marca */
+  --ion:        #FF6A2B;   /* Ion Orange — acción/acento */
+  --ion-hover:  #ff7d45;
+  --ion-dim:    rgba(255,106,43,0.14);
+  --ion-border: rgba(255,106,43,0.35);
+  --cyan:       #2FD4BE;   /* Signal Cyan — soporte/datos */
+  --cyan-dim:   rgba(47,212,190,0.12);
+
+  /* Texto */
+  --text:       #f2f3f5;
+  --text-2:     #b9bfc9;
+  --text-3:     #858d99;
+
+  /* Semánticos */
+  --ok:         #2FB47A;
+  --warn:       #F5A524;
+  --bad:        #E5484D;
+
+  /* Tipografía */
+  --sans:       "Inter", "Segoe UI", system-ui, sans-serif;
+  --display:    "Space Grotesk", "Inter", sans-serif;
+  --mono:       "JetBrains Mono", Consolas, monospace;
+
+  /* Radios / easing */
+  --r-md: 10px; --r-lg: 16px; --r-xl: 22px; --r-pill: 999px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Base */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--display); }
+a { color: inherit; }
+::selection { background: var(--ion); color: #fff; }
+
+/* Botones */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; padding: 0 26px;
+  font-family: var(--sans); font-size: 14.5px; font-weight: 600;
+  border: none; border-radius: 12px; cursor: pointer;
+  text-decoration: none; white-space: nowrap;
+  transition: background .18s, border-color .18s, transform .06s, box-shadow .18s;
+}
+.btn:active { transform: scale(.985); }
+.btn-ion { background: var(--ion); color: #fff; box-shadow: 0 8px 24px rgba(255,106,43,0.25); }
+.btn-ion:hover { background: var(--ion-hover); }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border-2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.09); }
+.btn-sm { height: 38px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
+.btn-lg { height: 52px; padding: 0 32px; font-size: 15.5px; }
+
+/* Badge / kicker */
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: var(--r-pill);
+  font-size: 12.5px; font-weight: 600;
+  background: var(--ion-dim); color: var(--ion);
+  border: 1px solid var(--ion-border);
+}
+.kicker {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ion);
+}
+
+/* Toggle de país */
+.country-toggle {
+  display: inline-flex; padding: 4px; gap: 4px;
+  background: var(--card); border: 1px solid var(--border-2);
+  border-radius: var(--r-pill);
+}
+.country-toggle button {
+  height: 38px; padding: 0 22px; font-family: var(--sans);
+  font-size: 13px; font-weight: 600; color: var(--text-2);
+  background: transparent; border: none; border-radius: var(--r-pill);
+  cursor: pointer; transition: background .18s, color .18s;
+}
+.country-toggle button.active { background: var(--ion); color: #fff; }
+
+/* Tablas scrolleables */
+.table-scroll {
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border-2); border-radius: var(--r-lg); background: var(--card);
+}

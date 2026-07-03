@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asimov — El sistema que vas a usar todos los días, a la vista</title>
+<meta name="description" content="Mirá Asimov por dentro: pedidos con margen, stock con catálogo de mayoristas, facturación electrónica legal en Argentina y España, y la app de escritorio." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+/* ══ ASIMOV BRAND SYSTEM ══ */
+:root {
+  --ink:#0f1117; --ink-2:#14171D; --graphite:#1b1f27; --card:#20242c; --card-2:#232833;
+  --border:#2c333d; --border-2:#343a43;
+  --ion:#FF6A2B; --ion-hover:#ff7d45; --ion-dim:rgba(255,106,43,0.14); --ion-border:rgba(255,106,43,0.35);
+  --cyan:#2FD4BE; --cyan-dim:rgba(47,212,190,0.12);
+  --text:#f2f3f5; --text-2:#b9bfc9; --text-3:#858d99; --ok:#2FB47A;
+  --sans:"Inter","Segoe UI",system-ui,sans-serif; --display:"Space Grotesk","Inter",sans-serif; --mono:"JetBrains Mono",Consolas,monospace;
+  --r-md:10px; --r-lg:16px; --r-xl:22px; --r-pill:999px;
+  --ease:cubic-bezier(0.2,0.7,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block} a{color:inherit}
+::selection{background:var(--ion);color:#fff}
+.container{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 26px;font-family:var(--sans);font-size:14.5px;font-weight:600;border:none;border-radius:12px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .18s,border-color .18s,transform .06s,box-shadow .18s}
+.btn:active{transform:scale(.985)}
+.btn-ion{background:var(--ion);color:#fff;box-shadow:0 8px 24px rgba(255,106,43,0.25)}
+.btn-ion:hover{background:var(--ion-hover)}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text);border:1px solid var(--border-2)}
+.btn-ghost:hover{background:rgba(255,255,255,0.09)}
+.btn-sm{height:38px;padding:0 16px;font-size:13px;border-radius:10px}
+.btn-lg{height:52px;padding:0 32px;font-size:15.5px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:var(--r-pill);font-size:12.5px;font-weight:600;background:var(--ion-dim);color:var(--ion);border:1px solid var(--ion-border)}
+.kicker{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ion);display:block;margin-bottom:14px}
+
+/* Ventana de producto */
+.appwin{position:relative;background:var(--ink-2);border:1px solid var(--border-2);border-radius:var(--r-lg);box-shadow:0 40px 90px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.03) inset;overflow:hidden;text-align:left;font-size:12.5px}
+.appwin .tbar{display:flex;align-items:center;gap:10px;background:var(--graphite);border-bottom:1px solid var(--border);padding:10px 16px;font-size:12px;color:var(--text-3)}
+.appwin .tbar .dots{margin-left:auto;display:flex;gap:6px}
+.appwin .tbar .dots i{width:9px;height:9px;border-radius:50%;background:var(--border-2)}
+.appwin .main{padding:18px;min-width:0}
+.kpis{display:flex;gap:10px;flex-wrap:wrap}
+.kpi{flex:1;min-width:110px;background:var(--card-2);border:1px solid var(--border-2);border-radius:10px;padding:12px 14px}
+.kpi b{display:block;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text)}
+.kpi span{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--text-3);text-transform:uppercase}
+.kpi.hot{border-color:var(--ion-border);background:linear-gradient(180deg,rgba(255,106,43,0.10),var(--card-2))}
+.kpi.hot b{color:var(--ion)}
+.appwin table{width:100%;border-collapse:collapse;margin-top:14px}
+.appwin th{color:var(--text-3);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border-2)}
+.appwin td{padding:9px 10px;font-size:12px;color:var(--text-2);border-bottom:1px solid var(--border)}
+.appwin td:first-child{font-family:var(--mono);font-size:11px;color:var(--text)}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.04em}
+.tag-ok{background:rgba(47,180,122,0.15);color:#4ade80}
+.tag-air{background:var(--cyan-dim);color:var(--cyan)}
+.m-orange{color:var(--ion);font-family:var(--mono);font-size:11.5px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border-2);border-radius:var(--r-lg);background:var(--card)}
+.country-toggle{display:inline-flex;padding:4px;gap:4px;background:var(--card);border:1px solid var(--border-2);border-radius:var(--r-pill)}
+.country-toggle button{height:38px;padding:0 22px;font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-2);background:transparent;border:none;border-radius:var(--r-pill);cursor:pointer;transition:background .18s,color .18s}
+.country-toggle button.active{background:var(--ion);color:#fff}
+
+/* ══ OPCIÓN 2 · PRODUCT-LED ══
+   tilt con mouse · tabs crossfade · parallax scroll · side dots */
+.side-dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:70;display:flex;flex-direction:column;gap:12px}
+.side-dots a{width:9px;height:9px;border-radius:50%;background:var(--border-2);transition:background .2s,transform .2s;display:block}
+.side-dots a.active{background:var(--ion);transform:scale(1.35)}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:90;border-bottom:1px solid transparent;transition:background .25s var(--ease),border-color .25s}
+.nav.scrolled{background:rgba(15,17,23,0.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:var(--border)}
+.nav-inner{display:flex;align-items:center;gap:24px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-0.01em;text-decoration:none}
+.nav-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+
+.hero{position:relative;padding:158px 0 100px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-160px 0 auto 0;height:620px;pointer-events:none;background:radial-gradient(620px 340px at 68% 20%,rgba(255,106,43,0.14),transparent 70%)}
+.hero-grid{position:relative;display:grid;grid-template-columns:0.92fr 1.08fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(34px,4.8vw,56px);line-height:1.05;letter-spacing:-0.03em;font-weight:700;margin:20px 0}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--ion),#ffa06e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{font-size:17px;color:var(--text-2);line-height:1.7;margin-bottom:30px;max-width:470px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero-note{font-size:13px;color:var(--text-3);margin-top:16px}
+.tilt-wrap{perspective:1400px}
+.tilt{transition:transform .18s ease-out;will-change:transform}
+
+.showcase{padding:104px 0;border-top:1px solid var(--border)}
+.showcase:nth-of-type(even){background:var(--ink-2)}
+.show-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.show-grid.rev .show-copy{order:2}
+.show-copy h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-0.02em;font-weight:700;margin-bottom:16px}
+.show-copy p{color:var(--text-2);line-height:1.7;font-size:15.5px;margin-bottom:22px}
+.show-stat{display:flex;gap:34px;margin-top:28px}
+.show-stat b{display:block;font-family:var(--display);font-size:26px;font-weight:700;color:var(--ion)}
+.show-stat span{font-size:11.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.parallax{will-change:transform}
+
+.tabs-section{padding:104px 0;border-top:1px solid var(--border);text-align:center}
+.tabs-section h2{font-size:clamp(28px,3.8vw,44px);letter-spacing:-0.02em;font-weight:700;margin-bottom:36px}
+.tab-btns{display:inline-flex;gap:6px;padding:5px;background:var(--card);border:1px solid var(--border-2);border-radius:var(--r-pill);margin-bottom:44px;flex-wrap:wrap;justify-content:center}
+.tab-btns button{height:40px;padding:0 22px;font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--text-2);background:transparent;border:none;border-radius:var(--r-pill);cursor:pointer;transition:background .2s,color .2s}
+.tab-btns button.active{background:var(--ion);color:#fff}
+.tab-panes{position:relative;max-width:880px;margin:0 auto}
+.tab-pane{opacity:0;visibility:hidden;position:absolute;inset:0;transition:opacity .45s var(--ease)}
+.tab-pane.active{opacity:1;visibility:visible;position:relative}
+
+.section{padding:104px 0;border-top:1px solid var(--border)}
+.section-head{text-align:center;max-width:660px;margin:0 auto 50px}
+.section-head h2{font-size:clamp(28px,3.8vw,44px);letter-spacing:-0.02em;font-weight:700;margin-bottom:16px}
+.section-head p{color:var(--text-2);font-size:16px;line-height:1.65}
+.toggle-row{display:flex;justify-content:center;margin-bottom:44px}
+.hplans{display:grid;gap:14px;max-width:900px;margin:0 auto}
+.hplan{display:grid;grid-template-columns:210px 1fr auto;gap:26px;align-items:center;padding:28px 32px;border-radius:var(--r-xl);background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border-2);transition:border-color .25s,transform .25s var(--ease)}
+.hplan:hover{border-color:var(--ion-border);transform:translateX(6px)}
+.hplan.featured{border-color:var(--ion);box-shadow:0 0 0 1px var(--ion),0 26px 60px rgba(255,106,43,0.12);background:linear-gradient(180deg,#262b35,var(--card))}
+.hplan h3{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ion);margin-bottom:8px}
+.hplan .price{font-family:var(--display);font-size:34px;font-weight:700;letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.hplan .per{font-size:12px;font-weight:500;color:var(--text-3)}
+.hplan-inc{font-size:13.5px;color:var(--text-2);line-height:1.75}
+.iva-note{text-align:center;font-size:12.5px;color:var(--text-3);margin-top:24px}
+
+.cmp table{width:100%;border-collapse:collapse;min-width:700px}
+.cmp th,.cmp td{padding:15px 18px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--border)}
+.cmp tbody tr:last-child td{border-bottom:none}
+.cmp th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);background:var(--graphite)}
+.cmp .col-asimov{background:rgba(255,106,43,0.06);border-inline:1px solid var(--ion-border)}
+.cmp thead .col-asimov{color:var(--ion)}
+.yes{color:var(--ok);font-weight:600} .no-x{color:var(--text-3)}
+.cmp-note{font-size:11.5px;color:var(--text-3);margin-top:16px;line-height:1.6}
+
+.faq{max-width:740px;margin:0 auto;display:grid;gap:10px}
+.faq-item{border:1px solid var(--border-2);border-radius:var(--r-md);background:var(--card);overflow:hidden;transition:border-color .25s}
+.faq-item[open]{border-color:var(--ion-border)}
+.faq-item summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 22px;font-size:14.5px;font-weight:600}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary svg{flex-shrink:0;transition:transform .3s var(--ease);color:var(--ion)}
+.faq-item[open] summary svg{transform:rotate(45deg)}
+.faq-item .faq-body{padding:0 22px 20px;font-size:14px;color:var(--text-2);line-height:1.7}
+
+.cta-final{position:relative;text-align:center;padding:110px 24px;overflow:hidden}
+.cta-final::before{content:"";position:absolute;inset:0;background:radial-gradient(640px 340px at 50% 110%,rgba(255,106,43,0.18),transparent 70%);pointer-events:none}
+.cta-final h2{position:relative;font-size:clamp(30px,4.4vw,52px);letter-spacing:-0.025em;font-weight:700;margin-bottom:16px}
+.cta-final h2 em{font-style:normal;color:var(--ion)}
+.cta-final p{position:relative;color:var(--text-2);margin-bottom:34px;font-size:16px}
+footer{border-top:1px solid var(--border);padding:40px 0;background:var(--ink-2)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--text-3)}
+.foot .fbrand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;color:var(--text);font-size:16px}
+
+.rvl,.rvr{opacity:0;transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rvl{transform:translateX(-40px)} .rvr{transform:translateX(40px)}
+.rvl.in,.rvr.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .rvl,.rvr{opacity:1;transform:none;transition:none}
+  .tilt{transition:none!important;transform:none!important}
+  .parallax{transform:none!important}
+  html{scroll-behavior:auto}
+}
+@media (max-width:1000px){
+  .hero-grid,.show-grid{grid-template-columns:1fr;gap:40px}
+  .show-grid.rev .show-copy{order:0}
+  .side-dots{display:none}
+  .hplan{grid-template-columns:1fr;gap:14px;text-align:left}
+}
+@media (max-width:760px){
+  .container{padding:0 18px}
+  .hero{padding-top:124px}
+  .nav-right .btn-ghost{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="side-dots" aria-label="Secciones">
+  <a href="#top" data-dot="top" class="active" aria-label="Inicio"></a>
+  <a href="#margen" data-dot="margen" aria-label="Margen"></a>
+  <a href="#stock" data-dot="stock" aria-label="Stock"></a>
+  <a href="#pantallas" data-dot="pantallas" aria-label="Pantallas"></a>
+  <a href="#escritorio" data-dot="escritorio" aria-label="Escritorio"></a>
+  <a href="#precios" data-dot="precios" aria-label="Precios"></a>
+</nav>
+
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">
+      <svg width="30" height="30" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
+    </a>
+    <div class="nav-right">
+      <a class="btn btn-sm btn-ghost" href="https://github.com/equazin/asimov-app/releases/latest">Descargar app</a>
+      <a class="btn btn-sm btn-ion" href="#precios">Probar gratis</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══ HERO con tilt ══ -->
+<section class="hero" id="top">
+  <div class="container hero-grid">
+    <div class="rvl in">
+      <span class="badge">ERP para pymes · Argentina y España</span>
+      <h1>Mirá el sistema <em>por dentro</em> antes de decidir</h1>
+      <p class="lead">Esto no es un folleto: son las pantallas reales. Pedidos que calculan el margen, stock con el catálogo del mayorista adentro y facturas legales en un clic.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-lg btn-ion" href="#precios">Probar gratis 14 días</a>
+        <a class="btn btn-lg btn-ghost" href="#pantallas">Ver las pantallas</a>
+      </div>
+      <div class="hero-note">Facturación ARCA (AR) · Verifactu (ES) · Sin permanencia</div>
+    </div>
+    <div class="tilt-wrap rvr in">
+      <div class="tilt" id="heroTilt">
+        <div class="appwin">
+          <div class="tbar">Asimov — Dashboard <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main">
+            <div class="kpis">
+              <div class="kpi hot"><b>$184.230</b><span>Ventas hoy</span></div>
+              <div class="kpi"><b>12</b><span>Fact. pendientes</span></div>
+              <div class="kpi"><b>7</b><span>Alertas stock</span></div>
+            </div>
+            <table>
+              <thead><tr><th>Pedido</th><th>Cliente</th><th>Margen</th><th>Total</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>PV-0341</td><td>Distribuidora Sur</td><td class="m-orange">+32%</td><td>$412.300</td><td><span class="tag tag-ok">FACTURADA</span></td></tr>
+                <tr><td>PV-0340</td><td>Núcleo SA</td><td class="m-orange">+28%</td><td>$96.800</td><td><span class="tag tag-ok">CAE OK</span></td></tr>
+                <tr><td>PV-0339</td><td>Tecno Rosario</td><td class="m-orange">+41%</td><td>$210.550</td><td><span class="tag tag-air">MAYORISTA</span></td></tr>
+                <tr><td>PV-0338</td><td>Insumos Beta</td><td class="m-orange">+22%</td><td>$58.900</td><td><span class="tag tag-ok">ENTREGADA</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SHOWCASE 1 · Margen ══ -->
+<section class="showcase" id="margen">
+  <div class="container show-grid">
+    <div class="show-copy rvl">
+      <span class="kicker">// ventas</span>
+      <h2>El precio sale del costo, no de la memoria</h2>
+      <p>Cargás el ítem, ponés el % de margen (por línea o general) y Asimov calcula el precio. Si el costo del proveedor cambió, lo ves antes de confirmar. Se acabó vender al costo sin darte cuenta.</p>
+      <div class="show-stat">
+        <div><b>+%</b><span>margen por ítem</span></div>
+        <div><b>0</b><span>ventas al costo</span></div>
+      </div>
+    </div>
+    <div class="parallax rvr" data-speed="0.06">
+      <div class="appwin">
+        <div class="tbar">Pedido de venta — PV-0342 <span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="main">
+          <table>
+            <thead><tr><th>Ítem</th><th>Costo</th><th>Margen %</th><th>Precio</th></tr></thead>
+            <tbody>
+              <tr><td>Notebook 15,6" i5</td><td>$820.000</td><td class="m-orange">25</td><td><b>$1.025.000</b></td></tr>
+              <tr><td>SSD NVMe 1TB</td><td>$74.500</td><td class="m-orange">38</td><td><b>$102.810</b></td></tr>
+              <tr><td>Memoria 16GB DDR5</td><td>$52.300</td><td class="m-orange">30</td><td><b>$67.990</b></td></tr>
+            </tbody>
+          </table>
+          <div class="kpis" style="margin-top:14px">
+            <div class="kpi hot"><b>+29,4%</b><span>Margen del pedido</span></div>
+            <div class="kpi"><b>$1.195.800</b><span>Total</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SHOWCASE 2 · Stock ══ -->
+<section class="showcase" id="stock">
+  <div class="container show-grid rev">
+    <div class="show-copy rvr">
+      <span class="kicker">// stock + mayoristas</span>
+      <h2>El catálogo del mayorista vive adentro del buscador</h2>
+      <p>Los artículos de tu mayorista IT aparecen junto a los tuyos, con su stock y su costo actualizado cada 15 minutos. Buscás, elegís, le ponés margen y vendés. Sin planillas de precios viejas.</p>
+      <div class="show-stat">
+        <div><b>15 min</b><span>sync de catálogo</span></div>
+        <div><b>N° serie</b><span>trazabilidad por unidad</span></div>
+      </div>
+    </div>
+    <div class="parallax rvl" data-speed="-0.05">
+      <div class="appwin">
+        <div class="tbar">Buscador de artículos — F4 <span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="main">
+          <table>
+            <thead><tr><th>Artículo</th><th>Origen</th><th>Disponible</th><th>Entrante</th><th>Costo</th></tr></thead>
+            <tbody>
+              <tr><td>Teclado mecánico RGB</td><td><span class="tag tag-air">MAYORISTA</span></td><td>136</td><td>40</td><td>$96.200</td></tr>
+              <tr><td>Monitor 27" IPS</td><td><span class="tag tag-air">MAYORISTA</span></td><td>54</td><td>—</td><td>$412.000</td></tr>
+              <tr><td>Cable HDMI 2m (propio)</td><td>Depósito 1</td><td>210</td><td>—</td><td>$6.400</td></tr>
+              <tr><td>Notebook 14" i7</td><td><span class="tag tag-air">MAYORISTA</span></td><td>12</td><td>25</td><td>$1.180.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TABS ══ -->
+<section class="tabs-section" id="pantallas">
+  <div class="container">
+    <span class="kicker">// el producto real</span>
+    <h2>Elegí una pantalla y mirala</h2>
+    <div class="tab-btns" role="tablist">
+      <button class="active" data-tab="t1" role="tab">Factura con CAE</button>
+      <button data-tab="t2" role="tab">Tesorería</button>
+      <button data-tab="t3" role="tab">RMA y garantías</button>
+    </div>
+    <div class="tab-panes">
+      <div class="tab-pane active" id="t1">
+        <div class="appwin">
+          <div class="tbar">Factura A — FA-0001-00081234 <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main">
+            <div class="kpis">
+              <div class="kpi hot"><b style="font-size:13px">CAE autorizada</b><span>ARCA · en tiempo real</span></div>
+              <div class="kpi"><b style="font-size:13px">Factura A</b><span>auto-sugerida por IVA</span></div>
+              <div class="kpi"><b style="font-size:13px">21% / 10,5%</b><span>IVA por línea</span></div>
+            </div>
+            <table>
+              <thead><tr><th>Concepto</th><th>Cant.</th><th>IVA</th><th>Total</th></tr></thead>
+              <tbody>
+                <tr><td>Notebook 15,6" i5</td><td>1</td><td>21%</td><td>$1.240.250</td></tr>
+                <tr><td>Instalación y puesta a punto</td><td>1</td><td>21%</td><td>$96.800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="t2">
+        <div class="appwin">
+          <div class="tbar">Tesorería — Caja y cuentas <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main">
+            <div class="kpis">
+              <div class="kpi hot"><b>$642.180</b><span>Caja hoy</span></div>
+              <div class="kpi"><b>$1.84M</b><span>Cta. cte. clientes</span></div>
+              <div class="kpi"><b>$920K</b><span>Cta. cte. proveedores</span></div>
+            </div>
+            <table>
+              <thead><tr><th>Movimiento</th><th>Medio</th><th>Importe</th></tr></thead>
+              <tbody>
+                <tr><td>Cobro FA-00081230</td><td>Transferencia</td><td>+$412.300</td></tr>
+                <tr><td>Pago OC-0089</td><td>Cheque 30d</td><td>−$188.000</td></tr>
+                <tr><td>Cobro FA-00081228</td><td>MercadoPago</td><td>+$96.800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane" id="t3">
+        <div class="appwin">
+          <div class="tbar">RMA — Garantías activas <span class="dots"><i></i><i></i><i></i></span></div>
+          <div class="main">
+            <table>
+              <thead><tr><th>Ticket</th><th>Producto</th><th>N° serie</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>RMA-0112</td><td>Monitor 27" IPS</td><td>SN-88412-A</td><td><span class="tag tag-ok">EN GARANTÍA</span></td></tr>
+                <tr><td>RMA-0111</td><td>Notebook 14" i7</td><td>SN-77201-C</td><td><span class="tag tag-ok">REPARADO</span></td></tr>
+                <tr><td>RMA-0110</td><td>SSD NVMe 1TB</td><td>SN-90332-B</td><td><span class="tag tag-air">RMA PROVEEDOR</span></td></tr>
+              </tbody>
+            </table>
+            <div class="kpis" style="margin-top:14px">
+              <div class="kpi"><b style="font-size:13px">Trazado</b><span>por número de serie</span></div>
+              <div class="kpi"><b style="font-size:13px">Historial</b><span>compra → venta → RMA</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ESCRITORIO ══ -->
+<section class="showcase" id="escritorio">
+  <div class="container show-grid">
+    <div class="show-copy rvl">
+      <span class="kicker">// app de escritorio · incluida</span>
+      <h2>Se instala, imprime directo y avisa como Windows</h2>
+      <p>La app de escritorio imprime facturas sin diálogos del navegador, muestra notificaciones nativas, arranca con la PC y cambia de empresa en dos clics. Los competidores viven en una pestaña; Asimov también vive en tu mostrador.</p>
+      <a class="btn btn-ghost" href="https://github.com/equazin/asimov-app/releases/latest">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Descargar para Windows — gratis
+      </a>
+    </div>
+    <div class="parallax rvr" data-speed="0.05">
+      <div class="appwin">
+        <div class="tbar">Asimov — Impresión directa <span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="main">
+          <div class="kpis">
+            <div class="kpi hot"><b style="font-size:13px">Imprimiendo…</b><span>HP LaserJet · silenciosa</span></div>
+            <div class="kpi"><b style="font-size:13px">2 ventanas</b><span>Ctrl+N · en paralelo</span></div>
+            <div class="kpi"><b style="font-size:13px">Auto-update</b><span>siempre al día</span></div>
+          </div>
+          <table>
+            <thead><tr><th>Notificación</th><th>Hora</th></tr></thead>
+            <tbody>
+              <tr><td>Nuevo lead: "Consulta por 20 notebooks"</td><td>10:42</td></tr>
+              <tr><td>Stock bajo: Monitor 27" (quedan 3)</td><td>10:15</td></tr>
+              <tr><td>CAE autorizada: FA-00081234</td><td>09:58</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRECIOS ══ -->
+<section class="section" id="precios" style="background:var(--ink-2)">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">// precios</span>
+      <h2>Tres planes, cero letra chica</h2>
+      <p>Todos incluyen la app de escritorio y márgenes por ítem. Sin permanencia.</p>
+    </div>
+    <div class="toggle-row">
+      <div class="country-toggle" role="tablist" aria-label="País">
+        <button class="active" data-country="ar" role="tab" aria-selected="true">Argentina (ARS)</button>
+        <button data-country="es" role="tab" aria-selected="false">España (EUR)</button>
+      </div>
+    </div>
+    <div class="hplans">
+      <div class="hplan rvl">
+        <div>
+          <h3>Emprendedor</h3>
+          <div class="price"><span data-price-ar="$59.900" data-price-es="19 €">$59.900</span></div>
+          <div class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</div>
+        </div>
+        <div class="hplan-inc"><span data-ar="500 comprobantes/mes · 3 usuarios · ventas + facturación ARCA · stock (1 depósito) · app de escritorio" data-es="1.500 facturas/año · 3 usuarios · ventas + Verifactu · stock (1 depósito) · app de escritorio">500 comprobantes/mes · 3 usuarios · ventas + facturación ARCA · stock (1 depósito) · app de escritorio</span></div>
+        <a class="btn btn-ghost" href="#">Empezar</a>
+      </div>
+      <div class="hplan featured rvl">
+        <div>
+          <h3>Pyme · recomendado</h3>
+          <div class="price"><span data-price-ar="$119.900" data-price-es="39 €">$119.900</span></div>
+          <div class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</div>
+        </div>
+        <div class="hplan-inc"><span data-ar="3.000 comprobantes/mes · 10 usuarios · multi-depósito · compras + tesorería + contabilidad · CRM" data-es="6.000 facturas/año · 10 usuarios · multi-depósito · compras + tesorería + contabilidad · CRM">3.000 comprobantes/mes · 10 usuarios · multi-depósito · compras + tesorería + contabilidad · CRM</span></div>
+        <a class="btn btn-ion" href="#">Probar 14 días</a>
+      </div>
+      <div class="hplan rvl">
+        <div>
+          <h3>Distribuidora</h3>
+          <div class="price"><span data-price-ar="$199.900" data-price-es="69 €">$199.900</span></div>
+          <div class="per" data-per-ar="/mes + IVA" data-per-es="/mes + IVA (anual)">/mes + IVA</div>
+        </div>
+        <div class="hplan-inc"><span data-ar="Ilimitado en comprobantes y usuarios · números de serie + RMA · integración con mayoristas · soporte prioritario" data-es="Facturas y usuarios ilimitados · números de serie + RMA · integración con mayoristas · soporte prioritario">Ilimitado en comprobantes y usuarios · números de serie + RMA · integración con mayoristas · soporte prioritario</span></div>
+        <a class="btn btn-ghost" href="#">Hablar con ventas</a>
+      </div>
+    </div>
+    <p class="iva-note" data-ar="Precios en pesos argentinos + IVA. Cancelás cuando quieras." data-es="Precios en euros + IVA (facturación anual). Cancelás cuando quieras.">Precios en pesos argentinos + IVA. Cancelás cuando quieras.</p>
+  </div>
+</section>
+
+<!-- ══ COMPARATIVA ══ -->
+<section class="section" id="comparativa">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">// comparativa</span>
+      <h2>Contra los de siempre</h2>
+    </div>
+    <div class="table-scroll cmp">
+      <table>
+        <thead>
+          <tr><th></th><th class="col-asimov">Asimov Pyme</th><th data-ar="Xubio Estándar" data-es="Holded Estándar">Xubio Estándar</th><th data-ar="Colppy Essential" data-es="Quipu Solution">Colppy Essential</th><th data-ar="Contabilium Standard" data-es="Sage 50">Contabilium Standard</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Precio de lista</td><td class="col-asimov"><b data-ar="$119.900" data-es="39 €">$119.900</b></td><td data-ar="$155.600" data-es="29,50 €">$155.600</td><td data-ar="$120.500" data-es="25 €">$120.500</td><td data-ar="$122.000" data-es="~45 €">$122.000</td></tr>
+          <tr><td>Usuarios incluidos</td><td class="col-asimov"><b>10</b></td><td data-ar="5" data-es="4">5</td><td data-ar="3" data-es="—">3</td><td data-ar="2" data-es="s/plan">2</td></tr>
+          <tr><td>App de escritorio</td><td class="col-asimov"><span class="yes">Incluida</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Margen por ítem</td><td class="col-asimov"><span class="yes">Sí</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Series + RMA</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+          <tr><td>Catálogo de mayoristas</td><td class="col-asimov"><span class="yes">Sí (Distribuidora)</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td><td><span class="no-x">No</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cmp-note">Precios de lista publicados por cada proveedor (julio 2026), orientativos y sujetos a cambio. Fuentes públicas: xubio.com, colppy.com, contabilium.com, holded.com, getquipu.com, sage.com. Las marcas pertenecen a sus dueños.</p>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="section" id="faq" style="background:var(--ink-2)">
+  <div class="container">
+    <div class="section-head"><span class="kicker">// faq</span><h2>Preguntas frecuentes</h2></div>
+    <div class="faq">
+      <details class="faq-item"><summary>¿La facturación es legal en mi país?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí. Argentina: comprobantes A/B/C/M con CAE de ARCA en tiempo real. España: preparado para Verifactu (obligatorio para sociedades desde 1/1/2027, autónomos 1/7/2027).</div></details>
+      <details class="faq-item"><summary>¿Necesito instalar algo?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">No es obligatorio: funciona en el navegador. La app de Windows es opcional y gratuita, con impresión directa y notificaciones. Se actualiza sola.</div></details>
+      <details class="faq-item"><summary>¿Puedo migrar desde Excel u otro sistema?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí. Importás clientes y artículos desde planillas y facturás el mismo día. Te acompañamos en la migración.</div></details>
+      <details class="faq-item"><summary>¿Hay permanencia o los precios incluyen IVA?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sin permanencia: cancelás cuando quieras y exportás todos tus datos. Los precios son + IVA, como todo el mercado.</div></details>
+      <details class="faq-item"><summary>¿Mi contador puede entrar?<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></summary><div class="faq-body">Sí, el acceso del estudio contable es gratis y no cuenta como usuario.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-final">
+  <h2>¿Viste las pantallas? <em>Ahora usalas.</em></h2>
+  <p>14 días gratis con todos los módulos. Sin tarjeta.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative">
+    <a class="btn btn-lg btn-ion" href="#precios">Crear mi cuenta gratis</a>
+    <a class="btn btn-lg btn-ghost" href="https://github.com/equazin/asimov-app/releases/latest">Descargar app para Windows</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <div class="fbrand">
+      <svg width="24" height="24" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 37 L31 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M60 37 L89 96" fill="none" stroke="#f2f3f5" stroke-width="14" stroke-linecap="round"/><path d="M43 76 H77" fill="none" stroke="#f2f3f5" stroke-width="11" stroke-linecap="round"/><circle cx="60" cy="21" r="11" fill="#FF6A2B"/></svg>
+      asimov
+    </div>
+    <div>Argentina · España — © 2026 Asimov. Todos los derechos reservados.</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var nav = document.getElementById("nav");
+
+  var tilt = document.getElementById("heroTilt");
+  if (tilt && !reduced && window.matchMedia("(pointer:fine)").matches) {
+    var wrap = tilt.parentElement;
+    wrap.addEventListener("mousemove", function (e) {
+      var r = wrap.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      tilt.style.transform = "rotateY(" + (x * 7).toFixed(2) + "deg) rotateX(" + (-y * 6).toFixed(2) + "deg)";
+    });
+    wrap.addEventListener("mouseleave", function () { tilt.style.transform = "rotateY(0) rotateX(0)"; });
+  }
+
+  var pars = Array.prototype.slice.call(document.querySelectorAll(".parallax"));
+  var dotSections = ["top", "margen", "stock", "pantallas", "escritorio", "precios"];
+  function onScroll() {
+    var st = document.documentElement.scrollTop;
+    nav.classList.toggle("scrolled", st > 24);
+    if (!reduced) {
+      pars.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var mid = r.top + r.height / 2 - window.innerHeight / 2;
+        el.style.transform = "translateY(" + (mid * parseFloat(el.dataset.speed)).toFixed(1) + "px)";
+      });
+    }
+    var current = dotSections[0];
+    dotSections.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < window.innerHeight * 0.45) current = id;
+    });
+    document.querySelectorAll(".side-dots a").forEach(function (a) {
+      a.classList.toggle("active", a.dataset.dot === current);
+    });
+  }
+  document.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll(".rvl,.rvr").forEach(function (el) { io.observe(el); });
+
+  document.querySelectorAll(".tab-btns button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".tab-btns button").forEach(function (x) { x.classList.remove("active"); });
+      document.querySelectorAll(".tab-pane").forEach(function (p) { p.classList.remove("active"); });
+      b.classList.add("active");
+      document.getElementById(b.dataset.tab).classList.add("active");
+    });
+  });
+
+  var buttons = document.querySelectorAll(".country-toggle button");
+  function setCountry(c) {
+    buttons.forEach(function (b) {
+      var on = b.dataset.country === c;
+      b.classList.toggle("active", on); b.setAttribute("aria-selected", String(on));
+    });
+    document.querySelectorAll("[data-ar]").forEach(function (el) { var v = c === "ar" ? el.dataset.ar : el.dataset.es; if (v) el.textContent = v; });
+    document.querySelectorAll("[data-price-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.priceAr : el.dataset.priceEs; });
+    document.querySelectorAll("[data-per-ar]").forEach(function (el) { el.textContent = c === "ar" ? el.dataset.perAr : el.dataset.perEs; });
+  }
+  buttons.forEach(function (b) { b.addEventListener("click", function () { setCountry(b.dataset.country); }); });
+
+  document.querySelectorAll(".faq-item").forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      if (d.open) document.querySelectorAll(".faq-item[open]").forEach(function (o) { if (o !== d) o.open = false; });
+    });
+  });
+})();
+</script>
+</body>
+</html>
