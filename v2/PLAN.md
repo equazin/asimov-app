@@ -125,6 +125,9 @@ Evolucionar Asimov ERP de app desktop Electron single-tenant a plataforma SaaS m
 - ✅ `.spec.ts` excluidos del `nest build`
 - ⬚ Pendiente: tests de auth/registerTenant, documentos (IVA/totales), E2E Playwright (admin)
 
+> 📄 **Sync multi-PC del desktop**: ver [docs/desktop-cloud-sync.md](../docs/desktop-cloud-sync.md)
+> — requisito de que una empresa abierta en varias PCs comparta datos (pendiente).
+
 #### 6.6 — Lanzamiento 🔧 EN PROGRESO
 - ✅ Cuenta principal `superadmin` + panel maestro protegido por rol
 - ✅ API lista para PaaS: bind 0.0.0.0, `start:prod` corre `migrate deploy`,
