@@ -4,7 +4,10 @@
 **/.turbo
 **/.expo
 **/*.tsbuildinfo
-packages/mobile
+# Excluimos el código de mobile del contexto, pero NO su package.json:
+# el Dockerfile lo necesita para que --frozen-lockfile matchee el workspace.
+packages/mobile/*
+!packages/mobile/package.json
 **/.env
 **/.env.*
 !**/.env.example
