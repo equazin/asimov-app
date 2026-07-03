@@ -219,7 +219,10 @@ async function main() {
     });
   }
 
-  console.log(`Seed complete: ${plans.length} plans, 1 demo tenant, 1 admin user`);
+  console.log(
+    `Seed complete: ${plans.length} plans, tenant maestro + superadmin (${superEmail}), ` +
+      `1 tenant demo (admin@demo.asimov.app)`,
+  );
 }
 
 main()
