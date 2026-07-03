@@ -148,15 +148,22 @@ que el bug de datos maestros).
   Verificado con `scripts/verify-shell-bridge.js` (10/10 bajo Electron real): el
   puente expone `window.asimov`, todas las sub-APIs y callbacks, y el roundtrip
   IPC funciona sin errores de preload.
-- [~] **CSP sin `unsafe-inline`:** la CSP ya es estricta (`default-src 'none'`;
-  sin `connect-src` → sin exfiltración de red; sin scripts externos/objects/
-  frames). Falta solo quitar `'unsafe-inline'` de `script-src`, que exige extraer
-  el `<script>` de ~1580 líneas **y** reescribir 102 handlers `onclick` inline +
-  los generados dinámicamente a event-delegation. **Diferido a propósito:** con
-  `contextIsolation` ya activo su valor es defensa-en-profundidad de bajo retorno
-  (un inline inyectado no puede ni exfiltrar ni escalar), y el refactor es alto
-  riesgo sin poder validar la UI automáticamente (el `smoke-test` no ejercita el
-  shell, que solo abre tras login). Hacer como tarea dedicada con prueba manual.
+- [~] **CSP sin `unsafe-inline` (EN CURSO en rama `harden/csp-inline`).**
+  Se construyó un **harness de validación real bajo Electron** (`scripts/verify-csp.js`)
+  que carga cada ventana y verifica 0 violaciones de CSP + 0 handlers inline en el
+  DOM. Progreso **11/17 ventanas endurecidas y validadas** (`script-src 'self'`,
+  script externalizado):
+  - Tier 1 (0 handlers): `login`, `client/supplier/product-selection`,
+    `new-article/quote/delivery-note`.
+  - Tier 2a (handlers estáticos): `new-client/supplier/sale-order/invoice`.
+  - Herramientas: `scripts/harden-window.js` (externaliza el `<script>` + inyecta
+    CSP), `copy-assets.js` copia `src/*.js`.
+  - **Pendiente:** 5 fichas con handlers estáticos (`new-receipt`,
+    `new-goods-receipt`, `new-purchase-order`, `new-purchase-invoice`,
+    `new-payment-order`) — mecánicas y validables por el harness; y **`shell.html`
+    (88 handlers, algunos generados dinámicamente)** — el único que además necesita
+    prueba manual clickeando la app. La rama no se mergea a `main` hasta validar
+    el shell corriendo la app.
 - [ ] (Opcional) DB cifrada (SQLCipher).
 
 ## Fase 3 — Tests ✅ (COMPLETADA)
