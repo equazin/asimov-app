@@ -254,7 +254,7 @@
   <!-- Search panel -->
   <div class="search-panel">
     <span class="search-label">Buscar</span>
-    <input type="text" class="search-input" id="txtSearch" placeholder="Buscar por código, descripción, línea o categoría..." autofocus />
+    <input type="text" class="search-input" id="txtSearch" placeholder="Buscar con + (ej: NB+16GB+LENOVO)" autofocus />
   </div>
 
   <!-- Table panel -->
@@ -385,13 +385,12 @@
     }
 
     function filterAndRender() {
-      const term = txtSearch.value.toUpperCase();
-      filteredProducts = products.filter(prod =>
-        prod.codigo.toUpperCase().includes(term) ||
-        prod.descripcion.toUpperCase().includes(term) ||
-        prod.linea.toUpperCase().includes(term) ||
-        prod.categoria.toUpperCase().includes(term)
-      );
+      const raw = txtSearch.value.toUpperCase();
+      const terms = raw.split("+").map(t => t.trim()).filter(Boolean);
+      filteredProducts = products.filter(prod => {
+        const haystack = (prod.codigo + " " + prod.descripcion + " " + prod.linea + " " + prod.categoria).toUpperCase();
+        return terms.every(t => haystack.includes(t));
+      });
       selectedIndex = 0;
       renderTable();
     }

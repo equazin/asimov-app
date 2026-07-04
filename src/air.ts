@@ -222,6 +222,7 @@ export interface AirProductNormalized {
   grupo: string | null;
   categoria: string | null;
   price: number | null;
+  ivaPct: number;
   stockDisp: number;
   stockFisico: number;
   stockEntrante: number;
@@ -275,6 +276,7 @@ const KEYS = {
   grupo: ["grupo"],
   categoria: ["categoria", "category"],
   price: ["precio", "precio_lista", "preciolista", "precioLista", "pvp", "price", "importe"],
+  iva: ["iva", "iva_pct", "ivaPct", "iva_porcentaje", "alicuota", "alicuota_iva", "tax", "tax_rate"],
   stockDisp: ["disponible", "stock_d", "stockd", "stockDisponible", "stock_disponible", "d"],
   stockFisico: ["fisico", "físico", "stock_f", "stockf", "stockFisico", "stock_fisico", "f"],
   stockEntrante: ["entrante", "stock_e", "stocke", "stockEntrante", "stock_entrante", "e", "pedido"],
@@ -324,6 +326,9 @@ export function mapAirProduct(raw: unknown): AirProductNormalized | null {
     stockEntrante = toInt(flatEntrante);
   }
 
+  const rawIva = toNum(pick(o, KEYS.iva));
+  const ivaPct = rawIva !== null && [0, 10.5, 21, 27].includes(rawIva) ? rawIva : 21;
+
   return {
     codiart,
     name,
@@ -332,6 +337,7 @@ export function mapAirProduct(raw: unknown): AirProductNormalized | null {
     grupo: toStr(pick(o, KEYS.grupo)),
     categoria: toStr(pick(o, KEYS.categoria)),
     price: toNum(pick(o, KEYS.price)),
+    ivaPct,
     stockDisp,
     stockFisico,
     stockEntrante,
@@ -388,13 +394,14 @@ export async function runAirSync(): Promise<AirSyncResult> {
         const id = crypto.randomUUID();
         dbRun(
           `INSERT INTO air_products (id, air_code, description, part_number, brand, category, unit, price_usd, iva_pct, stock, active, raw_json, synced_at)
-           VALUES (?, ?, ?, ?, ?, ?, 'un', ?, 21, ?, ?, ?, ?)
+           VALUES (?, ?, ?, ?, ?, ?, 'un', ?, ?, ?, ?, ?, ?)
            ON CONFLICT(air_code) DO UPDATE SET
              description = excluded.description,
              part_number = excluded.part_number,
              brand = excluded.brand,
              category = excluded.category,
              price_usd = excluded.price_usd,
+             iva_pct = excluded.iva_pct,
              stock = excluded.stock,
              active = excluded.active,
              raw_json = excluded.raw_json,
@@ -407,6 +414,7 @@ export async function runAirSync(): Promise<AirSyncResult> {
             p.rubro,
             p.categoria ?? p.grupo,
             p.price ?? 0,
+            p.ivaPct,
             p.stockDisp,
             p.active ? 1 : 0,
             JSON.stringify(rawItem),
@@ -423,7 +431,7 @@ export async function runAirSync(): Promise<AirSyncResult> {
           unit: "un",
           priceUsd: p.price ?? 0,
           priceArs: 0,
-          ivaPct: 21,
+          ivaPct: p.ivaPct,
           stock: p.stockDisp,
           active: p.active,
           rawJson: rawItem as Record<string, unknown>,

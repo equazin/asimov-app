@@ -748,7 +748,7 @@
         <button class="btn btn-primary" onclick="A.openNativeForm('article')">+ Nuevo Artículo</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar artículo, código..." oninput="A.loadView('stock',this.value)" /></div>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar con + (ej: NB+16GB+LENOVO)" oninput="A.debouncedSearch('stock',this.value)" /></div>
         <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('stock')">↻ Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-stock">
@@ -1440,6 +1440,7 @@
         { label: "Stock",     key: "stock_total",   w: "80px",  align: "right", fmt: fmtNum },
         { label: "Mín.",      key: "min_qty",       w: "70px",  align: "right", fmt: fmtNum },
         { label: "Precio",    key: "sale_price",    w: "110px", align: "right", fmt: fmtARS },
+        { label: "IVA",       key: "iva_pct",       w: "60px",  align: "center", fmt: (v) => (v ?? 21) + "%" },
         { label: "Origen",    key: "source",        w: "70px",  align: "center", fmt: fmtSource },
       ],
     },
@@ -1755,8 +1756,13 @@
   }
 
   // expose for buttons
+  let _searchTimer = null;
   window.A = {
     loadView: (viewId, search = "") => loadViewData(viewId, search),
+    debouncedSearch: (viewId, value) => {
+      clearTimeout(_searchTimer);
+      _searchTimer = setTimeout(() => loadViewData(viewId, value), 250);
+    },
     openNativeForm: (type) => {
       if (window.asimov && window.asimov.openNativeForm) {
         window.asimov.openNativeForm(type);

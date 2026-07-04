@@ -205,9 +205,13 @@ export function registerIpcHandlers(deps: IpcDeps): void {
 
   // --- DB: Artículos -------------------------------------------------------
   ipcMain.handle("db:articles:list", (_event, search: unknown) => {
-    const q = `%${safeStr(search)}%`;
+    const raw = safeStr(search);
+    const terms = raw.split("+").map(t => t.trim()).filter(Boolean);
+    const conditions = terms.map(() => "(a.name LIKE ? OR a.code LIKE ?)");
+    const params = terms.flatMap(t => { const q = `%${t}%`; return [q, q]; });
+    const where = conditions.length ? " AND " + conditions.join(" AND ") : "";
     return dbAll(`SELECT a.*, COALESCE((SELECT SUM(s.qty) FROM article_stock s WHERE s.article_id = a.id),0) as stock_total
-                  FROM articles a WHERE a.active = 1 AND (a.name LIKE ? OR a.code LIKE ?) ORDER BY a.name LIMIT 500`, [q, q]);
+                  FROM articles a WHERE a.active = 1${where} ORDER BY a.name LIMIT 500`, params);
   });
   ipcMain.handle("db:articles:get", (_event, id: unknown) => dbGet("SELECT * FROM articles WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:articles:save", (_event, row: unknown) => {
@@ -341,24 +345,35 @@ export function registerIpcHandlers(deps: IpcDeps): void {
 
   // --- DB: Stock -----------------------------------------------------------
   ipcMain.handle("db:stock:list", (_event, search: unknown) => {
-    const q = `%${safeStr(search)}%`;
+    const raw = safeStr(search);
+    const terms = raw.split("+").map(t => t.trim()).filter(Boolean);
+
+    const buildWhere = (nameCol: string, codeCol: string): { clause: string; params: string[] } => {
+      if (terms.length === 0) return { clause: "", params: [] };
+      const conditions = terms.map(() => `(${nameCol} LIKE ? OR ${codeCol} LIKE ?)`);
+      const params = terms.flatMap(t => { const q = `%${t}%`; return [q, q]; });
+      return { clause: "AND " + conditions.join(" AND "), params };
+    };
+
+    const local = buildWhere("a.name", "a.code");
     const localRows = dbAll(
-      `SELECT a.id, a.code, a.name, a.unit, a.sale_price,
+      `SELECT a.id, a.code, a.name, a.unit, a.sale_price, a.iva_pct,
               COALESCE(SUM(s.qty),0) as stock_total,
               COALESCE(MIN(s.min_qty),0) as min_qty,
               'local' as source
        FROM articles a LEFT JOIN article_stock s ON s.article_id = a.id
-       WHERE a.active = 1 AND a.manages_stock = 1 AND (a.name LIKE ? OR a.code LIKE ?)
-       GROUP BY a.id ORDER BY a.name LIMIT 500`, [q, q]);
+       WHERE a.active = 1 AND a.manages_stock = 1 ${local.clause}
+       GROUP BY a.id ORDER BY a.name LIMIT 500`, local.params);
 
     if (!isAirEnabled()) return localRows;
 
+    const air = buildWhere("description", "air_code");
     const airRows = dbAll(
       `SELECT id, air_code as code, description as name, 'un' as unit, price_usd as sale_price,
-              stock as stock_total, 0 as min_qty, 'air' as source
+              iva_pct, stock as stock_total, 0 as min_qty, 'air' as source
        FROM air_products
-       WHERE active = 1 AND (description LIKE ? OR air_code LIKE ?)
-       ORDER BY description LIMIT 5000`, [q, q]);
+       WHERE active = 1 ${air.clause}
+       ORDER BY description LIMIT 5000`, air.params);
 
     return [...(localRows as unknown[]), ...(airRows as unknown[])];
   });

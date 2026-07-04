@@ -68,6 +68,15 @@ describe("air — mapAirProduct", () => {
     expect(mapAirProduct({ cod: "F2", estado: "activo" })!.active).toBe(true);
     expect(mapAirProduct({ cod: "F3" })!.active).toBe(true); // default
   });
+
+  it("parsea IVA del catálogo, default 21 si falta o inválido", () => {
+    expect(mapAirProduct({ cod: "H1", iva: "10.5" })!.ivaPct).toBe(10.5);
+    expect(mapAirProduct({ cod: "H2", alicuota: 21 })!.ivaPct).toBe(21);
+    expect(mapAirProduct({ cod: "H3", iva_pct: 0 })!.ivaPct).toBe(0);
+    expect(mapAirProduct({ cod: "H4", iva: 27 })!.ivaPct).toBe(27);
+    expect(mapAirProduct({ cod: "H5" })!.ivaPct).toBe(21); // default
+    expect(mapAirProduct({ cod: "H6", iva: 15 })!.ivaPct).toBe(21); // invalid → default
+  });
 });
 
 describe("air — mapAirProducts", () => {

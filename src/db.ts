@@ -616,6 +616,7 @@ CREATE INDEX IF NOT EXISTS idx_invoices_date         ON invoices(date);
 CREATE INDEX IF NOT EXISTS idx_stock_movements_article ON stock_movements(article_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_client        ON tickets(client_id);
 CREATE INDEX IF NOT EXISTS idx_air_products_code      ON air_products(air_code);
+CREATE INDEX IF NOT EXISTS idx_air_products_desc      ON air_products(description);
 CREATE INDEX IF NOT EXISTS idx_air_products_category  ON air_products(category);
 CREATE INDEX IF NOT EXISTS idx_air_sync_runs_status   ON air_sync_runs(status);
 `;
