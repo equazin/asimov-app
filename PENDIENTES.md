@@ -1,36 +1,40 @@
 # Asimov ERP — Pendientes / Roadmap
 
-> Qué falta hacer, ordenado por prioridad. Última actualización: 2026-07-03.
+> Qué falta hacer, ordenado por prioridad. Última actualización: 2026-07-04.
 > Detalle de sub-temas en `v2/PLAN.md` y `docs/desktop-cloud-sync.md`.
 
 ## Estado general
 
 | Producto | Estado |
 |---|---|
-| **App escritorio** (Electron) | v4.3.0 en producción (release + autoupdate). Local-first, 1 empresa por PC. |
+| **App escritorio** (Electron) | **v4.5.0 en producción** (release + autoupdate). Login cloud, sync multi-PC, catálogo AIR con IVA por rubro. |
 | **Plataforma v2 SaaS** | API en Render + DB Neon + Panel en Vercel — **en vivo**. |
 | **App móvil** (Expo) | Construida (Fase 4), sin publicar en stores. |
 
 ---
 
-## 1. Conexión cloud del desktop + sync multi-PC 🔴 (prioridad alta)
+## 1. Sync multi-PC — completar cobertura 🟡
 
-**Objetivo:** que una misma empresa abierta en varias PCs comparta datos
-sincronizados. Hoy cada PC tiene su SQLite aislada. Diseño completo en
-[docs/desktop-cloud-sync.md](docs/desktop-cloud-sync.md).
+**Base ya en producción desde v4.4.0:** login cloud, badge de estado, cola de
+sync offline-first, mappers y apply del pull para las entidades base.
+Falta terminar la cobertura para que **todo** viaje entre PCs.
 
-- [ ] Definir modelo de login del desktop (login directo cloud vs local-first + sync).
-- [ ] Apuntar `src/api-client.ts` a la API de Render (hoy default `localhost:3000`).
-- [ ] UI "Conectar a la nube" en el desktop (email + contraseña de la empresa).
-- [ ] Aplicar el `pull` en la base local (insertar/actualizar filas remotas en SQLite).
-- [ ] Enganchar **todas** las escrituras del desktop a `enqueueChange` (cola de sync).
-- [ ] Propagación de borrados (soft-delete) en ambos sentidos.
-- [ ] Cobertura de entidades en pull/push (clientes, proveedores, productos, stock,
-      documentos, cta. cte., caja).
-- [ ] **Numeración de comprobantes multi-PC**: que la asigne el server por tenant
-      (evitar que dos PCs tomen el mismo número).
-- [ ] Indicador de estado de sync en la UI (conectado / sincronizando / offline / pendientes).
-- [ ] Release v4.4.0 con todo lo anterior (toca `src/` → requiere release + autoupdate).
+- [x] Login directo cloud (modelo A).
+- [x] `api-client.ts` apunta a Render.
+- [x] Pantalla "Conectar a la nube" en el login.
+- [x] Aplicar `pull` en SQLite (clientes, proveedores, artículos con mapper).
+- [x] Escrituras de clientes/proveedores/artículos encoladas.
+- [x] Indicador de estado en el status bar.
+- [x] Fix v4.4.4: fallback HTTP en catálogo AIR cuando el server devuelve 403.
+- [x] v4.5.0: búsqueda con `+` multi-término, IVA desde catálogo AIR y debounce.
+- [ ] **Propagación de borrados** (soft-delete) en ambos sentidos.
+- [ ] **Documentos** (facturas, remitos, órdenes de compra, etc.) — hoy no viajan
+      por el pull automático; cada tipo tiene shape (cabecera + líneas) distinto.
+- [ ] **Stock, cta. cte. y caja** — encolarse en push y aplicarse en pull.
+- [ ] **Numeración de comprobantes multi-PC** — la asigna el server por tenant
+      para evitar que dos PCs tomen el mismo número.
+- [ ] Reintento automático de la cola cuando la conexión vuelve (hoy el timer
+      cada 30 s ya cubre el caso feliz; falta backoff exponencial en errores).
 
 ## 2. Fase 6.5 — Tests 🟡
 
@@ -67,8 +71,9 @@ sincronizados. Hoy cada PC tiene su SQLite aislada. Diseño completo en
 ## 6. Higiene / técnico 🟢
 
 - [ ] AFIP: integración real de facturación electrónica (hoy stub WSAA/WSFE).
-- [ ] Investigar el origen de los archivos basura (`{,`, `{`, etc.) que aparecen en el
-      working tree (parecen errores de shell); ya están gitignorados los `*.db`.
+- [ ] Investigar el origen de los archivos basura (`{,`, `{`, `,-`, etc.) que
+      aparecen en el working tree (parecen errores de shell); ya están
+      gitignorados los `*.db`, pero conviene entender de dónde salen.
 - [ ] Rotar / cambiar credenciales sembradas por defecto (`admin/asimov`,
       `ventas@bartez.com.ar/3418`, `SUPERADMIN_PASSWORD`) antes de producción real.
 
