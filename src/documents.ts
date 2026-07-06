@@ -13,6 +13,23 @@
  */
 import { getDb, dbGet, dbRun, nextSequence, formatDocNumber } from "./db";
 import { randomUUID } from "node:crypto";
+import { enqueueChange } from "./sync";
+import { isCloudConnected } from "./api-client";
+import { buildDocEnvelope } from "./document-sync";
+
+/**
+ * Encola el documento (cabecera + ítems + movimientos) para push a la nube.
+ * Best-effort y solo con sesión cloud: nunca rompe el guardado local.
+ */
+function enqueueDocSnapshot(type: string, id: string): void {
+  if (!isCloudConnected()) return;
+  try {
+    const envelope = buildDocEnvelope(type, id);
+    if (envelope) enqueueChange("document_snapshot", id, "update", envelope as unknown as Record<string, unknown>);
+  } catch {
+    // best-effort: si la cola falla, el guardado local ya ocurrió.
+  }
+}
 
 function str(v: unknown, max = 500): string {
   return String(v ?? "").slice(0, max).trim();
@@ -148,6 +165,7 @@ export function persistGoodsReceipt(form: GoodsReceiptForm): PersistResult {
   });
 
   tx();
+  enqueueDocSnapshot("goods_receipt", id);
   return { id, number, stockMoved };
 }
 
@@ -201,6 +219,7 @@ export function persistDeliveryNote(form: DeliveryNoteForm): PersistResult {
   });
 
   tx();
+  enqueueDocSnapshot("delivery_note", id);
   return { id, number, stockMoved };
 }
 
@@ -253,6 +272,7 @@ export function persistReceipt(form: ReceiptForm): PersistResult {
   });
 
   tx();
+  enqueueDocSnapshot("receipt", id);
   return { id, number, cashMoved };
 }
 
@@ -306,6 +326,7 @@ export function persistPaymentOrder(form: PaymentOrderForm): PersistResult {
   });
 
   tx();
+  enqueueDocSnapshot("payment_order", id);
   return { id, number, cashMoved };
 }
 
@@ -382,6 +403,7 @@ export function persistSaleOrder(form: SaleOrderForm): PersistResult {
     }
   });
   tx();
+  enqueueDocSnapshot("sale_order", id);
   return { id, number };
 }
 
@@ -417,6 +439,7 @@ export function persistQuote(form: QuoteForm): PersistResult {
     }
   });
   tx();
+  enqueueDocSnapshot("quote", id);
   return { id, number };
 }
 
@@ -456,6 +479,7 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
     }
   });
   tx();
+  enqueueDocSnapshot("invoice", id);
   return { id, number };
 }
 
@@ -496,6 +520,7 @@ export function persistPurchaseOrder(form: PurchaseOrderForm): PersistResult {
     }
   });
   tx();
+  enqueueDocSnapshot("purchase_order", id);
   return { id, number };
 }
 
@@ -540,6 +565,7 @@ export function persistPurchaseInvoice(form: PurchaseInvoiceForm): PersistResult
     }
   });
   tx();
+  enqueueDocSnapshot("purchase_invoice", id);
   return { id, number };
 }
 

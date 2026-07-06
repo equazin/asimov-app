@@ -82,6 +82,7 @@ model Tenant {
   printTemplates PrintTemplate[]
   integrationConfigs IntegrationConfig[]
   externalCatalogProducts ExternalCatalogProduct[]
+  syncedDocuments SyncedDocument[]
 
   @@index([status])
   @@index([planId])
@@ -673,4 +674,29 @@ model ExternalCatalogProduct {
   @@index([tenantId, provider, active])
   @@index([tenantId, provider, externalCode])
   @@map("external_catalog_products")
+}
+
+// ============================================================
+// SYNC — Documentos multi-PC (envelope lossless del desktop)
+// ============================================================
+
+// Snapshot completo de un documento del desktop (cabecera + ítems + movimientos)
+// tal como lo guarda su SQLite local. El server no interpreta el shape: solo lo
+// almacena y lo reparte entre las PCs del tenant. `docId` es el id local del doc.
+model SyncedDocument {
+  id        String    @id @default(uuid())
+  tenantId  String
+  docId     String
+  type      String
+  number    String
+  payload   Json
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, docId])
+  @@index([tenantId, updatedAt])
+  @@map("synced_documents")
 }

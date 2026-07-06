@@ -18,6 +18,7 @@ import {
 import { net } from 'electron';
 import { encryptSecret } from './secrets';
 import { ensureSequenceBlocks } from './sequences';
+import { applyDocEnvelope, deleteDocLocal, type DocEnvelope } from './document-sync';
 
 const SYNC_INTERVAL_MS = 30_000;
 /** Tras este número de intentos fallidos, el cambio se "aparca" (deja de reintentarse). */
@@ -268,7 +269,11 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
 }
 
 function isCloudNativeEntity(entity: string): boolean {
-  return entity === 'integration_config' || entity === 'external_catalog_product';
+  return (
+    entity === 'integration_config' ||
+    entity === 'external_catalog_product' ||
+    entity === 'document_snapshot'
+  );
 }
 
 async function pushCloudNativeChanges(
@@ -386,7 +391,13 @@ async function pullChanges(): Promise<number> {
     const { changes, serverTimestamp } = result.data;
 
     for (const change of changes) {
-      applyRemoteChange(change);
+      // Un cambio que falle (p.ej. FK de un maestro aún no aplicado) no debe
+      // abortar el resto del pull; se reintentará en el próximo ciclo.
+      try {
+        applyRemoteChange(change);
+      } catch {
+        // best-effort por cambio
+      }
     }
 
     setLastSyncTimestamp(serverTimestamp);
@@ -583,9 +594,10 @@ function softDeleteAirProduct(data: RemoteRow): void {
  * Aplica un cambio remoto en la base local. El server manda entidades lógicas:
  *   client → clients, supplier → suppliers, product → articles.
  *
- * NOTA: los documentos (facturas, remitos, etc.) tienen shape complejo (cabecera
- * + líneas + numeración) y hoy quedan fuera del pull automático — se sincronizan
- * en otra iteración (PR-D/E) cuando se defina el mapeo por type.
+ * Los documentos del desktop viajan como `document_snapshot` (envelope lossless:
+ * cabecera + ítems + movimientos de stock/caja) y se aplican con `applyDocEnvelope`
+ * sin re-ejecutar efectos. El caso `document` (normalizado, web/mobile) queda
+ * reservado para cuando el panel opere documentos.
  */
 function applyRemoteChange(change: {
   entity: string;
@@ -625,8 +637,20 @@ function applyRemoteChange(change: {
       else upsertAirProduct(change.data);
       break;
     }
+    case 'document_snapshot': {
+      // Documentos multi-PC como envelope lossless (cabecera + ítems + movimientos).
+      if (change.action === 'delete') {
+        const env = change.data as unknown as DocEnvelope;
+        const type = String(env?.type ?? env?.header?.type ?? '');
+        if (type) deleteDocLocal(type, change.id);
+      } else {
+        applyDocEnvelope(change.data as unknown as DocEnvelope);
+      }
+      break;
+    }
     case 'document':
-      // TODO(PR-D/E): mapeo por type (invoice/receipt/quote/etc.) con cabecera + líneas.
+      // Documentos normalizados (creados desde web/mobile). Se mapearán cuando el
+      // panel opere documentos; hoy el canal multi-PC del desktop usa document_snapshot.
       break;
     default:
       break;
