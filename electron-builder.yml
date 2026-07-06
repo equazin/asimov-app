@@ -42,8 +42,18 @@ nsis:
   deleteAppDataOnUninstall: false
 
 # --- Auto-update vía GitHub Releases ---
+# El PRIMER provider define a dónde apunta el autoupdate embebido (app-update.yml):
+# el repo PÚBLICO `asimov-releases`, para que las PCs lean el feed sin token y sin
+# exponer el código (que vive en el repo privado `asimov-app`).
+# El segundo (`asimov-app`) se mantiene sólo durante la migración, para que la flota
+# actual —que todavía chequea `asimov-app`— reciba esta build y pase al nuevo canal.
+# Una vez migrada, se elimina y `asimov-app` vuelve a privado.
 publish:
-  provider: github
-  owner: equazin
-  repo: asimov-app
-  releaseType: release
+  - provider: github
+    owner: equazin
+    repo: asimov-releases
+    releaseType: release
+  - provider: github
+    owner: equazin
+    repo: asimov-app
+    releaseType: release
