@@ -17,6 +17,7 @@ import {
 } from './api-client';
 import { net } from 'electron';
 import { encryptSecret } from './secrets';
+import { ensureSequenceBlocks } from './sequences';
 
 const SYNC_INTERVAL_MS = 30_000;
 /** Tras este número de intentos fallidos, el cambio se "aparca" (deja de reintentarse). */
@@ -654,6 +655,10 @@ export async function runSync(): Promise<{
 
   isSyncing = true;
   try {
+    // Reservar bloques de numeración pendientes antes de push (para que los
+    // documentos que se creen a continuación ya tengan números autoritativos).
+    await ensureSequenceBlocks();
+
     const pushResult = await pushChanges();
     const pulled = await pullChanges();
 

@@ -31,6 +31,20 @@ CREATE TABLE IF NOT EXISTS sequences (
   last  INTEGER NOT NULL DEFAULT 0
 );
 
+-- Bloques de numeración reservados al server (Hi/Lo). Cada PC consume su rango
+-- [next_val, end_val] localmente (offline-first); al agotarlo pide otro bloque.
+-- Garantiza que dos PCs del mismo tenant no tomen el mismo número de comprobante.
+CREATE TABLE IF NOT EXISTS sequence_blocks (
+  name      TEXT PRIMARY KEY,
+  next_val  INTEGER NOT NULL,
+  end_val   INTEGER NOT NULL
+);
+
+-- Nombres de secuencia que necesitan (re)reservar un bloque en el próximo sync.
+CREATE TABLE IF NOT EXISTS sequence_refill (
+  name  TEXT PRIMARY KEY
+);
+
 -- Config del sistema
 CREATE TABLE IF NOT EXISTS system_config (
   key   TEXT PRIMARY KEY,
@@ -624,11 +638,66 @@ CREATE INDEX IF NOT EXISTS idx_air_sync_runs_status   ON air_sync_runs(status);
 // Secuencias (autonumeración)
 // ---------------------------------------------------------------------------
 
+/**
+ * Devuelve el próximo número correlativo para `name`.
+ *
+ * Multi-PC: si hay un bloque reservado a la nube con números disponibles, se
+ * consume de ahí (numeración autoritativa por tenant, sin colisiones entre PCs).
+ * Cada número consumido actualiza el "high-water mark" local (`sequences.last`)
+ * para que cualquier fallback local futuro nunca devuelva un número ya usado.
+ *
+ * Si no hay bloque (instalación sin nube, o se agotó/aún no se reservó), cae al
+ * correlativo local y marca la secuencia para reservar un bloque en el próximo sync.
+ */
 export function nextSequence(name: string): number {
   const db = getDb();
+
+  const block = db
+    .prepare("SELECT next_val, end_val FROM sequence_blocks WHERE name = ?")
+    .get(name) as { next_val: number; end_val: number } | undefined;
+
+  if (block && block.next_val <= block.end_val) {
+    const value = block.next_val;
+    db.prepare("UPDATE sequence_blocks SET next_val = next_val + 1 WHERE name = ?").run(name);
+    // High-water mark: el fallback local nunca debe regresar por debajo del bloque.
+    db.prepare(
+      "INSERT INTO sequences (name, last) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET last = MAX(last, excluded.last)",
+    ).run(name, value);
+    return value;
+  }
+
+  // Fallback local (sin bloque disponible). Se marca para reservar uno pronto.
   db.prepare("INSERT OR IGNORE INTO sequences (name, last) VALUES (?, 0)").run(name);
-  const result = db.prepare("UPDATE sequences SET last = last + 1 WHERE name = ? RETURNING last").get(name) as { last: number };
+  const result = db
+    .prepare("UPDATE sequences SET last = last + 1 WHERE name = ? RETURNING last")
+    .get(name) as { last: number };
+  db.prepare("INSERT OR IGNORE INTO sequence_refill (name) VALUES (?)").run(name);
   return result.last;
+}
+
+/** Nombres de secuencia que pidieron (re)reservar un bloque a la nube. */
+export function getSequenceRefillNames(): string[] {
+  const rows = getDb().prepare("SELECT name FROM sequence_refill").all() as Array<{ name: string }>;
+  return rows.map((r) => r.name);
+}
+
+/** Correlativo local máximo usado para `name` (piso para sembrar el bloque del server). */
+export function getSequenceLocalLast(name: string): number {
+  const row = getDb().prepare("SELECT last FROM sequences WHERE name = ?").get(name) as { last: number } | undefined;
+  return row?.last ?? 0;
+}
+
+/**
+ * Guarda un bloque reservado `[start, end]` y quita la marca de refill. Si el
+ * bloque local vigente todavía tuviera números, se descartan (hueco menor
+ * aceptable en numeración interna) y se pasa al nuevo rango, siempre creciente.
+ */
+export function storeSequenceBlock(name: string, start: number, end: number): void {
+  const db = getDb();
+  db.prepare(
+    "INSERT INTO sequence_blocks (name, next_val, end_val) VALUES (?, ?, ?) ON CONFLICT(name) DO UPDATE SET next_val = excluded.next_val, end_val = excluded.end_val",
+  ).run(name, start, end);
+  db.prepare("DELETE FROM sequence_refill WHERE name = ?").run(name);
 }
 
 export function formatDocNumber(prefix: string, seq: number): string {
