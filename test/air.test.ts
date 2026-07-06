@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { airRequest, mapAirProduct, mapAirProducts } from "../src/air";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { airRequest, mapAirProduct, mapAirProducts, resetAirAuthCache, AirRateLimitError } from "../src/air";
 import { closeDb, dbRun, initDb } from "../src/db";
 import { encryptSecret } from "../src/secrets";
 
@@ -12,6 +12,16 @@ function jsonResponse(body: unknown, status = 200): Response {
   } as Response;
 }
 
+/** Respuesta con body de texto crudo (para simular los notices de PHP de AIR). */
+function rawResponse(text: string, status = 200): Response {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: () => Promise.reject(new Error("no-json")),
+    text: () => Promise.resolve(text),
+  } as Response;
+}
+
 function seedAirConfig(): void {
   initDb(":memory:");
   dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_enabled", "true"]);
@@ -19,6 +29,10 @@ function seedAirConfig(): void {
   dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_password", encryptSecret("secret")]);
   dbRun("INSERT INTO system_config (key, value) VALUES (?, ?)", ["air_base_url", "https://api.air-intra.com/v2"]);
 }
+
+beforeEach(() => {
+  resetAirAuthCache();
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -87,12 +101,11 @@ describe("air — mapAirProducts", () => {
 });
 
 describe("air — transporte HTTP", () => {
-  it("reintenta con GET bearer si AIR rechaza el POST bearer con 403", async () => {
+  it("login (GET) + un único POST Bearer con los datos, sin fan-out", async () => {
     seedAirConfig();
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
-      .mockResolvedValueOnce(jsonResponse("Forbidden", 403))
       .mockResolvedValueOnce(jsonResponse([{ codiart: "A1", descripcion: "Router" }]));
 
     vi.stubGlobal("fetch", fetchMock);
@@ -100,8 +113,70 @@ describe("air — transporte HTTP", () => {
     await expect(airRequest("?q=articulos&page=0")).resolves.toEqual([
       { codiart: "A1", descripcion: "Router" },
     ]);
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    // Sólo 2 requests: login + POST bearer (antes hacía hasta 8).
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[0][0]).toContain("q=login");
     expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
-    expect(fetchMock.mock.calls[2][1]).toMatchObject({ method: "GET" });
+    expect(fetchMock.mock.calls[1][1].headers).toMatchObject({ Authorization: "Bearer tok-1" });
+  });
+
+  it("ante 401 re-loguea una vez y reintenta el POST", async () => {
+    seedAirConfig();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))          // login inicial
+      .mockResolvedValueOnce(jsonResponse({ error_id: 401 }, 401))       // POST → token vencido
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-2" }))          // re-login
+      .mockResolvedValueOnce(jsonResponse([{ codiart: "B1" }]));         // POST con token nuevo
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=0")).resolves.toEqual([{ codiart: "B1" }]);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock.mock.calls[3][1].headers).toMatchObject({ Authorization: "Bearer tok-2" });
+  });
+
+  it("ante 403 'Too many queries' lanza AirRateLimitError sin reintentar con otra auth", async () => {
+    seedAirConfig();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
+      .mockResolvedValueOnce(
+        jsonResponse({ error_id: 403, error_name: "Too many queries detected", error_detail: "esperá 5 min" }, 403),
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=0")).rejects.toBeInstanceOf(AirRateLimitError);
+    // login + 1 POST y nada más (sin fan-out de GET/token).
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("tolera un notice de PHP antepuesto al JSON y devuelve los datos", async () => {
+    seedAirConfig();
+    const dirty =
+      '<br /><b>Notice</b>: Undefined property: stdClass::$estado in <b>/x/consulta.php</b>[{"codiart":"A1","descripcion":"Router"}]';
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
+      .mockResolvedValueOnce(rawResponse(dirty));
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=0")).resolves.toEqual([
+      { codiart: "A1", descripcion: "Router" },
+    ]);
+  });
+
+  it("si el body no tiene JSON parseable, lanza (no lo toma como página vacía)", async () => {
+    seedAirConfig();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
+      .mockResolvedValueOnce(rawResponse("<br /><b>Notice</b>: error feo sin json"));
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=0")).rejects.toThrow(/no-JSON/);
   });
 });
