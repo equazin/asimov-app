@@ -19,8 +19,12 @@ import { net } from 'electron';
 import { encryptSecret } from './secrets';
 
 const SYNC_INTERVAL_MS = 30_000;
+/** Tras este número de intentos fallidos, el cambio se "aparca" (deja de reintentarse). */
+const MAX_ATTEMPTS = 8;
 let syncTimer: ReturnType<typeof setInterval> | null = null;
 let isSyncing = false;
+/** Recuerda si el último ciclo encontró la nube caída, para forzar reintento al volver. */
+let wasOffline = false;
 
 export function initSyncTables(): void {
   const db = getDb();
@@ -34,7 +38,9 @@ export function initSyncTables(): void {
       payload TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       synced_at TEXT,
-      error TEXT
+      error TEXT,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      next_attempt_at TEXT
     );
 
     CREATE TABLE IF NOT EXISTS sync_state (
@@ -42,6 +48,49 @@ export function initSyncTables(): void {
       value TEXT NOT NULL
     );
   `);
+
+  // Migración para instalaciones previas a v4.6.0 (la tabla existía sin estas columnas).
+  try { db.exec('ALTER TABLE sync_queue ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0'); } catch { /* ya existe */ }
+  try { db.exec('ALTER TABLE sync_queue ADD COLUMN next_attempt_at TEXT'); } catch { /* ya existe */ }
+}
+
+/** Minutos de espera antes del próximo intento, según cuántos van fallando (backoff exponencial con techo). */
+function backoffMinutes(attempts: number): number {
+  const schedule = [1, 2, 5, 10, 20, 40, 60, 120];
+  return schedule[Math.min(attempts, schedule.length - 1)];
+}
+
+/**
+ * Marca un fallo transitorio (red caída, 5xx, 429): incrementa intentos y agenda
+ * el próximo con backoff. Si se agota `MAX_ATTEMPTS`, el cambio queda aparcado
+ * (no se vuelve a intentar hasta un reintento manual/reconexión que lo reactive).
+ */
+function markTransientFailure(id: number, attempts: number, message: string): void {
+  const nextAttempts = attempts + 1;
+  if (nextAttempts >= MAX_ATTEMPTS) {
+    dbRun(
+      "UPDATE sync_queue SET attempts = ?, next_attempt_at = NULL, error = ? WHERE id = ?",
+      [nextAttempts, `parked_after_retries: ${message}`.slice(0, 500), id],
+    );
+    return;
+  }
+  dbRun(
+    "UPDATE sync_queue SET attempts = ?, next_attempt_at = datetime('now', ?), error = ? WHERE id = ?",
+    [nextAttempts, `+${backoffMinutes(nextAttempts)} minutes`, message.slice(0, 500), id],
+  );
+}
+
+/** Marca un fallo permanente (4xx de validación): no tiene sentido reintentar. */
+function markPermanentFailure(id: number, message: string): void {
+  dbRun(
+    "UPDATE sync_queue SET attempts = ?, next_attempt_at = NULL, error = ? WHERE id = ?",
+    [MAX_ATTEMPTS, message.slice(0, 500), id],
+  );
+}
+
+/** Un HTTP status es transitorio si conviene reintentar (red, timeout, rate-limit, 5xx). */
+function isTransientStatus(status: number): boolean {
+  return status === 408 || status === 429 || status >= 500;
 }
 
 export function enqueueChange(
@@ -75,21 +124,62 @@ interface QueueEntry {
   action: string;
   payload: string | null;
   created_at: string;
+  attempts: number;
 }
 
+/**
+ * Cambios listos para enviar: sin sincronizar, no aparcados (attempts < MAX) y
+ * cuyo backoff ya venció (`next_attempt_at` vacío o en el pasado).
+ */
 export function getPendingChanges(): QueueEntry[] {
   return dbAll(
-    'SELECT * FROM sync_queue WHERE synced_at IS NULL AND error IS NULL ORDER BY id ASC LIMIT 100',
-    [],
+    `SELECT * FROM sync_queue
+     WHERE synced_at IS NULL
+       AND attempts < ?
+       AND (next_attempt_at IS NULL OR next_attempt_at <= datetime('now'))
+     ORDER BY id ASC LIMIT 100`,
+    [MAX_ATTEMPTS],
   ) as QueueEntry[];
 }
 
+/** Cuenta lo que aún no se sincronizó (incluye lo que espera backoff, excluye lo aparcado). */
 export function getPendingCount(): number {
   const row = dbGet(
-    'SELECT COUNT(*) as count FROM sync_queue WHERE synced_at IS NULL AND error IS NULL',
-    [],
+    'SELECT COUNT(*) as count FROM sync_queue WHERE synced_at IS NULL AND attempts < ?',
+    [MAX_ATTEMPTS],
   ) as { count: number };
   return row.count;
+}
+
+/** Cambios definitivamente varados (agotaron reintentos o fallo permanente). */
+export function getParkedCount(): number {
+  const row = dbGet(
+    'SELECT COUNT(*) as count FROM sync_queue WHERE synced_at IS NULL AND attempts >= ?',
+    [MAX_ATTEMPTS],
+  ) as { count: number };
+  return row.count;
+}
+
+/**
+ * Reactiva los cambios que esperaban backoff para que se reintenten ya. Se llama
+ * al recuperar la conexión: no tiene sentido esperar el backoff si la nube volvió.
+ * No toca los aparcados (attempts >= MAX) para no reintentar en loop lo que ya falló definitivamente.
+ */
+function resetBackoffForRetryable(): void {
+  dbRun(
+    'UPDATE sync_queue SET next_attempt_at = NULL WHERE synced_at IS NULL AND attempts < ?',
+    [MAX_ATTEMPTS],
+  );
+}
+
+/** Reintenta manualmente los cambios aparcados (los "desagota" para un nuevo ciclo). */
+export function retryParkedChanges(): number {
+  const parked = getParkedCount();
+  dbRun(
+    'UPDATE sync_queue SET attempts = 0, next_attempt_at = NULL, error = NULL WHERE synced_at IS NULL AND attempts >= ?',
+    [MAX_ATTEMPTS],
+  );
+  return parked;
 }
 
 async function pushChanges(): Promise<{ pushed: number; errors: number }> {
@@ -146,7 +236,7 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
 
       if (response.ok) {
         dbRun(
-          "UPDATE sync_queue SET synced_at = datetime('now') WHERE id = ?",
+          "UPDATE sync_queue SET synced_at = datetime('now'), error = NULL WHERE id = ?",
           [entry.id],
         );
         pushed++;
@@ -158,17 +248,17 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
         pushed++;
       } else {
         const errBody = await response.text().catch(() => 'Unknown error');
-        dbRun(
-          'UPDATE sync_queue SET error = ? WHERE id = ?',
-          [errBody.slice(0, 500), entry.id],
-        );
+        const message = `HTTP ${response.status}: ${errBody}`;
+        if (isTransientStatus(response.status)) {
+          markTransientFailure(entry.id, entry.attempts, message);
+        } else {
+          markPermanentFailure(entry.id, message);
+        }
         errors++;
       }
     } catch (err) {
-      dbRun(
-        'UPDATE sync_queue SET error = ? WHERE id = ?',
-        [String(err).slice(0, 500), entry.id],
-      );
+      // Excepción de red (fetch falló): siempre transitorio → reintentar con backoff.
+      markTransientFailure(entry.id, entry.attempts, String(err));
       errors++;
     }
   }
@@ -204,8 +294,13 @@ async function pushCloudNativeChanges(
 
     if (!response.ok) {
       const errBody = await response.text().catch(() => 'Unknown error');
+      const message = `HTTP ${response.status}: ${errBody}`;
       for (const entry of entries) {
-        dbRun('UPDATE sync_queue SET error = ? WHERE id = ?', [errBody.slice(0, 500), entry.id]);
+        if (isTransientStatus(response.status)) {
+          markTransientFailure(entry.id, entry.attempts, message);
+        } else {
+          markPermanentFailure(entry.id, message);
+        }
       }
       return { pushed: 0, errors: entries.length };
     }
@@ -220,19 +315,21 @@ async function pushCloudNativeChanges(
 
     for (const entry of entries) {
       if (conflicts.has(entry.entity_id)) {
-        dbRun('UPDATE sync_queue SET error = ? WHERE id = ?', ['sync_conflict', entry.id]);
+        // El server no pudo aplicar el cambio: puede ser un hipo transitorio de DB
+        // o un dato inválido. Reintentamos con backoff; si persiste, se aparca.
+        markTransientFailure(entry.id, entry.attempts, 'sync_conflict');
         errors++;
       } else {
-        dbRun("UPDATE sync_queue SET synced_at = datetime('now') WHERE id = ?", [entry.id]);
+        dbRun("UPDATE sync_queue SET synced_at = datetime('now'), error = NULL WHERE id = ?", [entry.id]);
         pushed++;
       }
     }
 
     return { pushed, errors };
   } catch (err) {
-    const message = String(err).slice(0, 500);
+    // Excepción de red en el batch: transitorio para todos.
     for (const entry of entries) {
-      dbRun('UPDATE sync_queue SET error = ? WHERE id = ?', [message, entry.id]);
+      markTransientFailure(entry.id, entry.attempts, String(err));
     }
     return { pushed: 0, errors: entries.length };
   }
@@ -544,7 +641,16 @@ export async function runSync(): Promise<{
   if (!isCloudConnected()) return { pushed: 0, pulled: 0, errors: 0 };
 
   const isOnline = await apiTestConnection();
-  if (!isOnline) return { pushed: 0, pulled: 0, errors: 0 };
+  if (!isOnline) {
+    wasOffline = true;
+    return { pushed: 0, pulled: 0, errors: 0 };
+  }
+
+  // Acabamos de recuperar la conexión: reintentar ya lo que estaba esperando backoff.
+  if (wasOffline) {
+    resetBackoffForRetryable();
+    wasOffline = false;
+  }
 
   isSyncing = true;
   try {
@@ -578,12 +684,14 @@ export function stopSyncTimer(): void {
 export function getSyncStatus(): {
   connected: boolean;
   pendingChanges: number;
+  parkedChanges: number;
   lastSync: string | null;
   syncing: boolean;
 } {
   return {
     connected: isCloudConnected(),
     pendingChanges: getPendingCount(),
+    parkedChanges: getParkedCount(),
     lastSync: getLastSyncTimestamp(),
     syncing: isSyncing,
   };

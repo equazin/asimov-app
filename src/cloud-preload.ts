@@ -18,4 +18,5 @@ contextBridge.exposeInMainWorld('sync', {
   run: () => ipcRenderer.invoke('sync:run'),
   startAuto: () => ipcRenderer.invoke('sync:start-auto'),
   stopAuto: () => ipcRenderer.invoke('sync:stop-auto'),
+  retryParked: () => ipcRenderer.invoke('sync:retry-parked'),
 });

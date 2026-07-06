@@ -18,6 +18,7 @@ import {
   getSyncStatus,
   startSyncTimer,
   stopSyncTimer,
+  retryParkedChanges,
 } from './sync';
 
 export function registerCloudIpcHandlers(): void {
@@ -87,6 +88,13 @@ export function registerCloudIpcHandlers(): void {
   ipcMain.handle('sync:stop-auto', () => {
     stopSyncTimer();
     return { ok: true };
+  });
+
+  // Reactiva los cambios aparcados (que agotaron reintentos) para un nuevo ciclo.
+  ipcMain.handle('sync:retry-parked', async () => {
+    const reactivated = retryParkedChanges();
+    const result = await runSync();
+    return { ok: true, reactivated, ...result };
   });
 
   // Auto-start sync if user was previously logged in
