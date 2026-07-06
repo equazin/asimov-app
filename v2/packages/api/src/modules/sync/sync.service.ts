@@ -30,6 +30,7 @@ export class SyncService {
       documents,
       integrationConfigs,
       externalCatalogProducts,
+      syncedDocuments,
     ] = await Promise.all([
       this.prisma.client.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
@@ -48,6 +49,9 @@ export class SyncService {
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
       this.prisma.externalCatalogProduct.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.syncedDocument.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
     ]);
@@ -109,6 +113,17 @@ export class SyncService {
         id: `${p.provider}:${p.externalCode}`,
         data: p as unknown as Record<string, unknown>,
         updatedAt: p.updatedAt.toISOString(),
+      });
+    }
+
+    for (const d of syncedDocuments) {
+      changes.push({
+        entity: 'document_snapshot',
+        action: d.deletedAt ? 'delete' : 'update',
+        id: d.docId,
+        // El payload es el envelope completo tal como lo mandó el desktop origen.
+        data: d.payload as unknown as Record<string, unknown>,
+        updatedAt: d.updatedAt.toISOString(),
       });
     }
 
@@ -234,6 +249,40 @@ export class SyncService {
             },
             create: { id: data.id ? String(data.id) : undefined, tenantId, ...sanitized },
             update: sanitized,
+          });
+        }
+        break;
+      }
+
+      case 'document_snapshot': {
+        // El desktop manda el documento como envelope opaco; el server solo lo
+        // almacena y lo reparte. `id` es el id local del documento (docId).
+        const envelope = data as Record<string, unknown>;
+        const header = (envelope.header ?? {}) as Record<string, unknown>;
+        const type = String(envelope.type ?? '');
+        const number = String(header.number ?? '');
+        if (action === 'delete') {
+          await this.prisma.syncedDocument.updateMany({
+            where: { tenantId, docId: id },
+            data: { deletedAt: new Date() },
+          });
+        } else {
+          await this.prisma.syncedDocument.upsert({
+            where: { tenantId_docId: { tenantId, docId: id } },
+            create: {
+              tenantId,
+              docId: id,
+              type,
+              number,
+              payload: envelope as Prisma.InputJsonObject,
+              deletedAt: null,
+            },
+            update: {
+              type,
+              number,
+              payload: envelope as Prisma.InputJsonObject,
+              deletedAt: null,
+            },
           });
         }
         break;

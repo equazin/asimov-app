@@ -289,8 +289,9 @@ const api = {
   // Sincronización con la API v2 (Render). Sirve para el badge de estado
   // en el status bar y para forzar un push/pull manual desde la UI.
   cloudSync: {
-    status: () => ipcRenderer.invoke("sync:status") as Promise<{ connected: boolean; pendingChanges: number; lastSync: string | null; syncing: boolean }>,
+    status: () => ipcRenderer.invoke("sync:status") as Promise<{ connected: boolean; pendingChanges: number; parkedChanges: number; lastSync: string | null; syncing: boolean }>,
     run: () => ipcRenderer.invoke("sync:run") as Promise<{ ok: boolean; pushed?: number; pulled?: number; errors?: number; error?: string }>,
+    retryParked: () => ipcRenderer.invoke("sync:retry-parked") as Promise<{ ok: boolean; reactivated: number; pushed?: number; pulled?: number; errors?: number }>,
     cloudStatus: () => ipcRenderer.invoke("cloud:status") as Promise<{ connected: boolean; user: { email: string; name: string; role: string; tenantId: string } | null; apiUrl: string }>,
   },
 };

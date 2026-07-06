@@ -27,14 +27,24 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
 - [x] Indicador de estado en el status bar.
 - [x] Fix v4.4.4: fallback HTTP en catálogo AIR cuando el server devuelve 403.
 - [x] v4.5.0: búsqueda con `+` multi-término, IVA desde catálogo AIR y debounce.
-- [ ] **Propagación de borrados** (soft-delete) en ambos sentidos.
-- [ ] **Documentos** (facturas, remitos, órdenes de compra, etc.) — hoy no viajan
-      por el pull automático; cada tipo tiene shape (cabecera + líneas) distinto.
-- [ ] **Stock, cta. cte. y caja** — encolarse en push y aplicarse en pull.
-- [ ] **Numeración de comprobantes multi-PC** — la asigna el server por tenant
-      para evitar que dos PCs tomen el mismo número.
-- [ ] Reintento automático de la cola cuando la conexión vuelve (hoy el timer
-      cada 30 s ya cubre el caso feliz; falta backoff exponencial en errores).
+- [x] Reintento automático de la cola con **backoff exponencial** y reactivación
+      al reconectar; fallos permanentes se aparcan y se pueden desaparcar (paso 1).
+- [x] **Numeración de comprobantes multi-PC** — el server asigna rangos por tenant
+      (`POST /sequences/reserve`, Hi/Lo) y el desktop los consume offline-first con
+      fallback local y high-water mark (paso 3).
+- [x] **Documentos** (facturas, remitos, órdenes de compra, etc.) — viajan como
+      *envelope lossless* (cabecera + ítems + movimientos) vía `document_snapshot`
+      (paso 4).
+- [x] **Stock y caja** — los movimientos viajan como datos dentro del envelope del
+      documento y se aplican sin re-ejecutar efectos (sin doble conteo) (paso 5).
+- [x] **Propagación de borrados** de documentos (baja + reversa de efectos en la
+      otra PC); soft-delete de maestros ya estaba.
+- [ ] **Pendiente de release**: los cambios tocan `src/` → requiere **v4.6.0** con
+      autoupdate. Además correr `prisma migrate deploy` en la API (migración
+      `0002_synced_documents`).
+- [ ] **Warehouses/cajas custom**: hoy los movimientos referencian los ids por
+      defecto (`wh-default`/`ca-default`, iguales en toda PC). Si se crean depósitos
+      o cajas propias, falta sincronizarlos como maestros.
 
 ## 2. Fase 6.5 — Tests 🟡
 
