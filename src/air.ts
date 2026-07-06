@@ -6,8 +6,15 @@
  * No depende de Prisma ni de ningún ORM — usa directamente better-sqlite3 vía
  * los helpers de db.ts.
  *
- * Auth: token bearer obtenido con `?q=login`. Se cachea en memoria.
- * En 401 se re-loguea una vez y reintenta.
+ * Auth (según api.air-intra.com/docs): login `GET ?q=login&user=&pass=` → token;
+ * los endpoints de datos (`q=articulos`, `q=syp`) son **POST** con header
+ * `Authorization: Bearer <token>`. El token se cachea en memoria; en 401 se
+ * re-loguea una vez y reintenta.
+ *
+ * Rate-limit (doc): NO hay límite por request — las páginas se piden consecutivas
+ * (page=0,1,2… sin esperas). La API sólo pide una **pausa de 5 minutos entre
+ * ciclos completos** de descarga. Un 403 "Too many queries" significa que se está
+ * reiniciando el ciclo demasiado pronto (o se está hostigando con requests de más).
  */
 
 import { dbAll, dbRun } from "./db";
@@ -21,10 +28,16 @@ const AIR_BASE_URL = "https://api.air-intra.com/v2";
 const TOKEN_TTL_MS = 50 * 60 * 1000;
 const TOKEN_SKEW_MS = 30_000;
 const MAX_PAGES = 500;
+/** Pausa mínima entre ciclos completos de descarga que exige la API de AIR. */
+const AIR_MIN_CYCLE_MS = 5 * 60 * 1000;
 
 // ─── Token en memoria ───────────────────────────────────────────────────────
 
 let memToken: { token: string; expiresAt: number } | null = null;
+
+// Estado del ciclo de descarga: evita solapar corridas y respeta la pausa entre ciclos.
+let airSyncing = false;
+let lastCycleEndAt = 0;
 
 // ─── Helpers de config ──────────────────────────────────────────────────────
 
@@ -52,7 +65,8 @@ export function getAirLocalConfig(): AirLocalConfig {
     username: cfg.air_username ?? "",
     password: decryptSecret(cfg.air_password ?? ""),
     baseUrl: cfg.air_base_url?.trim() || AIR_BASE_URL,
-    syncIntervalMinutes: Math.max(1, parseInt(cfg.air_sync_interval ?? "15", 10) || 15),
+    // La API pide ≥5 min entre ciclos; no permitimos configurar menos.
+    syncIntervalMinutes: Math.max(5, parseInt(cfg.air_sync_interval ?? "15", 10) || 15),
   };
 }
 
@@ -115,6 +129,11 @@ async function getToken(force = false): Promise<string> {
   return login();
 }
 
+/** Descarta el token cacheado. Llamar al cambiar credenciales o en tests. */
+export function resetAirAuthCache(): void {
+  memToken = null;
+}
+
 // ─── Request genérico ───────────────────────────────────────────────────────
 
 function asArray(json: unknown): unknown[] {
@@ -125,51 +144,60 @@ function asArray(json: unknown): unknown[] {
   return [];
 }
 
-type AirFetchAttempt = {
-  label: string;
-  method: "GET" | "POST";
-  headers: Record<string, string>;
-  body?: string;
-};
-
-function buildAirFetchAttempts(token: string): AirFetchAttempt[] {
-  const bearerHeaders = {
-    Authorization: `Bearer ${token}`,
-    Accept: "application/json",
-  };
-  const tokenHeaders = {
-    Token: token,
-    Accept: "application/json",
-  };
-  return [
-    {
-      label: "POST bearer",
-      method: "POST",
-      headers: { ...bearerHeaders, "Content-Type": "application/json" },
-      body: "{}",
-    },
-    {
-      label: "GET bearer",
-      method: "GET",
-      headers: bearerHeaders,
-    },
-    {
-      label: "POST token",
-      method: "POST",
-      headers: { ...tokenHeaders, "Content-Type": "application/json" },
-      body: "{}",
-    },
-    {
-      label: "GET token",
-      method: "GET",
-      headers: tokenHeaders,
-    },
-  ];
+/** Error de rate-limit de AIR (403 "Too many queries"): hay que esperar, no reintentar. */
+export class AirRateLimitError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AirRateLimitError";
+  }
 }
 
-async function readSafeErrorBody(res: Response): Promise<string> {
-  const body = await res.text().catch(() => "");
-  return body.replace(/\s+/g, " ").slice(0, 160);
+/**
+ * Parsea el body de AIR tolerando basura previa. El backend (PHP) a veces
+ * antepone "notices"/HTML al JSON (p.ej. `<br /><b>Notice</b>: Undefined
+ * property: stdClass::$estado …`), lo que rompería un JSON.parse directo. Se
+ * intenta parsear tal cual y, si falla, desde el primer `[` o `{`.
+ */
+function extractJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    /* puede tener notices de PHP antes del JSON */
+  }
+  const idxs = [text.indexOf("["), text.indexOf("{")].filter((i) => i >= 0);
+  if (idxs.length === 0) return null;
+  try {
+    return JSON.parse(text.slice(Math.min(...idxs)));
+  } catch {
+    return null;
+  }
+}
+
+/** Extrae el envelope de error de AIR ({error_id, error_name, error_detail}) si viene JSON. */
+function parseAirError(bodyText: string): { id?: number; name?: string; detail?: string } {
+  const j = extractJson(bodyText);
+  if (j && typeof j === "object") {
+    const o = j as Record<string, unknown>;
+    return {
+      id: Number(o.error_id) || undefined,
+      name: typeof o.error_name === "string" ? o.error_name : undefined,
+      detail: typeof o.error_detail === "string" ? o.error_detail : undefined,
+    };
+  }
+  return {};
+}
+
+/** Un POST autenticado con Bearer, el contrato que documenta AIR para los datos. */
+function airPost(url: string, token: string): Promise<Response> {
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: "{}",
+  });
 }
 
 export async function airRequest(query: string): Promise<unknown[]> {
@@ -179,29 +207,45 @@ export async function airRequest(query: string): Promise<unknown[]> {
   const url = `${base}${sep}${query}`;
 
   let token = await getToken();
-  const errors: string[] = [];
 
-  for (let round = 0; round < 2; round++) {
-    for (const attempt of buildAirFetchAttempts(token)) {
-      const res = await fetch(url, {
-        method: attempt.method,
-        headers: attempt.headers,
-        body: attempt.body,
-      });
+  // Hasta 2 intentos: el 2º sólo ocurre si el 1º dio 401 (token vencido) y se re-logueó.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await airPost(url, token);
+    const text = await res.text().catch(() => "");
 
-      if (res.ok) {
-        const json: unknown = await res.json().catch(() => null);
-        return asArray(json);
+    if (res.ok) {
+      const json = extractJson(text);
+      // Body con contenido pero imposible de parsear (notice de PHP sin JSON
+      // detrás): NO devolver [] — eso haría creer que el catálogo terminó y
+      // desactivaría productos. Se lanza para marcar la corrida como error.
+      if (json === null && text.trim().length > 0) {
+        throw new Error(
+          `AIR ${query}: respuesta no-JSON (posible notice de PHP): ${text.replace(/\s+/g, " ").slice(0, 160)}`,
+        );
       }
-
-      errors.push(`${attempt.label}: HTTP ${res.status}${res.status === 403 ? " (sin permiso)" : ""} ${await readSafeErrorBody(res)}`.trim());
-
+      return asArray(json);
     }
 
-    if (round === 0) token = await getToken(true);
+    const bodyText = text.replace(/\s+/g, " ").slice(0, 200);
+    const airErr = parseAirError(text);
+
+    // 403 "Too many queries" → cooldown de la API: no reintentar, avisar claro.
+    if (res.status === 403 || airErr.id === 403) {
+      throw new AirRateLimitError(
+        `AIR rate-limit: ${airErr.detail ?? "demasiadas consultas"}. La API pide una pausa de ~5 minutos; reintentá luego.`,
+      );
+    }
+
+    // 401 → token inválido/vencido: re-login una vez y reintentar.
+    if (res.status === 401 && attempt === 0) {
+      token = await getToken(true);
+      continue;
+    }
+
+    throw new Error(`AIR ${query}: HTTP ${res.status} ${bodyText}`.trim());
   }
 
-  throw new Error(`AIR ${query}: no se pudo obtener catálogo. ${errors.join(" | ")}`);
+  throw new Error(`AIR ${query}: no se pudo autenticar tras reintentar el login.`);
 }
 
 export function fetchArticulosPage(page: number): Promise<unknown[]> {
@@ -370,7 +414,20 @@ export async function runAirSync(): Promise<AirSyncResult> {
     throw new Error("AIR: integración deshabilitada.");
   }
 
-  await getToken(true);
+  // No solapar: si ya hay una descarga en curso, no arrancamos otra.
+  if (airSyncing) {
+    throw new Error("AIR: ya hay una sincronización en curso.");
+  }
+
+  // Respetar la pausa de ~5 min entre ciclos completos que pide la API.
+  const sinceLast = Date.now() - lastCycleEndAt;
+  if (lastCycleEndAt && sinceLast < AIR_MIN_CYCLE_MS) {
+    const waitMin = Math.ceil((AIR_MIN_CYCLE_MS - sinceLast) / 60_000);
+    throw new Error(
+      `AIR: esperá ${waitMin} min antes de re-sincronizar (la API pide una pausa de 5 minutos entre ciclos).`,
+    );
+  }
+  airSyncing = true;
 
   const runId = crypto.randomUUID();
   const now = new Date().toISOString();
@@ -462,6 +519,10 @@ export async function runAirSync(): Promise<AirSyncResult> {
       [new Date().toISOString(), message.slice(0, 1000), itemsSynced, runId],
     );
     return { runId, pages: page, itemsSynced, deactivated: 0, status: "error", error: message };
+  } finally {
+    // Marca el fin del ciclo (arranca la pausa de 5 min) y libera el lock.
+    lastCycleEndAt = Date.now();
+    airSyncing = false;
   }
 }
 

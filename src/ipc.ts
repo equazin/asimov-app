@@ -36,6 +36,7 @@ import {
   startAirSyncTimer,
   stopAirSyncTimer,
   enqueueAirConfigCloudSync,
+  resetAirAuthCache,
 } from "./air";
 import {
   dbAll,
@@ -611,6 +612,11 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const stored = SECRET_CONFIG_KEYS.has(key) ? encryptSecret(value) : value;
     dbRun("INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)", [key, stored]);
     if (key.startsWith("air_")) {
+      // Cambió la config de AIR: descartar el token cacheado (puede ser de otras
+      // credenciales/URL) y propagar la config a la nube.
+      if (["air_username", "air_password", "air_base_url"].includes(key)) {
+        try { resetAirAuthCache(); } catch { /* best-effort */ }
+      }
       try { enqueueAirConfigCloudSync(); } catch { /* best-effort */ }
     }
     return { ok: true };
