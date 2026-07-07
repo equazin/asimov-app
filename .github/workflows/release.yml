@@ -1,12 +1,26 @@
 name: Release
 
+# NOTA sobre el canal de releases:
+# El autoupdate del desktop apunta al repo PÚBLICO `equazin/asimov-releases`
+# (ver electron-builder.yml → publish). El código fuente vive en el repo privado.
+#
+# Este workflow NO publica la release (el GITHUB_TOKEN por defecto sólo puede
+# escribir en ESTE repo, no en asimov-releases). Sólo compila y empaqueta el
+# instalador como artefacto, para validar que el build pasa en cada tag.
+#
+# La publicación oficial se hace con `npm run release` en local (electron-builder
+# sube a asimov-releases). Para publicar desde CI en su lugar, agregá un secret
+# `RELEASES_TOKEN` (PAT con contents:write en asimov-releases) y descomentá el
+# paso "Publish" de más abajo apuntando a ese repo.
+
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-windows:
@@ -25,13 +39,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Package installer
+      - name: Package installer (sin publicar)
         run: npx electron-builder --win --publish never
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Code signing (uncomment when certificate is ready):
           # CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           # CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -42,12 +56,14 @@ jobs:
             release/*.yml
           retention-days: 30
 
-      - name: Publish to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            release/*.exe
-            release/latest.yml
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # --- Publicación a asimov-releases (DESACTIVADA por defecto) ---
+      # Requiere el secret RELEASES_TOKEN (PAT con contents:write en asimov-releases).
+      # - name: Publish to asimov-releases
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     repository: equazin/asimov-releases
+      #     token: ${{ secrets.RELEASES_TOKEN }}
+      #     files: |
+      #       release/*.exe
+      #       release/latest.yml
+      #     generate_release_notes: true

@@ -4,8 +4,9 @@
  * App completamente nativa: todas las pantallas son HTML local con SQLite.
  * No hay carga de servidores remotos, sin partición de sesión web.
  */
-import { app, BrowserWindow, globalShortcut, ipcMain, Menu } from "electron";
+import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu } from "electron";
 import * as path from "node:path";
+import * as fs from "node:fs";
 import {
   getWindowBounds,
   setWindowBounds,
@@ -20,7 +21,7 @@ import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
 import { isAirEnabled } from "./air";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
-import { authenticate, seedDefaultAdmin, ensureUser, type SessionUser } from "./auth";
+import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
@@ -308,16 +309,35 @@ if (!gotLock) {
     syncLaunchAtStartup();
     initTray({ getMainWindow });
 
-    // Asegura un usuario admin en el primer arranque (credenciales por defecto).
-    seedDefaultAdmin();
-
-    // Usuario de acceso provisto (Bartez). Se crea una sola vez; cambiar la clave desde la app.
-    ensureUser({
-      name: "Ventas Bartez",
-      email: "ventas@bartez.com.ar",
-      password: "3418",
-      role: "admin",
-    });
+    // Primer arranque: siembra un admin con contraseña ALEATORIA (no hardcodeada)
+    // y la muestra/guarda una única vez para que el operador ingrese y la cambie.
+    const initialAdminPassword = seedDefaultAdmin();
+    if (initialAdminPassword) {
+      let credPath = "";
+      try {
+        credPath = path.join(app.getPath("userData"), "CREDENCIALES-INICIALES.txt");
+        fs.writeFileSync(
+          credPath,
+          `Asimov — credenciales iniciales del administrador\n\n` +
+            `Usuario: admin  (o ${DEFAULT_ADMIN.email})\n` +
+            `Contraseña: ${initialAdminPassword}\n\n` +
+            `IMPORTANTE: cambiá esta contraseña desde Usuarios apenas ingreses y borrá este archivo.\n`,
+          "utf8",
+        );
+      } catch { /* best-effort */ }
+      try {
+        dialog.showMessageBoxSync({
+          type: "info",
+          title: "Asimov — Primer acceso",
+          message: "Se creó el usuario administrador.",
+          detail:
+            `Usuario: admin  (${DEFAULT_ADMIN.email})\n` +
+            `Contraseña: ${initialAdminPassword}\n\n` +
+            `Guardala y cambiala desde Usuarios apenas ingreses.` +
+            (credPath ? `\nTambién quedó en:\n${credPath}` : ""),
+        });
+      } catch { /* best-effort */ }
+    }
 
     // --- Autenticación (gate de acceso) ---
     ipcMain.handle("auth:login", (_event, creds: { username?: string; password?: string }) => {
