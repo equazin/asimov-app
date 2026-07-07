@@ -499,6 +499,8 @@ td{ border-color:var(--border) !important; }
 ::-webkit-scrollbar-track{ background:#14171D; }
 /* ASIMOV-THEME-END */
   </style>
+  <link rel="stylesheet" href="comprobante-print.css" />
+  <script src="comprobante-print.js" defer></script>
 </head>
 <body>
 
@@ -832,7 +834,7 @@ td{ border-color:var(--border) !important; }
 
   <div class="footer">
     <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
-    <button class="footer-btn btn-print" disabled>🖨️ Imprimir / PDF</button>
+    <button class="footer-btn btn-print" id="btnPrint">🖨️ Imprimir / PDF</button>
     <button class="footer-btn btn-print" disabled title="Convierte esta cotización en un Pedido de Venta">📋 Convertir a Pedido</button>
     <button class="footer-btn btn-cancel" disabled>🗑️ Eliminar</button>
     <span class="footer-spacer"></span>
@@ -1105,6 +1107,26 @@ td{ border-color:var(--border) !important; }
 
     recalcTotals();
     renderItemsTable();
+
+    /* ─── Impresión de comprobante ─── */
+    window.getPrintData = function () {
+      if (!document.getElementById("txtClienteNombre").value.trim()) { alert("Seleccione un cliente antes de imprimir."); return null; }
+      if (items.length === 0) { alert("Agregue al menos un ítem."); return null; }
+      recalcTotals();
+      var t = window._totals || {}; var cli = clienteData || {};
+      return {
+        number: document.getElementById("txtNroCot").value,
+        date: document.getElementById("txtFecha").value,
+        validez: (document.getElementById("txtValidoHasta") || {}).value || "",
+        party: { name: document.getElementById("txtClienteNombre").value, cuit: cli.cuit || "", iva: cli.condicionIva || cli.iva || "", address: cli.domicilio || cli.address || "" },
+        notes: (document.getElementById("txtObsCliente") || {}).value || "",
+        items: items.map(function (it) { return { code: it.codigo, description: it.descripcion, qty: it.cantidad, unit: it.unidad, unitPrice: it.precio, ivaPct: it.iva, lineTotal: Number(it.cantidad) * Number(it.precio) }; }),
+        totals: { subtotal: t.subtotal, iva: t.iva, perc: t.perc || 0, total: t.total },
+      };
+    };
+    document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("presupuesto"); });
+    document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); window.printComprobante("presupuesto"); } });
   </script>
+  <div id="print-area"></div>
 </body>
 </html>

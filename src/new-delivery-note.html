@@ -537,6 +537,8 @@ td{ border-color:var(--border) !important; }
 ::-webkit-scrollbar-track{ background:#14171D; }
 /* ASIMOV-THEME-END */
   </style>
+  <link rel="stylesheet" href="comprobante-print.css" />
+  <script src="comprobante-print.js" defer></script>
 </head>
 <body>
 
@@ -820,7 +822,7 @@ td{ border-color:var(--border) !important; }
 
   <div class="footer">
     <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
-    <button class="footer-btn btn-print" disabled>🖨️ Imprimir <span class="kbd">F9</span></button>
+    <button class="footer-btn btn-print" id="btnPrint">🖨️ Imprimir <span class="kbd">F9</span></button>
     <button class="footer-btn btn-print" disabled title="Marcar como entregado y registrar confirmación">✅ Confirmar entrega</button>
     <button class="footer-btn btn-cancel" disabled>🗑️ Anular</button>
     <span class="footer-spacer"></span>
@@ -1056,6 +1058,24 @@ td{ border-color:var(--border) !important; }
     document.getElementById("btnClose").addEventListener("click", closeHandler);
 
     renderItemsTable();
+
+    /* ─── Impresión de comprobante ─── */
+    window.getPrintData = function () {
+      if (!document.getElementById("txtClienteNombre").value.trim()) { alert("Seleccione un cliente antes de imprimir."); return null; }
+      if (items.length === 0) { alert("Agregue al menos un ítem."); return null; }
+      var cli = clienteData || {};
+      return {
+        number: document.getElementById("txtNroRem").value,
+        date: document.getElementById("txtFecha").value,
+        transporte: (document.getElementById("txtTransporte") || {}).value || "",
+        party: { name: document.getElementById("txtClienteNombre").value, cuit: cli.cuit || "", iva: cli.condicionIva || cli.iva || "", address: (document.getElementById("txtDireccion") || {}).value || cli.domicilio || "" },
+        notes: (document.getElementById("txtObsEntrega") || {}).value || "",
+        items: items.map(function (it) { return { code: it.codigo, description: it.descripcion, qty: it.cantEntregada != null ? it.cantEntregada : it.cantidad, unit: it.unidad }; }),
+      };
+    };
+    document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("remito"); });
+    document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); window.printComprobante("remito"); } });
   </script>
+  <div id="print-area"></div>
 </body>
 </html>

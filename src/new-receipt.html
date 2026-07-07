@@ -587,6 +587,8 @@ td{ border-color:var(--border) !important; }
 ::-webkit-scrollbar-track{ background:#14171D; }
 /* ASIMOV-THEME-END */
   </style>
+  <link rel="stylesheet" href="comprobante-print.css" />
+  <script src="comprobante-print.js" defer></script>
 </head>
 <body>
 
@@ -967,7 +969,7 @@ td{ border-color:var(--border) !important; }
   <div class="footer">
     <button class="footer-btn btn-exit" id="btnExit">🚪 Salir <span class="kbd">ESC</span></button>
     <div class="footer-spacer"></div>
-    <button class="footer-btn btn-print" disabled>🖨️ Imprimir <span class="kbd">F9</span></button>
+    <button class="footer-btn btn-print" id="btnPrint">🖨️ Imprimir <span class="kbd">F9</span></button>
     <button class="footer-btn btn-print" disabled>📧 Enviar por email</button>
     <button class="footer-btn btn-cancel" disabled>❌ Anular</button>
     <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
@@ -1287,6 +1289,25 @@ td{ border-color:var(--border) !important; }
 
     renderFacturas();
     updateCobroSummary();
+
+    /* ─── Impresión de comprobante ─── */
+    window.getPrintData = function () {
+      if (!document.getElementById("txtClienteNombre").value.trim()) { alert("Seleccione un cliente antes de imprimir."); return null; }
+      if (!facturas.length) { alert("Agregue al menos una factura al recibo."); return null; }
+      var cli = clienteData || {};
+      var total = facturas.reduce(function (s, f) { return s + Number(f.cobrado || 0); }, 0);
+      return {
+        number: document.getElementById("txtNroRec").value,
+        date: document.getElementById("txtFecha").value,
+        party: { name: document.getElementById("txtClienteNombre").value, cuit: cli.cuit || "", iva: cli.condicionIva || cli.iva || "", address: cli.domicilio || cli.address || "" },
+        notes: (document.getElementById("txtConcepto") || {}).value || "",
+        total: total,
+        items: facturas.map(function (f) { return { code: f.nroFact, description: "Cancelación de factura", qty: 1, unit: "", unitPrice: f.cobrado, ivaPct: "", lineTotal: f.cobrado }; }),
+      };
+    };
+    document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("recibo"); });
+    document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); window.printComprobante("recibo"); } });
   </script>
+  <div id="print-area"></div>
 </body>
 </html>
