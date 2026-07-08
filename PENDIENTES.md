@@ -1,13 +1,13 @@
 # Asimov ERP — Pendientes / Roadmap
 
-> Qué falta hacer, ordenado por prioridad. Última actualización: 2026-07-04.
+> Qué falta hacer, ordenado por prioridad. Última actualización: 2026-07-08.
 > Detalle de sub-temas en `v2/PLAN.md` y `docs/desktop-cloud-sync.md`.
 
 ## Estado general
 
 | Producto | Estado |
 |---|---|
-| **App escritorio** (Electron) | **v4.5.0 en producción** (release + autoupdate). Login cloud, sync multi-PC, catálogo AIR con IVA por rubro. |
+| **App escritorio** (Electron) | **v4.8.0 en producción** (release + autoupdate). Login cloud, sync multi-PC, catálogo AIR con IVA por rubro, cotización del dólar automática, documentos entrelazados y esquemas/kits. |
 | **Plataforma v2 SaaS** | API en Render + DB Neon + Panel en Vercel — **en vivo**. |
 | **App móvil** (Expo) | Construida (Fase 4), sin publicar en stores. |
 
@@ -45,6 +45,11 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
 - [ ] **Warehouses/cajas custom**: hoy los movimientos referencian los ids por
       defecto (`wh-default`/`ca-default`, iguales en toda PC). Si se crean depósitos
       o cajas propias, falta sincronizarlos como maestros.
+- [ ] **Entidades v4.8.0 local-only**: `exchange_rates`, `document_links` y
+      `kit_components` **no viajan a la nube** (la API v2 no las conoce). Los
+      artículos repreciados sí se encolan como `product`. Para paridad multi-PC de
+      kits/vínculos hay que extender el schema Prisma de v2 + mappers de sync
+      (ver Fase F más abajo).
 
 ## 2. Fase 6.5 — Tests 🟡
 
@@ -86,6 +91,50 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
       gitignorados los `*.db`, pero conviene entender de dónde salen.
 - [ ] Rotar / cambiar credenciales sembradas por defecto (`admin/asimov`,
       `ventas@bartez.com.ar/3418`, `SUPERADMIN_PASSWORD`) antes de producción real.
+
+---
+
+## 7. Usabilidad y navegabilidad — plan de fases 🟢
+
+> Backlog surgido de la revisión de UX del 2026-07-08. Las 3 features grandes de
+> ese día (dólar, entrelazados, kits) ya están en **v4.8.0**. Lo de abajo es lo que
+> quedó del brainstorm, agrupado por fases de impacto/esfuerzo. Todo lo de las
+> Fases A–D vive en `src/shell.html` sin tocar la arquitectura.
+
+### Fase A — Tablas del shell (alto impacto, bajo esfuerzo) 🎯
+Es el "día a día". Nada de esto existe hoy en el shell.
+- [ ] **Ordenar por columna** (click en encabezado, asc/desc, indicador visual).
+- [ ] **Filtros rápidos por estado** (chips arriba de cada tabla: Pendiente / Facturado / Anulado…).
+- [ ] **Navegación por teclado en filas** (↑/↓ para moverse, Enter = acción principal, doble click).
+- [ ] **Paginación o scroll virtual** (para cuando haya miles de facturas/artículos).
+
+### Fase B — Búsqueda y navegación global
+- [ ] **Ctrl+K / Command Palette** — buscar cualquier cliente/factura/artículo y ejecutar acciones ("nueva factura") desde un solo lugar. *La de mayor salto de fluidez.*
+- [ ] **Ítems recientes** — últimos 10 documentos/entidades abiertos (sidebar o dashboard).
+- [ ] **Colapsar secciones del sidebar** con estado persistido (+ modo compacto solo-íconos).
+- [ ] **Favoritos / anclar vistas** por rol (el que factura no necesita ver RMA).
+
+### Fase C — Trazabilidad visible y drill-down
+Aprovecha la infra ya creada en v4.8.0 (`document_links` + `getLinksFor`).
+- [ ] **Links clickeables entre entidades** en las tablas: factura → cliente, cliente → cta. cte., pedido → remito → factura.
+- [ ] **Mostrar vínculos de documentos** (columna/panel "origen → derivados") — el backend ya los expone vía `db:doc-links:get`.
+- [ ] **Panel de detalle lateral (drawer)** — click en fila abre detalle + acciones (imprimir/anular/duplicar) sin salir de la lista.
+
+### Fase D — Flujos de documentos
+- [ ] **Duplicar documento** ("nueva cotización igual a esta para otro cliente").
+- [ ] **Conversión encadenada visible** — botón "Convertir a…" (cotización→pedido→remito→factura), reusando `document_links`.
+- [ ] **Atajos visibles** — modal de ayuda "?" con la lista (los `Ctrl+Shift+X` de `menu.ts` ya existen pero nadie los descubre) + tooltips.
+
+### Fase E — Apartados nuevos
+- [ ] **Dashboard accionable** — no solo números: "5 facturas vencen esta semana", "3 artículos bajo mínimo", cada alerta clickeable a la vista filtrada.
+- [ ] **Agenda / Vencimientos** — calendario de cheques, vencimientos de facturas de compra y seguimientos de CRM.
+- [ ] **Notas / adjuntos** en documentos y clientes (PDF o nota interna).
+- [ ] **Historial por entidad** — timeline cronológico de todas las operaciones de un cliente.
+- [ ] **Notificaciones internas** (campanita: stock bajo, sync fallida, comprobante AFIP rechazado).
+
+### Fase F — Deuda multi-PC de v4.8.0
+- [ ] Sincronizar `exchange_rates`, `document_links` y `kit_components` a la nube:
+      extender schema Prisma de v2 + mappers/apply de `src/sync.ts` (ver punto 1).
 
 ---
 
