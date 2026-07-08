@@ -22,6 +22,7 @@ import { hashPassword, type SessionUser } from "./auth";
 import { encryptSecret } from "./secrets";
 import { enqueueChange } from "./sync";
 import { isCloudConnected } from "./api-client";
+import { buildDocEnvelope } from "./document-sync";
 
 /** Encola un cambio (create/update/delete) sólo si hay sesión cloud activa. */
 function enqueueIfCloud(entity: string, id: string, action: "create" | "update" | "delete", payload?: Record<string, unknown>) {
@@ -39,6 +40,10 @@ import {
   resetAirAuthCache,
 } from "./air";
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
+import {
+  getAfipConfig, saveAfipCredentials, testAfipConnection, requestCae as afipRequestCae,
+  type SaveCredentialsInput, type CaeRequestInput,
+} from "./afip-service";
 import { listPendingSaleOrders, listPendingDeliveryNotes, getSourceItems, getLinksFor } from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
 import {
@@ -602,7 +607,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   // --- DB: Sistema Config --------------------------------------------------
   // Claves cuyo valor son secretos: se cifran en reposo (safeStorage) y nunca se
   // devuelven en el volcado genérico de configuración.
-  const SECRET_CONFIG_KEYS = new Set(["air_password"]);
+  const SECRET_CONFIG_KEYS = new Set(["air_password", "afip_cert", "afip_key", "afip_ta"]);
   ipcMain.handle("db:config:get-all", () =>
     dbAll<{ key: string; value: string }>("SELECT key, value FROM system_config ORDER BY key")
       .map((r) => (SECRET_CONFIG_KEYS.has(r.key) ? { key: r.key, value: "" } : r))
@@ -791,6 +796,76 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("air:sync-timer:stop", () => {
     stopAirSyncTimer();
     return { ok: true };
+  });
+
+  // ── AFIP / ARCA — facturación electrónica (desktop directo) ──────────
+  ipcMain.handle("afip:status", () => {
+    try {
+      return { ok: true, data: getAfipConfig() };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("afip:save-credentials", (_event, raw: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      const r = (raw ?? {}) as Record<string, unknown>;
+      const input: SaveCredentialsInput = {
+        cuit: safeStr(r.cuit),
+        pointOfSale: Number(r.pointOfSale) || 1,
+        env: safeStr(r.env) === "produccion" ? "produccion" : "homologacion",
+        certPem: r.certPem !== undefined ? safeStr(r.certPem, 100000) : undefined,
+        keyPem: r.keyPem !== undefined ? safeStr(r.keyPem, 100000) : undefined,
+        enabled: r.enabled === undefined ? undefined : Boolean(r.enabled),
+      };
+      return { ok: true, data: saveAfipCredentials(input) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("afip:test-connection", async () => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      return await testAfipConnection();
+    } catch (err: unknown) {
+      return { ok: false, message: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("afip:request-cae", async (_event, raw: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      const r = (raw ?? {}) as Record<string, unknown>;
+      const input: CaeRequestInput = {
+        invoiceId: safeStr(r.invoiceId),
+        invoiceType: Number(r.invoiceType) || 6,
+        clientCuit: safeStr(r.clientCuit),
+        concepto: r.concepto !== undefined ? Number(r.concepto) : undefined,
+        date: r.date ? safeStr(r.date, 40) : undefined,
+        net: Number(r.net) || 0,
+        iva: Number(r.iva) || 0,
+        total: Number(r.total) || 0,
+        items: Array.isArray(r.items)
+          ? (r.items as Array<Record<string, unknown>>).map((it) => ({ ivaRate: Number(it.ivaRate) || 0, subtotal: Number(it.subtotal) || 0 }))
+          : [],
+      };
+      if (!input.invoiceId) return { ok: false, error: "Falta el identificador de la factura." };
+      const data = await afipRequestCae(input);
+      // El CAE cambió la factura local (número/estado): propagar a la nube y refrescar el shell.
+      if (isCloudConnected()) {
+        try {
+          const envelope = buildDocEnvelope("invoice", input.invoiceId);
+          if (envelope) enqueueChange("document_snapshot", input.invoiceId, "update", envelope as unknown as Record<string, unknown>);
+        } catch { /* best-effort */ }
+      }
+      const win = deps.getMainWindow();
+      if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
+      return { ok: true, data };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
   });
 
   // ── Esquemas / Kits ──────────────────────────────────────────────────

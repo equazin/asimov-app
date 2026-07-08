@@ -890,7 +890,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_air_getairlocalconfig",
-      "community": 19,
+      "community": 29,
       "norm_label": "getairlocalconfig()"
     },
     {
@@ -900,7 +900,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_air_isairenabled",
-      "community": 19,
+      "community": 29,
       "norm_label": "isairenabled()"
     },
     {
@@ -910,7 +910,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_air_enqueueairconfigcloudsync",
-      "community": 19,
+      "community": 29,
       "norm_label": "enqueueairconfigcloudsync()"
     },
     {
@@ -1030,7 +1030,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "src_air_fetcharticulospage",
-      "community": 19,
+      "community": 29,
       "norm_label": "fetcharticulospage()"
     },
     {
@@ -1180,7 +1180,7 @@
       "source_location": "L412",
       "_origin": "ast",
       "id": "src_air_runairsync",
-      "community": 19,
+      "community": 29,
       "norm_label": "runairsync()"
     },
     {
@@ -1190,7 +1190,7 @@
       "source_location": "L531",
       "_origin": "ast",
       "id": "src_air_testairconnection",
-      "community": 19,
+      "community": 29,
       "norm_label": "testairconnection()"
     },
     {
@@ -1200,7 +1200,7 @@
       "source_location": "L557",
       "_origin": "ast",
       "id": "src_air_startairsynctimer",
-      "community": 19,
+      "community": 29,
       "norm_label": "startairsynctimer()"
     },
     {
@@ -1210,7 +1210,7 @@
       "source_location": "L575",
       "_origin": "ast",
       "id": "src_air_stopairsynctimer",
-      "community": 19,
+      "community": 29,
       "norm_label": "stopairsynctimer()"
     },
     {
@@ -1480,7 +1480,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_auth",
-      "community": 29,
+      "community": 107,
       "norm_label": "auth.ts"
     },
     {
@@ -1490,7 +1490,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_auth_hashpassword",
-      "community": 29,
+      "community": 107,
       "norm_label": "hashpassword()"
     },
     {
@@ -1500,7 +1500,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_auth_verifypassword",
-      "community": 29,
+      "community": 107,
       "norm_label": "verifypassword()"
     },
     {
@@ -1510,7 +1510,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_auth_sessionuser",
-      "community": 19,
+      "community": 29,
       "norm_label": "sessionuser"
     },
     {
@@ -1520,7 +1520,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_auth_authenticate",
-      "community": 29,
+      "community": 107,
       "norm_label": "authenticate()"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_auth_default_admin",
-      "community": 29,
+      "community": 107,
       "norm_label": "default_admin"
     },
     {
@@ -1540,7 +1540,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_auth_generateinitialpassword",
-      "community": 29,
+      "community": 107,
       "norm_label": "generateinitialpassword()"
     },
     {
@@ -1550,7 +1550,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_auth_seeddefaultadmin",
-      "community": 29,
+      "community": 107,
       "norm_label": "seeddefaultadmin()"
     },
     {
@@ -1560,7 +1560,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "src_auth_setuserpassword",
-      "community": 29,
+      "community": 107,
       "norm_label": "setuserpassword()"
     },
     {
@@ -1570,7 +1570,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_auth_ensureuser",
-      "community": 29,
+      "community": 107,
       "norm_label": "ensureuser()"
     },
     {
@@ -1780,7 +1780,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_config",
-      "community": 1,
+      "community": 105,
       "norm_label": "config.ts"
     },
     {
@@ -1790,7 +1790,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_config_windowbounds",
-      "community": 1,
+      "community": 105,
       "norm_label": "windowbounds"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_config_shellbackground",
-      "community": 1,
+      "community": 105,
       "norm_label": "shellbackground"
     },
     {
@@ -1810,7 +1810,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_config_bookmarkentry",
-      "community": 1,
+      "community": 105,
       "norm_label": "bookmarkentry"
     },
     {
@@ -1820,7 +1820,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_config_shellpreferences",
-      "community": 1,
+      "community": 105,
       "norm_label": "shellpreferences"
     },
     {
@@ -1830,7 +1830,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_config_printpreferences",
-      "community": 1,
+      "community": 105,
       "norm_label": "printpreferences"
     },
     {
@@ -1840,7 +1840,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_config_desktopconfig",
-      "community": 1,
+      "community": 105,
       "norm_label": "desktopconfig"
     },
     {
@@ -1850,7 +1850,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_config_defaults",
-      "community": 1,
+      "community": 105,
       "norm_label": "defaults"
     },
     {
@@ -1860,7 +1860,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_config_store",
-      "community": 1,
+      "community": 105,
       "norm_label": "store"
     },
     {
@@ -1870,7 +1870,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "src_config_getwindowbounds",
-      "community": 105,
+      "community": 4,
       "norm_label": "getwindowbounds()"
     },
     {
@@ -1880,7 +1880,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_config_setwindowbounds",
-      "community": 105,
+      "community": 4,
       "norm_label": "setwindowbounds()"
     },
     {
@@ -1910,7 +1910,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_config_getshell",
-      "community": 1,
+      "community": 105,
       "norm_label": "getshell()"
     },
     {
@@ -1920,7 +1920,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_config_getshellpreferences",
-      "community": 1,
+      "community": 29,
       "norm_label": "getshellpreferences()"
     },
     {
@@ -1930,7 +1930,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "src_config_setshellbackground",
-      "community": 1,
+      "community": 105,
       "norm_label": "setshellbackground()"
     },
     {
@@ -1940,7 +1940,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "src_config_getbookmarks",
-      "community": 1,
+      "community": 105,
       "norm_label": "getbookmarks()"
     },
     {
@@ -1950,7 +1950,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "src_config_addbookmark",
-      "community": 1,
+      "community": 105,
       "norm_label": "addbookmark()"
     },
     {
@@ -1960,7 +1960,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "src_config_removebookmark",
-      "community": 1,
+      "community": 105,
       "norm_label": "removebookmark()"
     },
     {
@@ -2010,7 +2010,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_db_getdb",
-      "community": 96,
+      "community": 0,
       "norm_label": "getdb()"
     },
     {
@@ -2080,7 +2080,7 @@
       "source_location": "L783",
       "_origin": "ast",
       "id": "src_db_closedb",
-      "community": 19,
+      "community": 29,
       "norm_label": "closedb()"
     },
     {
@@ -2090,7 +2090,7 @@
       "source_location": "L794",
       "_origin": "ast",
       "id": "src_db_dball",
-      "community": 94,
+      "community": 29,
       "norm_label": "dball()"
     },
     {
@@ -2100,7 +2100,7 @@
       "source_location": "L798",
       "_origin": "ast",
       "id": "src_db_dbget",
-      "community": 29,
+      "community": 107,
       "norm_label": "dbget()"
     },
     {
@@ -2110,7 +2110,7 @@
       "source_location": "L802",
       "_origin": "ast",
       "id": "src_db_dbrun",
-      "community": 29,
+      "community": 104,
       "norm_label": "dbrun()"
     },
     {
@@ -2290,7 +2290,7 @@
       "source_location": "L162",
       "_origin": "ast",
       "id": "src_document_links_listpendingsaleorders",
-      "community": 19,
+      "community": 29,
       "norm_label": "listpendingsaleorders()"
     },
     {
@@ -2300,7 +2300,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_document_links_listpendingdeliverynotes",
-      "community": 19,
+      "community": 29,
       "norm_label": "listpendingdeliverynotes()"
     },
     {
@@ -2310,7 +2310,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_document_links_getsourceitems",
-      "community": 19,
+      "community": 29,
       "norm_label": "getsourceitems()"
     },
     {
@@ -2320,7 +2320,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_document_sync",
-      "community": 3,
+      "community": 104,
       "norm_label": "document-sync.ts"
     },
     {
@@ -2330,7 +2330,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_document_sync_doctablemap",
-      "community": 3,
+      "community": 104,
       "norm_label": "doctablemap"
     },
     {
@@ -2340,7 +2340,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_document_sync_doc_tables",
-      "community": 3,
+      "community": 104,
       "norm_label": "doc_tables"
     },
     {
@@ -2350,7 +2350,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_document_sync_issyncabledoctype",
-      "community": 3,
+      "community": 104,
       "norm_label": "issyncabledoctype()"
     },
     {
@@ -2360,7 +2360,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_document_sync_row",
-      "community": 3,
+      "community": 104,
       "norm_label": "row"
     },
     {
@@ -2370,7 +2370,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_document_sync_docenvelope",
-      "community": 3,
+      "community": 104,
       "norm_label": "docenvelope"
     },
     {
@@ -2380,7 +2380,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_document_sync_builddocenvelope",
-      "community": 0,
+      "community": 104,
       "norm_label": "builddocenvelope()"
     },
     {
@@ -2390,7 +2390,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_document_sync_tablecolumns",
-      "community": 3,
+      "community": 104,
       "norm_label": "tablecolumns()"
     },
     {
@@ -2400,7 +2400,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_document_sync_replacerow",
-      "community": 3,
+      "community": 104,
       "norm_label": "replacerow()"
     },
     {
@@ -2410,7 +2410,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_document_sync_reversestock",
-      "community": 3,
+      "community": 104,
       "norm_label": "reversestock()"
     },
     {
@@ -2420,7 +2420,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "src_document_sync_reversecash",
-      "community": 3,
+      "community": 104,
       "norm_label": "reversecash()"
     },
     {
@@ -2430,7 +2430,7 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "src_document_sync_applydocenvelope",
-      "community": 3,
+      "community": 104,
       "norm_label": "applydocenvelope()"
     },
     {
@@ -2440,7 +2440,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "src_document_sync_deletedoclocal",
-      "community": 3,
+      "community": 104,
       "norm_label": "deletedoclocal()"
     },
     {
@@ -2780,7 +2780,7 @@
       "source_location": "L592",
       "_origin": "ast",
       "id": "src_documents_reversestockfor",
-      "community": 29,
+      "community": 0,
       "norm_label": "reversestockfor()"
     },
     {
@@ -2790,7 +2790,7 @@
       "source_location": "L603",
       "_origin": "ast",
       "id": "src_documents_reversecashfor",
-      "community": 29,
+      "community": 0,
       "norm_label": "reversecashfor()"
     },
     {
@@ -2830,7 +2830,7 @@
       "source_location": "L643",
       "_origin": "ast",
       "id": "src_documents_annuldocument",
-      "community": 29,
+      "community": 0,
       "norm_label": "annuldocument()"
     },
     {
@@ -2940,7 +2940,7 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "src_dolar_getratehistory",
-      "community": 94,
+      "community": 29,
       "norm_label": "getratehistory()"
     },
     {
@@ -3010,7 +3010,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ipc",
-      "community": 19,
+      "community": 29,
       "norm_label": "ipc.ts"
     },
     {
@@ -3020,7 +3020,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_ipc_enqueueifcloud",
-      "community": 19,
+      "community": 29,
       "norm_label": "enqueueifcloud()"
     },
     {
@@ -3030,7 +3030,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_ipc_ipcdeps",
-      "community": 19,
+      "community": 29,
       "norm_label": "ipcdeps"
     },
     {
@@ -3040,7 +3040,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_ipc_normalizeshellbackground",
-      "community": 19,
+      "community": 29,
       "norm_label": "normalizeshellbackground()"
     },
     {
@@ -3050,7 +3050,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_ipc_safestr",
-      "community": 19,
+      "community": 29,
       "norm_label": "safestr()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_ipc_registeripchandlers",
-      "community": 19,
+      "community": 29,
       "norm_label": "registeripchandlers()"
     },
     {
@@ -3120,7 +3120,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "src_kits_getkitcomponents",
-      "community": 101,
+      "community": 29,
       "norm_label": "getkitcomponents()"
     },
     {
@@ -3140,7 +3140,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "src_kits_getkitinfo",
-      "community": 101,
+      "community": 29,
       "norm_label": "getkitinfo()"
     },
     {
@@ -3410,7 +3410,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "src_main_isdev",
-      "community": 105,
+      "community": 4,
       "norm_label": "isdev()"
     },
     {
@@ -3420,7 +3420,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_main_persistbounds",
-      "community": 105,
+      "community": 4,
       "norm_label": "persistbounds()"
     },
     {
@@ -3430,7 +3430,7 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "src_main_createmainwindow",
-      "community": 105,
+      "community": 4,
       "norm_label": "createmainwindow()"
     },
     {
@@ -3460,7 +3460,7 @@
       "source_location": "L200",
       "_origin": "ast",
       "id": "src_main_completelogin",
-      "community": 105,
+      "community": 4,
       "norm_label": "completelogin()"
     },
     {
@@ -3500,7 +3500,7 @@
       "source_location": "L266",
       "_origin": "ast",
       "id": "src_main_opennativeform",
-      "community": 4,
+      "community": 106,
       "norm_label": "opennativeform()"
     },
     {
@@ -3610,7 +3610,7 @@
       "source_location": "L898",
       "_origin": "ast",
       "id": "src_main_makestandaloneform",
-      "community": 4,
+      "community": 106,
       "norm_label": "makestandaloneform()"
     },
     {
@@ -3620,7 +3620,7 @@
       "source_location": "L920",
       "_origin": "ast",
       "id": "src_main_createnewarticlewindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewarticlewindowstandalone()"
     },
     {
@@ -3630,7 +3630,7 @@
       "source_location": "L924",
       "_origin": "ast",
       "id": "src_main_createnewclientwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewclientwindowstandalone()"
     },
     {
@@ -3640,7 +3640,7 @@
       "source_location": "L928",
       "_origin": "ast",
       "id": "src_main_createnewsupplierwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewsupplierwindowstandalone()"
     },
     {
@@ -3650,7 +3650,7 @@
       "source_location": "L932",
       "_origin": "ast",
       "id": "src_main_createnewsaleorderwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewsaleorderwindowstandalone()"
     },
     {
@@ -3660,7 +3660,7 @@
       "source_location": "L936",
       "_origin": "ast",
       "id": "src_main_createnewquotewindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewquotewindowstandalone()"
     },
     {
@@ -3670,7 +3670,7 @@
       "source_location": "L940",
       "_origin": "ast",
       "id": "src_main_createnewinvoicewindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewinvoicewindowstandalone()"
     },
     {
@@ -3680,7 +3680,7 @@
       "source_location": "L944",
       "_origin": "ast",
       "id": "src_main_createnewdeliverynotewindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewdeliverynotewindowstandalone()"
     },
     {
@@ -3690,7 +3690,7 @@
       "source_location": "L948",
       "_origin": "ast",
       "id": "src_main_createnewreceiptwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewreceiptwindowstandalone()"
     },
     {
@@ -3700,7 +3700,7 @@
       "source_location": "L952",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseorderwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewpurchaseorderwindowstandalone()"
     },
     {
@@ -3710,7 +3710,7 @@
       "source_location": "L956",
       "_origin": "ast",
       "id": "src_main_createnewgoodsreceiptwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewgoodsreceiptwindowstandalone()"
     },
     {
@@ -3720,7 +3720,7 @@
       "source_location": "L960",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseinvoicewindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewpurchaseinvoicewindowstandalone()"
     },
     {
@@ -3730,7 +3730,7 @@
       "source_location": "L964",
       "_origin": "ast",
       "id": "src_main_createnewpaymentorderwindowstandalone",
-      "community": 4,
+      "community": 106,
       "norm_label": "createnewpaymentorderwindowstandalone()"
     },
     {
@@ -4640,7 +4640,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_sync_enqueuechange",
-      "community": 19,
+      "community": 29,
       "norm_label": "enqueuechange()"
     },
     {
@@ -4830,7 +4830,7 @@
       "source_location": "L497",
       "_origin": "ast",
       "id": "src_sync_applyairconfig",
-      "community": 3,
+      "community": 19,
       "norm_label": "applyairconfig()"
     },
     {
@@ -5000,7 +5000,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_tray_isquitting",
-      "community": 105,
+      "community": 4,
       "norm_label": "isquitting()"
     },
     {
@@ -5080,7 +5080,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_updater_initautoupdater",
-      "community": 97,
+      "community": 4,
       "norm_label": "initautoupdater()"
     },
     {
@@ -5140,7 +5140,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_auth_test",
-      "community": 29,
+      "community": 107,
       "norm_label": "auth.test.ts"
     },
     {
@@ -5310,7 +5310,7 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "test_dolar_test_seedarticle",
-      "community": 29,
+      "community": 104,
       "norm_label": "seedarticle()"
     },
     {
@@ -8250,7 +8250,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_decorators_public",
-      "community": 104,
+      "community": 98,
       "norm_label": "public()"
     },
     {
@@ -8480,7 +8480,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller",
-      "community": 104,
+      "community": 12,
       "norm_label": "health.controller.ts"
     },
     {
@@ -8490,7 +8490,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_healthcontroller",
-      "community": 104,
+      "community": 12,
       "norm_label": "healthcontroller"
     },
     {
@@ -8500,7 +8500,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_ts_controller",
-      "community": 104,
+      "community": 12,
       "norm_label": "controller"
     },
     {
@@ -8510,7 +8510,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_ts_public",
-      "community": 104,
+      "community": 12,
       "norm_label": "public"
     },
     {
@@ -8520,7 +8520,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_ts_get",
-      "community": 104,
+      "community": 12,
       "norm_label": "get"
     },
     {
@@ -8530,7 +8530,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_healthcontroller_constructor",
-      "community": 104,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -8540,7 +8540,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_healthcontroller_check",
-      "community": 104,
+      "community": 12,
       "norm_label": ".check()"
     },
     {
@@ -8590,7 +8590,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_prisma_service",
-      "community": 102,
+      "community": 12,
       "norm_label": "prisma.service.ts"
     },
     {
@@ -8680,7 +8680,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller",
-      "community": 103,
+      "community": 13,
       "norm_label": "afipcontroller"
     },
     {
@@ -8690,7 +8690,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_apitags",
-      "community": 103,
+      "community": 13,
       "norm_label": "apitags"
     },
     {
@@ -8700,7 +8700,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_apibearerauth",
-      "community": 103,
+      "community": 13,
       "norm_label": "apibearerauth"
     },
     {
@@ -8710,7 +8710,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_controller",
-      "community": 103,
+      "community": 13,
       "norm_label": "controller"
     },
     {
@@ -8720,7 +8720,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_post",
-      "community": 103,
+      "community": 13,
       "norm_label": "post"
     },
     {
@@ -8730,7 +8730,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_roles",
-      "community": 103,
+      "community": 13,
       "norm_label": "roles"
     },
     {
@@ -8740,7 +8740,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_body",
-      "community": 103,
+      "community": 13,
       "norm_label": "body"
     },
     {
@@ -8750,7 +8750,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_get",
-      "community": 103,
+      "community": 13,
       "norm_label": "get"
     },
     {
@@ -8760,7 +8760,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_param",
-      "community": 103,
+      "community": 13,
       "norm_label": "param"
     },
     {
@@ -8780,7 +8780,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_requestcae",
-      "community": 103,
+      "community": 13,
       "norm_label": ".requestcae()"
     },
     {
@@ -8790,7 +8790,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_getlastnumber",
-      "community": 103,
+      "community": 13,
       "norm_label": ".getlastnumber()"
     },
     {
@@ -8800,7 +8800,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
-      "community": 103,
+      "community": 13,
       "norm_label": ".testauth()"
     },
     {
@@ -9020,7 +9020,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller",
-      "community": 104,
+      "community": 37,
       "norm_label": "auth.controller.ts"
     },
     {
@@ -9030,7 +9030,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller",
-      "community": 14,
+      "community": 103,
       "norm_label": "authcontroller"
     },
     {
@@ -9040,7 +9040,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apitags",
-      "community": 14,
+      "community": 103,
       "norm_label": "apitags"
     },
     {
@@ -9050,7 +9050,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_controller",
-      "community": 14,
+      "community": 103,
       "norm_label": "controller"
     },
     {
@@ -9060,7 +9060,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_public",
-      "community": 14,
+      "community": 103,
       "norm_label": "public"
     },
     {
@@ -9070,7 +9070,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_post",
-      "community": 14,
+      "community": 103,
       "norm_label": "post"
     },
     {
@@ -9080,7 +9080,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "httpcode",
-      "community": 14,
+      "community": 103,
       "norm_label": "httpcode"
     },
     {
@@ -9090,7 +9090,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apioperation",
-      "community": 14,
+      "community": 103,
       "norm_label": "apioperation"
     },
     {
@@ -9100,7 +9100,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_body",
-      "community": 14,
+      "community": 103,
       "norm_label": "body"
     },
     {
@@ -9110,7 +9110,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "headers",
-      "community": 14,
+      "community": 103,
       "norm_label": "headers"
     },
     {
@@ -9120,7 +9120,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_constructor",
-      "community": 14,
+      "community": 103,
       "norm_label": ".constructor()"
     },
     {
@@ -9130,7 +9130,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_login",
-      "community": 14,
+      "community": 103,
       "norm_label": ".login()"
     },
     {
@@ -9140,7 +9140,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_register",
-      "community": 14,
+      "community": 103,
       "norm_label": ".register()"
     },
     {
@@ -9150,7 +9150,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_refresh",
-      "community": 14,
+      "community": 103,
       "norm_label": ".refresh()"
     },
     {
@@ -9160,7 +9160,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_logout",
-      "community": 14,
+      "community": 103,
       "norm_label": ".logout()"
     },
     {
@@ -9180,7 +9180,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_authmodule",
-      "community": 37,
+      "community": 109,
       "norm_label": "authmodule"
     },
     {
@@ -9190,7 +9190,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_ts_module",
-      "community": 37,
+      "community": 109,
       "norm_label": "module"
     },
     {
@@ -9260,7 +9260,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service",
-      "community": 102,
+      "community": 37,
       "norm_label": "auth.service.ts"
     },
     {
@@ -9270,7 +9270,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice",
-      "community": 14,
+      "community": 114,
       "norm_label": "authservice"
     },
     {
@@ -9280,7 +9280,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_ts_injectable",
-      "community": 14,
+      "community": 114,
       "norm_label": "injectable"
     },
     {
@@ -9290,7 +9290,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_constructor",
-      "community": 14,
+      "community": 114,
       "norm_label": ".constructor()"
     },
     {
@@ -9300,7 +9300,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_login",
-      "community": 14,
+      "community": 114,
       "norm_label": ".login()"
     },
     {
@@ -9310,7 +9310,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_registertenant",
-      "community": 14,
+      "community": 114,
       "norm_label": ".registertenant()"
     },
     {
@@ -9320,7 +9320,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_refreshtoken",
-      "community": 14,
+      "community": 114,
       "norm_label": ".refreshtoken()"
     },
     {
@@ -9330,7 +9330,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_logout",
-      "community": 14,
+      "community": 103,
       "norm_label": ".logout()"
     },
     {
@@ -9340,7 +9340,7 @@
       "source_location": "L226",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_generatetokens",
-      "community": 14,
+      "community": 114,
       "norm_label": ".generatetokens()"
     },
     {
@@ -9350,7 +9350,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy",
-      "community": 37,
+      "community": 12,
       "norm_label": "jwt.strategy.ts"
     },
     {
@@ -9360,7 +9360,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtpayload",
-      "community": 37,
+      "community": 12,
       "norm_label": "jwtpayload"
     },
     {
@@ -9370,7 +9370,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy",
-      "community": 37,
+      "community": 12,
       "norm_label": "jwtstrategy"
     },
     {
@@ -9380,7 +9380,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_ts_injectable",
-      "community": 37,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -9390,7 +9390,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_constructor",
-      "community": 37,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -9400,7 +9400,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_validate",
-      "community": 37,
+      "community": 12,
       "norm_label": ".validate()"
     },
     {
@@ -10120,7 +10120,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_service",
-      "community": 18,
+      "community": 12,
       "norm_label": "clients.service.ts"
     },
     {
@@ -10260,7 +10260,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_ts_get",
-      "community": 16,
+      "community": 98,
       "norm_label": "get"
     },
     {
@@ -10340,7 +10340,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_getbranding",
-      "community": 16,
+      "community": 98,
       "norm_label": ".getbranding()"
     },
     {
@@ -10360,7 +10360,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplates",
-      "community": 16,
+      "community": 98,
       "norm_label": ".gettemplates()"
     },
     {
@@ -10370,7 +10370,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplate",
-      "community": 16,
+      "community": 98,
       "norm_label": ".gettemplate()"
     },
     {
@@ -10410,7 +10410,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_module",
-      "community": 107,
+      "community": 16,
       "norm_label": "customization.module.ts"
     },
     {
@@ -10420,7 +10420,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_module_customizationmodule",
-      "community": 107,
+      "community": 16,
       "norm_label": "customizationmodule"
     },
     {
@@ -10430,7 +10430,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_module_ts_module",
-      "community": 107,
+      "community": 16,
       "norm_label": "module"
     },
     {
@@ -10440,7 +10440,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_service",
-      "community": 107,
+      "community": 16,
       "norm_label": "customization.service.ts"
     },
     {
@@ -11150,7 +11150,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_products_products_module_productsmodule",
-      "community": 18,
+      "community": 11,
       "norm_label": "productsmodule"
     },
     {
@@ -11160,7 +11160,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_products_products_module_ts_module",
-      "community": 18,
+      "community": 11,
       "norm_label": "module"
     },
     {
@@ -11420,7 +11420,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module",
-      "community": 18,
+      "community": 21,
       "norm_label": "reports.module.ts"
     },
     {
@@ -11430,7 +11430,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_reportsmodule",
-      "community": 18,
+      "community": 21,
       "norm_label": "reportsmodule"
     },
     {
@@ -11440,7 +11440,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_ts_module",
-      "community": 18,
+      "community": 21,
       "norm_label": "module"
     },
     {
@@ -11450,7 +11450,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service",
-      "community": 106,
+      "community": 21,
       "norm_label": "reports.service.ts"
     },
     {
@@ -11460,7 +11460,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_reportperiod",
-      "community": 106,
+      "community": 21,
       "norm_label": "reportperiod"
     },
     {
@@ -11470,7 +11470,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_salesreport",
-      "community": 106,
+      "community": 21,
       "norm_label": "salesreport"
     },
     {
@@ -11480,7 +11480,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_stockreport",
-      "community": 106,
+      "community": 21,
       "norm_label": "stockreport"
     },
     {
@@ -11490,7 +11490,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_accountreport",
-      "community": 106,
+      "community": 21,
       "norm_label": "accountreport"
     },
     {
@@ -11890,7 +11890,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_controller_stockcontroller_getlowstockalerts",
-      "community": 22,
+      "community": 98,
       "norm_label": ".getlowstockalerts()"
     },
     {
@@ -11920,7 +11920,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module",
-      "community": 108,
+      "community": 22,
       "norm_label": "stock.module.ts"
     },
     {
@@ -11930,7 +11930,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module_stockmodule",
-      "community": 108,
+      "community": 22,
       "norm_label": "stockmodule"
     },
     {
@@ -11940,7 +11940,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module_ts_module",
-      "community": 108,
+      "community": 22,
       "norm_label": "module"
     },
     {
@@ -11950,7 +11950,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_service",
-      "community": 108,
+      "community": 22,
       "norm_label": "stock.service.ts"
     },
     {
@@ -12230,7 +12230,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module",
-      "community": 109,
+      "community": 26,
       "norm_label": "suppliers.module.ts"
     },
     {
@@ -12240,7 +12240,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module_suppliersmodule",
-      "community": 109,
+      "community": 26,
       "norm_label": "suppliersmodule"
     },
     {
@@ -12250,7 +12250,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module_ts_module",
-      "community": 109,
+      "community": 26,
       "norm_label": "module"
     },
     {
@@ -12260,7 +12260,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_service",
-      "community": 109,
+      "community": 26,
       "norm_label": "suppliers.service.ts"
     },
     {
@@ -12350,7 +12350,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_controller",
-      "community": 98,
+      "community": 30,
       "norm_label": "sync.controller.ts"
     },
     {
@@ -12470,7 +12470,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module",
-      "community": 18,
+      "community": 30,
       "norm_label": "sync.module.ts"
     },
     {
@@ -12480,7 +12480,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module_syncmodule",
-      "community": 18,
+      "community": 30,
       "norm_label": "syncmodule"
     },
     {
@@ -12490,7 +12490,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module_ts_module",
-      "community": 18,
+      "community": 30,
       "norm_label": "module"
     },
     {
@@ -12500,7 +12500,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_service",
-      "community": 12,
+      "community": 30,
       "norm_label": "sync.service.ts"
     },
     {
@@ -12510,7 +12510,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_service_syncchange",
-      "community": 12,
+      "community": 30,
       "norm_label": "syncchange"
     },
     {
@@ -12630,7 +12630,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller",
-      "community": 102,
+      "community": 109,
       "norm_label": "tenant.controller.ts"
     },
     {
@@ -12850,7 +12850,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module",
-      "community": 102,
+      "community": 109,
       "norm_label": "tenant.module.ts"
     },
     {
@@ -12860,7 +12860,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module_tenantmodule",
-      "community": 102,
+      "community": 109,
       "norm_label": "tenantmodule"
     },
     {
@@ -12870,7 +12870,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module_ts_module",
-      "community": 102,
+      "community": 109,
       "norm_label": "module"
     },
     {
@@ -12880,7 +12880,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service",
-      "community": 102,
+      "community": 109,
       "norm_label": "tenant.service.ts"
     },
     {
@@ -12890,7 +12890,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice",
-      "community": 14,
+      "community": 109,
       "norm_label": "tenantservice"
     },
     {
@@ -12900,7 +12900,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_ts_injectable",
-      "community": 14,
+      "community": 109,
       "norm_label": "injectable"
     },
     {
@@ -12910,7 +12910,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_constructor",
-      "community": 14,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -16464,6 +16464,146 @@
       "norm_label": "for --cluster-only"
     },
     {
+      "label": "AFIP-ARCA.md",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "afip_arca",
+      "community": 111,
+      "norm_label": "afip-arca.md"
+    },
+    {
+      "label": "AFIP / ARCA \u2014 Facturaci\u00f3n electr\u00f3nica: estado y plan de fases",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
+      "community": 111,
+      "norm_label": "afip / arca \u2014 facturacion electronica: estado y plan de fases"
+    },
+    {
+      "label": "Estado actual",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "afip_arca_estado_actual",
+      "community": 111,
+      "norm_label": "estado actual"
+    },
+    {
+      "label": "\u2705 Lo que YA est\u00e1 (l\u00f3gica de dominio testeable)",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "afip_arca_lo_que_ya_est\u00e1_l\u00f3gica_de_dominio_testeable",
+      "community": 111,
+      "norm_label": "\u2705 lo que ya esta (logica de dominio testeable)"
+    },
+    {
+      "label": "\u274c Lo que est\u00e1 STUBBEADO / falta",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "afip_arca_lo_que_est\u00e1_stubbeado_falta",
+      "community": 111,
+      "norm_label": "\u274c lo que esta stubbeado / falta"
+    },
+    {
+      "label": "Plan de fases",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "afip_arca_plan_de_fases",
+      "community": 112,
+      "norm_label": "plan de fases"
+    },
+    {
+      "label": "Fase 1 \u2014 WSAA real (autenticaci\u00f3n) \ud83d\udd34 *bloqueante de todo lo dem\u00e1s*",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "afip_arca_fase_1_wsaa_real_autenticaci\u00f3n_bloqueante_de_todo_lo_dem\u00e1s",
+      "community": 112,
+      "norm_label": "fase 1 \u2014 wsaa real (autenticacion) \ud83d\udd34 *bloqueante de todo lo demas*"
+    },
+    {
+      "label": "Fase 2 \u2014 WSFE real (emisi\u00f3n de CAE) \ud83d\udd34",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "afip_arca_fase_2_wsfe_real_emisi\u00f3n_de_cae",
+      "community": 112,
+      "norm_label": "fase 2 \u2014 wsfe real (emision de cae) \ud83d\udd34"
+    },
+    {
+      "label": "Fase 3 \u2014 Integraci\u00f3n en el desktop \ud83d\udfe0",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L85",
+      "_origin": "ast",
+      "id": "afip_arca_fase_3_integraci\u00f3n_en_el_desktop",
+      "community": 112,
+      "norm_label": "fase 3 \u2014 integracion en el desktop \ud83d\udfe0"
+    },
+    {
+      "label": "Fase 4 \u2014 Cobertura de comprobantes \ud83d\udfe0",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "afip_arca_fase_4_cobertura_de_comprobantes",
+      "community": 112,
+      "norm_label": "fase 4 \u2014 cobertura de comprobantes \ud83d\udfe0"
+    },
+    {
+      "label": "Fase 5 \u2014 Padr\u00f3n y extras \ud83d\udfe2",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L107",
+      "_origin": "ast",
+      "id": "afip_arca_fase_5_padr\u00f3n_y_extras",
+      "community": 112,
+      "norm_label": "fase 5 \u2014 padron y extras \ud83d\udfe2"
+    },
+    {
+      "label": "Fase 6 \u2014 Homologaci\u00f3n \u2192 Producci\u00f3n \u2192 ARCA \ud83d\udd34 *gate de salida real*",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L115",
+      "_origin": "ast",
+      "id": "afip_arca_fase_6_homologaci\u00f3n_producci\u00f3n_arca_gate_de_salida_real",
+      "community": 112,
+      "norm_label": "fase 6 \u2014 homologacion \u2192 produccion \u2192 arca \ud83d\udd34 *gate de salida real*"
+    },
+    {
+      "label": "Notas t\u00e9cnicas",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L127",
+      "_origin": "ast",
+      "id": "afip_arca_notas_t\u00e9cnicas",
+      "community": 111,
+      "norm_label": "notas tecnicas"
+    },
+    {
+      "label": "Referencias",
+      "file_type": "document",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L139",
+      "_origin": "ast",
+      "id": "afip_arca_referencias",
+      "community": 111,
+      "norm_label": "referencias"
+    },
+    {
       "label": "CLAUDE.md",
       "file_type": "document",
       "source_file": "CLAUDE.md",
@@ -16490,7 +16630,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "pendientes",
-      "community": 8,
+      "community": 116,
       "norm_label": "pendientes.md"
     },
     {
@@ -16500,7 +16640,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "pendientes_asimov_erp_pendientes_roadmap",
-      "community": 8,
+      "community": 108,
       "norm_label": "asimov erp \u2014 pendientes / roadmap"
     },
     {
@@ -16510,7 +16650,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "pendientes_estado_general",
-      "community": 8,
+      "community": 108,
       "norm_label": "estado general"
     },
     {
@@ -16520,7 +16660,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "pendientes_1_sync_multi_pc_completar_cobertura",
-      "community": 8,
+      "community": 108,
       "norm_label": "1. sync multi-pc \u2014 completar cobertura \ud83d\udfe1"
     },
     {
@@ -16530,7 +16670,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "pendientes_2_fase_6_5_tests",
-      "community": 8,
+      "community": 108,
       "norm_label": "2. fase 6.5 \u2014 tests \ud83d\udfe1"
     },
     {
@@ -16540,7 +16680,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "pendientes_3_fase_6_6_billing_real_y_lanzamiento",
-      "community": 8,
+      "community": 108,
       "norm_label": "3. fase 6.6 \u2014 billing real y lanzamiento \ud83d\udfe1"
     },
     {
@@ -16550,7 +16690,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "pendientes_4_panel_maestro_completar_funciones",
-      "community": 8,
+      "community": 108,
       "norm_label": "4. panel maestro \u2014 completar funciones \ud83d\udfe2"
     },
     {
@@ -16560,7 +16700,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "pendientes_5_app_m\u00f3vil",
-      "community": 8,
+      "community": 108,
       "norm_label": "5. app movil \ud83d\udfe2"
     },
     {
@@ -16570,87 +16710,87 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "pendientes_6_higiene_t\u00e9cnico",
-      "community": 8,
+      "community": 108,
       "norm_label": "6. higiene / tecnico \ud83d\udfe2"
     },
     {
       "label": "7. Usabilidad y navegabilidad \u2014 plan de fases \ud83d\udfe2",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L97",
+      "source_location": "L98",
       "_origin": "ast",
       "id": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
-      "community": 8,
+      "community": 113,
       "norm_label": "7. usabilidad y navegabilidad \u2014 plan de fases \ud83d\udfe2"
     },
     {
       "label": "Fase A \u2014 Tablas del shell (alto impacto, bajo esfuerzo) \ud83c\udfaf",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L104",
+      "source_location": "L105",
       "_origin": "ast",
       "id": "pendientes_fase_a_tablas_del_shell_alto_impacto_bajo_esfuerzo",
-      "community": 8,
+      "community": 113,
       "norm_label": "fase a \u2014 tablas del shell (alto impacto, bajo esfuerzo) \ud83c\udfaf"
     },
     {
       "label": "Fase B \u2014 B\u00fasqueda y navegaci\u00f3n global",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L111",
+      "source_location": "L112",
       "_origin": "ast",
       "id": "pendientes_fase_b_b\u00fasqueda_y_navegaci\u00f3n_global",
-      "community": 8,
+      "community": 113,
       "norm_label": "fase b \u2014 busqueda y navegacion global"
     },
     {
       "label": "Fase C \u2014 Trazabilidad visible y drill-down",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L117",
+      "source_location": "L118",
       "_origin": "ast",
       "id": "pendientes_fase_c_trazabilidad_visible_y_drill_down",
-      "community": 8,
+      "community": 113,
       "norm_label": "fase c \u2014 trazabilidad visible y drill-down"
     },
     {
       "label": "Fase D \u2014 Flujos de documentos",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L123",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "pendientes_fase_d_flujos_de_documentos",
-      "community": 8,
+      "community": 113,
       "norm_label": "fase d \u2014 flujos de documentos"
     },
     {
       "label": "Fase E \u2014 Apartados nuevos",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L128",
+      "source_location": "L129",
       "_origin": "ast",
       "id": "pendientes_fase_e_apartados_nuevos",
-      "community": 8,
+      "community": 113,
       "norm_label": "fase e \u2014 apartados nuevos"
     },
     {
       "label": "Fase F \u2014 Deuda multi-PC de v4.8.0",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L135",
+      "source_location": "L136",
       "_origin": "ast",
       "id": "pendientes_fase_f_deuda_multi_pc_de_v4_8_0",
-      "community": 8,
+      "community": 113,
       "norm_label": "fase f \u2014 deuda multi-pc de v4.8.0"
     },
     {
       "label": "Referencias",
       "file_type": "document",
       "source_file": "PENDIENTES.md",
-      "source_location": "L141",
+      "source_location": "L142",
       "_origin": "ast",
       "id": "pendientes_referencias",
-      "community": 8,
+      "community": 108,
       "norm_label": "referencias"
     },
     {
@@ -17030,7 +17170,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "docs_desktop_cloud_sync",
-      "community": 8,
+      "community": 116,
       "norm_label": "desktop-cloud-sync.md"
     },
     {
@@ -17620,7 +17760,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_plan",
-      "community": 8,
+      "community": 116,
       "norm_label": "plan.md"
     },
     {
@@ -17630,7 +17770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_plan_asimov_erp_v2_plan_de_trabajo_saas_multi_tenant",
-      "community": 8,
+      "community": 116,
       "norm_label": "asimov erp v2 \u2014 plan de trabajo saas multi-tenant"
     },
     {
@@ -17640,7 +17780,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "v2_plan_resumen",
-      "community": 8,
+      "community": 116,
       "norm_label": "resumen"
     },
     {
@@ -17650,7 +17790,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_plan_fases",
-      "community": 8,
+      "community": 110,
       "norm_label": "fases"
     },
     {
@@ -17660,7 +17800,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_plan_fase_0_1_monorepo_shared_package_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 0.1 \u2014 monorepo + shared package \u2705 completada"
     },
     {
@@ -17670,7 +17810,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_plan_fase_0_2_esquema_prisma_multi_tenant_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 0.2 \u2014 esquema prisma multi-tenant \u2705 completada"
     },
     {
@@ -17680,7 +17820,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "v2_plan_fase_1_1_api_nestjs_core_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 1.1 \u2014 api nestjs core \u2705 completada"
     },
     {
@@ -17690,7 +17830,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "v2_plan_fase_1_2_m\u00f3dulos_erp_crud_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 1.2 \u2014 modulos erp (crud) \u2705 completada"
     },
     {
@@ -17700,7 +17840,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "v2_plan_fase_2_panel_maestro_admin_next_js_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 2 \u2014 panel maestro admin (next.js) \u2705 completada"
     },
     {
@@ -17710,7 +17850,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "v2_plan_fase_3_migraci\u00f3n_desktop_electron_api_client_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 3 \u2014 migracion desktop electron \u2192 api client \u2705 completada"
     },
     {
@@ -17720,7 +17860,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_plan_fase_4_app_m\u00f3vil_android_ios_expo_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 4 \u2014 app movil android + ios (expo) \u2705 completada"
     },
     {
@@ -17730,7 +17870,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "v2_plan_fase_5_afip_reportes_personalizaci\u00f3n_avanzada_completada",
-      "community": 8,
+      "community": 110,
       "norm_label": "fase 5 \u2014 afip + reportes + personalizacion avanzada \u2705 completada"
     },
     {
@@ -17740,7 +17880,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "v2_plan_fase_6_billing_qa_y_lanzamiento_en_progreso",
-      "community": 8,
+      "community": 115,
       "norm_label": "fase 6 \u2014 billing, qa y lanzamiento \ud83d\udd27 en progreso"
     },
     {
@@ -17750,7 +17890,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "v2_plan_6_1_billing_mercado_pago_stripe_completada",
-      "community": 8,
+      "community": 115,
       "norm_label": "6.1 \u2014 billing (mercado pago + stripe) \u2705 completada"
     },
     {
@@ -17760,7 +17900,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "v2_plan_6_2_ciclo_de_morosidad_automatizado_completada",
-      "community": 8,
+      "community": 115,
       "norm_label": "6.2 \u2014 ciclo de morosidad automatizado \u2705 completada"
     },
     {
@@ -17770,7 +17910,7 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "v2_plan_6_3_build_verde_tooling_monorepo_completada",
-      "community": 8,
+      "community": 115,
       "norm_label": "6.3 \u2014 build verde + tooling monorepo \u2705 completada"
     },
     {
@@ -17780,7 +17920,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "v2_plan_6_4_ci_cd_scaffoldeado",
-      "community": 8,
+      "community": 115,
       "norm_label": "6.4 \u2014 ci/cd \u2705 scaffoldeado"
     },
     {
@@ -17790,7 +17930,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "v2_plan_6_5_tests_en_progreso",
-      "community": 8,
+      "community": 115,
       "norm_label": "6.5 \u2014 tests \ud83d\udd27 en progreso"
     },
     {
@@ -17800,7 +17940,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "v2_plan_6_6_lanzamiento_en_progreso",
-      "community": 8,
+      "community": 115,
       "norm_label": "6.6 \u2014 lanzamiento \ud83d\udd27 en progreso"
     },
     {
@@ -17810,7 +17950,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "v2_plan_stack_tecnol\u00f3gico",
-      "community": 8,
+      "community": 116,
       "norm_label": "stack tecnologico"
     }
   ],
@@ -51291,6 +51431,146 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "afip_arca",
+      "target": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "afip_arca",
+      "target": "pendientes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
+      "target": "afip_arca_estado_actual",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L127",
+      "weight": 1.0,
+      "source": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
+      "target": "afip_arca_notas_t\u00e9cnicas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
+      "target": "afip_arca_plan_de_fases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
+      "target": "afip_arca_referencias",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "afip_arca_estado_actual",
+      "target": "afip_arca_lo_que_est\u00e1_stubbeado_falta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "afip_arca_estado_actual",
+      "target": "afip_arca_lo_que_ya_est\u00e1_l\u00f3gica_de_dominio_testeable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "afip_arca_plan_de_fases",
+      "target": "afip_arca_fase_1_wsaa_real_autenticaci\u00f3n_bloqueante_de_todo_lo_dem\u00e1s",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "afip_arca_plan_de_fases",
+      "target": "afip_arca_fase_2_wsfe_real_emisi\u00f3n_de_cae",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L85",
+      "weight": 1.0,
+      "source": "afip_arca_plan_de_fases",
+      "target": "afip_arca_fase_3_integraci\u00f3n_en_el_desktop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "afip_arca_plan_de_fases",
+      "target": "afip_arca_fase_4_cobertura_de_comprobantes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "afip_arca_plan_de_fases",
+      "target": "afip_arca_fase_5_padr\u00f3n_y_extras",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "AFIP-ARCA.md",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "afip_arca_plan_de_fases",
+      "target": "afip_arca_fase_6_homologaci\u00f3n_producci\u00f3n_arca_gate_de_salida_real",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -51302,7 +51582,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L144",
+      "source_location": "L146",
       "weight": 1.0,
       "source": "pendientes",
       "target": "docs_desktop_cloud_sync",
@@ -51322,7 +51602,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L143",
+      "source_location": "L145",
       "weight": 1.0,
       "source": "pendientes",
       "target": "v2_plan",
@@ -51392,7 +51672,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L97",
+      "source_location": "L98",
       "weight": 1.0,
       "source": "pendientes_asimov_erp_pendientes_roadmap",
       "target": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
@@ -51412,7 +51692,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L141",
+      "source_location": "L142",
       "weight": 1.0,
       "source": "pendientes_asimov_erp_pendientes_roadmap",
       "target": "pendientes_referencias",
@@ -51422,7 +51702,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L104",
+      "source_location": "L105",
       "weight": 1.0,
       "source": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
       "target": "pendientes_fase_a_tablas_del_shell_alto_impacto_bajo_esfuerzo",
@@ -51432,7 +51712,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L111",
+      "source_location": "L112",
       "weight": 1.0,
       "source": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
       "target": "pendientes_fase_b_b\u00fasqueda_y_navegaci\u00f3n_global",
@@ -51442,7 +51722,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L117",
+      "source_location": "L118",
       "weight": 1.0,
       "source": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
       "target": "pendientes_fase_c_trazabilidad_visible_y_drill_down",
@@ -51452,7 +51732,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L123",
+      "source_location": "L124",
       "weight": 1.0,
       "source": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
       "target": "pendientes_fase_d_flujos_de_documentos",
@@ -51462,7 +51742,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L128",
+      "source_location": "L129",
       "weight": 1.0,
       "source": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
       "target": "pendientes_fase_e_apartados_nuevos",
@@ -51472,7 +51752,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "PENDIENTES.md",
-      "source_location": "L135",
+      "source_location": "L136",
       "weight": 1.0,
       "source": "pendientes_7_usabilidad_y_navegabilidad_plan_de_fases",
       "target": "pendientes_fase_f_deuda_multi_pc_de_v4_8_0",
@@ -52580,5 +52860,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8973719f521f7006a70cab4af602c58b47e9c621"
+  "built_at_commit": "ce937ab888c7bd68b8190f4e0c30e8f2e67bd8e9"
 }
