@@ -3,6 +3,22 @@
  * desglose de IVA y mapeo de tipos de comprobante. Testeable en aislamiento.
  */
 
+/**
+ * Error de conectividad con AFIP (DNS caído, sin internet, timeout). Distinto
+ * de un rechazo: la factura puede quedar "pendiente de CAE" y reintentarse.
+ */
+export class AfipUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AfipUnavailableError';
+  }
+}
+
+export function isAfipUnavailable(err: unknown): err is AfipUnavailableError {
+  return err instanceof AfipUnavailableError ||
+    (err instanceof Error && err.name === 'AfipUnavailableError');
+}
+
 /** Códigos de alícuota de IVA de AFIP (FEParamGetTiposIva). */
 export const AFIP_IVA_CODES: Record<string, number> = {
   '0': 3,

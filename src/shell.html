@@ -1705,11 +1705,14 @@
     abierto:"pill-abierto", cerrado:"pill-cerrado", bajo:"pill-bajo",
     alta:"pill-aprobado", baja:"pill-cancelado", activo:"pill-aprobado",
     alta_prioridad:"pill-cancelado", media:"pill-pendiente", baja_prioridad:"pill-borrador",
+    pendiente_cae:"pill-pendiente", autorizada:"pill-aprobado",
   };
+  const STATUS_LABELS = { pendiente_cae: "pendiente CAE" };
   function fmtPill(v) {
     if (!v) return "—";
-    const cls = STATUS_MAP[v.toLowerCase().replace(/\s+/g,"_")] || "pill-borrador";
-    return `<span class="pill ${cls}">${v}</span>`;
+    const key = v.toLowerCase().replace(/\s+/g,"_");
+    const cls = STATUS_MAP[key] || "pill-borrador";
+    return `<span class="pill ${cls}">${STATUS_LABELS[key] || v}</span>`;
   }
   function fmtSource(v) {
     if (v === "air") return '<span style="display:inline-block;background:rgba(34,197,94,0.15);color:#4ade80;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;border:1px solid rgba(34,197,94,0.3);letter-spacing:0.5px">AIR</span>';

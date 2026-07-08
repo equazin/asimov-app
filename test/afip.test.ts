@@ -7,9 +7,13 @@ import {
 } from "../src/afip/wsaa";
 import {
   afipDate, formatAfipDate, buildUltimoAutorizadoEnvelope, parseUltimoAutorizado,
-  buildFECAESolicitarEnvelope, parseFECAEResponse,
+  buildFECAESolicitarEnvelope, parseFECAEResponse, callWsfe, WSFE_URLS,
 } from "../src/afip/wsfe";
-import { afipIvaCode, buildIvaAlicuotas, getInvoiceTypeCode, receptorDocType } from "../src/afip/domain";
+import { callLoginCms, WSAA_URLS } from "../src/afip/wsaa";
+import {
+  afipIvaCode, buildIvaAlicuotas, getInvoiceTypeCode, receptorDocType,
+  AfipUnavailableError, isAfipUnavailable,
+} from "../src/afip/domain";
 import { buildAfipQrUrl } from "../src/afip/qr";
 
 function makeSelfSigned(): { certPem: string; keyPem: string } {
@@ -153,5 +157,37 @@ describe("afip/wsfe", () => {
     const r2 = parseFECAEResponse(rej);
     expect(r2.ok).toBe(false);
     if (!r2.ok) expect(r2.observations[0]).toEqual({ code: "10015", msg: "Fecha fuera de rango" });
+  });
+});
+
+describe("afip — modo offline (AfipUnavailableError)", () => {
+  const ta = { token: "T", sign: "S", expiration: new Date().toISOString() };
+  const cab = { cuit: "20304050607", pointOfSale: 3, invoiceType: 6 };
+  const fetchDown = (() => Promise.reject(new TypeError("fetch failed"))) as unknown as typeof fetch;
+
+  it("callWsfe sin red lanza AfipUnavailableError (no un rechazo)", async () => {
+    const call = callWsfe(WSFE_URLS.homologacion, "FECAESolicitar", buildUltimoAutorizadoEnvelope(ta, cab), fetchDown);
+    await expect(call).rejects.toBeInstanceOf(AfipUnavailableError);
+    await expect(call).rejects.toThrow(/No se pudo conectar con AFIP/);
+  });
+
+  it("callLoginCms sin red lanza AfipUnavailableError", async () => {
+    await expect(callLoginCms(WSAA_URLS.homologacion, "Q01T", fetchDown)).rejects.toBeInstanceOf(AfipUnavailableError);
+  });
+
+  it("isAfipUnavailable distingue caída de red de un rechazo de AFIP", () => {
+    expect(isAfipUnavailable(new AfipUnavailableError("sin red"))).toBe(true);
+    expect(isAfipUnavailable(new Error("AFIP rechazó el comprobante: [10015] Fecha fuera de rango"))).toBe(false);
+    expect(isAfipUnavailable("string")).toBe(false);
+  });
+
+  it("una respuesta HTTP con SOAP Fault NO es 'no disponible': es un error real", async () => {
+    const fetchFault = (() => Promise.resolve({
+      ok: false, status: 500,
+      text: () => Promise.resolve("<Envelope><Body><Fault><faultstring>Computador no autorizado</faultstring></Fault></Body></Envelope>"),
+    })) as unknown as typeof fetch;
+    const call = callWsfe(WSFE_URLS.homologacion, "FECAESolicitar", "<x/>", fetchFault);
+    await expect(call).rejects.toThrow(/Computador no autorizado/);
+    await expect(call).rejects.not.toBeInstanceOf(AfipUnavailableError);
   });
 });

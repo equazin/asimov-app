@@ -18,10 +18,10 @@ import { registerCloudIpcHandlers } from "./ipc-cloud";
 import { getStoredUser } from "./api-client";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
-import { initDb, dbAll, dbGet } from "./db";
+import { initDb, dbAll } from "./db";
 import { startDolarAutoUpdate } from "./dolar";
-import { requestCae } from "./afip-service";
-import { getInvoiceTypeCode } from "./afip/domain";
+import { requestCae, buildCaeInputFromInvoice, markInvoicePendingCae, retryPendingCae, getAfipConfig } from "./afip-service";
+import { isAfipUnavailable } from "./afip/domain";
 import { isAirEnabled } from "./air";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
 import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
@@ -314,12 +314,20 @@ if (!gotLock) {
         if (!win.isDestroyed()) win.webContents.send("dolar:updated", rates);
       }
     });
-    // Cotización del dólar: fetch inmediato + cada 30 min; difunde a todas las ventanas.
-    startDolarAutoUpdate((rates) => {
-      for (const win of BrowserWindow.getAllWindows()) {
-        if (!win.isDestroyed()) win.webContents.send("dolar:updated", rates);
+
+    // Facturas que quedaron "pendiente de CAE" por falta de conexión: reintento
+    // al arrancar (con margen para que la red esté lista) y luego cada 10 min.
+    const retryCae = async () => {
+      try {
+        if (!getAfipConfig().enabled) return;
+        const r = await retryPendingCae();
+        if (r.authorized > 0) notifyShell("shell:invoice-saved");
+      } catch (err) {
+        console.error("[afip] reintento de CAE pendientes falló:", err);
       }
-    });
+    };
+    setTimeout(retryCae, 20_000);
+    setInterval(retryCae, 10 * 60_000);
     // Sin barra de menú superior: la navegación vive en el sidebar del shell.
     Menu.setApplicationMenu(null);
     registerGlobalShortcuts();
@@ -546,30 +554,25 @@ if (!gotLock) {
     ipcMain.handle("shell:invoice-authorize", async (_event, data: { invoice?: Record<string, unknown> }) => {
       const invoice = data?.invoice;
       if (!invoice) return { ok: false, error: "Sin datos de factura." };
+      let invoiceId = "";
       try {
         const { id } = persistInvoice(invoice as Record<string, unknown>);
-        const inv = dbGet<{ subtotal: number; iva_amount: number; total: number; tipo: string; client_id: string }>(
-          "SELECT subtotal, iva_amount, total, tipo, client_id FROM invoices WHERE id = ?", [id],
-        );
-        if (!inv) return { ok: false, error: "No se pudo leer la factura recién guardada." };
-        const items = dbAll<{ iva_pct: number; subtotal: number }>(
-          "SELECT iva_pct, subtotal FROM invoice_items WHERE invoice_id = ?", [id],
-        );
-        const client = inv.client_id
-          ? dbGet<{ cuit: string }>("SELECT cuit FROM clients WHERE id = ?", [inv.client_id])
-          : undefined;
-        const result = await requestCae({
-          invoiceId: id,
-          invoiceType: getInvoiceTypeCode(String(inv.tipo || "B"), "responsable_inscripto"),
-          clientCuit: client?.cuit ?? "",
-          net: inv.subtotal,
-          iva: inv.iva_amount,
-          total: inv.total,
-          items: items.map((it) => ({ ivaRate: Number(it.iva_pct) || 0, subtotal: Number(it.subtotal) || 0 })),
-        });
+        invoiceId = id;
+        const result = await requestCae(buildCaeInputFromInvoice(id));
         notifyShell("shell:invoice-saved");
         return { ok: true, data: result };
       } catch (err) {
+        // Sin conexión con AFIP: la factura ya quedó guardada; se marca
+        // "pendiente de CAE" y se reintenta automáticamente al recuperar red.
+        if (invoiceId && isAfipUnavailable(err)) {
+          markInvoicePendingCae(invoiceId);
+          notifyShell("shell:invoice-saved");
+          return {
+            ok: false,
+            pending: true,
+            error: "No hay conexión con AFIP. La factura quedó guardada como \"pendiente de CAE\" y se autorizará automáticamente cuando vuelva la conexión.",
+          };
+        }
         return { ok: false, error: err instanceof Error ? err.message : String(err) };
       }
     });

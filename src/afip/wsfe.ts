@@ -10,7 +10,7 @@
  */
 import { XMLParser } from 'fast-xml-parser';
 import type { AfipTA } from './wsaa';
-import { buildIvaAlicuotas, type AfipAlicIva } from './domain';
+import { buildIvaAlicuotas, AfipUnavailableError, type AfipAlicIva } from './domain';
 
 export const WSFE_URLS = {
   homologacion: 'https://wswhomo.afip.gov.ar/wsfev1/service.asmx',
@@ -219,14 +219,22 @@ export async function callWsfe(
   envelope: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<string> {
-  const res = await fetchImpl(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/xml; charset=utf-8',
-      SOAPAction: `${WSFE_NS}${soapAction}`,
-    },
-    body: envelope,
-  });
+  let res: Response;
+  try {
+    res = await fetchImpl(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/xml; charset=utf-8',
+        SOAPAction: `${WSFE_NS}${soapAction}`,
+      },
+      body: envelope,
+    });
+  } catch (err) {
+    // fetch sólo lanza por problemas de red/DNS/timeout, nunca por HTTP != 2xx.
+    throw new AfipUnavailableError(
+      `No se pudo conectar con AFIP (WSFE): ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
   const text = await res.text();
   if (!res.ok) {
     let detail = `HTTP ${res.status}`;

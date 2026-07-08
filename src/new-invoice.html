@@ -1503,6 +1503,19 @@ td{ border-color:var(--border) !important; }
       btn.innerHTML = "⏳ Autorizando…";
       try {
         var res = await window.asimovNewInvoice.authorizeInvoice(invoice);
+        if (res && !res.ok && res.pending) {
+          // Sin conexión: la factura quedó guardada "pendiente de CAE".
+          var banner = document.getElementById("afipEstadoBanner");
+          if (banner) {
+            banner.className = "afip-estado pendiente";
+            banner.innerHTML = '<span class="estado-icon">📡</span><div class="estado-text">' +
+              '<strong>Pendiente de CAE (sin conexión)</strong>' +
+              '<span>La factura quedó guardada y se autorizará automáticamente cuando vuelva la conexión con AFIP.</span></div>';
+          }
+          alert("📡 " + res.error);
+          document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "afip") t.click(); });
+          return;
+        }
         if (!res || !res.ok) throw new Error((res && res.error) || "AFIP no autorizó el comprobante");
         setAfipAuthorized(res.data);
         var obs = (res.data.observations || []).map(function(o){ return "[" + o.code + "] " + o.msg; }).join("\n");

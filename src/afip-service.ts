@@ -24,7 +24,7 @@ import {
   WSFE_URLS, buildUltimoAutorizadoEnvelope, parseUltimoAutorizado,
   buildFECAESolicitarEnvelope, parseFECAEResponse, callWsfe, type FeCabecera, type FeComprobante,
 } from "./afip/wsfe";
-import { receptorDocType } from "./afip/domain";
+import { receptorDocType, getInvoiceTypeCode, isAfipUnavailable } from "./afip/domain";
 import { buildAfipQrUrl } from "./afip/qr";
 import * as QRCode from "qrcode";
 
@@ -265,4 +265,80 @@ export async function requestCae(input: CaeRequestInput): Promise<CaeSuccessDto>
     qrUrl,
     qrDataUrl,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Modo offline — facturas "pendiente de CAE" y reintento
+// ---------------------------------------------------------------------------
+
+/** Arma el CaeRequestInput leyendo la factura, sus ítems y el CUIT del cliente. */
+export function buildCaeInputFromInvoice(invoiceId: string): CaeRequestInput {
+  const inv = dbGet<{ subtotal: number; iva_amount: number; total: number; tipo: string; client_id: string; date: string }>(
+    "SELECT subtotal, iva_amount, total, tipo, client_id, date FROM invoices WHERE id = ?", [invoiceId],
+  );
+  if (!inv) throw new Error(`No existe la factura ${invoiceId}.`);
+  const items = dbAll<{ iva_pct: number; subtotal: number }>(
+    "SELECT iva_pct, subtotal FROM invoice_items WHERE invoice_id = ?", [invoiceId],
+  );
+  const client = inv.client_id
+    ? dbGet<{ cuit: string }>("SELECT cuit FROM clients WHERE id = ?", [inv.client_id])
+    : undefined;
+  return {
+    invoiceId,
+    invoiceType: getInvoiceTypeCode(String(inv.tipo || "B"), "responsable_inscripto"),
+    clientCuit: client?.cuit ?? "",
+    date: inv.date || undefined,
+    net: inv.subtotal,
+    iva: inv.iva_amount,
+    total: inv.total,
+    items: items.map((it) => ({ ivaRate: Number(it.iva_pct) || 0, subtotal: Number(it.subtotal) || 0 })),
+  };
+}
+
+/** Deja la factura en "pendiente de CAE" (sólo si aún no tiene CAE). */
+export function markInvoicePendingCae(invoiceId: string): void {
+  dbRun(
+    "UPDATE invoices SET status = 'pendiente_cae' WHERE id = ? AND (cae IS NULL OR cae = '')",
+    [invoiceId],
+  );
+}
+
+/** Facturas que quedaron esperando CAE por falta de conexión. */
+export function getPendingCaeInvoices(): Array<{ id: string; number: string; total: number }> {
+  return dbAll<{ id: string; number: string; total: number }>(
+    "SELECT id, number, total FROM invoices WHERE status = 'pendiente_cae' ORDER BY created_at",
+  );
+}
+
+export interface RetryPendingResult {
+  authorized: number;
+  stillPending: number;
+  rejected: Array<{ invoiceId: string; error: string }>;
+}
+
+/**
+ * Reintenta pedir CAE para todas las facturas "pendiente_cae". Si AFIP sigue
+ * inaccesible corta y deja el resto pendiente; los rechazos reales se informan
+ * (la factura queda pendiente para que el operador la corrija o anule).
+ */
+export async function retryPendingCae(): Promise<RetryPendingResult> {
+  const result: RetryPendingResult = { authorized: 0, stillPending: 0, rejected: [] };
+  const pending = getPendingCaeInvoices();
+  for (let i = 0; i < pending.length; i++) {
+    try {
+      await requestCae(buildCaeInputFromInvoice(pending[i].id));
+      result.authorized++;
+    } catch (err) {
+      if (isAfipUnavailable(err)) {
+        // Sin conexión: no tiene sentido seguir con las demás.
+        result.stillPending = pending.length - i;
+        break;
+      }
+      result.rejected.push({
+        invoiceId: pending[i].id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+  return result;
 }

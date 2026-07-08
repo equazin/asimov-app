@@ -40,8 +40,6 @@
 
 ### ❌ Lo que falta
 
-- **Modo offline** (resto de Fase 3): si no hay red/AFIP, dejar la factura
-  "pendiente de CAE" y reintentar.
 - **Comprobantes**: faltan **notas de crédito/débito** y validar A/B/C punta a
   punta (Fase 4).
 - **Padrón** (consulta CUIT → condición IVA / razón social): no existe (Fase 5).
@@ -79,7 +77,7 @@ Sin token/sign reales, nada de WSFE funciona.
 - [x] Reemplazar los `CAE_<timestamp>` stub por el CAE real en `document.update`.
 - [x] Tests de armado del envelope y del parseo de respuestas (mocks de WSFE).
 
-### Fase 3 — Integración en el desktop ✅ *hecha (falta sólo modo offline)*
+### Fase 3 — Integración en el desktop ✅ *hecha*
 
 Que el operador pueda facturar electrónicamente desde la app. Se implementó como
 **AFIP directo desde el desktop** (motor propio en `src/afip/`), sin depender de
@@ -92,8 +90,10 @@ la nube.
       `cae_expiry`, número definitivo) y reflejar estado en el banner AFIP.
 - [x] **QR AFIP** (RG 4892) + CAE y venc. en el **comprobante impreso**
       (`comprobante-print.*`, integra con los membretes ya existentes).
-- [ ] Modo **offline**: si no hay nube/AFIP, la factura queda "pendiente de CAE" y
-      se reintenta (encaja con la cola de sync existente).
+- [x] Modo **offline**: si no hay conexión con AFIP (`AfipUnavailableError`), la
+      factura queda guardada con estado `pendiente_cae` y se reintenta
+      automáticamente (al arrancar la app y cada 10 min; también manual vía
+      `afip:retry-pending`).
 
 ### Fase 4 — Cobertura de comprobantes 🟠
 

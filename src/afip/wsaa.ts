@@ -7,6 +7,7 @@
  * cachea (ver afip.service) y sólo se renueva al vencer.
  */
 import { XMLParser } from 'fast-xml-parser';
+import { AfipUnavailableError } from './domain';
 
 export interface AfipTA {
   token: string;
@@ -101,11 +102,19 @@ export async function callLoginCms(
   signedCmsBase64: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<AfipTA> {
-  const res = await fetchImpl(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/xml; charset=utf-8', SOAPAction: '' },
-    body: buildLoginCmsEnvelope(signedCmsBase64),
-  });
+  let res: Response;
+  try {
+    res = await fetchImpl(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/xml; charset=utf-8', SOAPAction: '' },
+      body: buildLoginCmsEnvelope(signedCmsBase64),
+    });
+  } catch (err) {
+    // fetch sólo lanza por problemas de red/DNS/timeout, nunca por HTTP != 2xx.
+    throw new AfipUnavailableError(
+      `No se pudo conectar con AFIP (WSAA): ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
   const text = await res.text();
   if (!res.ok) {
     // Ante error, AFIP suele mandar un SOAP Fault con detalle útil.

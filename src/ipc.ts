@@ -42,8 +42,10 @@ import {
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
 import {
   getAfipConfig, saveAfipCredentials, testAfipConnection, requestCae as afipRequestCae,
+  markInvoicePendingCae, retryPendingCae, getPendingCaeInvoices,
   type SaveCredentialsInput, type CaeRequestInput,
 } from "./afip-service";
+import { isAfipUnavailable } from "./afip/domain";
 import { listPendingSaleOrders, listPendingDeliveryNotes, getSourceItems, getLinksFor } from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
 import {
@@ -852,7 +854,21 @@ export function registerIpcHandlers(deps: IpcDeps): void {
           : [],
       };
       if (!input.invoiceId) return { ok: false, error: "Falta el identificador de la factura." };
-      const data = await afipRequestCae(input);
+      let data;
+      try {
+        data = await afipRequestCae(input);
+      } catch (err) {
+        // Sin conexión: queda "pendiente de CAE" y el reintento automático la levanta.
+        if (isAfipUnavailable(err)) {
+          markInvoicePendingCae(input.invoiceId);
+          return {
+            ok: false,
+            pending: true,
+            error: "No hay conexión con AFIP. La factura quedó \"pendiente de CAE\" y se reintentará automáticamente.",
+          };
+        }
+        throw err;
+      }
       // El CAE cambió la factura local (número/estado): propagar a la nube y refrescar el shell.
       if (isCloudConnected()) {
         try {
@@ -863,6 +879,22 @@ export function registerIpcHandlers(deps: IpcDeps): void {
       const win = deps.getMainWindow();
       if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
       return { ok: true, data };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // Reintento manual de facturas "pendiente de CAE" (también corre solo al
+  // arrancar y cada 10 min desde main.ts).
+  ipcMain.handle("afip:retry-pending", async () => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      const data = await retryPendingCae();
+      if (data.authorized > 0) {
+        const win = deps.getMainWindow();
+        if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
+      }
+      return { ok: true, data: { ...data, pendingLeft: getPendingCaeInvoices().length } };
     } catch (err: unknown) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }

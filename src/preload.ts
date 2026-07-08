@@ -303,7 +303,8 @@ const api = {
     saveCredentials: (input: { cuit: string; pointOfSale: number; env: string; certPem?: string; keyPem?: string; enabled?: boolean }) =>
       ipcRenderer.invoke("afip:save-credentials", input) as Promise<{ ok: boolean; data?: { certExpires: string | null }; error?: string }>,
     testConnection: () => ipcRenderer.invoke("afip:test-connection") as Promise<{ ok: boolean; message: string; expiration?: string }>,
-    requestCae: (input: unknown) => ipcRenderer.invoke("afip:request-cae", input) as Promise<{ ok: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
+    requestCae: (input: unknown) => ipcRenderer.invoke("afip:request-cae", input) as Promise<{ ok: boolean; pending?: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
+    retryPending: () => ipcRenderer.invoke("afip:retry-pending") as Promise<{ ok: boolean; data?: { authorized: number; stillPending: number; rejected: Array<{ invoiceId: string; error: string }>; pendingLeft: number }; error?: string }>,
   },
 
   // Sincronización con la API v2 (Render). Sirve para el badge de estado
