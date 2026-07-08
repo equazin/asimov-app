@@ -615,6 +615,20 @@ CREATE TABLE IF NOT EXISTS air_sync_runs (
 );
 
 -- ============================================================
+-- Vínculos entre documentos (pedido → remito → factura)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS document_links (
+  id          TEXT PRIMARY KEY,
+  source_type TEXT NOT NULL,
+  source_id   TEXT NOT NULL,
+  target_type TEXT NOT NULL,
+  target_id   TEXT NOT NULL,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (source_type, source_id, target_type, target_id)
+);
+
+-- ============================================================
 -- Cotizaciones de moneda (dólar)
 -- ============================================================
 
@@ -647,6 +661,8 @@ CREATE INDEX IF NOT EXISTS idx_air_products_code      ON air_products(air_code);
 CREATE INDEX IF NOT EXISTS idx_air_products_desc      ON air_products(description);
 CREATE INDEX IF NOT EXISTS idx_air_products_category  ON air_products(category);
 CREATE INDEX IF NOT EXISTS idx_air_sync_runs_status   ON air_sync_runs(status);
+CREATE INDEX IF NOT EXISTS idx_doc_links_source ON document_links(source_type, source_id);
+CREATE INDEX IF NOT EXISTS idx_doc_links_target ON document_links(target_type, target_id);
 CREATE INDEX IF NOT EXISTS idx_exchange_rates_casa    ON exchange_rates(casa, fetched_at);
 `;
 // ---------------------------------------------------------------------------

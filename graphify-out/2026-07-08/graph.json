@@ -1250,7 +1250,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_api_client_getapibaseurl",
-      "community": 3,
+      "community": 97,
       "norm_label": "getapibaseurl()"
     },
     {
@@ -1480,7 +1480,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_auth",
-      "community": 0,
+      "community": 98,
       "norm_label": "auth.ts"
     },
     {
@@ -1490,7 +1490,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_auth_hashpassword",
-      "community": 0,
+      "community": 98,
       "norm_label": "hashpassword()"
     },
     {
@@ -1500,7 +1500,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_auth_verifypassword",
-      "community": 0,
+      "community": 98,
       "norm_label": "verifypassword()"
     },
     {
@@ -1520,7 +1520,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_auth_authenticate",
-      "community": 0,
+      "community": 98,
       "norm_label": "authenticate()"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_auth_default_admin",
-      "community": 0,
+      "community": 98,
       "norm_label": "default_admin"
     },
     {
@@ -1540,7 +1540,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_auth_generateinitialpassword",
-      "community": 0,
+      "community": 98,
       "norm_label": "generateinitialpassword()"
     },
     {
@@ -1550,7 +1550,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_auth_seeddefaultadmin",
-      "community": 0,
+      "community": 98,
       "norm_label": "seeddefaultadmin()"
     },
     {
@@ -1560,7 +1560,7 @@
       "source_location": "L84",
       "_origin": "ast",
       "id": "src_auth_setuserpassword",
-      "community": 0,
+      "community": 98,
       "norm_label": "setuserpassword()"
     },
     {
@@ -1570,7 +1570,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_auth_ensureuser",
-      "community": 0,
+      "community": 98,
       "norm_label": "ensureuser()"
     },
     {
@@ -2000,7 +2000,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_db",
-      "community": 0,
+      "community": 97,
       "norm_label": "db.ts"
     },
     {
@@ -2010,7 +2010,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_db_getdb",
-      "community": 0,
+      "community": 94,
       "norm_label": "getdb()"
     },
     {
@@ -2030,7 +2030,7 @@
       "source_location": "L679",
       "_origin": "ast",
       "id": "src_db_getsequencerefillnames",
-      "community": 0,
+      "community": 97,
       "norm_label": "getsequencerefillnames()"
     },
     {
@@ -2040,7 +2040,7 @@
       "source_location": "L685",
       "_origin": "ast",
       "id": "src_db_getsequencelocallast",
-      "community": 0,
+      "community": 97,
       "norm_label": "getsequencelocallast()"
     },
     {
@@ -2050,7 +2050,7 @@
       "source_location": "L695",
       "_origin": "ast",
       "id": "src_db_storesequenceblock",
-      "community": 0,
+      "community": 97,
       "norm_label": "storesequenceblock()"
     },
     {
@@ -2070,7 +2070,7 @@
       "source_location": "L712",
       "_origin": "ast",
       "id": "src_db_initdb",
-      "community": 0,
+      "community": 97,
       "norm_label": "initdb()"
     },
     {
@@ -2090,7 +2090,7 @@
       "source_location": "L744",
       "_origin": "ast",
       "id": "src_db_dball",
-      "community": 0,
+      "community": 94,
       "norm_label": "dball()"
     },
     {
@@ -2100,7 +2100,7 @@
       "source_location": "L748",
       "_origin": "ast",
       "id": "src_db_dbget",
-      "community": 0,
+      "community": 98,
       "norm_label": "dbget()"
     },
     {
@@ -2110,7 +2110,7 @@
       "source_location": "L752",
       "_origin": "ast",
       "id": "src_db_dbrun",
-      "community": 0,
+      "community": 19,
       "norm_label": "dbrun()"
     },
     {
@@ -2120,7 +2120,7 @@
       "source_location": "L761",
       "_origin": "ast",
       "id": "src_db_upsertclient",
-      "community": 0,
+      "community": 96,
       "norm_label": "upsertclient()"
     },
     {
@@ -2130,7 +2130,7 @@
       "source_location": "L772",
       "_origin": "ast",
       "id": "src_db_upsertsupplier",
-      "community": 0,
+      "community": 96,
       "norm_label": "upsertsupplier()"
     },
     {
@@ -2140,7 +2140,7 @@
       "source_location": "L783",
       "_origin": "ast",
       "id": "src_db_upsertarticle",
-      "community": 0,
+      "community": 96,
       "norm_label": "upsertarticle()"
     },
     {
@@ -2150,7 +2150,7 @@
       "source_location": "L797",
       "_origin": "ast",
       "id": "src_db_dashboardkpis",
-      "community": 0,
+      "community": 97,
       "norm_label": "dashboardkpis"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_location": "L807",
       "_origin": "ast",
       "id": "src_db_getdashboardkpis",
-      "community": 0,
+      "community": 94,
       "norm_label": "getdashboardkpis()"
     },
     {
@@ -2170,7 +2170,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_document_sync",
-      "community": 0,
+      "community": 94,
       "norm_label": "document-sync.ts"
     },
     {
@@ -2180,7 +2180,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_document_sync_doctablemap",
-      "community": 0,
+      "community": 94,
       "norm_label": "doctablemap"
     },
     {
@@ -2190,7 +2190,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_document_sync_doc_tables",
-      "community": 0,
+      "community": 94,
       "norm_label": "doc_tables"
     },
     {
@@ -2200,7 +2200,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_document_sync_issyncabledoctype",
-      "community": 0,
+      "community": 94,
       "norm_label": "issyncabledoctype()"
     },
     {
@@ -2210,7 +2210,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_document_sync_row",
-      "community": 0,
+      "community": 94,
       "norm_label": "row"
     },
     {
@@ -2220,7 +2220,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_document_sync_docenvelope",
-      "community": 0,
+      "community": 94,
       "norm_label": "docenvelope"
     },
     {
@@ -2230,7 +2230,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_document_sync_builddocenvelope",
-      "community": 0,
+      "community": 94,
       "norm_label": "builddocenvelope()"
     },
     {
@@ -2240,7 +2240,7 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "src_document_sync_tablecolumns",
-      "community": 0,
+      "community": 94,
       "norm_label": "tablecolumns()"
     },
     {
@@ -2250,7 +2250,7 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "src_document_sync_replacerow",
-      "community": 0,
+      "community": 94,
       "norm_label": "replacerow()"
     },
     {
@@ -2260,7 +2260,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "src_document_sync_reversestock",
-      "community": 0,
+      "community": 94,
       "norm_label": "reversestock()"
     },
     {
@@ -2270,7 +2270,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "src_document_sync_reversecash",
-      "community": 0,
+      "community": 94,
       "norm_label": "reversecash()"
     },
     {
@@ -2280,7 +2280,7 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "src_document_sync_applydocenvelope",
-      "community": 0,
+      "community": 94,
       "norm_label": "applydocenvelope()"
     },
     {
@@ -2290,7 +2290,7 @@
       "source_location": "L163",
       "_origin": "ast",
       "id": "src_document_sync_deletedoclocal",
-      "community": 0,
+      "community": 94,
       "norm_label": "deletedoclocal()"
     },
     {
@@ -3350,7 +3350,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_masters",
-      "community": 0,
+      "community": 96,
       "norm_label": "masters.ts"
     },
     {
@@ -3360,7 +3360,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_masters_str",
-      "community": 0,
+      "community": 96,
       "norm_label": "str()"
     },
     {
@@ -3370,7 +3370,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_masters_num",
-      "community": 0,
+      "community": 96,
       "norm_label": "num()"
     },
     {
@@ -3380,7 +3380,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_masters_tryenqueue",
-      "community": 0,
+      "community": 96,
       "norm_label": "tryenqueue()"
     },
     {
@@ -3390,7 +3390,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_masters_clientform",
-      "community": 0,
+      "community": 96,
       "norm_label": "clientform"
     },
     {
@@ -3400,7 +3400,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_masters_persistclientform",
-      "community": 0,
+      "community": 96,
       "norm_label": "persistclientform()"
     },
     {
@@ -3410,7 +3410,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_masters_supplierform",
-      "community": 0,
+      "community": 96,
       "norm_label": "supplierform"
     },
     {
@@ -3420,7 +3420,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "src_masters_persistsupplierform",
-      "community": 0,
+      "community": 96,
       "norm_label": "persistsupplierform()"
     },
     {
@@ -3430,7 +3430,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "src_masters_articleform",
-      "community": 0,
+      "community": 96,
       "norm_label": "articleform"
     },
     {
@@ -3440,7 +3440,7 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "src_masters_persistarticleform",
-      "community": 0,
+      "community": 96,
       "norm_label": "persistarticleform()"
     },
     {
@@ -4140,7 +4140,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_sequences",
-      "community": 0,
+      "community": 97,
       "norm_label": "sequences.ts"
     },
     {
@@ -4150,7 +4150,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_sequences_ensuresequenceblocks",
-      "community": 0,
+      "community": 97,
       "norm_label": "ensuresequenceblocks()"
     },
     {
@@ -4190,7 +4190,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_sync",
-      "community": 3,
+      "community": 19,
       "norm_label": "sync.ts"
     },
     {
@@ -4210,7 +4210,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_sync_backoffminutes",
-      "community": 3,
+      "community": 19,
       "norm_label": "backoffminutes()"
     },
     {
@@ -4220,7 +4220,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_sync_marktransientfailure",
-      "community": 3,
+      "community": 19,
       "norm_label": "marktransientfailure()"
     },
     {
@@ -4230,7 +4230,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "src_sync_markpermanentfailure",
-      "community": 3,
+      "community": 19,
       "norm_label": "markpermanentfailure()"
     },
     {
@@ -4240,7 +4240,7 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "src_sync_istransientstatus",
-      "community": 3,
+      "community": 19,
       "norm_label": "istransientstatus()"
     },
     {
@@ -4260,7 +4260,7 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "src_sync_getlastsynctimestamp",
-      "community": 3,
+      "community": 19,
       "norm_label": "getlastsynctimestamp()"
     },
     {
@@ -4270,7 +4270,7 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_sync_setlastsynctimestamp",
-      "community": 3,
+      "community": 19,
       "norm_label": "setlastsynctimestamp()"
     },
     {
@@ -4280,7 +4280,7 @@
       "source_location": "L122",
       "_origin": "ast",
       "id": "src_sync_queueentry",
-      "community": 3,
+      "community": 19,
       "norm_label": "queueentry"
     },
     {
@@ -4320,7 +4320,7 @@
       "source_location": "L170",
       "_origin": "ast",
       "id": "src_sync_resetbackoffforretryable",
-      "community": 3,
+      "community": 19,
       "norm_label": "resetbackoffforretryable()"
     },
     {
@@ -4340,7 +4340,7 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "src_sync_pushchanges",
-      "community": 3,
+      "community": 19,
       "norm_label": "pushchanges()"
     },
     {
@@ -4350,7 +4350,7 @@
       "source_location": "L271",
       "_origin": "ast",
       "id": "src_sync_iscloudnativeentity",
-      "community": 3,
+      "community": 19,
       "norm_label": "iscloudnativeentity()"
     },
     {
@@ -4360,7 +4360,7 @@
       "source_location": "L279",
       "_origin": "ast",
       "id": "src_sync_pushcloudnativechanges",
-      "community": 3,
+      "community": 19,
       "norm_label": "pushcloudnativechanges()"
     },
     {
@@ -4370,7 +4370,7 @@
       "source_location": "L344",
       "_origin": "ast",
       "id": "src_sync_entitytoapipath",
-      "community": 3,
+      "community": 19,
       "norm_label": "entitytoapipath()"
     },
     {
@@ -4380,7 +4380,7 @@
       "source_location": "L356",
       "_origin": "ast",
       "id": "src_sync_pullchanges",
-      "community": 3,
+      "community": 19,
       "norm_label": "pullchanges()"
     },
     {
@@ -4390,7 +4390,7 @@
       "source_location": "L414",
       "_origin": "ast",
       "id": "src_sync_remoterow",
-      "community": 3,
+      "community": 19,
       "norm_label": "remoterow"
     },
     {
@@ -4400,7 +4400,7 @@
       "source_location": "L415",
       "_origin": "ast",
       "id": "src_sync_mapclient",
-      "community": 3,
+      "community": 19,
       "norm_label": "mapclient()"
     },
     {
@@ -4410,7 +4410,7 @@
       "source_location": "L436",
       "_origin": "ast",
       "id": "src_sync_mapsupplier",
-      "community": 3,
+      "community": 19,
       "norm_label": "mapsupplier()"
     },
     {
@@ -4420,7 +4420,7 @@
       "source_location": "L455",
       "_origin": "ast",
       "id": "src_sync_maparticle",
-      "community": 3,
+      "community": 19,
       "norm_label": "maparticle()"
     },
     {
@@ -4430,7 +4430,7 @@
       "source_location": "L476",
       "_origin": "ast",
       "id": "src_sync_mapairproduct",
-      "community": 3,
+      "community": 19,
       "norm_label": "mapairproduct()"
     },
     {
@@ -4440,7 +4440,7 @@
       "source_location": "L497",
       "_origin": "ast",
       "id": "src_sync_applyairconfig",
-      "community": 3,
+      "community": 19,
       "norm_label": "applyairconfig()"
     },
     {
@@ -4450,7 +4450,7 @@
       "source_location": "L518",
       "_origin": "ast",
       "id": "src_sync_tablecolumns",
-      "community": 3,
+      "community": 19,
       "norm_label": "tablecolumns()"
     },
     {
@@ -4460,7 +4460,7 @@
       "source_location": "L523",
       "_origin": "ast",
       "id": "src_sync_upsertrow",
-      "community": 3,
+      "community": 19,
       "norm_label": "upsertrow()"
     },
     {
@@ -4470,7 +4470,7 @@
       "source_location": "L538",
       "_origin": "ast",
       "id": "src_sync_softdeleterow",
-      "community": 3,
+      "community": 19,
       "norm_label": "softdeleterow()"
     },
     {
@@ -4480,7 +4480,7 @@
       "source_location": "L548",
       "_origin": "ast",
       "id": "src_sync_upsertairproduct",
-      "community": 3,
+      "community": 19,
       "norm_label": "upsertairproduct()"
     },
     {
@@ -4490,7 +4490,7 @@
       "source_location": "L587",
       "_origin": "ast",
       "id": "src_sync_softdeleteairproduct",
-      "community": 3,
+      "community": 19,
       "norm_label": "softdeleteairproduct()"
     },
     {
@@ -4500,7 +4500,7 @@
       "source_location": "L602",
       "_origin": "ast",
       "id": "src_sync_applyremotechange",
-      "community": 3,
+      "community": 19,
       "norm_label": "applyremotechange()"
     },
     {
@@ -4740,7 +4740,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "test_air_test_seedairconfig",
-      "community": 1,
+      "community": 19,
       "norm_label": "seedairconfig()"
     },
     {
@@ -4750,7 +4750,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_auth_test",
-      "community": 0,
+      "community": 98,
       "norm_label": "auth.test.ts"
     },
     {
@@ -4760,7 +4760,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_db_test",
-      "community": 0,
+      "community": 94,
       "norm_label": "db.test.ts"
     },
     {
@@ -4770,7 +4770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_document_sync_test",
-      "community": 0,
+      "community": 94,
       "norm_label": "document-sync.test.ts"
     },
     {
@@ -4780,7 +4780,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "test_document_sync_test_one",
-      "community": 0,
+      "community": 94,
       "norm_label": "one()"
     },
     {
@@ -4790,7 +4790,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "test_document_sync_test_count",
-      "community": 0,
+      "community": 94,
       "norm_label": "count()"
     },
     {
@@ -4800,7 +4800,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "test_document_sync_test_stockqty",
-      "community": 0,
+      "community": 94,
       "norm_label": "stockqty()"
     },
     {
@@ -4810,7 +4810,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "test_document_sync_test_cashbalance",
-      "community": 0,
+      "community": 94,
       "norm_label": "cashbalance()"
     },
     {
@@ -4860,7 +4860,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_helpers",
-      "community": 0,
+      "community": 94,
       "norm_label": "helpers.ts"
     },
     {
@@ -4870,7 +4870,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "test_helpers_inittestdb",
-      "community": 0,
+      "community": 94,
       "norm_label": "inittestdb()"
     },
     {
@@ -4880,7 +4880,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "test_helpers_resetledger",
-      "community": 0,
+      "community": 94,
       "norm_label": "resetledger()"
     },
     {
@@ -4890,7 +4890,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "test_helpers_seedarticle",
-      "community": 0,
+      "community": 94,
       "norm_label": "seedarticle()"
     },
     {
@@ -4900,7 +4900,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_masters_test",
-      "community": 0,
+      "community": 96,
       "norm_label": "masters.test.ts"
     },
     {
@@ -4910,7 +4910,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "test_masters_test_row",
-      "community": 0,
+      "community": 96,
       "norm_label": "row()"
     },
     {
@@ -4930,7 +4930,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_sequences_test",
-      "community": 0,
+      "community": 97,
       "norm_label": "sequences.test.ts"
     },
     {
@@ -4940,7 +4940,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "test_sequences_test_fetchmock",
-      "community": 0,
+      "community": 97,
       "norm_label": "fetchmock"
     },
     {
@@ -7344,6 +7344,316 @@
       "norm_label": "vitest"
     },
     {
+      "label": "migration.sql",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "community": 95,
+      "norm_label": "migration.sql"
+    },
+    {
+      "label": "\"plans\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_plans",
+      "community": 95,
+      "norm_label": "\"plans\""
+    },
+    {
+      "label": "\"tenants\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "community": 95,
+      "norm_label": "\"tenants\""
+    },
+    {
+      "label": "\"subscriptions\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_subscriptions",
+      "community": 95,
+      "norm_label": "\"subscriptions\""
+    },
+    {
+      "label": "\"subscription_payments\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_subscription_payments",
+      "community": 95,
+      "norm_label": "\"subscription_payments\""
+    },
+    {
+      "label": "\"feature_flags\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L88",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_feature_flags",
+      "community": 95,
+      "norm_label": "\"feature_flags\""
+    },
+    {
+      "label": "\"tenant_usage\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_tenant_usage",
+      "community": 95,
+      "norm_label": "\"tenant_usage\""
+    },
+    {
+      "label": "\"users\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L112",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_users",
+      "community": 95,
+      "norm_label": "\"users\""
+    },
+    {
+      "label": "\"sessions\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L130",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_sessions",
+      "community": 95,
+      "norm_label": "\"sessions\""
+    },
+    {
+      "label": "\"clients\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_clients",
+      "community": 95,
+      "norm_label": "\"clients\""
+    },
+    {
+      "label": "\"suppliers\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L171",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_suppliers",
+      "community": 95,
+      "norm_label": "\"suppliers\""
+    },
+    {
+      "label": "\"products\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L198",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "community": 95,
+      "norm_label": "\"products\""
+    },
+    {
+      "label": "\"warehouses\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L226",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_warehouses",
+      "community": 95,
+      "norm_label": "\"warehouses\""
+    },
+    {
+      "label": "\"product_stock\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L240",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_product_stock",
+      "community": 95,
+      "norm_label": "\"product_stock\""
+    },
+    {
+      "label": "\"stock_movements\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L252",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_stock_movements",
+      "community": 95,
+      "norm_label": "\"stock_movements\""
+    },
+    {
+      "label": "\"price_lists\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L270",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_price_lists",
+      "community": 95,
+      "norm_label": "\"price_lists\""
+    },
+    {
+      "label": "\"price_list_items\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L285",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_price_list_items",
+      "community": 95,
+      "norm_label": "\"price_list_items\""
+    },
+    {
+      "label": "\"documents\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L295",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "community": 95,
+      "norm_label": "\"documents\""
+    },
+    {
+      "label": "\"document_items\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L330",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_document_items",
+      "community": 95,
+      "norm_label": "\"document_items\""
+    },
+    {
+      "label": "\"account_movements\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L349",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_account_movements",
+      "community": 95,
+      "norm_label": "\"account_movements\""
+    },
+    {
+      "label": "\"cash_accounts\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L367",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_cash_accounts",
+      "community": 95,
+      "norm_label": "\"cash_accounts\""
+    },
+    {
+      "label": "\"cash_movements\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L381",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_cash_movements",
+      "community": 95,
+      "norm_label": "\"cash_movements\""
+    },
+    {
+      "label": "\"audit_logs\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L397",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_audit_logs",
+      "community": 95,
+      "norm_label": "\"audit_logs\""
+    },
+    {
+      "label": "\"sequences\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L414",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_sequences",
+      "community": 95,
+      "norm_label": "\"sequences\""
+    },
+    {
+      "label": "\"print_templates\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L425",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_print_templates",
+      "community": 95,
+      "norm_label": "\"print_templates\""
+    },
+    {
+      "label": "\"notifications\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L439",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0000_init_migration_notifications",
+      "community": 95,
+      "norm_label": "\"notifications\""
+    },
+    {
+      "label": "migration.sql",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0001_air_integration_sync/migration.sql",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration",
+      "community": 99,
+      "norm_label": "migration.sql"
+    },
+    {
+      "label": "\"integration_configs\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0001_air_integration_sync/migration.sql",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration_integration_configs",
+      "community": 99,
+      "norm_label": "\"integration_configs\""
+    },
+    {
+      "label": "\"external_catalog_products\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0001_air_integration_sync/migration.sql",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration_external_catalog_products",
+      "community": 99,
+      "norm_label": "\"external_catalog_products\""
+    },
+    {
+      "label": "migration.sql",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0002_synced_documents/migration.sql",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0002_synced_documents_migration",
+      "community": 100,
+      "norm_label": "migration.sql"
+    },
+    {
+      "label": "\"synced_documents\"",
+      "file_type": "code",
+      "source_file": "v2/packages/api/prisma/migrations/0002_synced_documents/migration.sql",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "v2_packages_api_prisma_migrations_0002_synced_documents_migration_synced_documents",
+      "community": 100,
+      "norm_label": "\"synced_documents\""
+    },
+    {
       "label": "seed.ts",
       "file_type": "code",
       "source_file": "v2/packages/api/prisma/seed.ts",
@@ -8210,7 +8520,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller",
-      "community": 29,
+      "community": 37,
       "norm_label": "auth.controller.ts"
     },
     {
@@ -8220,7 +8530,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller",
-      "community": 19,
+      "community": 14,
       "norm_label": "authcontroller"
     },
     {
@@ -8230,7 +8540,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apitags",
-      "community": 19,
+      "community": 14,
       "norm_label": "apitags"
     },
     {
@@ -8240,7 +8550,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_controller",
-      "community": 19,
+      "community": 14,
       "norm_label": "controller"
     },
     {
@@ -8250,7 +8560,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_public",
-      "community": 19,
+      "community": 14,
       "norm_label": "public"
     },
     {
@@ -8260,7 +8570,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_post",
-      "community": 19,
+      "community": 14,
       "norm_label": "post"
     },
     {
@@ -8270,7 +8580,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "httpcode",
-      "community": 19,
+      "community": 14,
       "norm_label": "httpcode"
     },
     {
@@ -8280,7 +8590,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apioperation",
-      "community": 19,
+      "community": 14,
       "norm_label": "apioperation"
     },
     {
@@ -8290,7 +8600,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_body",
-      "community": 19,
+      "community": 14,
       "norm_label": "body"
     },
     {
@@ -8300,7 +8610,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "headers",
-      "community": 19,
+      "community": 14,
       "norm_label": "headers"
     },
     {
@@ -8310,7 +8620,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_constructor",
-      "community": 19,
+      "community": 14,
       "norm_label": ".constructor()"
     },
     {
@@ -8320,7 +8630,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_login",
-      "community": 19,
+      "community": 14,
       "norm_label": ".login()"
     },
     {
@@ -8330,7 +8640,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_register",
-      "community": 19,
+      "community": 14,
       "norm_label": ".register()"
     },
     {
@@ -8340,7 +8650,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_refresh",
-      "community": 19,
+      "community": 14,
       "norm_label": ".refresh()"
     },
     {
@@ -8350,7 +8660,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_logout",
-      "community": 19,
+      "community": 14,
       "norm_label": ".logout()"
     },
     {
@@ -8390,7 +8700,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec",
-      "community": 19,
+      "community": 37,
       "norm_label": "auth.service.spec.ts"
     },
     {
@@ -8400,7 +8710,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeprismamock",
-      "community": 19,
+      "community": 37,
       "norm_label": "makeprismamock()"
     },
     {
@@ -8410,7 +8720,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makejwt",
-      "community": 19,
+      "community": 37,
       "norm_label": "makejwt()"
     },
     {
@@ -8420,7 +8730,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeconfig",
-      "community": 19,
+      "community": 37,
       "norm_label": "makeconfig()"
     },
     {
@@ -8430,7 +8740,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeservice",
-      "community": 19,
+      "community": 37,
       "norm_label": "makeservice()"
     },
     {
@@ -8440,7 +8750,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_validreg",
-      "community": 19,
+      "community": 37,
       "norm_label": "validreg"
     },
     {
@@ -8450,7 +8760,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service",
-      "community": 12,
+      "community": 37,
       "norm_label": "auth.service.ts"
     },
     {
@@ -8460,7 +8770,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice",
-      "community": 19,
+      "community": 14,
       "norm_label": "authservice"
     },
     {
@@ -8470,7 +8780,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_ts_injectable",
-      "community": 19,
+      "community": 14,
       "norm_label": "injectable"
     },
     {
@@ -8480,7 +8790,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_constructor",
-      "community": 19,
+      "community": 14,
       "norm_label": ".constructor()"
     },
     {
@@ -8490,7 +8800,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_login",
-      "community": 19,
+      "community": 14,
       "norm_label": ".login()"
     },
     {
@@ -8500,7 +8810,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_registertenant",
-      "community": 19,
+      "community": 14,
       "norm_label": ".registertenant()"
     },
     {
@@ -8510,7 +8820,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_refreshtoken",
-      "community": 19,
+      "community": 14,
       "norm_label": ".refreshtoken()"
     },
     {
@@ -8520,7 +8830,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_logout",
-      "community": 19,
+      "community": 14,
       "norm_label": ".logout()"
     },
     {
@@ -8530,7 +8840,7 @@
       "source_location": "L226",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_generatetokens",
-      "community": 19,
+      "community": 14,
       "norm_label": ".generatetokens()"
     },
     {
@@ -8540,7 +8850,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy",
-      "community": 29,
+      "community": 12,
       "norm_label": "jwt.strategy.ts"
     },
     {
@@ -8550,7 +8860,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtpayload",
-      "community": 29,
+      "community": 12,
       "norm_label": "jwtpayload"
     },
     {
@@ -8560,7 +8870,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy",
-      "community": 37,
+      "community": 12,
       "norm_label": "jwtstrategy"
     },
     {
@@ -8570,7 +8880,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_ts_injectable",
-      "community": 37,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -8580,7 +8890,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_constructor",
-      "community": 37,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -8590,7 +8900,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_validate",
-      "community": 37,
+      "community": 12,
       "norm_label": ".validate()"
     },
     {
@@ -8780,7 +9090,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_billing_billing_module_billingmodule",
-      "community": 7,
+      "community": 18,
       "norm_label": "billingmodule"
     },
     {
@@ -8790,7 +9100,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_billing_billing_module_ts_module",
-      "community": 7,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -9280,7 +9590,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module",
-      "community": 18,
+      "community": 24,
       "norm_label": "clients.module.ts"
     },
     {
@@ -9290,7 +9600,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module_clientsmodule",
-      "community": 18,
+      "community": 24,
       "norm_label": "clientsmodule"
     },
     {
@@ -9300,7 +9610,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module_ts_module",
-      "community": 18,
+      "community": 24,
       "norm_label": "module"
     },
     {
@@ -9310,7 +9620,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_service",
-      "community": 18,
+      "community": 24,
       "norm_label": "clients.service.ts"
     },
     {
@@ -9490,7 +9800,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_ts_param",
-      "community": 16,
+      "community": 29,
       "norm_label": "param"
     },
     {
@@ -9560,7 +9870,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplate",
-      "community": 16,
+      "community": 29,
       "norm_label": ".gettemplate()"
     },
     {
@@ -9700,7 +10010,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_service_customizationservice_getprinttemplate",
-      "community": 16,
+      "community": 29,
       "norm_label": ".getprinttemplate()"
     },
     {
@@ -9940,7 +10250,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_module",
-      "community": 18,
+      "community": 25,
       "norm_label": "documents.module.ts"
     },
     {
@@ -9950,7 +10260,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_module_documentsmodule",
-      "community": 18,
+      "community": 25,
       "norm_label": "documentsmodule"
     },
     {
@@ -9960,7 +10270,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_module_ts_module",
-      "community": 18,
+      "community": 25,
       "norm_label": "module"
     },
     {
@@ -9970,7 +10280,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_spec",
-      "community": 12,
+      "community": 25,
       "norm_label": "documents.service.spec.ts"
     },
     {
@@ -9980,7 +10290,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_spec_makeprismamock",
-      "community": 12,
+      "community": 25,
       "norm_label": "makeprismamock()"
     },
     {
@@ -9990,7 +10300,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_spec_basedto",
-      "community": 12,
+      "community": 25,
       "norm_label": "basedto"
     },
     {
@@ -10000,7 +10310,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service",
-      "community": 12,
+      "community": 25,
       "norm_label": "documents.service.ts"
     },
     {
@@ -10010,7 +10320,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_createdocumentdto",
-      "community": 12,
+      "community": 25,
       "norm_label": "createdocumentdto"
     },
     {
@@ -10610,7 +10920,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module",
-      "community": 21,
+      "community": 18,
       "norm_label": "reports.module.ts"
     },
     {
@@ -10620,7 +10930,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_reportsmodule",
-      "community": 21,
+      "community": 18,
       "norm_label": "reportsmodule"
     },
     {
@@ -10630,7 +10940,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_ts_module",
-      "community": 21,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -10640,7 +10950,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service",
-      "community": 21,
+      "community": 12,
       "norm_label": "reports.service.ts"
     },
     {
@@ -10650,7 +10960,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_reportperiod",
-      "community": 21,
+      "community": 12,
       "norm_label": "reportperiod"
     },
     {
@@ -10660,7 +10970,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_salesreport",
-      "community": 21,
+      "community": 12,
       "norm_label": "salesreport"
     },
     {
@@ -10670,7 +10980,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_stockreport",
-      "community": 21,
+      "community": 12,
       "norm_label": "stockreport"
     },
     {
@@ -10680,7 +10990,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_accountreport",
-      "community": 21,
+      "community": 12,
       "norm_label": "accountreport"
     },
     {
@@ -10760,7 +11070,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sequences_sequences_controller",
-      "community": 38,
+      "community": 29,
       "norm_label": "sequences.controller.ts"
     },
     {
@@ -10880,7 +11190,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sequences_sequences_service",
-      "community": 38,
+      "community": 12,
       "norm_label": "sequences.service.ts"
     },
     {
@@ -10890,7 +11200,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sequences_sequences_service_reservedrange",
-      "community": 38,
+      "community": 12,
       "norm_label": "reservedrange"
     },
     {
@@ -11230,7 +11540,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_controller",
-      "community": 29,
+      "community": 26,
       "norm_label": "suppliers.controller.ts"
     },
     {
@@ -11420,7 +11730,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module",
-      "community": 18,
+      "community": 26,
       "norm_label": "suppliers.module.ts"
     },
     {
@@ -11450,7 +11760,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_service",
-      "community": 18,
+      "community": 26,
       "norm_label": "suppliers.service.ts"
     },
     {
@@ -11660,7 +11970,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module",
-      "community": 18,
+      "community": 30,
       "norm_label": "sync.module.ts"
     },
     {
@@ -11670,7 +11980,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module_syncmodule",
-      "community": 18,
+      "community": 30,
       "norm_label": "syncmodule"
     },
     {
@@ -11680,7 +11990,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module_ts_module",
-      "community": 18,
+      "community": 30,
       "norm_label": "module"
     },
     {
@@ -11690,7 +12000,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_service",
-      "community": 12,
+      "community": 30,
       "norm_label": "sync.service.ts"
     },
     {
@@ -11700,7 +12010,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_service_syncchange",
-      "community": 12,
+      "community": 30,
       "norm_label": "syncchange"
     },
     {
@@ -11820,7 +12130,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller",
-      "community": 12,
+      "community": 14,
       "norm_label": "tenant.controller.ts"
     },
     {
@@ -12040,7 +12350,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module",
-      "community": 12,
+      "community": 14,
       "norm_label": "tenant.module.ts"
     },
     {
@@ -12070,7 +12380,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service",
-      "community": 12,
+      "community": 14,
       "norm_label": "tenant.service.ts"
     },
     {
@@ -33259,6 +33569,666 @@
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_vitest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L349",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_account_movements",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L397",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_audit_logs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L367",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_cash_accounts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L381",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_cash_movements",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_clients",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L330",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_document_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L295",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L88",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_feature_flags",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L439",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_notifications",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_plans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L285",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_price_list_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L270",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_price_lists",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L425",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_print_templates",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L240",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_product_stock",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L198",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L414",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_sequences",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L130",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_sessions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L252",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_stock_movements",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_subscription_payments",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_subscriptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_suppliers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenant_usage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L112",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L226",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_warehouses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L604",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_subscriptions",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_plans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L598",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_plans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L685",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_account_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L703",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_audit_logs",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L697",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_cash_accounts",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L622",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_clients",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L661",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L610",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_feature_flags",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L652",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_price_lists",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L709",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_print_templates",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L631",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L643",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_stock_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L601",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_subscriptions",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L628",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_suppliers",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L613",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_tenant_usage",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L616",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_users",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L634",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_warehouses",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_tenants",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L607",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_subscription_payments",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_subscriptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L706",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_audit_logs",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L673",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L619",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_sessions",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_users",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L691",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_account_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_clients",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L625",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_clients",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_price_lists",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L664",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_clients",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L694",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_account_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_suppliers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L667",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_suppliers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L682",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_document_items",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L658",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_price_list_items",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L637",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_product_stock",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L646",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_stock_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_products",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L670",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_warehouses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L640",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_product_stock",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_warehouses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L649",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_stock_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_warehouses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L655",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_price_list_items",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_price_lists",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L688",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_account_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L679",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_document_items",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L676",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_documents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0000_init/migration.sql",
+      "source_location": "L700",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0000_init_migration_cash_movements",
+      "target": "v2_packages_api_prisma_migrations_0000_init_migration_cash_accounts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0001_air_integration_sync/migration.sql",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration",
+      "target": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration_external_catalog_products",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0001_air_integration_sync/migration.sql",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration",
+      "target": "v2_packages_api_prisma_migrations_0001_air_integration_sync_migration_integration_configs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/prisma/migrations/0002_synced_documents/migration.sql",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "v2_packages_api_prisma_migrations_0002_synced_documents_migration",
+      "target": "v2_packages_api_prisma_migrations_0002_synced_documents_migration_synced_documents",
       "confidence_score": 1.0
     },
     {

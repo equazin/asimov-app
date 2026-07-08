@@ -16,6 +16,7 @@ import { randomUUID } from "node:crypto";
 import { enqueueChange } from "./sync";
 import { isCloudConnected } from "./api-client";
 import { buildDocEnvelope } from "./document-sync";
+import { applySourceLink, revertSourcesOnAnnul, type DocumentSource } from "./document-links";
 
 /**
  * Encola el documento (cabecera + ítems + movimientos) para push a la nube.
@@ -180,6 +181,8 @@ export interface DeliveryNoteForm {
   clienteNombre?: string;
   observaciones?: string;
   items?: Array<{ codigo?: string; descripcion?: string; unidad?: string; cantPedida?: number | string; cantEntregada?: number | string }>;
+  /** Pedido de origen (traído al form): crea vínculo y lo marca "remitido". */
+  origen?: DocumentSource | null;
 }
 
 export function persistDeliveryNote(form: DeliveryNoteForm): PersistResult {
@@ -216,6 +219,7 @@ export function persistDeliveryNote(form: DeliveryNoteForm): PersistResult {
         stockMoved++;
       }
     }
+    if (form.origen) applySourceLink("delivery-note", id, form.origen);
   });
 
   tx();
@@ -448,6 +452,8 @@ export interface InvoiceForm {
   cliente?: { id?: string } | null; clienteNombre?: string; observaciones?: string;
   items?: SaleDocItem[];
   totales?: { neto21?: number; neto10?: number; neto0?: number; iva21?: number; iva10?: number; total?: number };
+  /** Documento de origen (pedido/remito traído al form): crea vínculo y propaga estado. */
+  origen?: DocumentSource | null;
 }
 
 export function persistInvoice(form: InvoiceForm): PersistResult {
@@ -477,6 +483,7 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
         [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, ivaPct, sub, Math.round(sub * ivaPct) / 100],
       );
     }
+    if (form.origen) applySourceLink("invoice", id, form.origen);
   });
   tx();
   enqueueDocSnapshot("invoice", id);
@@ -638,6 +645,9 @@ export function annulDocument(type: string, id: string): AnnulResult {
     if (cfg.effect === "stock") reverseStockFor(cfg.refType, docId);
     else if (cfg.effect === "cash") reverseCashFor(cfg.refType, docId);
     dbRun(`UPDATE ${cfg.table} SET status = 'anulado' WHERE id = ?`, [docId]);
+    // Los documentos de origen vinculados (pedido/remito) vuelven a "pendiente"
+    // para poder facturarse o remitirse de nuevo.
+    revertSourcesOnAnnul(str(type), docId);
   });
   tx();
   return { ok: true };

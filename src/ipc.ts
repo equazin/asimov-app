@@ -39,6 +39,7 @@ import {
   resetAirAuthCache,
 } from "./air";
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
+import { listPendingSaleOrders, listPendingDeliveryNotes, getSourceItems, getLinksFor } from "./document-links";
 import {
   dbAll,
   dbGet,
@@ -790,6 +791,16 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     stopAirSyncTimer();
     return { ok: true };
   });
+
+  // ── Documentos entrelazados (pedido → remito → factura) ──────────────
+  ipcMain.handle("db:doc-links:pending-sale-orders", (_event, clientId: unknown, target: unknown) =>
+    listPendingSaleOrders(safeStr(clientId), safeStr(target) === "delivery-note" ? "delivery-note" : "invoice"));
+  ipcMain.handle("db:doc-links:pending-delivery-notes", (_event, clientId: unknown) =>
+    listPendingDeliveryNotes(safeStr(clientId)));
+  ipcMain.handle("db:doc-links:source-items", (_event, type: unknown, id: unknown) =>
+    getSourceItems(safeStr(type), safeStr(id)));
+  ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>
+    getLinksFor(safeStr(type), safeStr(id)));
 
   // ── Cotización del dólar ──────────────────────────────────────────────
   ipcMain.handle("dolar:latest", () => {

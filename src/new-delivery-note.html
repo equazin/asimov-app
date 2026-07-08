@@ -646,8 +646,25 @@ td{ border-color:var(--border) !important; }
     <div class="tab-panel items-panel" id="panel-items">
       <div class="items-toolbar">
         <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
+        <button class="btn" id="btnTraerPedido" style="height:26px;padding:0 12px;" title="Traer los ítems de un pedido pendiente del cliente">📋 Traer pedido</button>
+        <span class="origen-badge" id="lblOrigen" style="display:none;background:rgba(46,163,110,0.15);color:#2ea36e;border:1px solid rgba(46,163,110,0.4);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">
+          📎 <span id="lblOrigenTexto"></span>
+          <span id="btnQuitarOrigen" style="cursor:pointer;margin-left:4px;font-weight:700;" title="Desvincular pedido de origen">×</span>
+        </span>
         <span class="items-hint">Cant. pedida → cant. entregada | F4 o + = buscar artículo | Insert = nueva fila</span>
         <span class="items-count" id="lblItemCount">0 ítems</span>
+      </div>
+
+      <!-- Modal selector de pedido pendiente -->
+      <div id="origenModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:center;justify-content:center;">
+        <div style="background:var(--panel,#1b1f27);color:inherit;border:1px solid rgba(255,255,255,0.15);border-radius:8px;width:560px;max-height:70vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.5);">
+          <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;">
+            <strong>Traer pedido pendiente</strong>
+            <span style="flex:1"></span>
+            <span id="origenModalClose" style="cursor:pointer;font-size:18px;padding:0 6px;">×</span>
+          </div>
+          <div id="origenModalBody" style="overflow-y:auto;padding:8px 0;"></div>
+        </div>
       </div>
       <div class="items-table-wrap">
         <table class="items-table">
@@ -1016,6 +1033,87 @@ td{ border-color:var(--border) !important; }
       return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
+    /* ─── Documentos entrelazados: traer pedido ─── */
+    var origenDoc = null; // { tipo: "sale-order", id, numero }
+
+    function setOrigen(doc) {
+      origenDoc = doc;
+      var badge = document.getElementById("lblOrigen");
+      if (doc) {
+        document.getElementById("lblOrigenTexto").textContent = "Pedido " + (doc.numero || "");
+        badge.style.display = "inline-flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+    document.getElementById("btnQuitarOrigen").addEventListener("click", function() { setOrigen(null); });
+
+    function closeOrigenModal() { document.getElementById("origenModal").style.display = "none"; }
+    document.getElementById("origenModalClose").addEventListener("click", closeOrigenModal);
+    document.getElementById("origenModal").addEventListener("click", function(e) {
+      if (e.target === this) closeOrigenModal();
+    });
+
+    document.getElementById("btnTraerPedido").addEventListener("click", async function() {
+      if (!clienteData || !clienteData.id) {
+        alert("Primero seleccioná el destinatario (F4 en Razón Social).");
+        return;
+      }
+      var modal = document.getElementById("origenModal");
+      var body = document.getElementById("origenModalBody");
+      body.innerHTML = '<div style="padding:16px;opacity:0.6;">Buscando...</div>';
+      modal.style.display = "flex";
+      try {
+        var docs = await window.asimovNewDeliveryNote.listPendingSaleOrders(String(clienteData.id));
+        if (!docs || docs.length === 0) {
+          body.innerHTML = '<div style="padding:16px;opacity:0.6;">Este cliente no tiene pedidos pendientes de remitir.</div>';
+          return;
+        }
+        body.innerHTML = docs.map(function(d) {
+          return '<div class="origen-item" data-id="' + esc(d.id) + '" data-num="' + esc(d.number) + '" ' +
+            'style="padding:8px 14px;cursor:pointer;display:flex;gap:12px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);" ' +
+            'onmouseover="this.style.background=\'rgba(255,255,255,0.07)\'" onmouseout="this.style.background=\'\'">' +
+            '<strong style="min-width:120px;">' + esc(d.number) + '</strong>' +
+            '<span style="opacity:0.7;min-width:80px;">' + esc(d.date || "") + '</span>' +
+            '<span style="opacity:0.7;">' + d.items_count + ' ítem' + (d.items_count === 1 ? "" : "s") + '</span>' +
+            '<span style="flex:1"></span>' +
+            '<span style="font-size:10px;text-transform:uppercase;opacity:0.6;">' + esc(d.status || "") + '</span>' +
+            '</div>';
+        }).join("");
+        body.querySelectorAll(".origen-item").forEach(function(el) {
+          el.addEventListener("click", function() { importPedido(el.dataset.id, el.dataset.num); });
+        });
+      } catch (e) {
+        body.innerHTML = '<div style="padding:16px;color:#e05d5d;">' + esc(e.message || "Error al buscar pedidos") + '</div>';
+      }
+    });
+
+    async function importPedido(id, numero) {
+      try {
+        var srcItems = await window.asimovNewDeliveryNote.getSourceItems("sale-order", id);
+        if (!srcItems || srcItems.length === 0) { alert("El pedido no tiene ítems."); return; }
+        if (items.length > 0 && !confirm("El remito ya tiene ítems cargados. ¿Reemplazarlos por los del pedido?")) return;
+        items = [];
+        srcItems.forEach(function(it) {
+          var qty = parseFloat(it.qty) || 1;
+          items.push({
+            id: nextRowId++,
+            codigo: it.code || "",
+            descripcion: it.description || "",
+            unidad: it.unit || "UN",
+            cantPedida: qty,
+            cantEntregada: qty,
+            lote: "",
+          });
+        });
+        setOrigen({ tipo: "sale-order", id: id, numero: numero });
+        renderItemsTable();
+        closeOrigenModal();
+      } catch (e) {
+        alert("No se pudieron traer los ítems: " + (e.message || e));
+      }
+    }
+
     /* ─── Keyboard & toolbar ─── */
     document.getElementById("btnAddRow").addEventListener("click", function() { addRow(); });
     window.addEventListener("keydown", function(e) {
@@ -1047,6 +1145,7 @@ td{ border-color:var(--border) !important; }
         direccion: document.getElementById("txtDireccion").value,
         items: items,
         observaciones: document.getElementById("txtObsEntrega").value,
+        origen: origenDoc,
       };
       if (window.asimovNewDeliveryNote) window.asimovNewDeliveryNote.saveDeliveryNote(delivery);
     });
