@@ -24,7 +24,10 @@ import {
   WSFE_URLS, buildUltimoAutorizadoEnvelope, parseUltimoAutorizado,
   buildFECAESolicitarEnvelope, parseFECAEResponse, callWsfe, type FeCabecera, type FeComprobante,
 } from "./afip/wsfe";
-import { receptorDocType, getInvoiceTypeCode, isAfipUnavailable } from "./afip/domain";
+import {
+  receptorDocType, isAfipUnavailable, resolveVoucherTypeCode,
+  validateVoucherForClient, requiresAssociatedInvoice,
+} from "./afip/domain";
 import { buildAfipQrUrl } from "./afip/qr";
 import * as QRCode from "qrcode";
 
@@ -50,6 +53,8 @@ export interface CaeRequestInput {
   iva: number;
   total: number;
   items: Array<{ ivaRate: number; subtotal: number }>;
+  /** Comprobante(s) asociado(s) — obligatorio para NC/ND (RG 4540). */
+  cbtesAsoc?: Array<{ tipo: number; ptoVta: number; nro: number; cuit?: string }>;
 }
 
 export interface CaeSuccessDto {
@@ -226,6 +231,7 @@ export async function requestCae(input: CaeRequestInput): Promise<CaeSuccessDto>
     impIva: input.iva,
     impTotal: input.total,
     items: input.items,
+    cbtesAsoc: input.cbtesAsoc,
   };
 
   const result = parseFECAEResponse(await callWsfe(url, "FECAESolicitar", buildFECAESolicitarEnvelope(ta, cab, cbte)));
@@ -271,7 +277,11 @@ export async function requestCae(input: CaeRequestInput): Promise<CaeSuccessDto>
 // Modo offline — facturas "pendiente de CAE" y reintento
 // ---------------------------------------------------------------------------
 
-/** Arma el CaeRequestInput leyendo la factura, sus ítems y el CUIT del cliente. */
+/**
+ * Arma el CaeRequestInput leyendo la factura, sus ítems y el cliente. Resuelve
+ * el código AFIP según tipo + condición de IVA del cliente, valida la
+ * coherencia (A/B/C) y, para NC/ND, busca la factura asociada en document_links.
+ */
 export function buildCaeInputFromInvoice(invoiceId: string): CaeRequestInput {
   const inv = dbGet<{ subtotal: number; iva_amount: number; total: number; tipo: string; client_id: string; date: string }>(
     "SELECT subtotal, iva_amount, total, tipo, client_id, date FROM invoices WHERE id = ?", [invoiceId],
@@ -281,17 +291,57 @@ export function buildCaeInputFromInvoice(invoiceId: string): CaeRequestInput {
     "SELECT iva_pct, subtotal FROM invoice_items WHERE invoice_id = ?", [invoiceId],
   );
   const client = inv.client_id
-    ? dbGet<{ cuit: string }>("SELECT cuit FROM clients WHERE id = ?", [inv.client_id])
+    ? dbGet<{ cuit: string; fiscal_type: string }>("SELECT cuit, fiscal_type FROM clients WHERE id = ?", [inv.client_id])
     : undefined;
+
+  const tipo = String(inv.tipo || "B");
+  const invalid = validateVoucherForClient(tipo, client?.fiscal_type, client?.cuit);
+  if (invalid) throw new Error(invalid);
+
   return {
     invoiceId,
-    invoiceType: getInvoiceTypeCode(String(inv.tipo || "B"), "responsable_inscripto"),
+    invoiceType: resolveVoucherTypeCode(tipo, client?.fiscal_type),
     clientCuit: client?.cuit ?? "",
     date: inv.date || undefined,
     net: inv.subtotal,
     iva: inv.iva_amount,
     total: inv.total,
     items: items.map((it) => ({ ivaRate: Number(it.iva_pct) || 0, subtotal: Number(it.subtotal) || 0 })),
+    cbtesAsoc: requiresAssociatedInvoice(tipo)
+      ? [buildAssociatedVoucher(invoiceId, client?.fiscal_type)]
+      : undefined,
+  };
+}
+
+/**
+ * Factura original asociada a una NC/ND (vía document_links invoice → invoice),
+ * en el formato CbteAsoc de WSFE. Exige que exista y que ya tenga CAE.
+ */
+function buildAssociatedVoucher(invoiceId: string, clientFiscalType: string | undefined):
+  { tipo: number; ptoVta: number; nro: number; cuit: string } {
+  const orig = dbGet<{ tipo: string; number: string; point_of_sale: string; cae: string | null }>(
+    `SELECT i.tipo, i.number, i.point_of_sale, i.cae
+     FROM document_links l JOIN invoices i ON i.id = l.source_id
+     WHERE l.target_type = 'invoice' AND l.target_id = ? AND l.source_type = 'invoice'
+     ORDER BY l.created_at DESC LIMIT 1`,
+    [invoiceId],
+  );
+  if (!orig) {
+    throw new Error('La nota de crédito/débito debe estar asociada a la factura original: usá "Traer factura" en el formulario.');
+  }
+  if (!orig.cae) {
+    throw new Error(`La factura asociada ${orig.number} no tiene CAE: autorizala en AFIP antes de emitir la nota de crédito/débito.`);
+  }
+  const nro = parseInt(String(orig.number).split("-").pop() ?? "", 10);
+  if (!Number.isFinite(nro) || nro <= 0) {
+    throw new Error(`No se pudo leer el número de la factura asociada ("${orig.number}").`);
+  }
+  const cfg = readConfigMap();
+  return {
+    tipo: resolveVoucherTypeCode(String(orig.tipo || "B"), clientFiscalType),
+    ptoVta: parseInt(String(orig.point_of_sale), 10) || 1,
+    nro,
+    cuit: cfg.afip_cuit ?? "",
   };
 }
 

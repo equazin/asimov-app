@@ -79,7 +79,11 @@ export function applySourceLink(targetType: LinkableDocType, targetId: string, s
   const sourceType = String(source?.tipo ?? "").trim();
   const sourceId = String(source?.id ?? "").trim();
   const def = DOC_TABLES[sourceType];
-  if (!def || !sourceId || !targetId || sourceType === targetType) return false;
+  // invoice → invoice es válido (factura original → nota de crédito/débito);
+  // para el resto, mismo tipo = error de datos. Nunca un documento consigo mismo.
+  const sameTypeAllowed = sourceType === "invoice" && targetType === "invoice";
+  if (!def || !sourceId || !targetId || sourceId === targetId) return false;
+  if (sourceType === targetType && !sameTypeAllowed) return false;
   const exists = dbGet(`SELECT id FROM ${def.table} WHERE id = ?`, [sourceId]);
   if (!exists) return false;
 
@@ -175,6 +179,23 @@ export function listPendingSaleOrders(clientId: string, target: "invoice" | "del
   );
 }
 
+/**
+ * Facturas de un cliente que pueden asociarse a una nota de crédito/débito:
+ * autorizadas por AFIP (con CAE) o al menos emitidas, nunca anuladas.
+ */
+export function listClientInvoicesForNote(clientId: string): PendingDoc[] {
+  if (!clientId) return [];
+  return dbAll<PendingDoc>(
+    `SELECT f.id, f.number, f.date, f.status, f.total, f.client_name,
+            (SELECT COUNT(*) FROM invoice_items i WHERE i.invoice_id = f.id) AS items_count
+     FROM invoices f
+     WHERE f.client_id = ? AND LOWER(f.status) NOT IN ('anulado','anulada','cancelado')
+       AND UPPER(f.tipo) NOT IN ('NC','ND')
+     ORDER BY f.date DESC, f.created_at DESC LIMIT 50`,
+    [clientId],
+  );
+}
+
 /** Remitos de un cliente aún no facturados ni anulados. */
 export function listPendingDeliveryNotes(clientId: string): PendingDoc[] {
   if (!clientId) return [];
@@ -215,6 +236,14 @@ export function getSourceItems(docType: string, docId: string): SourceItem[] {
     return dbAll<SourceItem>(
       `SELECT code, description, 'un' AS unit, qty, unit_price, iva_pct
        FROM quote_items WHERE quote_id = ? ORDER BY rowid`,
+      [docId],
+    );
+  }
+  if (docType === "invoice") {
+    // Para precargar una nota de crédito/débito con los ítems de la factura.
+    return dbAll<SourceItem>(
+      `SELECT code, description, 'un' AS unit, qty, unit_price, iva_pct
+       FROM invoice_items WHERE invoice_id = ? ORDER BY rowid`,
       [docId],
     );
   }

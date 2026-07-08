@@ -40,8 +40,8 @@
 
 ### ❌ Lo que falta
 
-- **Comprobantes**: faltan **notas de crédito/débito** y validar A/B/C punta a
-  punta (Fase 4).
+- **Percepciones/tributos** (`Tributos` de WSFE), sólo si aplica al rubro
+  (resto de Fase 4).
 - **Padrón** (consulta CUIT → condición IVA / razón social): no existe (Fase 5).
 - **Homologación → producción**: sin certificar en el ambiente de testing de AFIP
   (Fase 6).
@@ -95,13 +95,18 @@ la nube.
       automáticamente (al arrancar la app y cada 10 min; también manual vía
       `afip:retry-pending`).
 
-### Fase 4 — Cobertura de comprobantes 🟠
+### Fase 4 — Cobertura de comprobantes ✅ *hecha (percepciones pendientes)*
 
-- [ ] **Notas de crédito y débito** (A/B/C) con su tipo AFIP y asociación al
-      comprobante de origen (encaja con `document_links` de v4.8.0).
-- [ ] Validar **Factura A / B / C** punta a punta según condición del cliente
-      (el mapeo ya está en `getInvoiceTypeCode`).
-- [ ] Comprobantes tipo **M** y percepciones si aplica al rubro.
+- [x] **Notas de crédito y débito** (A/B/C) con su tipo AFIP (3/8, 2/7, 13/12,
+      derivado de la condición del cliente) y **asociación al comprobante de
+      origen** vía `document_links` (botón "Traer factura" en el form) →
+      `CbtesAsoc` en `FECAESolicitar` (RG 4540). La NC/ND exige que la factura
+      asociada tenga CAE.
+- [x] Validar **Factura A / B / C** según condición del cliente ANTES de ir a
+      AFIP (`validateVoucherForClient`): A/M exigen cliente RI con CUIT, B a un
+      RI se rechaza (corresponde A), C sólo emisor monotributista.
+- [x] Comprobante tipo **M** (código 51) mapeado. Percepciones/tributos
+      (`Tributos` de WSFE): pendiente, sólo si aplica al rubro.
 
 ### Fase 5 — Padrón y extras 🟢
 

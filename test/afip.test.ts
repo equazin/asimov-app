@@ -13,6 +13,7 @@ import { callLoginCms, WSAA_URLS } from "../src/afip/wsaa";
 import {
   afipIvaCode, buildIvaAlicuotas, getInvoiceTypeCode, receptorDocType,
   AfipUnavailableError, isAfipUnavailable,
+  resolveVoucherTypeCode, validateVoucherForClient, requiresAssociatedInvoice, voucherLetterForClient,
 } from "../src/afip/domain";
 import { buildAfipQrUrl } from "../src/afip/qr";
 
@@ -157,6 +158,71 @@ describe("afip/wsfe", () => {
     const r2 = parseFECAEResponse(rej);
     expect(r2.ok).toBe(false);
     if (!r2.ok) expect(r2.observations[0]).toEqual({ code: "10015", msg: "Fecha fuera de rango" });
+  });
+});
+
+describe("afip/domain — Fase 4: NC/ND, letra según cliente y validación", () => {
+  it("resolveVoucherTypeCode deriva la letra de la condición del cliente", () => {
+    expect(voucherLetterForClient("Responsable Inscripto")).toBe("A");
+    expect(voucherLetterForClient("Consumidor Final")).toBe("B");
+    // NC/ND: 3/8 y 2/7 según el cliente
+    expect(resolveVoucherTypeCode("NC", "Responsable Inscripto")).toBe(3);
+    expect(resolveVoucherTypeCode("NC", "Consumidor Final")).toBe(8);
+    expect(resolveVoucherTypeCode("ND", "Responsable Inscripto")).toBe(2);
+    expect(resolveVoucherTypeCode("ND", "Monotributista")).toBe(7);
+    // Facturas
+    expect(resolveVoucherTypeCode("A", "Responsable Inscripto")).toBe(1);
+    expect(resolveVoucherTypeCode("B", "Consumidor Final")).toBe(6);
+    expect(resolveVoucherTypeCode("M", "Responsable Inscripto")).toBe(51);
+    // Emisor monotributista: serie C
+    expect(resolveVoucherTypeCode("B", "Consumidor Final", "monotributista")).toBe(11);
+    expect(resolveVoucherTypeCode("NC", "Responsable Inscripto", "monotributista")).toBe(13);
+    expect(resolveVoucherTypeCode("ND", "Consumidor Final", "monotributista")).toBe(12);
+  });
+
+  it("validateVoucherForClient detecta incoherencias A/B/C", () => {
+    expect(validateVoucherForClient("A", "Responsable Inscripto", "30712345678")).toBeNull();
+    expect(validateVoucherForClient("B", "Consumidor Final", "")).toBeNull();
+    expect(validateVoucherForClient("A", "Consumidor Final", "")).toMatch(/Responsable Inscripto/);
+    expect(validateVoucherForClient("A", "Responsable Inscripto", "")).toMatch(/CUIT/);
+    expect(validateVoucherForClient("B", "Responsable Inscripto", "30712345678")).toMatch(/corresponde Factura A/);
+    expect(validateVoucherForClient("C", "Consumidor Final", "")).toMatch(/monotributista/);
+    expect(validateVoucherForClient("NC", "Responsable Inscripto", "")).toMatch(/CUIT/);
+    expect(validateVoucherForClient("NC", "Consumidor Final", "")).toBeNull();
+    // Emisor monotributista emite C a cualquiera
+    expect(validateVoucherForClient("C", "Consumidor Final", "", "monotributista")).toBeNull();
+  });
+
+  it("requiresAssociatedInvoice sólo para NC/ND", () => {
+    expect(requiresAssociatedInvoice("NC")).toBe(true);
+    expect(requiresAssociatedInvoice("nd")).toBe(true);
+    expect(requiresAssociatedInvoice("A")).toBe(false);
+    expect(requiresAssociatedInvoice("")).toBe(false);
+  });
+});
+
+describe("afip/wsfe — CbtesAsoc (comprobante asociado de NC/ND)", () => {
+  const ta = { token: "T", sign: "S", expiration: new Date().toISOString() };
+  const cbteBase = {
+    docType: 80, docNumber: "27111111112", invoiceNumber: 7, date: new Date("2026-07-08T10:00:00"),
+    impNeto: 100, impIva: 21, impTotal: 121, items: [{ ivaRate: 21, subtotal: 100 }],
+  };
+
+  it("incluye CbtesAsoc antes de Iva, con tipo/ptovta/nro/cuit", () => {
+    const env = buildFECAESolicitarEnvelope(ta, { cuit: "30712345678", pointOfSale: 3, invoiceType: 3 }, {
+      ...cbteBase,
+      cbtesAsoc: [{ tipo: 1, ptoVta: 3, nro: 43, cuit: "30712345678" }],
+    });
+    expect(env).toContain(
+      "<ar:CbtesAsoc><ar:CbteAsoc><ar:Tipo>1</ar:Tipo><ar:PtoVta>3</ar:PtoVta><ar:Nro>43</ar:Nro>" +
+      "<ar:Cuit>30712345678</ar:Cuit></ar:CbteAsoc></ar:CbtesAsoc>",
+    );
+    expect(env.indexOf("<ar:CbtesAsoc>")).toBeLessThan(env.indexOf("<ar:Iva>"));
+  });
+
+  it("sin asociados no emite el bloque", () => {
+    const env = buildFECAESolicitarEnvelope(ta, { cuit: "30712345678", pointOfSale: 3, invoiceType: 6 }, cbteBase);
+    expect(env).not.toContain("CbtesAsoc");
   });
 });
 

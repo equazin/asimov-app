@@ -736,6 +736,7 @@ td{ border-color:var(--border) !important; }
         <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
         <button class="btn" id="btnTraerPedido" style="height:26px;padding:0 12px;" title="Traer los ítems de un pedido pendiente del cliente">📋 Traer pedido</button>
         <button class="btn" id="btnTraerRemito" style="height:26px;padding:0 12px;" title="Facturar un remito pendiente del cliente">🚚 Traer remito</button>
+        <button class="btn" id="btnTraerFactura" style="height:26px;padding:0 12px;display:none;" title="Asociar la factura original a esta nota de crédito/débito (obligatorio para AFIP)">🧾 Traer factura</button>
         <span class="origen-badge" id="lblOrigen" style="display:none;background:rgba(46,163,110,0.15);color:#2ea36e;border:1px solid rgba(46,163,110,0.4);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">
           📎 <span id="lblOrigenTexto"></span>
           <span id="btnQuitarOrigen" style="cursor:pointer;margin-left:4px;font-weight:700;" title="Desvincular documento de origen">×</span>
@@ -1064,12 +1065,19 @@ td{ border-color:var(--border) !important; }
     }
 
     /* ─── Tipo selector ─── */
+    // "Traer factura" sólo aplica a notas de crédito/débito (comprobante asociado AFIP).
+    function updateTraerFactura() {
+      var b = document.getElementById("btnTraerFactura");
+      if (b) b.style.display = (tipoActual === "NC" || tipoActual === "ND") ? "" : "none";
+    }
+
     document.querySelectorAll(".tipo-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         document.querySelectorAll(".tipo-btn").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         tipoActual = btn.dataset.tipo;
         updateHeader();
+        updateTraerFactura();
       });
     });
 
@@ -1141,6 +1149,7 @@ td{ border-color:var(--border) !important; }
         b.classList.toggle("active", b.dataset.tipo === t);
       });
       updateHeader();
+      updateTraerFactura();
     }
 
     /* ─── Items table ─── */
@@ -1314,8 +1323,8 @@ td{ border-color:var(--border) !important; }
       origenDoc = doc;
       var badge = document.getElementById("lblOrigen");
       if (doc) {
-        document.getElementById("lblOrigenTexto").textContent =
-          (doc.tipo === "delivery-note" ? "Remito " : "Pedido ") + (doc.numero || "");
+        var pref = doc.tipo === "delivery-note" ? "Remito " : doc.tipo === "invoice" ? "Factura " : "Pedido ";
+        document.getElementById("lblOrigenTexto").textContent = pref + (doc.numero || "");
         badge.style.display = "inline-flex";
       } else {
         badge.style.display = "none";
@@ -1340,16 +1349,19 @@ td{ border-color:var(--border) !important; }
       var modal = document.getElementById("origenModal");
       var body = document.getElementById("origenModalBody");
       document.getElementById("origenModalTitle").textContent =
-        tipo === "delivery-note" ? "Traer remito pendiente" : "Traer pedido pendiente";
+        tipo === "delivery-note" ? "Traer remito pendiente" :
+        tipo === "invoice" ? "Asociar factura original" : "Traer pedido pendiente";
       body.innerHTML = '<div style="padding:16px;opacity:0.6;">Buscando...</div>';
       modal.style.display = "flex";
       try {
         var docs = tipo === "delivery-note"
           ? await window.asimovNewInvoice.listPendingDeliveryNotes(String(clienteData.id))
+          : tipo === "invoice"
+          ? await window.asimovNewInvoice.listClientInvoices(String(clienteData.id))
           : await window.asimovNewInvoice.listPendingSaleOrders(String(clienteData.id));
         if (!docs || docs.length === 0) {
           body.innerHTML = '<div style="padding:16px;opacity:0.6;">Este cliente no tiene ' +
-            (tipo === "delivery-note" ? "remitos" : "pedidos") + ' pendientes.</div>';
+            (tipo === "delivery-note" ? "remitos pendientes" : tipo === "invoice" ? "facturas para asociar" : "pedidos pendientes") + '.</div>';
           return;
         }
         body.innerHTML = docs.map(function(d) {
@@ -1408,6 +1420,7 @@ td{ border-color:var(--border) !important; }
 
     document.getElementById("btnTraerPedido").addEventListener("click", function() { openOrigenPicker("sale-order"); });
     document.getElementById("btnTraerRemito").addEventListener("click", function() { openOrigenPicker("delivery-note"); });
+    document.getElementById("btnTraerFactura").addEventListener("click", function() { openOrigenPicker("invoice"); });
     window.addEventListener("keydown", function(e) {
       if (e.key === "F8") { e.preventDefault(); document.getElementById("btnSave").click(); }
       if (e.key === "Insert") { e.preventDefault(); addRow(); }

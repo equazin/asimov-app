@@ -46,7 +46,7 @@ import {
   type SaveCredentialsInput, type CaeRequestInput,
 } from "./afip-service";
 import { isAfipUnavailable } from "./afip/domain";
-import { listPendingSaleOrders, listPendingDeliveryNotes, getSourceItems, getLinksFor } from "./document-links";
+import { listPendingSaleOrders, listPendingDeliveryNotes, listClientInvoicesForNote, getSourceItems, getLinksFor } from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
 import {
   dbAll,
@@ -852,6 +852,12 @@ export function registerIpcHandlers(deps: IpcDeps): void {
         items: Array.isArray(r.items)
           ? (r.items as Array<Record<string, unknown>>).map((it) => ({ ivaRate: Number(it.ivaRate) || 0, subtotal: Number(it.subtotal) || 0 }))
           : [],
+        cbtesAsoc: Array.isArray(r.cbtesAsoc)
+          ? (r.cbtesAsoc as Array<Record<string, unknown>>).map((c) => ({
+              tipo: Number(c.tipo) || 0, ptoVta: Number(c.ptoVta) || 0, nro: Number(c.nro) || 0,
+              cuit: c.cuit ? safeStr(c.cuit, 20) : undefined,
+            }))
+          : undefined,
       };
       if (!input.invoiceId) return { ok: false, error: "Falta el identificador de la factura." };
       let data;
@@ -925,6 +931,8 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     listPendingSaleOrders(safeStr(clientId), safeStr(target) === "delivery-note" ? "delivery-note" : "invoice"));
   ipcMain.handle("db:doc-links:pending-delivery-notes", (_event, clientId: unknown) =>
     listPendingDeliveryNotes(safeStr(clientId)));
+  ipcMain.handle("db:doc-links:client-invoices", (_event, clientId: unknown) =>
+    listClientInvoicesForNote(safeStr(clientId)));
   ipcMain.handle("db:doc-links:source-items", (_event, type: unknown, id: unknown) =>
     getSourceItems(safeStr(type), safeStr(id)));
   ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>

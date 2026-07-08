@@ -85,6 +85,96 @@ export function getInvoiceTypeCode(invoiceType: string, fiscalType: string): num
   return typeMap[fiscalType]?.[invoiceType] ?? 11;
 }
 
+// ---------------------------------------------------------------------------
+// Fase 4 — cobertura de comprobantes: NC/ND, letra según cliente y validación
+// ---------------------------------------------------------------------------
+
+/** Tipos de comprobante que maneja el formulario de factura del desktop. */
+export type VoucherKind = 'A' | 'B' | 'C' | 'M' | 'NC' | 'ND';
+
+/** Normaliza la condición de IVA del cliente a una clave estable. */
+export function normalizeIvaCondition(cond: string | null | undefined):
+  'responsable_inscripto' | 'monotributista' | 'exento' | 'consumidor_final' | 'no_responsable' {
+  const c = String(cond ?? '').toLowerCase();
+  if (c.includes('inscripto') || c.includes('inscripta')) return 'responsable_inscripto';
+  if (c.includes('monotribut')) return 'monotributista';
+  if (c.includes('exento') || c.includes('exenta')) return 'exento';
+  if (c.includes('no responsable')) return 'no_responsable';
+  return 'consumidor_final';
+}
+
+/** Letra que corresponde emitir (emisor RI) según la condición de IVA del cliente. */
+export function voucherLetterForClient(clientIvaCondition: string | null | undefined): 'A' | 'B' {
+  return normalizeIvaCondition(clientIvaCondition) === 'responsable_inscripto' ? 'A' : 'B';
+}
+
+/**
+ * Código AFIP del comprobante a partir del tipo del formulario (A/B/C/M/NC/ND)
+ * y la condición de IVA del cliente. Para NC/ND la letra se deriva del cliente
+ * (RI → A, resto → B). Emisor monotributista: siempre serie C (11/12/13).
+ */
+export function resolveVoucherTypeCode(
+  tipo: string,
+  clientIvaCondition: string | null | undefined,
+  issuerFiscalType: 'responsable_inscripto' | 'monotributista' = 'responsable_inscripto',
+): number {
+  const t = String(tipo || 'B').toUpperCase();
+  if (issuerFiscalType === 'monotributista') {
+    if (t === 'NC') return 13;
+    if (t === 'ND') return 12;
+    return 11;
+  }
+  const letter = voucherLetterForClient(clientIvaCondition);
+  if (t === 'NC') return letter === 'A' ? 3 : 8;
+  if (t === 'ND') return letter === 'A' ? 2 : 7;
+  if (t === 'M') return 51;
+  if (t === 'A') return 1;
+  if (t === 'C') return 11;
+  return 6; // B
+}
+
+/** ¿El comprobante exige informar el comprobante asociado (CbtesAsoc, RG 4540)? */
+export function requiresAssociatedInvoice(tipo: string): boolean {
+  const t = String(tipo || '').toUpperCase();
+  return t === 'NC' || t === 'ND';
+}
+
+/**
+ * Valida la coherencia tipo de comprobante ↔ cliente ANTES de ir a AFIP, con
+ * mensajes accionables. Devuelve `null` si es válido.
+ */
+export function validateVoucherForClient(
+  tipo: string,
+  clientIvaCondition: string | null | undefined,
+  clientCuit: string | null | undefined,
+  issuerFiscalType: 'responsable_inscripto' | 'monotributista' = 'responsable_inscripto',
+): string | null {
+  const t = String(tipo || 'B').toUpperCase();
+  const cond = normalizeIvaCondition(clientIvaCondition);
+  const cuitDigits = String(clientCuit ?? '').replace(/\D/g, '');
+
+  if (issuerFiscalType === 'monotributista') return null; // serie C para todos
+
+  if (t === 'C') {
+    return 'La Factura C sólo la emite un monotributista; siendo Responsable Inscripto corresponde A o B según el cliente.';
+  }
+  if (t === 'A' || t === 'M') {
+    if (cond !== 'responsable_inscripto') {
+      return `El comprobante ${t} sólo puede emitirse a un cliente Responsable Inscripto (este cliente es "${clientIvaCondition || 'sin condición'}").`;
+    }
+    if (cuitDigits.length !== 11) {
+      return `El comprobante ${t} exige el CUIT del cliente (11 dígitos).`;
+    }
+  }
+  if (t === 'B' && cond === 'responsable_inscripto') {
+    return 'A un cliente Responsable Inscripto corresponde Factura A (no B).';
+  }
+  if ((t === 'NC' || t === 'ND') && cond === 'responsable_inscripto' && cuitDigits.length !== 11) {
+    return 'La nota de crédito/débito A exige el CUIT del cliente (11 dígitos).';
+  }
+  return null;
+}
+
 /**
  * Tipo de documento del receptor para WSFE (`DocTipo`): 80 CUIT, 96 DNI,
  * 99 consumidor final (sin identificar). Elige según el largo del número.

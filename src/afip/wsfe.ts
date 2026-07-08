@@ -41,6 +41,11 @@ export interface FeComprobante {
   impTotConc?: number;
   impOpEx?: number;
   items: Array<{ ivaRate: number; subtotal: number }>;
+  /**
+   * Comprobantes asociados (obligatorio para NC/ND — RG 4540): la factura
+   * original a la que acredita/debita. `cuit` es el del EMISOR del asociado.
+   */
+  cbtesAsoc?: Array<{ tipo: number; ptoVta: number; nro: number; cuit?: string }>;
 }
 
 export interface CaeSuccess {
@@ -133,6 +138,17 @@ export function buildFECAESolicitarEnvelope(ta: AfipTA, cab: FeCabecera, cbte: F
       '</ar:Iva>'
     : '';
 
+  // El WSDL exige CbtesAsoc ANTES de Iva dentro de FECAEDetRequest.
+  const cbtesAsocXml = cbte.cbtesAsoc?.length
+    ? '<ar:CbtesAsoc>' + cbte.cbtesAsoc.map((c) =>
+        `<ar:CbteAsoc><ar:Tipo>${c.tipo}</ar:Tipo>` +
+        `<ar:PtoVta>${c.ptoVta}</ar:PtoVta>` +
+        `<ar:Nro>${c.nro}</ar:Nro>` +
+        (c.cuit ? `<ar:Cuit>${escapeXml(c.cuit)}</ar:Cuit>` : '') +
+        '</ar:CbteAsoc>').join('') +
+      '</ar:CbtesAsoc>'
+    : '';
+
   const detalle =
     `<ar:Concepto>${concepto}</ar:Concepto>` +
     `<ar:DocTipo>${cbte.docType}</ar:DocTipo>` +
@@ -147,6 +163,7 @@ export function buildFECAESolicitarEnvelope(ta: AfipTA, cab: FeCabecera, cbte: F
     `<ar:ImpIVA>${impIva}</ar:ImpIVA>` +
     '<ar:MonId>PES</ar:MonId>' +
     '<ar:MonCotiz>1</ar:MonCotiz>' +
+    cbtesAsocXml +
     ivaXml;
 
   return (

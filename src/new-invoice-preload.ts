@@ -27,6 +27,9 @@ const api = {
     ipcRenderer.invoke("db:doc-links:pending-sale-orders", clientId, "invoice"),
   listPendingDeliveryNotes: (clientId: string) =>
     ipcRenderer.invoke("db:doc-links:pending-delivery-notes", clientId),
+  // Facturas del cliente para asociar a una nota de crédito/débito
+  listClientInvoices: (clientId: string) =>
+    ipcRenderer.invoke("db:doc-links:client-invoices", clientId),
   getSourceItems: (type: string, id: string) =>
     ipcRenderer.invoke("db:doc-links:source-items", type, id),
   cancel: () => {

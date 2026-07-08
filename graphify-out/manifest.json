@@ -100,7 +100,7 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1783523475.0779114,
+    "mtime": 1783523724.4863634,
     "ast_hash": "239060cae352e9a7450ebffc24b31ef7",
     "semantic_hash": ""
   },
@@ -110,7 +110,7 @@
     "semantic_hash": ""
   },
   "src/main.ts": {
-    "mtime": 1783523609.2929742,
+    "mtime": 1783523724.4873643,
     "ast_hash": "3d27862ec19982a9d20a56d04d71bae7",
     "semantic_hash": ""
   },
@@ -145,7 +145,7 @@
     "semantic_hash": ""
   },
   "src/new-invoice-preload.ts": {
-    "mtime": 1783523512.7778049,
+    "mtime": 1783523724.488363,
     "ast_hash": "8ff49e53a0affaae024e1341ff7b09d9",
     "semantic_hash": ""
   },
@@ -185,7 +185,7 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1783523494.7341788,
+    "mtime": 1783523724.4903636,
     "ast_hash": "3433d932a2de66b413ccc1e3350bc8bd",
     "semantic_hash": ""
   },
@@ -1090,7 +1090,7 @@
     "semantic_hash": ""
   },
   "src/new-invoice.html": {
-    "mtime": 1783523524.5316496,
+    "mtime": 1783523724.489365,
     "ast_hash": "be56a2b331e1b7d2e7dad5dd70e813dc",
     "semantic_hash": ""
   },
@@ -1135,7 +1135,7 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1783523547.0317774,
+    "mtime": 1783523724.4913647,
     "ast_hash": "3b6851b464a53193b579ce3f0868ac72",
     "semantic_hash": ""
   },
@@ -1350,7 +1350,7 @@
     "semantic_hash": ""
   },
   "AFIP-ARCA.md": {
-    "mtime": 1783523656.5199492,
+    "mtime": 1783523724.4563584,
     "ast_hash": "7cfe6393899ba7df8d4dc721fbf75e3f",
     "semantic_hash": ""
   },
@@ -1380,7 +1380,7 @@
     "semantic_hash": ""
   },
   "src/afip-service.ts": {
-    "mtime": 1783523346.627781,
+    "mtime": 1783523724.4843652,
     "ast_hash": "013a97173bf3a3d5cb95d9bf512d6289",
     "semantic_hash": ""
   },
@@ -1390,7 +1390,7 @@
     "semantic_hash": ""
   },
   "src/afip/domain.ts": {
-    "mtime": 1783523283.2831876,
+    "mtime": 1783523724.4843652,
     "ast_hash": "f9873cbeadeffd86406a86dbf023689c",
     "semantic_hash": ""
   },
@@ -1400,17 +1400,17 @@
     "semantic_hash": ""
   },
   "src/afip/wsaa.ts": {
-    "mtime": 1783523295.0915558,
+    "mtime": 1783523724.4853642,
     "ast_hash": "afb371b46f001a29ba21e6201b378f47",
     "semantic_hash": ""
   },
   "src/afip/wsfe.ts": {
-    "mtime": 1783523322.6772983,
+    "mtime": 1783523724.4853642,
     "ast_hash": "4008f589d0d959b51297af60ea0e3a50",
     "semantic_hash": ""
   },
   "test/afip.test.ts": {
-    "mtime": 1783523577.717396,
+    "mtime": 1783523724.492365,
     "ast_hash": "1116e5d0f95984e03bb6df840c2634a3",
     "semantic_hash": ""
   }

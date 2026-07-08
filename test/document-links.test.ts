@@ -5,6 +5,7 @@ import {
   getLinksFor,
   listPendingSaleOrders,
   listPendingDeliveryNotes,
+  listClientInvoicesForNote,
   getSourceItems,
 } from "../src/document-links";
 import { persistSaleOrder, persistDeliveryNote, persistInvoice, annulDocument } from "../src/documents";
@@ -56,6 +57,40 @@ describe("applySourceLink", () => {
     expect(applySourceLink("invoice", "inv-1", { tipo: "sale-order", id: "no-existe" })).toBe(false);
     expect(applySourceLink("invoice", "inv-1", { tipo: "tabla-mala", id: "so-1" })).toBe(false);
     expect(dbAll("SELECT * FROM document_links")).toHaveLength(1);
+  });
+
+  it("factura → nota de crédito: vincula sin tocar el estado de la original", () => {
+    dbRun("INSERT INTO invoices (id, number, client_id, tipo, status, cae) VALUES (?,?,?,?,?,?)",
+      ["inv-orig", "00001-00000010", CLIENT_ID, "A", "autorizada", "75000000000001"]);
+    dbRun("INSERT INTO invoices (id, number, client_id, tipo) VALUES (?,?,?,?)",
+      ["inv-nc", "00001-00000011", CLIENT_ID, "NC"]);
+
+    expect(applySourceLink("invoice", "inv-nc", { tipo: "invoice", id: "inv-orig" })).toBe(true);
+    expect(dbGet<{ status: string }>("SELECT status FROM invoices WHERE id='inv-orig'")?.status).toBe("autorizada");
+    // nunca un documento consigo mismo
+    expect(applySourceLink("invoice", "inv-orig", { tipo: "invoice", id: "inv-orig" })).toBe(false);
+  });
+});
+
+describe("listClientInvoicesForNote / getSourceItems(invoice)", () => {
+  it("lista facturas del cliente excluyendo NC/ND y anuladas, y trae sus ítems", () => {
+    dbRun("INSERT INTO invoices (id, number, client_id, tipo, status) VALUES (?,?,?,?,?)",
+      ["inv-a", "00001-00000001", CLIENT_ID, "A", "autorizada"]);
+    dbRun("INSERT INTO invoices (id, number, client_id, tipo, status) VALUES (?,?,?,?,?)",
+      ["inv-nc", "00001-00000002", CLIENT_ID, "NC", "emitida"]);
+    dbRun("INSERT INTO invoices (id, number, client_id, tipo, status) VALUES (?,?,?,?,?)",
+      ["inv-anulada", "00001-00000003", CLIENT_ID, "B", "anulada"]);
+    dbRun(
+      "INSERT INTO invoice_items (id, invoice_id, code, description, qty, unit_price, iva_pct, subtotal) VALUES (?,?,?,?,?,?,?,?)",
+      ["ii-1", "inv-a", "R5-5600G", "RYZEN 5 5600G", 2, 250000, 21, 500000],
+    );
+
+    const list = listClientInvoicesForNote(CLIENT_ID);
+    expect(list.map((d) => d.id)).toEqual(["inv-a"]);
+
+    const items = getSourceItems("invoice", "inv-a");
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({ code: "R5-5600G", qty: 2, unit_price: 250000, iva_pct: 21 });
   });
 });
 
