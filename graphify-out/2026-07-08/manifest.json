@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1783518563.9616377,
-    "ast_hash": "ce46beb8891082dce5d3d57903f72b7e",
+    "mtime": 1783523093.8448427,
+    "ast_hash": "9d5b2a74a507483b4f739c2aab9d6c0f",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "src/comprobante-print.js": {
-    "mtime": 1783498953.15147,
-    "ast_hash": "0d52ea7b491de6454954229b72111abc",
+    "mtime": 1783523070.0227888,
+    "ast_hash": "21e9a9ef2faba30af68754f801f85697",
     "semantic_hash": ""
   },
   "src/config.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1783518550.0566554,
-    "ast_hash": "05308b4440f879514e9884448bdfbb15",
+    "mtime": 1783523070.0237882,
+    "ast_hash": "cead8e197a30d643de729535dfb5c218",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "src/main.ts": {
-    "mtime": 1783518550.0566554,
-    "ast_hash": "4b72e811b95ef6df5005098528cfd049",
+    "mtime": 1783523070.0237882,
+    "ast_hash": "e918263f243de7b49605b8536abb0f7f",
     "semantic_hash": ""
   },
   "src/masters.ts": {
@@ -145,8 +145,8 @@
     "semantic_hash": ""
   },
   "src/new-invoice-preload.ts": {
-    "mtime": 1783518550.059654,
-    "ast_hash": "c6a909c028d5777b85e358cd38a2803e",
+    "mtime": 1783523070.0237882,
+    "ast_hash": "bd21b79076ee15946cc113d7c1885572",
     "semantic_hash": ""
   },
   "src/new-payment-order-preload.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1783518550.0616548,
-    "ast_hash": "398b338a66020a5c240257956b257fc9",
+    "mtime": 1783523070.0259144,
+    "ast_hash": "0795d02353d73334aa4b055ed17f6150",
     "semantic_hash": ""
   },
   "src/product-selection-preload.ts": {
@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "v2/packages/api/package.json": {
-    "mtime": 1783520100.87336,
-    "ast_hash": "079106e8167ddc63791754d72460412e",
+    "mtime": 1783523070.027914,
+    "ast_hash": "86b8f065fc54651c39dc873e1f614370",
     "semantic_hash": ""
   },
   "v2/packages/api/prisma/migrations/0000_init/migration.sql": {
@@ -515,7 +515,7 @@
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.controller.ts": {
-    "mtime": 1783520397.4603436,
+    "mtime": 1783523070.0299134,
     "ast_hash": "87482a6392db30349c68e25c902c4995",
     "semantic_hash": ""
   },
@@ -525,13 +525,13 @@
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.service.spec.ts": {
-    "mtime": 1783520385.5367076,
+    "mtime": 1783523070.030912,
     "ast_hash": "fe17f6a13517089c0f6cabccffab3775",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.service.ts": {
-    "mtime": 1783520378.4165995,
-    "ast_hash": "cb47236ba47f6cfb2de3c6d36e5657af",
+    "mtime": 1783523070.030912,
+    "ast_hash": "778a42b175409bef4631d5b0bed01fe0",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/auth/auth.controller.ts": {
@@ -1090,8 +1090,8 @@
     "semantic_hash": ""
   },
   "src/new-invoice.html": {
-    "mtime": 1783518550.0606544,
-    "ast_hash": "770c7d9dff28679ca99478e53af1936e",
+    "mtime": 1783523070.024912,
+    "ast_hash": "7233d7710880e128d24a85e1eecfdbfd",
     "semantic_hash": ""
   },
   "src/new-payment-order.html": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1783518550.0616548,
-    "ast_hash": "720af95aa54c9eba3c24b3ab32bb5c0c",
+    "mtime": 1783523070.0269134,
+    "ast_hash": "15fefe9cbe8d3fc71ba45194d5e1f8dc",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
@@ -1160,8 +1160,8 @@
     "semantic_hash": ""
   },
   "v2/pnpm-workspace.yaml": {
-    "mtime": 1783520061.8791432,
-    "ast_hash": "2e0b795eb5d89d1cd0d771eb87fcdbfe",
+    "mtime": 1783523070.0339122,
+    "ast_hash": "a81d8f1ab8c9cbcd1ff4fc8a1c50b1a4",
     "semantic_hash": ""
   },
   "branding/asimov-icon-master.svg": {
@@ -1350,33 +1350,68 @@
     "semantic_hash": ""
   },
   "AFIP-ARCA.md": {
-    "mtime": 1783519603.1149256,
-    "ast_hash": "0b1eb95280de561de900e95a338462ac",
+    "mtime": 1783523069.9922507,
+    "ast_hash": "273c53739639b203ff0a8dd40ed241a4",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip-crypto.ts": {
-    "mtime": 1783520152.45105,
-    "ast_hash": "917cc245c84c1ea099129fd03a91e2f2",
+    "mtime": 1783523070.027914,
+    "ast_hash": "5a47475d6400651b959c7b67d0573e92",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip-domain.ts": {
-    "mtime": 1783520291.5718567,
-    "ast_hash": "e0157ce392ca36df59db8d0d2be55887",
+    "mtime": 1783523070.0289125,
+    "ast_hash": "50f28fc4b5e066398fcd27ceac4840ea",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip-integration.spec.ts": {
-    "mtime": 1783520469.2733653,
-    "ast_hash": "5a8397f5458ad52a58f3c80343003c29",
+    "mtime": 1783523070.0289125,
+    "ast_hash": "407b9fb7364d93f30fbe35dd189e39ef",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip-wsaa.ts": {
-    "mtime": 1783520194.9966767,
-    "ast_hash": "1223e94d5e2262be8128128e38ee87d3",
+    "mtime": 1783523070.0289125,
+    "ast_hash": "d08dc321f1b33f8fae70d65d8b18e6c5",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip-wsfe.ts": {
-    "mtime": 1783520262.7258182,
-    "ast_hash": "a12603fee11bba304fc098951135584e",
+    "mtime": 1783523070.0299134,
+    "ast_hash": "5986d6ae016cd3345cae0c8e5c06dfa8",
+    "semantic_hash": ""
+  },
+  "src/afip-service.ts": {
+    "mtime": 1783523070.0207882,
+    "ast_hash": "c47bf1ae03636fc3467425bccc886511",
+    "semantic_hash": ""
+  },
+  "src/afip/crypto.ts": {
+    "mtime": 1783523070.021789,
+    "ast_hash": "99c7dc95fe9b7c4957631179a9dc3783",
+    "semantic_hash": ""
+  },
+  "src/afip/domain.ts": {
+    "mtime": 1783523070.021789,
+    "ast_hash": "50f28fc4b5e066398fcd27ceac4840ea",
+    "semantic_hash": ""
+  },
+  "src/afip/qr.ts": {
+    "mtime": 1783523070.021789,
+    "ast_hash": "d58fe0e16c5c89d647102d66137607fd",
+    "semantic_hash": ""
+  },
+  "src/afip/wsaa.ts": {
+    "mtime": 1783523070.021789,
+    "ast_hash": "d08dc321f1b33f8fae70d65d8b18e6c5",
+    "semantic_hash": ""
+  },
+  "src/afip/wsfe.ts": {
+    "mtime": 1783523070.0227888,
+    "ast_hash": "8ff18b2f059c5904c1d8350ffb65876d",
+    "semantic_hash": ""
+  },
+  "test/afip.test.ts": {
+    "mtime": 1783523070.0269134,
+    "ast_hash": "79d33899a065162e9588ac03dae3f527",
     "semantic_hash": ""
   }
 }
