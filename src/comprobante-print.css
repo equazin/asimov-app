@@ -1,0 +1,118 @@
+/*
+ * Estilos de impresión de comprobantes (membrete + cuerpo).
+ * Compartido por new-invoice / new-sale-order / new-receipt / new-delivery-note /
+ * new-quote. En pantalla el #print-area está oculto; al imprimir se oculta el
+ * chrome de la app y se muestra sólo el comprobante.
+ *
+ * El logo de Bartez es reversado (claro), por eso cada membrete lo apoya sobre
+ * una franja de color distinta por tipo de documento.
+ */
+
+#print-area { display: none; }
+
+@media print {
+  @page { size: A4; margin: 12mm 12mm 14mm; }
+  html, body { background: #fff !important; }
+  /* Ocultar todo el chrome de la app… */
+  body > *:not(#print-area) { display: none !important; }
+  /* …y mostrar sólo el comprobante. */
+  #print-area { display: block !important; }
+}
+
+/* Contenedor del comprobante (también usable en preview en pantalla). */
+.cbt {
+  --navy:#0D2B4E; --blue:#1478C0; --teal:#0E7C86; --slate:#34506E;
+  --green:#1E7A46; --indigo:#2E3A8C; --orange:#F26522;
+  --ink:#1c2430; --muted:#5a6673; --line:#d8dee6; --zebra:#f4f6f9;
+  color: var(--ink);
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.cbt * { box-sizing: border-box; }
+.cbt .logo { height: 34px; display: block; }
+.cbt .logo.sm { height: 26px; }
+.cbt .logo.lg { height: 40px; }
+.cbt .fiscal { font-size: 10px; line-height: 1.5; color: var(--muted); }
+.cbt .fiscal b { color: var(--ink); }
+.cbt .num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Membretes por tipo ---------- */
+/* Factura */
+.mb-factura .band { background: var(--navy); display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+.mb-factura .right { display: flex; align-items: center; gap: 12px; color: #fff; text-align: right; }
+.mb-factura .letter { width: 44px; height: 44px; border: 2px solid #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; }
+.mb-factura .meta .big { font-size: 15px; font-weight: 800; letter-spacing: .04em; }
+.mb-factura .sub { display: flex; justify-content: space-between; gap: 18px; padding: 10px 20px 4px; }
+.mb-factura .fbox { border: 1px solid var(--line); border-radius: 6px; padding: 7px 11px; font-size: 10px; line-height: 1.55; min-width: 220px; }
+.mb-factura .fbox .k { color: var(--muted); } .mb-factura .fbox .v { font-weight: 700; }
+
+/* Presupuesto */
+.mb-presupuesto .wrap { display: flex; }
+.mb-presupuesto .side { background: var(--teal); width: 200px; padding: 18px 16px; color: #fff; display: flex; flex-direction: column; gap: 12px; }
+.mb-presupuesto .side .emisor { font-size: 9px; line-height: 1.5; color: #d7f0f2; margin-top: auto; }
+.mb-presupuesto .side .emisor b { color: #fff; }
+.mb-presupuesto .main { flex: 1; padding: 18px 22px; }
+.mb-presupuesto .title { font-size: 28px; font-weight: 800; color: var(--teal); line-height: 1; }
+.mb-presupuesto .title small { display: block; font-size: 11px; font-weight: 600; letter-spacing: .2em; color: var(--muted); margin-top: 6px; }
+.mb-presupuesto .row { display: flex; gap: 24px; margin-top: 14px; }
+.mb-presupuesto .row .k { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-size: 8.5px; }
+.mb-presupuesto .row .v { font-weight: 700; font-size: 12px; }
+
+/* Remito */
+.mb-remito .band { background: var(--slate); text-align: center; padding: 11px; }
+.mb-remito .band .logo { margin: 0 auto; }
+.mb-remito .body { text-align: center; padding: 12px 20px 8px; }
+.mb-remito .title { font-size: 24px; font-weight: 800; letter-spacing: .16em; color: var(--slate); }
+.mb-remito .note { display: inline-block; margin-top: 6px; font-size: 9.5px; font-weight: 700; color: #b23b3b; border: 1px dashed #d9a3a3; border-radius: 4px; padding: 3px 10px; letter-spacing: .05em; }
+.mb-remito .meta { display: flex; justify-content: center; gap: 26px; margin-top: 8px; }
+.mb-remito .meta .k { color: var(--muted); font-size: 8.5px; text-transform: uppercase; letter-spacing: .08em; }
+.mb-remito .meta .v { font-weight: 700; }
+.mb-remito .fiscal { border-top: 1px solid var(--line); margin-top: 10px; padding-top: 8px; }
+
+/* Recibo */
+.mb-recibo .wrap { display: flex; align-items: stretch; }
+.mb-recibo .band { background: var(--green); width: 190px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+.mb-recibo .band .t { color: #cdeed8; font-size: 9px; line-height: 1.5; margin-top: 10px; }
+.mb-recibo .band .t b { color: #fff; }
+.mb-recibo .main { flex: 1; padding: 16px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+.mb-recibo .title { font-size: 28px; font-weight: 800; color: var(--green); }
+.mb-recibo .title small { display: block; font-size: 10px; color: var(--muted); font-weight: 600; }
+.mb-recibo .amount { border: 2px solid var(--green); border-radius: 8px; padding: 9px 15px; text-align: right; min-width: 170px; }
+.mb-recibo .amount .k { font-size: 8.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.mb-recibo .amount .v { font-size: 20px; font-weight: 800; color: var(--green); }
+
+/* Pedido */
+.mb-pedido .band { position: relative; background: var(--indigo); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; overflow: hidden; }
+.mb-pedido .band:after { content: ""; position: absolute; left: 0; bottom: 0; height: 5px; width: 100%; background: linear-gradient(90deg, var(--orange), transparent); }
+.mb-pedido .right { color: #fff; text-align: right; }
+.mb-pedido .right .big { font-size: 19px; font-weight: 800; letter-spacing: .03em; }
+.mb-pedido .right .k { font-size: 9.5px; color: #c4c9ee; letter-spacing: .08em; }
+.mb-pedido .sub { display: flex; justify-content: space-between; padding: 10px 20px 2px; }
+
+/* ---------- Bloque destinatario (cliente/proveedor) ---------- */
+.cbt .party { margin: 10px 20px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; font-size: 10.5px; }
+.cbt .party .k { color: var(--muted); }
+.cbt .party .full { grid-column: 1 / -1; }
+.cbt .party b { font-size: 12px; }
+
+/* ---------- Tabla de ítems ---------- */
+.cbt .items { width: calc(100% - 40px); margin: 8px 20px; border-collapse: collapse; font-size: 10px; }
+.cbt .items thead th { background: #eef1f5; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: 8.5px; text-align: left; padding: 5px 7px; border-bottom: 1px solid var(--line); }
+.cbt .items tbody td { padding: 4px 7px; border-bottom: 1px solid #eef1f5; vertical-align: top; }
+.cbt .items tbody tr:nth-child(even) td { background: var(--zebra); }
+.cbt .items .r { text-align: right; font-variant-numeric: tabular-nums; }
+.cbt .items .c { text-align: center; }
+
+/* ---------- Totales ---------- */
+.cbt .totals { display: flex; justify-content: flex-end; margin: 8px 20px; }
+.cbt .totals table { font-size: 11px; min-width: 260px; }
+.cbt .totals td { padding: 3px 8px; }
+.cbt .totals td.k { color: var(--muted); text-align: right; }
+.cbt .totals td.v { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cbt .totals tr.grand td { border-top: 2px solid var(--ink); font-size: 14px; padding-top: 6px; }
+.cbt .totals tr.grand td.v { font-weight: 800; }
+
+/* ---------- Observaciones / pie ---------- */
+.cbt .notes { margin: 6px 20px; font-size: 10px; color: var(--muted); min-height: 18px; }
+.cbt .foot { margin: 14px 20px 0; padding-top: 8px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 9px; color: var(--muted); }

@@ -28,6 +28,23 @@ if (fs.existsSync(brandIcon)) {
   console.log("[copy-assets] bartez-isologo.png -> dist/");
 }
 
+// Assets compartidos de impresión de comprobantes (CSS + renderer JS).
+for (const asset of ["comprobante-print.css", "comprobante-print.js"]) {
+  const from = path.join(srcDir, asset);
+  const to = path.join(distDir, asset);
+  if (fs.existsSync(from)) {
+    fs.copyFileSync(from, to);
+    console.log(`[copy-assets] ${asset} → dist/`);
+  }
+}
+
+const bartezLogo = path.join(root, "build", "bartez-logo.png");
+const bartezLogoOut = path.join(distDir, "bartez-logo.png");
+if (fs.existsSync(bartezLogo)) {
+  fs.copyFileSync(bartezLogo, bartezLogoOut);
+  console.log("[copy-assets] bartez-logo.png -> dist/");
+}
+
 const appIcon = path.join(root, "build", "icon.png");
 const appIconOut = path.join(distDir, "icon.png");
 if (fs.existsSync(appIcon)) {

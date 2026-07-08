@@ -593,6 +593,8 @@ td{ border-color:var(--border) !important; }
 ::-webkit-scrollbar-track{ background:#14171D; }
 /* ASIMOV-THEME-END */
   </style>
+  <link rel="stylesheet" href="comprobante-print.css" />
+  <script src="comprobante-print.js" defer></script>
 </head>
 <body>
 
@@ -999,11 +1001,14 @@ td{ border-color:var(--border) !important; }
   <div class="footer">
     <button class="footer-btn btn-exit" id="btnExit">🚪 Salir <span class="kbd">ESC</span></button>
     <div class="footer-spacer"></div>
-    <button class="footer-btn btn-print" disabled>🖨️ Imprimir <span class="kbd">F9</span></button>
+    <button class="footer-btn btn-print" id="btnPrint">🖨️ Imprimir <span class="kbd">F9</span></button>
     <button class="footer-btn btn-print" disabled title="Enviar a AFIP para obtener CAE (requiere conexión)">📋 Autorizar AFIP</button>
     <button class="footer-btn btn-cancel" disabled>🗑️ Anular</button>
     <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
   </div>
+
+  <!-- Comprobante para impresión (oculto en pantalla; visible sólo al imprimir). -->
+  <div id="print-area"></div>
 
   <script>
     /* ─── Estado ─── */
@@ -1319,6 +1324,38 @@ td{ border-color:var(--border) !important; }
       };
       if (window.asimovNewInvoice) window.asimovNewInvoice.saveInvoice(invoice);
     });
+
+    /* ─── Impresión de comprobante ─── */
+    window.getPrintData = function () {
+      if (!document.getElementById("txtClienteNombre").value.trim()) {
+        alert("Seleccione un cliente antes de imprimir.");
+        return null;
+      }
+      if (items.length === 0) { alert("Agregue al menos un ítem."); return null; }
+      recalcTotals();
+      var t = window._totals || {};
+      var cli = clienteData || {};
+      return {
+        letter: tipoActual,
+        number: (document.getElementById("txtPtoVta").value || "0001") + "-" + (document.getElementById("txtNroFact").value || ""),
+        date: document.getElementById("txtFecha").value,
+        party: {
+          name: document.getElementById("txtClienteNombre").value,
+          cuit: document.getElementById("txtClienteCuit").value,
+          iva: document.getElementById("txtClienteIva").value,
+          address: document.getElementById("txtClienteDomicilio").value,
+        },
+        condVenta: document.getElementById("selCondVenta").value,
+        vendedor: document.getElementById("txtVendedor") ? document.getElementById("txtVendedor").value : "",
+        notes: document.getElementById("txtObsCliente").value,
+        items: items.map(function (it) {
+          return { code: it.codigo, description: it.descripcion, qty: it.cantidad, unit: it.unidad, unitPrice: it.precio, ivaPct: it.iva, lineTotal: Number(it.cantidad) * Number(it.precio) };
+        }),
+        totals: { subtotal: t.subtotal, iva: t.iva, perc: t.perc || 0, total: t.total },
+      };
+    };
+    document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("factura"); });
+    document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); window.printComprobante("factura"); } });
 
     var closeHandler = function() {
       if (window.asimovNewInvoice) window.asimovNewInvoice.cancel();
