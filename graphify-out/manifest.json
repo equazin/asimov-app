@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "src/db.ts": {
-    "mtime": 1783501881.3618965,
-    "ast_hash": "981bb90a1e020a71142f81b9c190a7e9",
+    "mtime": 1783517338.0496905,
+    "ast_hash": "859c138a1d4471d7ba5b186f377cda83",
     "semantic_hash": ""
   },
   "src/document-sync.ts": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "src/documents.ts": {
-    "mtime": 1783376305.753923,
-    "ast_hash": "0464408c88ab5fa62959b64978057428",
+    "mtime": 1783517416.034181,
+    "ast_hash": "cfb10c6d27a99d3ce2df93af6aecf583",
     "semantic_hash": ""
   },
   "src/ipc-cloud.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1783501402.2605767,
-    "ast_hash": "100411b16b49046b62907b048b2148cf",
+    "mtime": 1783517492.3797002,
+    "ast_hash": "224e6458b4ab0c1fa25136a4cf7e305e",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "src/new-delivery-note-preload.ts": {
-    "mtime": 1782836549.169896,
-    "ast_hash": "de74c050aaf46bd53f653c7dab2f3caa",
+    "mtime": 1783517512.550929,
+    "ast_hash": "1296df451eb6a97a6c531914eee18a02",
     "semantic_hash": ""
   },
   "src/new-goods-receipt-preload.ts": {
@@ -145,8 +145,8 @@
     "semantic_hash": ""
   },
   "src/new-invoice-preload.ts": {
-    "mtime": 1782836133.9498005,
-    "ast_hash": "4ea08430e23c39b297ca113feaea5bf4",
+    "mtime": 1783517495.2772543,
+    "ast_hash": "e17062ffec681f6bbc7bcd0687bd5d16",
     "semantic_hash": ""
   },
   "src/new-payment-order-preload.ts": {
@@ -1080,8 +1080,8 @@
     "semantic_hash": ""
   },
   "src/new-delivery-note.html": {
-    "mtime": 1783498953.15147,
-    "ast_hash": "4debef941fde300c594b1a4f67d4fa12",
+    "mtime": 1783517707.7192156,
+    "ast_hash": "5e36317197e74182d9d7851db3ae33e6",
     "semantic_hash": ""
   },
   "src/new-goods-receipt.html": {
@@ -1090,8 +1090,8 @@
     "semantic_hash": ""
   },
   "src/new-invoice.html": {
-    "mtime": 1783498953.1524692,
-    "ast_hash": "cb000541b32cfb1685b8a62a099dbe16",
+    "mtime": 1783517629.339362,
+    "ast_hash": "770c7d9dff28679ca99478e53af1936e",
     "semantic_hash": ""
   },
   "src/new-payment-order.html": {
@@ -1327,6 +1327,16 @@
   "test/dolar.test.ts": {
     "mtime": 1783501225.5940104,
     "ast_hash": "fe50e5e770c5e5e5aec10d374236f51d",
+    "semantic_hash": ""
+  },
+  "src/document-links.ts": {
+    "mtime": 1783517377.4094536,
+    "ast_hash": "9d74a032c5f03f0e701c29c6f9813eca",
+    "semantic_hash": ""
+  },
+  "test/document-links.test.ts": {
+    "mtime": 1783517452.609357,
+    "ast_hash": "129103e683cd6a27f0a4b663a95d77fb",
     "semantic_hash": ""
   }
 }

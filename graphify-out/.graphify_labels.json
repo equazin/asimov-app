@@ -101,6 +101,5 @@
   "99": "migration.sql",
   "100": "migration.sql",
   "101": "AuthService",
-  "102": ".audit",
-  "103": "secrets.ts"
+  "102": ".audit"
 }

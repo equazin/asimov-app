@@ -40,6 +40,7 @@ import {
 } from "./air";
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
 import { listPendingSaleOrders, listPendingDeliveryNotes, getSourceItems, getLinksFor } from "./document-links";
+import { getKitInfo, setKitComponents } from "./kits";
 import {
   dbAll,
   dbGet,
@@ -790,6 +791,26 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("air:sync-timer:stop", () => {
     stopAirSyncTimer();
     return { ok: true };
+  });
+
+  // ── Esquemas / Kits ──────────────────────────────────────────────────
+  ipcMain.handle("db:kits:get", (_event, articleId: unknown) => {
+    try {
+      return { ok: true, data: getKitInfo(safeStr(articleId)) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("db:kits:set", (_event, articleId: unknown, components: unknown) => {
+    try {
+      const list = Array.isArray(components)
+        ? components.map((c) => ({ articleId: safeStr((c as Record<string, unknown>)?.articleId), qty: Number((c as Record<string, unknown>)?.qty) }))
+        : [];
+      return { ok: true, data: setKitComponents(safeStr(articleId), list) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
   });
 
   // ── Documentos entrelazados (pedido → remito → factura) ──────────────

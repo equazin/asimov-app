@@ -615,6 +615,20 @@ CREATE TABLE IF NOT EXISTS air_sync_runs (
 );
 
 -- ============================================================
+-- Esquemas / Kits (artículo compuesto por otros artículos)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS kit_components (
+  id                   TEXT PRIMARY KEY,
+  kit_article_id       TEXT NOT NULL,
+  component_article_id TEXT NOT NULL,
+  qty                  REAL NOT NULL DEFAULT 1,
+  UNIQUE (kit_article_id, component_article_id),
+  FOREIGN KEY (kit_article_id)       REFERENCES articles(id),
+  FOREIGN KEY (component_article_id) REFERENCES articles(id)
+);
+
+-- ============================================================
 -- Vínculos entre documentos (pedido → remito → factura)
 -- ============================================================
 
@@ -663,6 +677,7 @@ CREATE INDEX IF NOT EXISTS idx_air_products_category  ON air_products(category);
 CREATE INDEX IF NOT EXISTS idx_air_sync_runs_status   ON air_sync_runs(status);
 CREATE INDEX IF NOT EXISTS idx_doc_links_source ON document_links(source_type, source_id);
 CREATE INDEX IF NOT EXISTS idx_doc_links_target ON document_links(target_type, target_id);
+CREATE INDEX IF NOT EXISTS idx_kit_components_kit ON kit_components(kit_article_id);
 CREATE INDEX IF NOT EXISTS idx_exchange_rates_casa    ON exchange_rates(casa, fetched_at);
 `;
 // ---------------------------------------------------------------------------
@@ -750,6 +765,8 @@ export function initDb(dbPath?: string): void {
   try { _db.exec("ALTER TABLE air_products ADD COLUMN part_number TEXT"); } catch {}
   // Precio en USD opcional para artículos propios (repreciado por cotización del dólar)
   try { _db.exec("ALTER TABLE articles ADD COLUMN price_usd REAL NOT NULL DEFAULT 0"); } catch {}
+  // Esquemas/kits: el artículo compuesto se marca y sus componentes viven en kit_components
+  try { _db.exec("ALTER TABLE articles ADD COLUMN is_kit INTEGER NOT NULL DEFAULT 0"); } catch {}
 
   // Datos iniciales: depósito y caja por defecto
   const warehouseExists = (_db.prepare("SELECT id FROM warehouses LIMIT 1").get() as any);

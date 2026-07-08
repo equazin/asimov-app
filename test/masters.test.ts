@@ -53,6 +53,21 @@ describe("masters — mapeo UI → schema", () => {
     expect(a.category).toBe("Insumos");
   });
 
+  it("artículo con esquema: crea el kit con sus componentes", () => {
+    const { id: compId } = persistArticleForm({ codigo: "SSD240", descripcion: "SSD 240GB", importe: 35000 });
+    const { id: kitId } = persistArticleForm({
+      codigo: "PC-R5",
+      descripcion: "PC ARMADA RYZEN 5",
+      importe: 900000,
+      esquema: [{ articleId: compId, qty: 1 }, { articleId: "no-existe", qty: 2 }],
+    });
+    const kit = row("articles", kitId);
+    expect(kit.is_kit).toBe(1);
+    expect(kit.manages_stock).toBe(0);
+    const comps = getDb().prepare("SELECT * FROM kit_components WHERE kit_article_id = ?").all(kitId);
+    expect(comps).toHaveLength(1);
+  });
+
   it("artículo: precio_usd se persiste y se preserva si un update no lo envía", () => {
     const { id } = persistArticleForm({ codigo: "U1", descripcion: "SSD", importe: 100000, precio_usd: 80 });
     expect(row("articles", id).price_usd).toBe(80);

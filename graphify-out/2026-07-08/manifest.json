@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "src/db.ts": {
-    "mtime": 1783376305.7524147,
-    "ast_hash": "1e495bc2a9676ce18b1358656e1c9c2a",
+    "mtime": 1783501881.3618965,
+    "ast_hash": "981bb90a1e020a71142f81b9c190a7e9",
     "semantic_hash": ""
   },
   "src/document-sync.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1783380280.1774106,
-    "ast_hash": "6c0a8a36bcee8710a9bb06616f90ef57",
+    "mtime": 1783501402.2605767,
+    "ast_hash": "100411b16b49046b62907b048b2148cf",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -110,13 +110,13 @@
     "semantic_hash": ""
   },
   "src/main.ts": {
-    "mtime": 1783498952.9807293,
-    "ast_hash": "c62769626b6020d322ef4be57f382e56",
+    "mtime": 1783517109.6247025,
+    "ast_hash": "4b72e811b95ef6df5005098528cfd049",
     "semantic_hash": ""
   },
   "src/masters.ts": {
-    "mtime": 1783099753.9868453,
-    "ast_hash": "6d75ed232bc7557124eaf90d0d1c9a51",
+    "mtime": 1783501900.5991201,
+    "ast_hash": "2b6b9f7540630b7ea49cec7d97e6ccae",
     "semantic_hash": ""
   },
   "src/menu.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1783376305.753923,
-    "ast_hash": "245da4bc837e3b0561d881857ec151d2",
+    "mtime": 1783501421.3272512,
+    "ast_hash": "398b338a66020a5c240257956b257fc9",
     "semantic_hash": ""
   },
   "src/product-selection-preload.ts": {
@@ -255,8 +255,8 @@
     "semantic_hash": ""
   },
   "test/masters.test.ts": {
-    "mtime": 1783087199.14832,
-    "ast_hash": "1b7bf0b0a7fbaa912372a3f2d50ad874",
+    "mtime": 1783517077.68728,
+    "ast_hash": "d448cc82d30f61835fb1a7d6e145b3ac",
     "semantic_hash": ""
   },
   "test/secrets.test.ts": {
@@ -1070,8 +1070,8 @@
     "semantic_hash": ""
   },
   "src/new-article.html": {
-    "mtime": 1782917541.6461515,
-    "ast_hash": "83fbb33380931d7012be116af167d19f",
+    "mtime": 1783501862.940233,
+    "ast_hash": "bff2468206e2d3fad09646be4f39b7c5",
     "semantic_hash": ""
   },
   "src/new-client.html": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1783134941.727302,
-    "ast_hash": "3a757ef31e0f4b485d6a4a184b7eade5",
+    "mtime": 1783501771.5072918,
+    "ast_hash": "720af95aa54c9eba3c24b3ab32bb5c0c",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
@@ -1317,6 +1317,16 @@
   "mockups/splash-logo-check.png": {
     "mtime": 1782755000.0835004,
     "ast_hash": "7c30fbd94f7af141d5d0e254d81ef15f",
+    "semantic_hash": ""
+  },
+  "src/dolar.ts": {
+    "mtime": 1783501266.2922988,
+    "ast_hash": "188bd3c1250a648133e89c34389a5661",
+    "semantic_hash": ""
+  },
+  "test/dolar.test.ts": {
+    "mtime": 1783501225.5940104,
+    "ast_hash": "fe50e5e770c5e5e5aec10d374236f51d",
     "semantic_hash": ""
   }
 }

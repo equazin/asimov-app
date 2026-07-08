@@ -17,6 +17,7 @@ import { enqueueChange } from "./sync";
 import { isCloudConnected } from "./api-client";
 import { buildDocEnvelope } from "./document-sync";
 import { applySourceLink, revertSourcesOnAnnul, type DocumentSource } from "./document-links";
+import { explodeKitComponents } from "./kits";
 
 /**
  * Encola el documento (cabecera + ítems + movimientos) para push a la nube.
@@ -60,10 +61,10 @@ function defaultCashAccountId(): string {
   return c?.id ?? "ca-default";
 }
 
-function findArticleByCode(code: string): { id: string; manages_stock: number } | undefined {
+function findArticleByCode(code: string): { id: string; manages_stock: number; is_kit: number } | undefined {
   if (!code) return undefined;
-  return dbGet<{ id: string; manages_stock: number }>(
-    "SELECT id, manages_stock FROM articles WHERE code = ? LIMIT 1",
+  return dbGet<{ id: string; manages_stock: number; is_kit: number }>(
+    "SELECT id, manages_stock, is_kit FROM articles WHERE code = ? LIMIT 1",
     [code],
   );
 }
@@ -214,9 +215,18 @@ export function persistDeliveryNote(form: DeliveryNoteForm): PersistResult {
         "INSERT INTO delivery_note_items (id,note_id,article_id,code,description,unit,qty_ordered,qty_delivered) VALUES (?,?,?,?,?,?,?,?)",
         [randomUUID(), id, article?.id ?? null, code, str(item.descripcion), str(item.unidad) || "un", num(item.cantPedida), qtyDelivered],
       );
-      if (!cancelled && article && article.manages_stock && qtyDelivered > 0) {
-        applyStockDelta(article.id, warehouseId, -qtyDelivered, "salida", "delivery_note", id, `Remito ${number}`);
-        stockMoved++;
+      if (!cancelled && article && qtyDelivered > 0) {
+        if (article.is_kit) {
+          // Kit/esquema: el stock se descuenta de cada componente, no del kit.
+          for (const comp of explodeKitComponents(article.id)) {
+            if (!comp.manages_stock) continue;
+            applyStockDelta(comp.component_article_id, warehouseId, -(comp.qty * qtyDelivered), "salida", "delivery_note", id, `Remito ${number} (kit ${code})`);
+            stockMoved++;
+          }
+        } else if (article.manages_stock) {
+          applyStockDelta(article.id, warehouseId, -qtyDelivered, "salida", "delivery_note", id, `Remito ${number}`);
+          stockMoved++;
+        }
       }
     }
     if (form.origen) applySourceLink("delivery-note", id, form.origen);
