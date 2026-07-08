@@ -85,7 +85,8 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
 
 ## 6. Higiene / técnico 🟢
 
-- [ ] AFIP: integración real de facturación electrónica (hoy stub WSAA/WSFE).
+- [ ] AFIP/ARCA: integración real de facturación electrónica (hoy stub WSAA/WSFE).
+      **Plan de fases detallado en [AFIP-ARCA.md](AFIP-ARCA.md).**
 - [ ] Investigar el origen de los archivos basura (`{,`, `{`, `,-`, etc.) que
       aparecen en el working tree (parecen errores de shell); ya están
       gitignorados los `*.db`, pero conviene entender de dónde salen.
@@ -140,6 +141,7 @@ Aprovecha la infra ya creada en v4.8.0 (`document_links` + `getLinksFor`).
 
 ## Referencias
 
+- **Facturación electrónica AFIP/ARCA**: [AFIP-ARCA.md](AFIP-ARCA.md)
 - Plan v2 detallado: [v2/PLAN.md](v2/PLAN.md)
 - Sync multi-PC (diseño): [docs/desktop-cloud-sync.md](docs/desktop-cloud-sync.md)
 - Infra cloud (URLs): API `https://asimov-api-lwci.onrender.com`, Panel `https://asimov-app.vercel.app`
