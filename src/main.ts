@@ -19,6 +19,7 @@ import { getStoredUser } from "./api-client";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
+import { startDolarAutoUpdate } from "./dolar";
 import { isAirEnabled } from "./air";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
 import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
@@ -303,6 +304,20 @@ if (!gotLock) {
     // Cloud + sync (v2): IPC handlers para login contra la API de Render,
     // cola de sync offline-first y timer de push/pull cada 30 s.
     registerCloudIpcHandlers();
+
+    // Cotización del dólar: fetch inmediato + cada 30 min; se difunde a todas
+    // las ventanas para el widget del status bar y la vista Dólar.
+    startDolarAutoUpdate((rates) => {
+      for (const win of BrowserWindow.getAllWindows()) {
+        if (!win.isDestroyed()) win.webContents.send("dolar:updated", rates);
+      }
+    });
+    // Cotización del dólar: fetch inmediato + cada 30 min; difunde a todas las ventanas.
+    startDolarAutoUpdate((rates) => {
+      for (const win of BrowserWindow.getAllWindows()) {
+        if (!win.isDestroyed()) win.webContents.send("dolar:updated", rates);
+      }
+    });
     // Sin barra de menú superior: la navegación vive en el sidebar del shell.
     Menu.setApplicationMenu(null);
     registerGlobalShortcuts();

@@ -38,6 +38,9 @@ import {
   enqueueAirConfigCloudSync,
   resetAirAuthCache,
 } from "./air";
+import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
+import { listPendingSaleOrders, listPendingDeliveryNotes, getSourceItems, getLinksFor } from "./document-links";
+import { getKitInfo, setKitComponents } from "./kits";
 import {
   dbAll,
   dbGet,
@@ -788,6 +791,87 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("air:sync-timer:stop", () => {
     stopAirSyncTimer();
     return { ok: true };
+  });
+
+  // ── Esquemas / Kits ──────────────────────────────────────────────────
+  ipcMain.handle("db:kits:get", (_event, articleId: unknown) => {
+    try {
+      return { ok: true, data: getKitInfo(safeStr(articleId)) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("db:kits:set", (_event, articleId: unknown, components: unknown) => {
+    try {
+      const list = Array.isArray(components)
+        ? components.map((c) => ({ articleId: safeStr((c as Record<string, unknown>)?.articleId), qty: Number((c as Record<string, unknown>)?.qty) }))
+        : [];
+      return { ok: true, data: setKitComponents(safeStr(articleId), list) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // ── Documentos entrelazados (pedido → remito → factura) ──────────────
+  ipcMain.handle("db:doc-links:pending-sale-orders", (_event, clientId: unknown, target: unknown) =>
+    listPendingSaleOrders(safeStr(clientId), safeStr(target) === "delivery-note" ? "delivery-note" : "invoice"));
+  ipcMain.handle("db:doc-links:pending-delivery-notes", (_event, clientId: unknown) =>
+    listPendingDeliveryNotes(safeStr(clientId)));
+  ipcMain.handle("db:doc-links:source-items", (_event, type: unknown, id: unknown) =>
+    getSourceItems(safeStr(type), safeStr(id)));
+  ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>
+    getLinksFor(safeStr(type), safeStr(id)));
+
+  // ── Cotización del dólar ──────────────────────────────────────────────
+  ipcMain.handle("dolar:latest", () => {
+    try {
+      return { ok: true, data: getLatestRates() };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("dolar:history", (_event, casa: unknown, limit: unknown) => {
+    try {
+      const n = Number(limit);
+      return { ok: true, data: getRateHistory(safeStr(casa) || "blue", Number.isFinite(n) && n > 0 ? n : 100) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("dolar:refresh", async () => {
+    try {
+      return { ok: true, data: await refreshDolarNow() };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // Repreciado manual: recalcula precios ARS de artículos con price_usd (solo admin).
+  ipcMain.handle("dolar:reprice", (_event, casa: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      const result = repriceArticlesFromUsd(safeStr(casa) || "blue");
+      // Los artículos repreciados deben llegar a las otras PCs vía sync cloud.
+      const updatedArticles = dbAll<Record<string, unknown>>(
+        "SELECT id, code, name, category, unit, sale_price, iva_pct FROM articles WHERE price_usd > 0 AND active = 1",
+      );
+      for (const art of updatedArticles) {
+        enqueueIfCloud("product", String(art.id), "update", {
+          code: safeStr(art.code),
+          name: safeStr(art.name),
+          category: safeStr(art.category) || null,
+          unit: safeStr(art.unit) || "un",
+          price: Number(art.sale_price) || 0,
+          ivaRate: Number(art.iva_pct) || 21,
+        });
+      }
+      return { ok: true, data: result };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
   });
 
 }

@@ -517,6 +517,8 @@ td{ border-color:var(--border) !important; }
             <div class="field"><label>Código</label><input type="text" id="txtCodigo" /></div>
             <div class="field span-3"><label>Descripción</label><input type="text" id="txtDescripcion" placeholder="Nombre del artículo..." /></div>
 
+            <div class="field"><label>Precio venta $</label><input type="number" id="txtPrecio" min="0" step="0.01" placeholder="0.00" /></div>
+            <div class="field"><label>Precio USD (opcional)</label><input type="number" id="txtPrecioUsd" min="0" step="0.01" placeholder="0.00" title="Si lo cargás, el precio en pesos se puede recalcular con la cotización del dólar desde Tesorería → Dólar" /></div>
             <div class="field"><label>Línea</label><input type="text" id="txtLinea" placeholder="Ej: GENÉRICO" /></div>
             <div class="field"><label>Orden en lista</label><input type="number" value="0" /></div>
             <div class="field"><label>Unidad</label><select><option>U</option><option>KG</option><option>LT</option><option>MT</option><option>PACK</option></select></div>
@@ -613,26 +615,34 @@ td{ border-color:var(--border) !important; }
     <!-- ═══════════════ COMPOSICIÓN ═══════════════ -->
     <div class="tab-panel" id="panel-esquema">
       <div class="form-grid">
-        <div class="section-title">Componentes del artículo (BOM)</div>
-        <div class="field span-2"><label>Tipo</label><select><option>Simple</option><option>Compuesto</option><option>Kit</option><option>Servicio</option></select></div>
-        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" /><label>Descomponer al facturar</label></div></div>
-        <div class="field"><label>&nbsp;</label><div class="field-check"><input type="checkbox" /><label>Descontar stock componentes</label></div></div>
+        <div class="section-title">Esquema / Kit — componentes del artículo</div>
+        <div class="field span-4" style="font-size:11px;opacity:0.75;">
+          Si agregás componentes, este artículo pasa a ser un <b>esquema</b> (ej: "PC ARMADA RYZEN 5").
+          El precio de venta del esquema es el que cargás en la pestaña General (uno solo para todo el kit)
+          y al remitirse el stock se descuenta de cada componente.
+        </div>
 
-        <div class="mini-table">
+        <div class="field span-3" style="position:relative;">
+          <label>Buscar componente (código o nombre)</label>
+          <input type="text" id="txtBuscarComp" placeholder="Ej: ryzen, ssd, a520..." autocomplete="off" />
+          <div id="compResults" style="display:none;position:absolute;z-index:200;background:#1b1f27;border:1px solid rgba(255,255,255,0.2);border-radius:4px;max-height:220px;overflow-y:auto;width:100%;top:100%;left:0;"></div>
+        </div>
+        <div class="field"><label>&nbsp;</label><span style="font-size:11px;opacity:0.6;">Enter o click para agregar</span></div>
+
+        <div class="mini-table span-4">
           <table>
-            <thead><tr><th>Código</th><th>Componente</th><th>Cantidad</th><th>Unidad</th><th>Costo unit.</th><th>Subtotal</th></tr></thead>
-            <tbody>
-              <tr class="empty-row"><td colspan="6">Sin componentes definidos. Para artículos simples no es necesario.</td></tr>
+            <thead><tr><th>Código</th><th>Componente</th><th style="width:90px;">Cantidad</th><th style="width:110px;">Costo unit.</th><th style="width:110px;">Subtotal</th><th style="width:40px;"></th></tr></thead>
+            <tbody id="compBody">
+              <tr class="empty-row"><td colspan="6">Sin componentes. Este es un artículo simple.</td></tr>
             </tbody>
           </table>
         </div>
-        <div class="add-row-btn">+ Agregar componente</div>
 
-        <div class="section-title">Resumen de costos</div>
-        <div class="field"><label>Costo componentes</label><input type="text" value="0.00" readonly style="background:#f0f0f0;" /></div>
-        <div class="field"><label>% Mano de obra</label><input type="text" value="0.00" /></div>
-        <div class="field"><label>% Gastos indir.</label><input type="text" value="0.00" /></div>
-        <div class="field"><label>Costo total</label><input type="text" value="0.00" readonly style="background:#f0f0f0;font-weight:700;" /></div>
+        <div class="section-title">Resumen del esquema</div>
+        <div class="field"><label>Costo componentes</label><input type="text" id="txtCostoComp" value="0.00" readonly style="background:#f0f0f0;" /></div>
+        <div class="field"><label>Suma precios individuales</label><input type="text" id="txtSumaVentaComp" value="0.00" readonly style="background:#f0f0f0;" title="Referencia: cuánto valdría vendiendo los componentes por separado" /></div>
+        <div class="field"><label>Precio del esquema</label><input type="text" id="txtPrecioKitRef" value="—" readonly style="background:#e8f4ef;font-weight:700;" title="Es el Precio venta $ de la pestaña General" /></div>
+        <div class="field"><label>Margen s/ costo</label><input type="text" id="txtMargenKit" value="—" readonly style="background:#f0f0f0;font-weight:700;" /></div>
       </div>
     </div>
 
@@ -758,6 +768,8 @@ td{ border-color:var(--border) !important; }
   <script>
     const txtCodigo = document.getElementById("txtCodigo");
     const txtDescripcion = document.getElementById("txtDescripcion");
+    const txtPrecio = document.getElementById("txtPrecio");
+    const txtPrecioUsd = document.getElementById("txtPrecioUsd");
     const txtLinea = document.getElementById("txtLinea");
     const txtCategoria = document.getElementById("txtCategoria");
     const selIva = document.getElementById("selIva");
@@ -776,19 +788,125 @@ td{ border-color:var(--border) !important; }
 
     /* btnNew removed */
 
+    /* ─── Esquema / Kit ─── */
+    let kitComponents = []; // { articleId, code, name, qty, cost }
+
+    function escHtml(s) {
+      return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function fmt2(n) { return (Math.round((n || 0) * 100) / 100).toFixed(2); }
+
+    function renderKitTable() {
+      const tbody = document.getElementById("compBody");
+      if (kitComponents.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Sin componentes. Este es un artículo simple.</td></tr>';
+      } else {
+        tbody.innerHTML = kitComponents.map((c, i) =>
+          '<tr>' +
+          '<td style="font-family:Consolas,monospace;">' + escHtml(c.code) + '</td>' +
+          '<td>' + escHtml(c.name) + '</td>' +
+          '<td><input type="number" min="0.01" step="1" value="' + c.qty + '" data-idx="' + i + '" class="comp-qty" style="width:70px;" /></td>' +
+          '<td style="text-align:right;">$ ' + fmt2(c.cost) + '</td>' +
+          '<td style="text-align:right;font-weight:600;">$ ' + fmt2(c.cost * c.qty) + '</td>' +
+          '<td style="text-align:center;"><span class="comp-del" data-idx="' + i + '" style="cursor:pointer;color:#e05d5d;font-weight:700;" title="Quitar">×</span></td>' +
+          '</tr>'
+        ).join("");
+        tbody.querySelectorAll(".comp-qty").forEach(inp => {
+          inp.addEventListener("change", () => {
+            const idx = parseInt(inp.dataset.idx);
+            kitComponents[idx].qty = Math.max(0.01, parseFloat(inp.value) || 1);
+            renderKitTable();
+          });
+        });
+        tbody.querySelectorAll(".comp-del").forEach(btn => {
+          btn.addEventListener("click", () => {
+            kitComponents.splice(parseInt(btn.dataset.idx), 1);
+            renderKitTable();
+          });
+        });
+      }
+      // Resumen
+      const cost = kitComponents.reduce((a, c) => a + c.cost * c.qty, 0);
+      const sale = kitComponents.reduce((a, c) => a + (c.sale || 0) * c.qty, 0);
+      const kitPrice = parseFloat(txtPrecio.value) || 0;
+      document.getElementById("txtCostoComp").value = fmt2(cost);
+      document.getElementById("txtSumaVentaComp").value = fmt2(sale);
+      document.getElementById("txtPrecioKitRef").value = kitPrice ? "$ " + fmt2(kitPrice) : "—";
+      document.getElementById("txtMargenKit").value =
+        (kitPrice && cost) ? fmt2(((kitPrice / cost) - 1) * 100) + " %" : "—";
+    }
+
+    const txtBuscarComp = document.getElementById("txtBuscarComp");
+    const compResults = document.getElementById("compResults");
+    let searchTimer = null;
+
+    txtBuscarComp.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+      const q = txtBuscarComp.value.trim();
+      if (q.length < 2) { compResults.style.display = "none"; return; }
+      searchTimer = setTimeout(async () => {
+        if (!window.asimovNewArticle || !window.asimovNewArticle.searchArticles) return;
+        try {
+          const rows = await window.asimovNewArticle.searchArticles(q);
+          const usable = (rows || []).filter(r => !r.is_kit).slice(0, 12);
+          if (usable.length === 0) {
+            compResults.innerHTML = '<div style="padding:8px 10px;opacity:0.6;font-size:11px;">Sin resultados.</div>';
+          } else {
+            compResults.innerHTML = usable.map(r =>
+              '<div class="comp-opt" data-id="' + escHtml(r.id) + '" data-code="' + escHtml(r.code) + '" data-name="' + escHtml(r.name) + '" data-cost="' + (r.cost_price || 0) + '" data-sale="' + (r.sale_price || 0) + '" ' +
+              'style="padding:6px 10px;cursor:pointer;font-size:12px;display:flex;gap:8px;" ' +
+              'onmouseover="this.style.background=\'rgba(255,255,255,0.08)\'" onmouseout="this.style.background=\'\'">' +
+              '<span style="font-family:Consolas,monospace;opacity:0.7;min-width:80px;">' + escHtml(r.code) + '</span>' +
+              '<span style="flex:1;">' + escHtml(r.name) + '</span>' +
+              '<span style="opacity:0.6;">$ ' + fmt2(r.sale_price || 0) + '</span>' +
+              '</div>'
+            ).join("");
+          }
+          compResults.style.display = "block";
+          compResults.querySelectorAll(".comp-opt").forEach(el => {
+            el.addEventListener("click", () => {
+              const id = el.dataset.id;
+              const existing = kitComponents.find(c => c.articleId === id);
+              if (existing) { existing.qty += 1; }
+              else {
+                kitComponents.push({
+                  articleId: id, code: el.dataset.code, name: el.dataset.name,
+                  qty: 1, cost: parseFloat(el.dataset.cost) || 0, sale: parseFloat(el.dataset.sale) || 0,
+                });
+              }
+              txtBuscarComp.value = "";
+              compResults.style.display = "none";
+              renderKitTable();
+            });
+          });
+        } catch { compResults.style.display = "none"; }
+      }, 250);
+    });
+    document.addEventListener("click", (e) => {
+      if (!compResults.contains(e.target) && e.target !== txtBuscarComp) compResults.style.display = "none";
+    });
+    txtPrecio.addEventListener("input", renderKitTable);
+
     document.getElementById("btnSave").addEventListener("click", () => {
       if (!txtCodigo.value || !txtDescripcion.value) {
         alert("Complete Código y Descripción.");
         return;
       }
+      if (kitComponents.length > 0 && !(parseFloat(txtPrecio.value) > 0)) {
+        alert("El esquema necesita un Precio de venta (pestaña General): es el precio único de todo el kit.");
+        return;
+      }
       const article = {
         codigo: txtCodigo.value.trim(),
         descripcion: txtDescripcion.value.trim().toUpperCase(),
-        importe: (10 + Math.random() * 100).toFixed(2),
+        importe: txtPrecio.value || "0",
+        precio_usd: txtPrecioUsd.value || "0",
         iva: selIva.value,
         st: "0", compro: "0", entr: "0",
         linea: (txtLinea.value.trim() || "GENÉRICO").toUpperCase(),
-        categoria: (txtCategoria.value.trim() || "VARIOS").toUpperCase()
+        categoria: (txtCategoria.value.trim() || "VARIOS").toUpperCase(),
+        esquema: kitComponents.map(c => ({ articleId: c.articleId, qty: c.qty }))
       };
       if (window.asimovNewArticle) window.asimovNewArticle.createArticle(article);
     });

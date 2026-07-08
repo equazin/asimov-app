@@ -16,6 +16,11 @@ const api = {
   saveDeliveryNote: (delivery: any) => {
     ipcRenderer.send("shell:delivery-note-saved", { delivery });
   },
+  // Documentos entrelazados: traer pedido pendiente del cliente
+  listPendingSaleOrders: (clientId: string) =>
+    ipcRenderer.invoke("db:doc-links:pending-sale-orders", clientId, "delivery-note"),
+  getSourceItems: (type: string, id: string) =>
+    ipcRenderer.invoke("db:doc-links:source-items", type, id),
   cancel: () => {
     ipcRenderer.send("shell:delivery-note-saved", { delivery: null });
   },

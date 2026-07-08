@@ -10,6 +10,7 @@
 import { upsertClient, upsertSupplier, upsertArticle } from "./db";
 import { enqueueChange } from "./sync";
 import { isCloudConnected } from "./api-client";
+import { setKitComponents } from "./kits";
 
 function str(v: unknown, max = 500): string {
   return String(v ?? "").slice(0, max).trim();
@@ -114,9 +115,12 @@ export interface ArticleForm {
   codigo?: string;
   descripcion?: string;
   importe?: string | number;
+  precio_usd?: string | number;
   iva?: string | number;
   linea?: string;
   categoria?: string;
+  /** Componentes del esquema/kit: si viene con elementos, el artículo es un kit. */
+  esquema?: Array<{ articleId?: string; qty?: number | string }>;
 }
 
 export function persistArticleForm(form: ArticleForm): { id: string } {
@@ -129,9 +133,17 @@ export function persistArticleForm(form: ArticleForm): { id: string } {
     category: str(form.categoria),
     unit: "un",
     sale_price: num(form.importe),
+    price_usd: num(form.precio_usd),
     iva_pct: num(form.iva) || 21,
     active: 1,
   });
+  // Esquema/kit: si el form trae componentes, se definen (o redefinen) acá.
+  if (Array.isArray(form.esquema)) {
+    const components = form.esquema
+      .map((c) => ({ articleId: str(c?.articleId), qty: num(c?.qty) }))
+      .filter((c) => c.articleId && c.qty > 0);
+    if (components.length > 0) setKitComponents(saved.id, components);
+  }
   tryEnqueue("product", saved.id, isNew ? "create" : "update", {
     code,
     name: str(form.descripcion),

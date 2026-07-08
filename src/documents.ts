@@ -16,6 +16,8 @@ import { randomUUID } from "node:crypto";
 import { enqueueChange } from "./sync";
 import { isCloudConnected } from "./api-client";
 import { buildDocEnvelope } from "./document-sync";
+import { applySourceLink, revertSourcesOnAnnul, type DocumentSource } from "./document-links";
+import { explodeKitComponents } from "./kits";
 
 /**
  * Encola el documento (cabecera + ítems + movimientos) para push a la nube.
@@ -59,10 +61,10 @@ function defaultCashAccountId(): string {
   return c?.id ?? "ca-default";
 }
 
-function findArticleByCode(code: string): { id: string; manages_stock: number } | undefined {
+function findArticleByCode(code: string): { id: string; manages_stock: number; is_kit: number } | undefined {
   if (!code) return undefined;
-  return dbGet<{ id: string; manages_stock: number }>(
-    "SELECT id, manages_stock FROM articles WHERE code = ? LIMIT 1",
+  return dbGet<{ id: string; manages_stock: number; is_kit: number }>(
+    "SELECT id, manages_stock, is_kit FROM articles WHERE code = ? LIMIT 1",
     [code],
   );
 }
@@ -180,6 +182,8 @@ export interface DeliveryNoteForm {
   clienteNombre?: string;
   observaciones?: string;
   items?: Array<{ codigo?: string; descripcion?: string; unidad?: string; cantPedida?: number | string; cantEntregada?: number | string }>;
+  /** Pedido de origen (traído al form): crea vínculo y lo marca "remitido". */
+  origen?: DocumentSource | null;
 }
 
 export function persistDeliveryNote(form: DeliveryNoteForm): PersistResult {
@@ -211,11 +215,21 @@ export function persistDeliveryNote(form: DeliveryNoteForm): PersistResult {
         "INSERT INTO delivery_note_items (id,note_id,article_id,code,description,unit,qty_ordered,qty_delivered) VALUES (?,?,?,?,?,?,?,?)",
         [randomUUID(), id, article?.id ?? null, code, str(item.descripcion), str(item.unidad) || "un", num(item.cantPedida), qtyDelivered],
       );
-      if (!cancelled && article && article.manages_stock && qtyDelivered > 0) {
-        applyStockDelta(article.id, warehouseId, -qtyDelivered, "salida", "delivery_note", id, `Remito ${number}`);
-        stockMoved++;
+      if (!cancelled && article && qtyDelivered > 0) {
+        if (article.is_kit) {
+          // Kit/esquema: el stock se descuenta de cada componente, no del kit.
+          for (const comp of explodeKitComponents(article.id)) {
+            if (!comp.manages_stock) continue;
+            applyStockDelta(comp.component_article_id, warehouseId, -(comp.qty * qtyDelivered), "salida", "delivery_note", id, `Remito ${number} (kit ${code})`);
+            stockMoved++;
+          }
+        } else if (article.manages_stock) {
+          applyStockDelta(article.id, warehouseId, -qtyDelivered, "salida", "delivery_note", id, `Remito ${number}`);
+          stockMoved++;
+        }
       }
     }
+    if (form.origen) applySourceLink("delivery-note", id, form.origen);
   });
 
   tx();
@@ -448,6 +462,8 @@ export interface InvoiceForm {
   cliente?: { id?: string } | null; clienteNombre?: string; observaciones?: string;
   items?: SaleDocItem[];
   totales?: { neto21?: number; neto10?: number; neto0?: number; iva21?: number; iva10?: number; total?: number };
+  /** Documento de origen (pedido/remito traído al form): crea vínculo y propaga estado. */
+  origen?: DocumentSource | null;
 }
 
 export function persistInvoice(form: InvoiceForm): PersistResult {
@@ -477,6 +493,7 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
         [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, ivaPct, sub, Math.round(sub * ivaPct) / 100],
       );
     }
+    if (form.origen) applySourceLink("invoice", id, form.origen);
   });
   tx();
   enqueueDocSnapshot("invoice", id);
@@ -638,6 +655,9 @@ export function annulDocument(type: string, id: string): AnnulResult {
     if (cfg.effect === "stock") reverseStockFor(cfg.refType, docId);
     else if (cfg.effect === "cash") reverseCashFor(cfg.refType, docId);
     dbRun(`UPDATE ${cfg.table} SET status = 'anulado' WHERE id = ?`, [docId]);
+    // Los documentos de origen vinculados (pedido/remito) vuelven a "pendiente"
+    // para poder facturarse o remitirse de nuevo.
+    revertSourcesOnAnnul(str(type), docId);
   });
   tx();
   return { ok: true };

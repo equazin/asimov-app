@@ -27,6 +27,7 @@ export function resetLedger(): void {
     DELETE FROM invoice_items;         DELETE FROM invoices;
     DELETE FROM purchase_order_items;  DELETE FROM purchase_orders;
     DELETE FROM purchase_invoice_items;DELETE FROM purchase_invoices;
+    DELETE FROM kit_components; DELETE FROM document_links;
     DELETE FROM clients; DELETE FROM suppliers; DELETE FROM articles;
     DELETE FROM users;
   `);

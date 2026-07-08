@@ -734,8 +734,26 @@ td{ border-color:var(--border) !important; }
     <div class="tab-panel items-panel" id="panel-items">
       <div class="items-toolbar">
         <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
+        <button class="btn" id="btnTraerPedido" style="height:26px;padding:0 12px;" title="Traer los ítems de un pedido pendiente del cliente">📋 Traer pedido</button>
+        <button class="btn" id="btnTraerRemito" style="height:26px;padding:0 12px;" title="Facturar un remito pendiente del cliente">🚚 Traer remito</button>
+        <span class="origen-badge" id="lblOrigen" style="display:none;background:rgba(46,163,110,0.15);color:#2ea36e;border:1px solid rgba(46,163,110,0.4);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">
+          📎 <span id="lblOrigenTexto"></span>
+          <span id="btnQuitarOrigen" style="cursor:pointer;margin-left:4px;font-weight:700;" title="Desvincular documento de origen">×</span>
+        </span>
         <span class="items-hint">F4 o + = buscar artículo &nbsp;|&nbsp; Insert = nueva fila</span>
         <span class="items-count" id="lblItemCount">0 ítems</span>
+      </div>
+
+      <!-- Modal selector de documento origen (pedido/remito pendiente) -->
+      <div id="origenModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:center;justify-content:center;">
+        <div style="background:var(--panel,#1b1f27);color:inherit;border:1px solid rgba(255,255,255,0.15);border-radius:8px;width:560px;max-height:70vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.5);">
+          <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;">
+            <strong id="origenModalTitle">Traer pedido</strong>
+            <span style="flex:1"></span>
+            <span id="origenModalClose" style="cursor:pointer;font-size:18px;padding:0 6px;">×</span>
+          </div>
+          <div id="origenModalBody" style="overflow-y:auto;padding:8px 0;"></div>
+        </div>
       </div>
       <div class="items-table-wrap">
         <table class="items-table">
@@ -1016,6 +1034,7 @@ td{ border-color:var(--border) !important; }
     let nextRowId = 1;
     let clienteData = null;
     let tipoActual = "B";
+    let origenDoc = null; // documento traído: { tipo: "sale-order"|"delivery-note", id, numero }
 
     /* ─── Init ─── */
     (function init() {
@@ -1289,6 +1308,106 @@ td{ border-color:var(--border) !important; }
 
     /* ─── Keyboard & toolbar ─── */
     document.getElementById("btnAddRow").addEventListener("click", function() { addRow(); });
+
+    /* ─── Documentos entrelazados: traer pedido / remito ─── */
+    function setOrigen(doc) {
+      origenDoc = doc;
+      var badge = document.getElementById("lblOrigen");
+      if (doc) {
+        document.getElementById("lblOrigenTexto").textContent =
+          (doc.tipo === "delivery-note" ? "Remito " : "Pedido ") + (doc.numero || "");
+        badge.style.display = "inline-flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    document.getElementById("btnQuitarOrigen").addEventListener("click", function() { setOrigen(null); });
+
+    function closeOrigenModal() { document.getElementById("origenModal").style.display = "none"; }
+    document.getElementById("origenModalClose").addEventListener("click", closeOrigenModal);
+    document.getElementById("origenModal").addEventListener("click", function(e) {
+      if (e.target === this) closeOrigenModal();
+    });
+
+    function fmtMoney(n) { return "$ " + fmtNum(n || 0); }
+
+    async function openOrigenPicker(tipo) {
+      if (!clienteData || !clienteData.id) {
+        alert("Primero seleccioná el cliente (F4 en Razón Social).");
+        return;
+      }
+      var modal = document.getElementById("origenModal");
+      var body = document.getElementById("origenModalBody");
+      document.getElementById("origenModalTitle").textContent =
+        tipo === "delivery-note" ? "Traer remito pendiente" : "Traer pedido pendiente";
+      body.innerHTML = '<div style="padding:16px;opacity:0.6;">Buscando...</div>';
+      modal.style.display = "flex";
+      try {
+        var docs = tipo === "delivery-note"
+          ? await window.asimovNewInvoice.listPendingDeliveryNotes(String(clienteData.id))
+          : await window.asimovNewInvoice.listPendingSaleOrders(String(clienteData.id));
+        if (!docs || docs.length === 0) {
+          body.innerHTML = '<div style="padding:16px;opacity:0.6;">Este cliente no tiene ' +
+            (tipo === "delivery-note" ? "remitos" : "pedidos") + ' pendientes.</div>';
+          return;
+        }
+        body.innerHTML = docs.map(function(d) {
+          return '<div class="origen-item" data-id="' + esc(d.id) + '" data-num="' + esc(d.number) + '" ' +
+            'style="padding:8px 14px;cursor:pointer;display:flex;gap:12px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);" ' +
+            'onmouseover="this.style.background=\'rgba(255,255,255,0.07)\'" onmouseout="this.style.background=\'\'">' +
+            '<strong style="min-width:120px;">' + esc(d.number) + '</strong>' +
+            '<span style="opacity:0.7;min-width:80px;">' + esc(d.date || "") + '</span>' +
+            '<span style="opacity:0.7;">' + d.items_count + ' ítem' + (d.items_count === 1 ? "" : "s") + '</span>' +
+            '<span style="flex:1"></span>' +
+            (d.total ? '<span style="font-weight:600;">' + fmtMoney(d.total) + '</span>' : '') +
+            '<span style="font-size:10px;text-transform:uppercase;opacity:0.6;">' + esc(d.status || "") + '</span>' +
+            '</div>';
+        }).join("");
+        body.querySelectorAll(".origen-item").forEach(function(el) {
+          el.addEventListener("click", function() { importOrigen(tipo, el.dataset.id, el.dataset.num); });
+        });
+      } catch (e) {
+        body.innerHTML = '<div style="padding:16px;color:#e05d5d;">' + esc(e.message || "Error al buscar documentos") + '</div>';
+      }
+    }
+
+    async function importOrigen(tipo, id, numero) {
+      try {
+        var srcItems = await window.asimovNewInvoice.getSourceItems(tipo, id);
+        if (!srcItems || srcItems.length === 0) {
+          alert("El documento seleccionado no tiene ítems.");
+          return;
+        }
+        if (items.length > 0 && !confirm("La factura ya tiene ítems cargados. ¿Reemplazarlos por los del documento seleccionado?")) {
+          return;
+        }
+        items = [];
+        srcItems.forEach(function(it) {
+          items.push({
+            id: nextRowId++,
+            codigo: it.code || "",
+            descripcion: it.description || "",
+            unidad: it.unit || "UN",
+            cantidad: parseFloat(it.qty) || 1,
+            costo: 0,
+            margen: 0,
+            precio: parseFloat(it.unit_price) || 0,
+            descuento: 0,
+            iva: parseFloat(it.iva_pct) || 21,
+          });
+        });
+        setOrigen({ tipo: tipo, id: id, numero: numero });
+        renderItemsTable();
+        recalcTotals();
+        closeOrigenModal();
+      } catch (e) {
+        alert("No se pudieron traer los ítems: " + (e.message || e));
+      }
+    }
+
+    document.getElementById("btnTraerPedido").addEventListener("click", function() { openOrigenPicker("sale-order"); });
+    document.getElementById("btnTraerRemito").addEventListener("click", function() { openOrigenPicker("delivery-note"); });
     window.addEventListener("keydown", function(e) {
       if (e.key === "F8") { e.preventDefault(); document.getElementById("btnSave").click(); }
       if (e.key === "Insert") { e.preventDefault(); addRow(); }
@@ -1321,6 +1440,7 @@ td{ border-color:var(--border) !important; }
         items: items,
         totales: window._totals || {},
         observaciones: document.getElementById("txtObsCliente").value,
+        origen: origenDoc,
       };
       if (window.asimovNewInvoice) window.asimovNewInvoice.saveInvoice(invoice);
     });

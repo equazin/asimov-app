@@ -16,6 +16,13 @@ const api = {
   saveInvoice: (invoice: any) => {
     ipcRenderer.send("shell:invoice-saved", { invoice });
   },
+  // Documentos entrelazados: traer pedido/remito pendiente del cliente
+  listPendingSaleOrders: (clientId: string) =>
+    ipcRenderer.invoke("db:doc-links:pending-sale-orders", clientId, "invoice"),
+  listPendingDeliveryNotes: (clientId: string) =>
+    ipcRenderer.invoke("db:doc-links:pending-delivery-notes", clientId),
+  getSourceItems: (type: string, id: string) =>
+    ipcRenderer.invoke("db:doc-links:source-items", type, id),
   cancel: () => {
     ipcRenderer.send("shell:invoice-saved", { invoice: null });
   },

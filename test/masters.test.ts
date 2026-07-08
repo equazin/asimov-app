@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "../src/masters";
-import { getDb } from "../src/db";
+import { getDb, upsertArticle } from "../src/db";
 import { initTestDb } from "./helpers";
 
 beforeEach(() => initTestDb());
@@ -51,5 +51,31 @@ describe("masters — mapeo UI → schema", () => {
     expect(a.iva_pct).toBe(10.5);
     expect(a.code).toBe("K1");
     expect(a.category).toBe("Insumos");
+  });
+
+  it("artículo con esquema: crea el kit con sus componentes", () => {
+    const { id: compId } = persistArticleForm({ codigo: "SSD240", descripcion: "SSD 240GB", importe: 35000 });
+    const { id: kitId } = persistArticleForm({
+      codigo: "PC-R5",
+      descripcion: "PC ARMADA RYZEN 5",
+      importe: 900000,
+      esquema: [{ articleId: compId, qty: 1 }, { articleId: "no-existe", qty: 2 }],
+    });
+    const kit = row("articles", kitId);
+    expect(kit.is_kit).toBe(1);
+    expect(kit.manages_stock).toBe(0);
+    const comps = getDb().prepare("SELECT * FROM kit_components WHERE kit_article_id = ?").all(kitId);
+    expect(comps).toHaveLength(1);
+  });
+
+  it("artículo: precio_usd se persiste y se preserva si un update no lo envía", () => {
+    const { id } = persistArticleForm({ codigo: "U1", descripcion: "SSD", importe: 100000, precio_usd: 80 });
+    expect(row("articles", id).price_usd).toBe(80);
+
+    // Update sin precio_usd (p. ej. otro caller de upsertArticle): no debe pisarlo.
+    upsertArticle({ id, code: "U1", name: "SSD 240", sale_price: 110000 });
+    const after = row("articles", id);
+    expect(after.name).toBe("SSD 240");
+    expect(after.price_usd).toBe(80);
   });
 });

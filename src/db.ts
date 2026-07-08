@@ -615,6 +615,48 @@ CREATE TABLE IF NOT EXISTS air_sync_runs (
 );
 
 -- ============================================================
+-- Esquemas / Kits (artículo compuesto por otros artículos)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS kit_components (
+  id                   TEXT PRIMARY KEY,
+  kit_article_id       TEXT NOT NULL,
+  component_article_id TEXT NOT NULL,
+  qty                  REAL NOT NULL DEFAULT 1,
+  UNIQUE (kit_article_id, component_article_id),
+  FOREIGN KEY (kit_article_id)       REFERENCES articles(id),
+  FOREIGN KEY (component_article_id) REFERENCES articles(id)
+);
+
+-- ============================================================
+-- Vínculos entre documentos (pedido → remito → factura)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS document_links (
+  id          TEXT PRIMARY KEY,
+  source_type TEXT NOT NULL,
+  source_id   TEXT NOT NULL,
+  target_type TEXT NOT NULL,
+  target_id   TEXT NOT NULL,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (source_type, source_id, target_type, target_id)
+);
+
+-- ============================================================
+-- Cotizaciones de moneda (dólar)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS exchange_rates (
+  id         TEXT PRIMARY KEY,
+  casa       TEXT NOT NULL,
+  nombre     TEXT NOT NULL,
+  compra     REAL NOT NULL DEFAULT 0,
+  venta      REAL NOT NULL DEFAULT 0,
+  source_date TEXT,
+  fetched_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ============================================================
 -- Índices
 -- ============================================================
 
@@ -633,6 +675,10 @@ CREATE INDEX IF NOT EXISTS idx_air_products_code      ON air_products(air_code);
 CREATE INDEX IF NOT EXISTS idx_air_products_desc      ON air_products(description);
 CREATE INDEX IF NOT EXISTS idx_air_products_category  ON air_products(category);
 CREATE INDEX IF NOT EXISTS idx_air_sync_runs_status   ON air_sync_runs(status);
+CREATE INDEX IF NOT EXISTS idx_doc_links_source ON document_links(source_type, source_id);
+CREATE INDEX IF NOT EXISTS idx_doc_links_target ON document_links(target_type, target_id);
+CREATE INDEX IF NOT EXISTS idx_kit_components_kit ON kit_components(kit_article_id);
+CREATE INDEX IF NOT EXISTS idx_exchange_rates_casa    ON exchange_rates(casa, fetched_at);
 `;
 // ---------------------------------------------------------------------------
 // Secuencias (autonumeración)
@@ -717,6 +763,10 @@ export function initDb(dbPath?: string): void {
 
   // Migrations for existing tables
   try { _db.exec("ALTER TABLE air_products ADD COLUMN part_number TEXT"); } catch {}
+  // Precio en USD opcional para artículos propios (repreciado por cotización del dólar)
+  try { _db.exec("ALTER TABLE articles ADD COLUMN price_usd REAL NOT NULL DEFAULT 0"); } catch {}
+  // Esquemas/kits: el artículo compuesto se marca y sus componentes viven en kit_components
+  try { _db.exec("ALTER TABLE articles ADD COLUMN is_kit INTEGER NOT NULL DEFAULT 0"); } catch {}
 
   // Datos iniciales: depósito y caja por defecto
   const warehouseExists = (_db.prepare("SELECT id FROM warehouses LIMIT 1").get() as any);
@@ -783,9 +833,9 @@ export function upsertSupplier(row: Record<string, unknown>): { id: string } {
 export function upsertArticle(row: Record<string, unknown>): { id: string } {
   const id = String(row.id ?? "").trim() || randomUUID();
   dbRun(
-    `INSERT OR REPLACE INTO articles (id,code,name,description,category,unit,cost_price,sale_price,iva_pct,manages_stock,manages_serial,active,notes,created_at,updated_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM articles WHERE id=?),datetime('now')),datetime('now'))`,
-    [id, row.code, row.name, row.description, row.category, row.unit ?? "un", row.cost_price ?? 0, row.sale_price ?? 0, row.iva_pct ?? 21, row.manages_stock ?? 1, row.manages_serial ?? 0, row.active ?? 1, row.notes, id],
+    `INSERT OR REPLACE INTO articles (id,code,name,description,category,unit,cost_price,sale_price,price_usd,iva_pct,manages_stock,manages_serial,active,notes,created_at,updated_at)
+     VALUES (?,?,?,?,?,?,?,?,COALESCE(?,(SELECT price_usd FROM articles WHERE id=?),0),?,?,?,?,?,COALESCE((SELECT created_at FROM articles WHERE id=?),datetime('now')),datetime('now'))`,
+    [id, row.code, row.name, row.description, row.category, row.unit ?? "un", row.cost_price ?? 0, row.sale_price ?? 0, row.price_usd ?? null, id, row.iva_pct ?? 21, row.manages_stock ?? 1, row.manages_serial ?? 0, row.active ?? 1, row.notes, id],
   );
   return { id };
 }
