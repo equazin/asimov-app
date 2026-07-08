@@ -8,6 +8,7 @@ import {
 import {
   afipDate, formatAfipDate, buildUltimoAutorizadoEnvelope, parseUltimoAutorizado,
   buildFECAESolicitarEnvelope, parseFECAEResponse, callWsfe, WSFE_URLS,
+  buildFEDummyEnvelope, parseFEDummy,
 } from "../src/afip/wsfe";
 import { callLoginCms, WSAA_URLS } from "../src/afip/wsaa";
 import {
@@ -114,6 +115,20 @@ describe("afip/wsaa", () => {
     expect(isTaValid({ expiration: new Date(Date.now() + 30 * 60_000).toISOString() })).toBe(true);
     expect(isTaValid({ expiration: new Date(Date.now() + 2 * 60_000).toISOString() })).toBe(false);
     expect(isTaValid(null)).toBe(false);
+  });
+});
+
+describe("afip/wsfe — FEDummy (health-check de Fase 6)", () => {
+  it("arma el envelope sin autenticación y parsea el estado de los servidores", () => {
+    expect(buildFEDummyEnvelope()).toContain("<ar:FEDummy/>");
+    const okXml = "<Env><Body><FEDummyResponse><FEDummyResult>" +
+      "<AppServer>OK</AppServer><DbServer>OK</DbServer><AuthServer>OK</AuthServer>" +
+      "</FEDummyResult></FEDummyResponse></Body></Env>";
+    expect(parseFEDummy(okXml)).toEqual({ appServer: "OK", dbServer: "OK", authServer: "OK", ok: true });
+
+    const degraded = "<Env><Body><FEDummyResult><AppServer>OK</AppServer>" +
+      "<DbServer>ERROR</DbServer><AuthServer>OK</AuthServer></FEDummyResult></Body></Env>";
+    expect(parseFEDummy(degraded).ok).toBe(false);
   });
 });
 

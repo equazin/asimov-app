@@ -22,7 +22,8 @@ import {
 } from "./afip/wsaa";
 import {
   WSFE_URLS, buildUltimoAutorizadoEnvelope, parseUltimoAutorizado,
-  buildFECAESolicitarEnvelope, parseFECAEResponse, callWsfe, type FeCabecera, type FeComprobante,
+  buildFECAESolicitarEnvelope, parseFECAEResponse, callWsfe,
+  buildFEDummyEnvelope, parseFEDummy, type FeCabecera, type FeComprobante,
 } from "./afip/wsfe";
 import {
   receptorDocType, isAfipUnavailable, resolveVoucherTypeCode,
@@ -214,6 +215,104 @@ export async function testAfipConnection(): Promise<{ ok: boolean; message: stri
   } catch (err: unknown) {
     return { ok: false, message: err instanceof Error ? err.message : String(err) };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Diagnóstico del circuito (Fase 6 — homologación / puesta en producción)
+// ---------------------------------------------------------------------------
+
+export type DiagStatus = "ok" | "warn" | "error" | "skip";
+
+export interface DiagStep {
+  id: string;
+  label: string;
+  status: DiagStatus;
+  detail: string;
+}
+
+export interface AfipDiagnostics {
+  env: AfipEnv;
+  ok: boolean;
+  steps: DiagStep[];
+}
+
+/**
+ * Recorre el circuito completo de facturación electrónica y reporta cada paso,
+ * para validar homologación antes de pasar a producción (Fase 6). No emite
+ * comprobantes: sólo verifica config, autenticación, salud de WSFE y numeración.
+ */
+export async function runAfipDiagnostics(): Promise<AfipDiagnostics> {
+  const cfg = getAfipConfig();
+  const steps: DiagStep[] = [];
+  const add = (id: string, label: string, status: DiagStatus, detail: string): void => {
+    steps.push({ id, label, status, detail });
+  };
+
+  // 1. Certificado y clave.
+  if (!cfg.hasCert || !cfg.hasKey) {
+    add("cert", "Certificado y clave", "error", "Falta cargar el certificado (.crt) y/o la clave (.key) en Configuración → AFIP.");
+  } else if (cfg.certExpires && new Date(cfg.certExpires).getTime() < Date.now()) {
+    add("cert", "Certificado y clave", "error", `El certificado venció el ${cfg.certExpires.slice(0, 10)}. Generá uno nuevo en el portal de AFIP.`);
+  } else {
+    const venceEn = cfg.certExpires
+      ? ` (vence ${cfg.certExpires.slice(0, 10)})`
+      : "";
+    add("cert", "Certificado y clave", "ok", `Cargados${venceEn}.`);
+  }
+
+  // 2. CUIT y punto de venta.
+  if (!/^\d{11}$/.test(cfg.cuit)) {
+    add("config", "CUIT y punto de venta", "error", "El CUIT del emisor debe tener 11 dígitos.");
+  } else {
+    add("config", "CUIT y punto de venta", "ok", `CUIT ${cfg.cuit} · Pto. venta ${cfg.pointOfSale} · Ambiente ${cfg.env === "produccion" ? "PRODUCCIÓN" : "homologación"}.`);
+  }
+
+  // Si la config base falla, no tiene sentido ir a la red.
+  const configOk = steps.every((s) => s.status !== "error");
+  if (!configOk) {
+    return { env: cfg.env, ok: false, steps };
+  }
+
+  const url = cfg.env === "produccion" ? WSFE_URLS.produccion : WSFE_URLS.homologacion;
+
+  // 3. FEDummy — salud del servicio WSFE (no requiere autenticación).
+  try {
+    const dummy = parseFEDummy(await callWsfe(url, "FEDummy", buildFEDummyEnvelope()));
+    add("fedummy", "Servicio WSFE (FEDummy)", dummy.ok ? "ok" : "warn",
+      `AppServer ${dummy.appServer} · DbServer ${dummy.dbServer} · AuthServer ${dummy.authServer}.`);
+  } catch (err) {
+    add("fedummy", "Servicio WSFE (FEDummy)", "error", errMsg(err));
+  }
+
+  // 4. WSAA — autenticación (token/sign) contra el servicio wsfe.
+  let authOk = false;
+  try {
+    const ta = await getValidTA();
+    authOk = true;
+    add("wsaa", "Autenticación WSAA", "ok", `Ticket de acceso válido hasta ${new Date(ta.expiration).toLocaleString("es-AR")}.`);
+  } catch (err) {
+    add("wsaa", "Autenticación WSAA", "error", errMsg(err));
+  }
+
+  // 5. Numeración — FECompUltimoAutorizado para Factura B del punto de venta.
+  if (authOk) {
+    try {
+      const last = await getLastAuthorizedNumber(cfg.pointOfSale, 6);
+      add("numeracion", "Numeración (último autorizado)", "ok",
+        `Última Factura B autorizada en el pto. ${cfg.pointOfSale}: N° ${last}. La próxima será ${last + 1}.`);
+    } catch (err) {
+      add("numeracion", "Numeración (último autorizado)", "error", errMsg(err));
+    }
+  } else {
+    add("numeracion", "Numeración (último autorizado)", "skip", "Se omite: primero hay que autenticar en WSAA.");
+  }
+
+  const ok = steps.every((s) => s.status === "ok" || s.status === "skip");
+  return { env: cfg.env, ok, steps };
+}
+
+function errMsg(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
 }
 
 // ---------------------------------------------------------------------------

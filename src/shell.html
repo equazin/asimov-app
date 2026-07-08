@@ -1158,8 +1158,13 @@
           <div class="printer-row" style="margin-top:8px;gap:10px;align-items:center">
             <button class="btn btn-primary btn-sm" onclick="saveAfip()">💾 Guardar AFIP</button>
             <button class="btn btn-outline btn-sm" onclick="testAfip()">🔌 Probar conexión</button>
+            <button class="btn btn-outline btn-sm" onclick="diagAfip()">🩺 Diagnóstico del circuito</button>
             <span class="save-msg ok" id="afip-save-msg" style="display:none">✓ Guardado</span>
             <span id="afip-test-msg" style="font-size:12px"></span>
+          </div>
+          <div id="afip-diag-panel" style="display:none;margin-top:10px;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+            <div id="afip-diag-head" style="font-size:12px;font-weight:600;margin-bottom:8px"></div>
+            <div id="afip-diag-steps" style="display:flex;flex-direction:column;gap:6px"></div>
           </div>
           <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08)">
             <div style="font-size:12px;font-weight:600;margin-bottom:6px">📚 Libro IVA Ventas (RG 4597)</div>
@@ -2718,6 +2723,37 @@
       }
     } catch (e) {
       if (out) { out.style.color = "#e05d5d"; out.textContent = "✗ " + (e.message || "Error"); }
+    }
+  };
+
+  window.diagAfip = async function () {
+    const api = await waitForAsimov();
+    const panel = document.getElementById("afip-diag-panel");
+    const head = document.getElementById("afip-diag-head");
+    const list = document.getElementById("afip-diag-steps");
+    if (!panel) return;
+    panel.style.display = "block";
+    head.textContent = "Ejecutando diagnóstico del circuito…";
+    list.innerHTML = "";
+    const ICON = { ok: "✅", warn: "⚠️", error: "❌", skip: "⏭️" };
+    const COLOR = { ok: "#6ed49a", warn: "#e0b64d", error: "#e05d5d", skip: "var(--text-muted)" };
+    try {
+      const res = await api.afip.diagnostics();
+      if (!res || !res.ok) throw new Error((res && res.error) || "No se pudo ejecutar el diagnóstico");
+      const d = res.data;
+      head.innerHTML = (d.ok ? "✅ Circuito OK" : "⚠️ Hay pasos con problemas") +
+        ' <span style="opacity:0.6;font-weight:400">· Ambiente ' +
+        (d.env === "produccion" ? "PRODUCCIÓN" : "homologación") + "</span>";
+      list.innerHTML = d.steps.map(function (s) {
+        return '<div style="display:flex;gap:8px;font-size:12px;align-items:flex-start">' +
+          '<span>' + (ICON[s.status] || "•") + '</span>' +
+          '<span style="min-width:210px;font-weight:600">' + esc(s.label) + '</span>' +
+          '<span style="color:' + (COLOR[s.status] || "inherit") + '">' + esc(s.detail) + '</span>' +
+          '</div>';
+      }).join("");
+    } catch (e) {
+      head.textContent = "";
+      list.innerHTML = '<div style="color:#e05d5d;font-size:12px">✗ ' + esc(e.message || "Error") + '</div>';
     }
   };
 

@@ -927,7 +927,7 @@
       "label": "AfipEnv",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L31",
+      "source_location": "L35",
       "_origin": "ast",
       "id": "src_afip_service_afipenv",
       "community": 1,
@@ -937,7 +937,7 @@
       "label": "AfipConfig",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L33",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "src_afip_service_afipconfig",
       "community": 1,
@@ -947,7 +947,7 @@
       "label": "CaeRequestInput",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L43",
+      "source_location": "L47",
       "_origin": "ast",
       "id": "src_afip_service_caerequestinput",
       "community": 1,
@@ -957,7 +957,7 @@
       "label": "CaeSuccessDto",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L55",
+      "source_location": "L61",
       "_origin": "ast",
       "id": "src_afip_service_caesuccessdto",
       "community": 1,
@@ -967,7 +967,7 @@
       "label": "readConfigMap()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L70",
+      "source_location": "L76",
       "_origin": "ast",
       "id": "src_afip_service_readconfigmap",
       "community": 1,
@@ -977,7 +977,7 @@
       "label": "setConfigValue()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L79",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "src_afip_service_setconfigvalue",
       "community": 1,
@@ -987,7 +987,7 @@
       "label": "getAfipConfig()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L87",
+      "source_location": "L93",
       "_origin": "ast",
       "id": "src_afip_service_getafipconfig",
       "community": 1,
@@ -997,7 +997,7 @@
       "label": "SaveCredentialsInput",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L105",
+      "source_location": "L111",
       "_origin": "ast",
       "id": "src_afip_service_savecredentialsinput",
       "community": 1,
@@ -1007,7 +1007,7 @@
       "label": "saveAfipCredentials()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L115",
+      "source_location": "L121",
       "_origin": "ast",
       "id": "src_afip_service_saveafipcredentials",
       "community": 1,
@@ -1017,17 +1017,27 @@
       "label": "requireCreds()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L142",
+      "source_location": "L148",
       "_origin": "ast",
       "id": "src_afip_service_requirecreds",
       "community": 1,
       "norm_label": "requirecreds()"
     },
     {
+      "label": "taKey()",
+      "file_type": "code",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L164",
+      "_origin": "ast",
+      "id": "src_afip_service_takey",
+      "community": 1,
+      "norm_label": "takey()"
+    },
+    {
       "label": "readCachedTa()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L156",
+      "source_location": "L168",
       "_origin": "ast",
       "id": "src_afip_service_readcachedta",
       "community": 1,
@@ -1037,7 +1047,7 @@
       "label": "writeCachedTa()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L162",
+      "source_location": "L174",
       "_origin": "ast",
       "id": "src_afip_service_writecachedta",
       "community": 1,
@@ -1047,17 +1057,27 @@
       "label": "getValidTA()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L167",
+      "source_location": "L179",
       "_origin": "ast",
       "id": "src_afip_service_getvalidta",
       "community": 1,
       "norm_label": "getvalidta()"
     },
     {
+      "label": "consultarPadron()",
+      "file_type": "code",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L200",
+      "_origin": "ast",
+      "id": "src_afip_service_consultarpadron",
+      "community": 1,
+      "norm_label": "consultarpadron()"
+    },
+    {
       "label": "testAfipConnection()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L181",
+      "source_location": "L210",
       "_origin": "ast",
       "id": "src_afip_service_testafipconnection",
       "community": 1,
@@ -1067,7 +1087,7 @@
       "label": "getLastAuthorizedNumber()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L194",
+      "source_location": "L223",
       "_origin": "ast",
       "id": "src_afip_service_getlastauthorizednumber",
       "community": 1,
@@ -1077,7 +1097,7 @@
       "label": "requestCae()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L206",
+      "source_location": "L235",
       "_origin": "ast",
       "id": "src_afip_service_requestcae",
       "community": 1,
@@ -1087,37 +1107,47 @@
       "label": "buildCaeInputFromInvoice()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L275",
+      "source_location": "L309",
       "_origin": "ast",
       "id": "src_afip_service_buildcaeinputfrominvoice",
-      "community": 107,
+      "community": 105,
       "norm_label": "buildcaeinputfrominvoice()"
+    },
+    {
+      "label": "buildAssociatedVoucher()",
+      "file_type": "code",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L344",
+      "_origin": "ast",
+      "id": "src_afip_service_buildassociatedvoucher",
+      "community": 105,
+      "norm_label": "buildassociatedvoucher()"
     },
     {
       "label": "markInvoicePendingCae()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L299",
+      "source_location": "L373",
       "_origin": "ast",
       "id": "src_afip_service_markinvoicependingcae",
-      "community": 88,
+      "community": 37,
       "norm_label": "markinvoicependingcae()"
     },
     {
       "label": "getPendingCaeInvoices()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L307",
+      "source_location": "L381",
       "_origin": "ast",
       "id": "src_afip_service_getpendingcaeinvoices",
-      "community": 88,
+      "community": 37,
       "norm_label": "getpendingcaeinvoices()"
     },
     {
       "label": "RetryPendingResult",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L313",
+      "source_location": "L387",
       "_origin": "ast",
       "id": "src_afip_service_retrypendingresult",
       "community": 1,
@@ -1127,10 +1157,10 @@
       "label": "retryPendingCae()",
       "file_type": "code",
       "source_file": "src/afip-service.ts",
-      "source_location": "L324",
+      "source_location": "L398",
       "_origin": "ast",
       "id": "src_afip_service_retrypendingcae",
-      "community": 88,
+      "community": 37,
       "norm_label": "retrypendingcae()"
     },
     {
@@ -1190,7 +1220,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_domain",
-      "community": 1,
+      "community": 105,
       "norm_label": "domain.ts"
     },
     {
@@ -1200,7 +1230,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_afip_domain_afipunavailableerror",
-      "community": 1,
+      "community": 104,
       "norm_label": "afipunavailableerror"
     },
     {
@@ -1210,7 +1240,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_afip_domain_afipunavailableerror_constructor",
-      "community": 1,
+      "community": 104,
       "norm_label": ".constructor()"
     },
     {
@@ -1220,7 +1250,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_afip_domain_isafipunavailable",
-      "community": 88,
+      "community": 37,
       "norm_label": "isafipunavailable()"
     },
     {
@@ -1230,7 +1260,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_afip_domain_afip_iva_codes",
-      "community": 1,
+      "community": 105,
       "norm_label": "afip_iva_codes"
     },
     {
@@ -1240,7 +1270,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_afip_domain_afipivacode",
-      "community": 1,
+      "community": 105,
       "norm_label": "afipivacode()"
     },
     {
@@ -1250,7 +1280,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_afip_domain_round2",
-      "community": 1,
+      "community": 105,
       "norm_label": "round2()"
     },
     {
@@ -1260,7 +1290,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_afip_domain_afipaliciva",
-      "community": 1,
+      "community": 105,
       "norm_label": "afipaliciva"
     },
     {
@@ -1270,7 +1300,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_afip_domain_buildivaalicuotas",
-      "community": 1,
+      "community": 105,
       "norm_label": "buildivaalicuotas()"
     },
     {
@@ -1280,18 +1310,188 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_afip_domain_getinvoicetypecode",
-      "community": 1,
+      "community": 105,
       "norm_label": "getinvoicetypecode()"
+    },
+    {
+      "label": "VoucherKind",
+      "file_type": "code",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L93",
+      "_origin": "ast",
+      "id": "src_afip_domain_voucherkind",
+      "community": 105,
+      "norm_label": "voucherkind"
+    },
+    {
+      "label": "normalizeIvaCondition()",
+      "file_type": "code",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "src_afip_domain_normalizeivacondition",
+      "community": 105,
+      "norm_label": "normalizeivacondition()"
+    },
+    {
+      "label": "voucherLetterForClient()",
+      "file_type": "code",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L107",
+      "_origin": "ast",
+      "id": "src_afip_domain_voucherletterforclient",
+      "community": 105,
+      "norm_label": "voucherletterforclient()"
+    },
+    {
+      "label": "resolveVoucherTypeCode()",
+      "file_type": "code",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L116",
+      "_origin": "ast",
+      "id": "src_afip_domain_resolvevouchertypecode",
+      "community": 105,
+      "norm_label": "resolvevouchertypecode()"
+    },
+    {
+      "label": "requiresAssociatedInvoice()",
+      "file_type": "code",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L137",
+      "_origin": "ast",
+      "id": "src_afip_domain_requiresassociatedinvoice",
+      "community": 105,
+      "norm_label": "requiresassociatedinvoice()"
+    },
+    {
+      "label": "validateVoucherForClient()",
+      "file_type": "code",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L146",
+      "_origin": "ast",
+      "id": "src_afip_domain_validatevoucherforclient",
+      "community": 105,
+      "norm_label": "validatevoucherforclient()"
     },
     {
       "label": "receptorDocType()",
       "file_type": "code",
       "source_file": "src/afip/domain.ts",
-      "source_location": "L92",
+      "source_location": "L182",
       "_origin": "ast",
       "id": "src_afip_domain_receptordoctype",
-      "community": 1,
+      "community": 114,
       "norm_label": "receptordoctype()"
+    },
+    {
+      "label": "padron.ts",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_afip_padron",
+      "community": 120,
+      "norm_label": "padron.ts"
+    },
+    {
+      "label": "PADRON_URLS",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "src_afip_padron_padron_urls",
+      "community": 120,
+      "norm_label": "padron_urls"
+    },
+    {
+      "label": "PadronPersona",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "src_afip_padron_padronpersona",
+      "community": 120,
+      "norm_label": "padronpersona"
+    },
+    {
+      "label": "buildGetPersonaEnvelope()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "src_afip_padron_buildgetpersonaenvelope",
+      "community": 120,
+      "norm_label": "buildgetpersonaenvelope()"
+    },
+    {
+      "label": "xmlParser",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "src_afip_padron_xmlparser",
+      "community": 120,
+      "norm_label": "xmlparser"
+    },
+    {
+      "label": "parsePersonaResponse()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "src_afip_padron_parsepersonaresponse",
+      "community": 120,
+      "norm_label": "parsepersonaresponse()"
+    },
+    {
+      "label": "collectImpuestos()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "src_afip_padron_collectimpuestos",
+      "community": 120,
+      "norm_label": "collectimpuestos()"
+    },
+    {
+      "label": "callPadron()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L104",
+      "_origin": "ast",
+      "id": "src_afip_padron_callpadron",
+      "community": 120,
+      "norm_label": "callpadron()"
+    },
+    {
+      "label": "str()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L131",
+      "_origin": "ast",
+      "id": "src_afip_padron_str",
+      "community": 120,
+      "norm_label": "str()"
+    },
+    {
+      "label": "escapeXml()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L135",
+      "_origin": "ast",
+      "id": "src_afip_padron_escapexml",
+      "community": 120,
+      "norm_label": "escapexml()"
+    },
+    {
+      "label": "findDeep()",
+      "file_type": "code",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L139",
+      "_origin": "ast",
+      "id": "src_afip_padron_finddeep",
+      "community": 120,
+      "norm_label": "finddeep()"
     },
     {
       "label": "qr.ts",
@@ -1300,7 +1500,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_qr",
-      "community": 1,
+      "community": 104,
       "norm_label": "qr.ts"
     },
     {
@@ -1310,7 +1510,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_afip_qr_afipqrdata",
-      "community": 1,
+      "community": 104,
       "norm_label": "afipqrdata"
     },
     {
@@ -1320,7 +1520,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_afip_qr_buildafipqrurl",
-      "community": 1,
+      "community": 104,
       "norm_label": "buildafipqrurl()"
     },
     {
@@ -1330,7 +1530,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_wsaa",
-      "community": 1,
+      "community": 104,
       "norm_label": "wsaa.ts"
     },
     {
@@ -1340,7 +1540,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_afip_wsaa_afipta",
-      "community": 1,
+      "community": 120,
       "norm_label": "afipta"
     },
     {
@@ -1350,7 +1550,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_afip_wsaa_wsaa_urls",
-      "community": 1,
+      "community": 104,
       "norm_label": "wsaa_urls"
     },
     {
@@ -1360,7 +1560,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_afip_wsaa_buildloginticketrequest",
-      "community": 1,
+      "community": 104,
       "norm_label": "buildloginticketrequest()"
     },
     {
@@ -1370,7 +1570,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_afip_wsaa_buildlogincmsenvelope",
-      "community": 1,
+      "community": 104,
       "norm_label": "buildlogincmsenvelope()"
     },
     {
@@ -1380,7 +1580,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_afip_wsaa_xmlparser",
-      "community": 1,
+      "community": 104,
       "norm_label": "xmlparser"
     },
     {
@@ -1390,7 +1590,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_afip_wsaa_extractlogincmsreturn",
-      "community": 1,
+      "community": 104,
       "norm_label": "extractlogincmsreturn()"
     },
     {
@@ -1400,7 +1600,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_afip_wsaa_parseloginticketresponse",
-      "community": 1,
+      "community": 104,
       "norm_label": "parseloginticketresponse()"
     },
     {
@@ -1410,7 +1610,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "src_afip_wsaa_istavalid",
-      "community": 1,
+      "community": 104,
       "norm_label": "istavalid()"
     },
     {
@@ -1420,7 +1620,7 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "src_afip_wsaa_calllogincms",
-      "community": 1,
+      "community": 104,
       "norm_label": "calllogincms()"
     },
     {
@@ -1430,7 +1630,7 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "src_afip_wsaa_finddeep",
-      "community": 1,
+      "community": 104,
       "norm_label": "finddeep()"
     },
     {
@@ -1440,7 +1640,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_wsfe",
-      "community": 1,
+      "community": 19,
       "norm_label": "wsfe.ts"
     },
     {
@@ -1450,7 +1650,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_afip_wsfe_wsfe_urls",
-      "community": 1,
+      "community": 19,
       "norm_label": "wsfe_urls"
     },
     {
@@ -1460,7 +1660,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_afip_wsfe_fecabecera",
-      "community": 1,
+      "community": 19,
       "norm_label": "fecabecera"
     },
     {
@@ -1470,74 +1670,74 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_afip_wsfe_fecomprobante",
-      "community": 1,
+      "community": 19,
       "norm_label": "fecomprobante"
     },
     {
       "label": "CaeSuccess",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L46",
+      "source_location": "L51",
       "_origin": "ast",
       "id": "src_afip_wsfe_caesuccess",
-      "community": 1,
+      "community": 19,
       "norm_label": "caesuccess"
     },
     {
       "label": "CaeRejected",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L54",
+      "source_location": "L59",
       "_origin": "ast",
       "id": "src_afip_wsfe_caerejected",
-      "community": 1,
+      "community": 19,
       "norm_label": "caerejected"
     },
     {
       "label": "CaeResult",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L61",
+      "source_location": "L66",
       "_origin": "ast",
       "id": "src_afip_wsfe_caeresult",
-      "community": 1,
+      "community": 19,
       "norm_label": "caeresult"
     },
     {
       "label": "AfipMessage",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L63",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "src_afip_wsfe_afipmessage",
-      "community": 1,
+      "community": 19,
       "norm_label": "afipmessage"
     },
     {
       "label": "afipDate()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L69",
+      "source_location": "L74",
       "_origin": "ast",
       "id": "src_afip_wsfe_afipdate",
-      "community": 1,
+      "community": 19,
       "norm_label": "afipdate()"
     },
     {
       "label": "round2()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L76",
+      "source_location": "L81",
       "_origin": "ast",
       "id": "src_afip_wsfe_round2",
-      "community": 1,
+      "community": 19,
       "norm_label": "round2()"
     },
     {
       "label": "buildUltimoAutorizadoEnvelope()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L82",
+      "source_location": "L87",
       "_origin": "ast",
       "id": "src_afip_wsfe_buildultimoautorizadoenvelope",
       "community": 1,
@@ -1547,47 +1747,47 @@
       "label": "xmlParser",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L99",
+      "source_location": "L104",
       "_origin": "ast",
       "id": "src_afip_wsfe_xmlparser",
-      "community": 1,
+      "community": 19,
       "norm_label": "xmlparser"
     },
     {
       "label": "parseUltimoAutorizado()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L101",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "src_afip_wsfe_parseultimoautorizado",
-      "community": 1,
+      "community": 19,
       "norm_label": "parseultimoautorizado()"
     },
     {
       "label": "buildFECAESolicitarEnvelope()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L122",
+      "source_location": "L127",
       "_origin": "ast",
       "id": "src_afip_wsfe_buildfecaesolicitarenvelope",
-      "community": 1,
+      "community": 19,
       "norm_label": "buildfecaesolicitarenvelope()"
     },
     {
       "label": "parseFECAEResponse()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L179",
+      "source_location": "L196",
       "_origin": "ast",
       "id": "src_afip_wsfe_parsefecaeresponse",
-      "community": 1,
+      "community": 19,
       "norm_label": "parsefecaeresponse()"
     },
     {
       "label": "callWsfe()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L216",
+      "source_location": "L233",
       "_origin": "ast",
       "id": "src_afip_wsfe_callwsfe",
       "community": 1,
@@ -1597,80 +1797,80 @@
       "label": "formatAfipDate()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L252",
+      "source_location": "L269",
       "_origin": "ast",
       "id": "src_afip_wsfe_formatafipdate",
-      "community": 1,
+      "community": 19,
       "norm_label": "formatafipdate()"
     },
     {
       "label": "escapeXml()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L257",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "src_afip_wsfe_escapexml",
-      "community": 1,
+      "community": 19,
       "norm_label": "escapexml()"
     },
     {
       "label": "toArray()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L261",
+      "source_location": "L278",
       "_origin": "ast",
       "id": "src_afip_wsfe_toarray",
-      "community": 1,
+      "community": 19,
       "norm_label": "toarray()"
     },
     {
       "label": "collectErrors()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L266",
+      "source_location": "L283",
       "_origin": "ast",
       "id": "src_afip_wsfe_collecterrors",
-      "community": 1,
+      "community": 19,
       "norm_label": "collecterrors()"
     },
     {
       "label": "collectObservations()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L271",
+      "source_location": "L288",
       "_origin": "ast",
       "id": "src_afip_wsfe_collectobservations",
-      "community": 1,
+      "community": 19,
       "norm_label": "collectobservations()"
     },
     {
       "label": "mapMessage()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L276",
+      "source_location": "L293",
       "_origin": "ast",
       "id": "src_afip_wsfe_mapmessage",
-      "community": 1,
+      "community": 19,
       "norm_label": "mapmessage()"
     },
     {
       "label": "formatMessages()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L282",
+      "source_location": "L299",
       "_origin": "ast",
       "id": "src_afip_wsfe_formatmessages",
-      "community": 1,
+      "community": 19,
       "norm_label": "formatmessages()"
     },
     {
       "label": "findDeep()",
       "file_type": "code",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L286",
+      "source_location": "L303",
       "_origin": "ast",
       "id": "src_afip_wsfe_finddeep",
-      "community": 1,
+      "community": 19,
       "norm_label": "finddeep()"
     },
     {
@@ -1680,7 +1880,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_air",
-      "community": 19,
+      "community": 37,
       "norm_label": "air.ts"
     },
     {
@@ -1690,7 +1890,7 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_air_airlocalconfig",
-      "community": 19,
+      "community": 37,
       "norm_label": "airlocalconfig"
     },
     {
@@ -1700,7 +1900,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_air_getairlocalconfig",
-      "community": 88,
+      "community": 37,
       "norm_label": "getairlocalconfig()"
     },
     {
@@ -1710,7 +1910,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_air_isairenabled",
-      "community": 88,
+      "community": 37,
       "norm_label": "isairenabled()"
     },
     {
@@ -1720,7 +1920,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_air_enqueueairconfigcloudsync",
-      "community": 88,
+      "community": 37,
       "norm_label": "enqueueairconfigcloudsync()"
     },
     {
@@ -1730,7 +1930,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_air_extracttoken",
-      "community": 19,
+      "community": 37,
       "norm_label": "extracttoken()"
     },
     {
@@ -1740,7 +1940,7 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "src_air_login",
-      "community": 19,
+      "community": 37,
       "norm_label": "login()"
     },
     {
@@ -1750,7 +1950,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_air_gettoken",
-      "community": 19,
+      "community": 37,
       "norm_label": "gettoken()"
     },
     {
@@ -1760,7 +1960,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_air_resetairauthcache",
-      "community": 19,
+      "community": 37,
       "norm_label": "resetairauthcache()"
     },
     {
@@ -1770,7 +1970,7 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "src_air_asarray",
-      "community": 19,
+      "community": 37,
       "norm_label": "asarray()"
     },
     {
@@ -1780,7 +1980,7 @@
       "source_location": "L148",
       "_origin": "ast",
       "id": "src_air_airratelimiterror",
-      "community": 19,
+      "community": 96,
       "norm_label": "airratelimiterror"
     },
     {
@@ -1790,7 +1990,7 @@
       "source_location": "L149",
       "_origin": "ast",
       "id": "src_air_airratelimiterror_constructor",
-      "community": 19,
+      "community": 96,
       "norm_label": ".constructor()"
     },
     {
@@ -1800,7 +2000,7 @@
       "source_location": "L161",
       "_origin": "ast",
       "id": "src_air_extractjson",
-      "community": 19,
+      "community": 37,
       "norm_label": "extractjson()"
     },
     {
@@ -1810,7 +2010,7 @@
       "source_location": "L177",
       "_origin": "ast",
       "id": "src_air_parseairerror",
-      "community": 19,
+      "community": 37,
       "norm_label": "parseairerror()"
     },
     {
@@ -1820,7 +2020,7 @@
       "source_location": "L191",
       "_origin": "ast",
       "id": "src_air_airpost",
-      "community": 19,
+      "community": 37,
       "norm_label": "airpost()"
     },
     {
@@ -1830,7 +2030,7 @@
       "source_location": "L203",
       "_origin": "ast",
       "id": "src_air_airrequest",
-      "community": 19,
+      "community": 37,
       "norm_label": "airrequest()"
     },
     {
@@ -1840,7 +2040,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "src_air_fetcharticulospage",
-      "community": 88,
+      "community": 37,
       "norm_label": "fetcharticulospage()"
     },
     {
@@ -1850,7 +2050,7 @@
       "source_location": "L255",
       "_origin": "ast",
       "id": "src_air_fetchsyppage",
-      "community": 19,
+      "community": 37,
       "norm_label": "fetchsyppage()"
     },
     {
@@ -1860,7 +2060,7 @@
       "source_location": "L261",
       "_origin": "ast",
       "id": "src_air_airproductnormalized",
-      "community": 19,
+      "community": 37,
       "norm_label": "airproductnormalized"
     },
     {
@@ -1870,7 +2070,7 @@
       "source_location": "L276",
       "_origin": "ast",
       "id": "src_air_raw",
-      "community": 19,
+      "community": 37,
       "norm_label": "raw"
     },
     {
@@ -1880,7 +2080,7 @@
       "source_location": "L278",
       "_origin": "ast",
       "id": "src_air_pick",
-      "community": 19,
+      "community": 37,
       "norm_label": "pick()"
     },
     {
@@ -1890,7 +2090,7 @@
       "source_location": "L288",
       "_origin": "ast",
       "id": "src_air_tostr",
-      "community": 19,
+      "community": 37,
       "norm_label": "tostr()"
     },
     {
@@ -1900,7 +2100,7 @@
       "source_location": "L294",
       "_origin": "ast",
       "id": "src_air_tonum",
-      "community": 19,
+      "community": 37,
       "norm_label": "tonum()"
     },
     {
@@ -1910,7 +2110,7 @@
       "source_location": "L304",
       "_origin": "ast",
       "id": "src_air_toint",
-      "community": 19,
+      "community": 37,
       "norm_label": "toint()"
     },
     {
@@ -1920,7 +2120,7 @@
       "source_location": "L309",
       "_origin": "ast",
       "id": "src_air_parseactive",
-      "community": 19,
+      "community": 37,
       "norm_label": "parseactive()"
     },
     {
@@ -1930,7 +2130,7 @@
       "source_location": "L316",
       "_origin": "ast",
       "id": "src_air_keys",
-      "community": 19,
+      "community": 37,
       "norm_label": "keys"
     },
     {
@@ -1940,7 +2140,7 @@
       "source_location": "L331",
       "_origin": "ast",
       "id": "src_air_location_keys",
-      "community": 19,
+      "community": 37,
       "norm_label": "location_keys"
     },
     {
@@ -1950,7 +2150,7 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "src_air_sumlocationstock",
-      "community": 19,
+      "community": 37,
       "norm_label": "sumlocationstock()"
     },
     {
@@ -1960,7 +2160,7 @@
       "source_location": "L345",
       "_origin": "ast",
       "id": "src_air_mapairproduct",
-      "community": 19,
+      "community": 37,
       "norm_label": "mapairproduct()"
     },
     {
@@ -1970,7 +2170,7 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "src_air_mapairproducts",
-      "community": 19,
+      "community": 96,
       "norm_label": "mapairproducts()"
     },
     {
@@ -1980,7 +2180,7 @@
       "source_location": "L403",
       "_origin": "ast",
       "id": "src_air_airsyncresult",
-      "community": 19,
+      "community": 37,
       "norm_label": "airsyncresult"
     },
     {
@@ -1990,7 +2190,7 @@
       "source_location": "L412",
       "_origin": "ast",
       "id": "src_air_runairsync",
-      "community": 88,
+      "community": 37,
       "norm_label": "runairsync()"
     },
     {
@@ -2000,7 +2200,7 @@
       "source_location": "L531",
       "_origin": "ast",
       "id": "src_air_testairconnection",
-      "community": 88,
+      "community": 37,
       "norm_label": "testairconnection()"
     },
     {
@@ -2010,7 +2210,7 @@
       "source_location": "L557",
       "_origin": "ast",
       "id": "src_air_startairsynctimer",
-      "community": 88,
+      "community": 37,
       "norm_label": "startairsynctimer()"
     },
     {
@@ -2020,7 +2220,7 @@
       "source_location": "L575",
       "_origin": "ast",
       "id": "src_air_stopairsynctimer",
-      "community": 88,
+      "community": 37,
       "norm_label": "stopairsynctimer()"
     },
     {
@@ -2320,7 +2520,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_auth_sessionuser",
-      "community": 88,
+      "community": 37,
       "norm_label": "sessionuser"
     },
     {
@@ -2600,7 +2800,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_config",
-      "community": 37,
+      "community": 117,
       "norm_label": "config.ts"
     },
     {
@@ -2610,7 +2810,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_config_windowbounds",
-      "community": 37,
+      "community": 117,
       "norm_label": "windowbounds"
     },
     {
@@ -2620,7 +2820,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_config_shellbackground",
-      "community": 37,
+      "community": 117,
       "norm_label": "shellbackground"
     },
     {
@@ -2630,7 +2830,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_config_bookmarkentry",
-      "community": 37,
+      "community": 117,
       "norm_label": "bookmarkentry"
     },
     {
@@ -2640,7 +2840,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_config_shellpreferences",
-      "community": 37,
+      "community": 117,
       "norm_label": "shellpreferences"
     },
     {
@@ -2650,7 +2850,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_config_printpreferences",
-      "community": 37,
+      "community": 117,
       "norm_label": "printpreferences"
     },
     {
@@ -2660,7 +2860,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_config_desktopconfig",
-      "community": 37,
+      "community": 117,
       "norm_label": "desktopconfig"
     },
     {
@@ -2670,7 +2870,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_config_defaults",
-      "community": 37,
+      "community": 117,
       "norm_label": "defaults"
     },
     {
@@ -2680,7 +2880,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_config_store",
-      "community": 37,
+      "community": 117,
       "norm_label": "store"
     },
     {
@@ -2690,7 +2890,7 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "src_config_getwindowbounds",
-      "community": 4,
+      "community": 117,
       "norm_label": "getwindowbounds()"
     },
     {
@@ -2700,7 +2900,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_config_setwindowbounds",
-      "community": 4,
+      "community": 117,
       "norm_label": "setwindowbounds()"
     },
     {
@@ -2710,7 +2910,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_config_getlaunchatstartup",
-      "community": 104,
+      "community": 119,
       "norm_label": "getlaunchatstartup()"
     },
     {
@@ -2720,7 +2920,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_config_setlaunchatstartup",
-      "community": 104,
+      "community": 119,
       "norm_label": "setlaunchatstartup()"
     },
     {
@@ -2740,7 +2940,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_config_getshellpreferences",
-      "community": 88,
+      "community": 37,
       "norm_label": "getshellpreferences()"
     },
     {
@@ -2790,7 +2990,7 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "src_config_getprintpreferences",
-      "community": 37,
+      "community": 88,
       "norm_label": "getprintpreferences()"
     },
     {
@@ -2800,7 +3000,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "src_config_setpreferredprinter",
-      "community": 37,
+      "community": 88,
       "norm_label": "setpreferredprinter()"
     },
     {
@@ -2810,7 +3010,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_config_setsilentprint",
-      "community": 37,
+      "community": 88,
       "norm_label": "setsilentprint()"
     },
     {
@@ -2930,7 +3130,7 @@
       "source_location": "L802",
       "_origin": "ast",
       "id": "src_db_dbrun",
-      "community": 106,
+      "community": 0,
       "norm_label": "dbrun()"
     },
     {
@@ -3010,7 +3210,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_document_links_documentsource",
-      "community": 29,
+      "community": 0,
       "norm_label": "documentsource"
     },
     {
@@ -3077,7 +3277,7 @@
       "label": "revertSourcesOnAnnul()",
       "file_type": "code",
       "source_file": "src/document-links.ts",
-      "source_location": "L101",
+      "source_location": "L105",
       "_origin": "ast",
       "id": "src_document_links_revertsourcesonannul",
       "community": 29,
@@ -3087,7 +3287,7 @@
       "label": "resolveDoc()",
       "file_type": "code",
       "source_file": "src/document-links.ts",
-      "source_location": "L120",
+      "source_location": "L124",
       "_origin": "ast",
       "id": "src_document_links_resolvedoc",
       "community": 29,
@@ -3097,7 +3297,7 @@
       "label": "getLinksFor()",
       "file_type": "code",
       "source_file": "src/document-links.ts",
-      "source_location": "L138",
+      "source_location": "L142",
       "_origin": "ast",
       "id": "src_document_links_getlinksfor",
       "community": 29,
@@ -3107,17 +3307,27 @@
       "label": "listPendingSaleOrders()",
       "file_type": "code",
       "source_file": "src/document-links.ts",
-      "source_location": "L162",
+      "source_location": "L166",
       "_origin": "ast",
       "id": "src_document_links_listpendingsaleorders",
       "community": 29,
       "norm_label": "listpendingsaleorders()"
     },
     {
+      "label": "listClientInvoicesForNote()",
+      "file_type": "code",
+      "source_file": "src/document-links.ts",
+      "source_location": "L186",
+      "_origin": "ast",
+      "id": "src_document_links_listclientinvoicesfornote",
+      "community": 29,
+      "norm_label": "listclientinvoicesfornote()"
+    },
+    {
       "label": "listPendingDeliveryNotes()",
       "file_type": "code",
       "source_file": "src/document-links.ts",
-      "source_location": "L179",
+      "source_location": "L200",
       "_origin": "ast",
       "id": "src_document_links_listpendingdeliverynotes",
       "community": 29,
@@ -3127,7 +3337,7 @@
       "label": "getSourceItems()",
       "file_type": "code",
       "source_file": "src/document-links.ts",
-      "source_location": "L196",
+      "source_location": "L217",
       "_origin": "ast",
       "id": "src_document_links_getsourceitems",
       "community": 29,
@@ -3400,7 +3610,7 @@
       "source_location": "L176",
       "_origin": "ast",
       "id": "src_documents_deliverynoteform",
-      "community": 29,
+      "community": 0,
       "norm_label": "deliverynoteform"
     },
     {
@@ -3530,7 +3740,7 @@
       "source_location": "L460",
       "_origin": "ast",
       "id": "src_documents_invoiceform",
-      "community": 29,
+      "community": 0,
       "norm_label": "invoiceform"
     },
     {
@@ -3830,7 +4040,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ipc",
-      "community": 88,
+      "community": 37,
       "norm_label": "ipc.ts"
     },
     {
@@ -3840,47 +4050,47 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_ipc_enqueueifcloud",
-      "community": 88,
+      "community": 37,
       "norm_label": "enqueueifcloud()"
     },
     {
       "label": "IpcDeps",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L64",
+      "source_location": "L65",
       "_origin": "ast",
       "id": "src_ipc_ipcdeps",
-      "community": 88,
+      "community": 37,
       "norm_label": "ipcdeps"
     },
     {
       "label": "normalizeShellBackground()",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L69",
+      "source_location": "L70",
       "_origin": "ast",
       "id": "src_ipc_normalizeshellbackground",
-      "community": 88,
+      "community": 37,
       "norm_label": "normalizeshellbackground()"
     },
     {
       "label": "safeStr()",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L78",
+      "source_location": "L79",
       "_origin": "ast",
       "id": "src_ipc_safestr",
-      "community": 88,
+      "community": 37,
       "norm_label": "safestr()"
     },
     {
       "label": "registerIpcHandlers()",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L82",
+      "source_location": "L83",
       "_origin": "ast",
       "id": "src_ipc_registeripchandlers",
-      "community": 88,
+      "community": 37,
       "norm_label": "registeripchandlers()"
     },
     {
@@ -3972,6 +4182,126 @@
       "id": "src_kits_explodekitcomponents",
       "community": 101,
       "norm_label": "explodekitcomponents()"
+    },
+    {
+      "label": "libro-iva.ts",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_libro_iva",
+      "community": 114,
+      "norm_label": "libro-iva.ts"
+    },
+    {
+      "label": "LibroIvaResult",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "src_libro_iva_libroivaresult",
+      "community": 114,
+      "norm_label": "libroivaresult"
+    },
+    {
+      "label": "InvoiceRow",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "src_libro_iva_invoicerow",
+      "community": 114,
+      "norm_label": "invoicerow"
+    },
+    {
+      "label": "fmtImporte()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "src_libro_iva_fmtimporte",
+      "community": 114,
+      "norm_label": "fmtimporte()"
+    },
+    {
+      "label": "fmtNum()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L43",
+      "_origin": "ast",
+      "id": "src_libro_iva_fmtnum",
+      "community": 114,
+      "norm_label": "fmtnum()"
+    },
+    {
+      "label": "fmtText()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "src_libro_iva_fmttext",
+      "community": 114,
+      "norm_label": "fmttext()"
+    },
+    {
+      "label": "fmtFecha()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "src_libro_iva_fmtfecha",
+      "community": 114,
+      "norm_label": "fmtfecha()"
+    },
+    {
+      "label": "CbteRecordInput",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "src_libro_iva_cbterecordinput",
+      "community": 114,
+      "norm_label": "cbterecordinput"
+    },
+    {
+      "label": "buildCbteRecord()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L77",
+      "_origin": "ast",
+      "id": "src_libro_iva_buildcbterecord",
+      "community": 114,
+      "norm_label": "buildcbterecord()"
+    },
+    {
+      "label": "AlicuotaRecordInput",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L105",
+      "_origin": "ast",
+      "id": "src_libro_iva_alicuotarecordinput",
+      "community": 114,
+      "norm_label": "alicuotarecordinput"
+    },
+    {
+      "label": "buildAlicuotaRecord()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L115",
+      "_origin": "ast",
+      "id": "src_libro_iva_buildalicuotarecord",
+      "community": 114,
+      "norm_label": "buildalicuotarecord()"
+    },
+    {
+      "label": "buildLibroIvaVentas()",
+      "file_type": "code",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L133",
+      "_origin": "ast",
+      "id": "src_libro_iva_buildlibroivaventas",
+      "community": 114,
+      "norm_label": "buildlibroivaventas()"
     },
     {
       "label": "login-preload.ts",
@@ -4230,7 +4560,7 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "src_main_isdev",
-      "community": 104,
+      "community": 121,
       "norm_label": "isdev()"
     },
     {
@@ -4240,7 +4570,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_main_persistbounds",
-      "community": 4,
+      "community": 117,
       "norm_label": "persistbounds()"
     },
     {
@@ -4250,7 +4580,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_main_createmainwindow",
-      "community": 4,
+      "community": 117,
       "norm_label": "createmainwindow()"
     },
     {
@@ -4280,7 +4610,7 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "src_main_completelogin",
-      "community": 104,
+      "community": 121,
       "norm_label": "completelogin()"
     },
     {
@@ -4310,7 +4640,7 @@
       "source_location": "L229",
       "_origin": "ast",
       "id": "src_main_registerglobalshortcuts",
-      "community": 37,
+      "community": 88,
       "norm_label": "registerglobalshortcuts()"
     },
     {
@@ -4320,7 +4650,7 @@
       "source_location": "L268",
       "_origin": "ast",
       "id": "src_main_opennativeform",
-      "community": 4,
+      "community": 118,
       "norm_label": "opennativeform()"
     },
     {
@@ -4430,7 +4760,7 @@
       "source_location": "L935",
       "_origin": "ast",
       "id": "src_main_makestandaloneform",
-      "community": 4,
+      "community": 118,
       "norm_label": "makestandaloneform()"
     },
     {
@@ -4440,7 +4770,7 @@
       "source_location": "L957",
       "_origin": "ast",
       "id": "src_main_createnewarticlewindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewarticlewindowstandalone()"
     },
     {
@@ -4450,7 +4780,7 @@
       "source_location": "L961",
       "_origin": "ast",
       "id": "src_main_createnewclientwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewclientwindowstandalone()"
     },
     {
@@ -4460,7 +4790,7 @@
       "source_location": "L965",
       "_origin": "ast",
       "id": "src_main_createnewsupplierwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewsupplierwindowstandalone()"
     },
     {
@@ -4470,7 +4800,7 @@
       "source_location": "L969",
       "_origin": "ast",
       "id": "src_main_createnewsaleorderwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewsaleorderwindowstandalone()"
     },
     {
@@ -4480,7 +4810,7 @@
       "source_location": "L973",
       "_origin": "ast",
       "id": "src_main_createnewquotewindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewquotewindowstandalone()"
     },
     {
@@ -4490,7 +4820,7 @@
       "source_location": "L977",
       "_origin": "ast",
       "id": "src_main_createnewinvoicewindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewinvoicewindowstandalone()"
     },
     {
@@ -4500,7 +4830,7 @@
       "source_location": "L981",
       "_origin": "ast",
       "id": "src_main_createnewdeliverynotewindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewdeliverynotewindowstandalone()"
     },
     {
@@ -4510,7 +4840,7 @@
       "source_location": "L985",
       "_origin": "ast",
       "id": "src_main_createnewreceiptwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewreceiptwindowstandalone()"
     },
     {
@@ -4520,7 +4850,7 @@
       "source_location": "L989",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseorderwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewpurchaseorderwindowstandalone()"
     },
     {
@@ -4530,7 +4860,7 @@
       "source_location": "L993",
       "_origin": "ast",
       "id": "src_main_createnewgoodsreceiptwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewgoodsreceiptwindowstandalone()"
     },
     {
@@ -4540,7 +4870,7 @@
       "source_location": "L997",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseinvoicewindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewpurchaseinvoicewindowstandalone()"
     },
     {
@@ -4550,7 +4880,7 @@
       "source_location": "L1001",
       "_origin": "ast",
       "id": "src_main_createnewpaymentorderwindowstandalone",
-      "community": 4,
+      "community": 118,
       "norm_label": "createnewpaymentorderwindowstandalone()"
     },
     {
@@ -4660,7 +4990,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_menu",
-      "community": 37,
+      "community": 88,
       "norm_label": "menu.ts"
     },
     {
@@ -4670,7 +5000,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_menu_menudeps",
-      "community": 37,
+      "community": 88,
       "norm_label": "menudeps"
     },
     {
@@ -4680,7 +5010,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_menu_nativeformtype",
-      "community": 37,
+      "community": 88,
       "norm_label": "nativeformtype"
     },
     {
@@ -4690,7 +5020,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_menu_focusedwindow",
-      "community": 37,
+      "community": 88,
       "norm_label": "focusedwindow()"
     },
     {
@@ -4700,7 +5030,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_menu_focusedcontents",
-      "community": 37,
+      "community": 88,
       "norm_label": "focusedcontents()"
     },
     {
@@ -4710,7 +5040,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_menu_broadcast",
-      "community": 37,
+      "community": 88,
       "norm_label": "broadcast()"
     },
     {
@@ -4720,7 +5050,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_menu_navigate",
-      "community": 37,
+      "community": 88,
       "norm_label": "navigate()"
     },
     {
@@ -4730,7 +5060,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_menu_currenttitle",
-      "community": 37,
+      "community": 88,
       "norm_label": "currenttitle()"
     },
     {
@@ -4740,7 +5070,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_menu_currentpath",
-      "community": 37,
+      "community": 88,
       "norm_label": "currentpath()"
     },
     {
@@ -4750,7 +5080,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_menu_setbackground",
-      "community": 37,
+      "community": 88,
       "norm_label": "setbackground()"
     },
     {
@@ -4760,7 +5090,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_menu_choosebackgroundimage",
-      "community": 37,
+      "community": 88,
       "norm_label": "choosebackgroundimage()"
     },
     {
@@ -4770,7 +5100,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_menu_showprintersetup",
-      "community": 37,
+      "community": 88,
       "norm_label": "showprintersetup()"
     },
     {
@@ -4780,7 +5110,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "src_menu_bookmarkmenuitems",
-      "community": 37,
+      "community": 88,
       "norm_label": "bookmarkmenuitems()"
     },
     {
@@ -4790,7 +5120,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "src_menu_nativeentry",
-      "community": 37,
+      "community": 88,
       "norm_label": "nativeentry"
     },
     {
@@ -4800,7 +5130,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "src_menu_modules",
-      "community": 37,
+      "community": 88,
       "norm_label": "modules"
     },
     {
@@ -4810,7 +5140,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_menu_modulemenu",
-      "community": 37,
+      "community": 88,
       "norm_label": "modulemenu()"
     },
     {
@@ -4820,7 +5150,7 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "src_menu_buildappmenu",
-      "community": 37,
+      "community": 88,
       "norm_label": "buildappmenu()"
     },
     {
@@ -4877,7 +5207,7 @@
       "label": "AsimovNewClientApi",
       "file_type": "code",
       "source_file": "src/new-client-preload.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "src_new_client_preload_asimovnewclientapi",
       "community": 68,
@@ -4967,7 +5297,7 @@
       "label": "AsimovNewInvoiceApi",
       "file_type": "code",
       "source_file": "src/new-invoice-preload.ts",
-      "source_location": "L38",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "src_new_invoice_preload_asimovnewinvoiceapi",
       "community": 71,
@@ -5267,7 +5597,7 @@
       "label": "AsimovApi",
       "file_type": "code",
       "source_file": "src/preload.ts",
-      "source_location": "L338",
+      "source_location": "L340",
       "_origin": "ast",
       "id": "src_preload_asimovapi",
       "community": 47,
@@ -5460,7 +5790,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_sync_enqueuechange",
-      "community": 88,
+      "community": 37,
       "norm_label": "enqueuechange()"
     },
     {
@@ -5760,7 +6090,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tray",
-      "community": 104,
+      "community": 119,
       "norm_label": "tray.ts"
     },
     {
@@ -5770,7 +6100,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_tray_traydeps",
-      "community": 104,
+      "community": 119,
       "norm_label": "traydeps"
     },
     {
@@ -5780,7 +6110,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_tray_iconpath",
-      "community": 104,
+      "community": 119,
       "norm_label": "iconpath()"
     },
     {
@@ -5790,7 +6120,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_tray_createtrayicon",
-      "community": 104,
+      "community": 119,
       "norm_label": "createtrayicon()"
     },
     {
@@ -5800,7 +6130,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_tray_showwindow",
-      "community": 104,
+      "community": 119,
       "norm_label": "showwindow()"
     },
     {
@@ -5810,7 +6140,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_tray_applylaunchatstartup",
-      "community": 104,
+      "community": 119,
       "norm_label": "applylaunchatstartup()"
     },
     {
@@ -5820,7 +6150,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_tray_isquitting",
-      "community": 4,
+      "community": 117,
       "norm_label": "isquitting()"
     },
     {
@@ -5830,7 +6160,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_tray_synclaunchatstartup",
-      "community": 104,
+      "community": 119,
       "norm_label": "synclaunchatstartup()"
     },
     {
@@ -5840,7 +6170,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_tray_setlaunchatstartupenabled",
-      "community": 104,
+      "community": 119,
       "norm_label": "setlaunchatstartupenabled()"
     },
     {
@@ -5850,7 +6180,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_tray_inittray",
-      "community": 104,
+      "community": 119,
       "norm_label": "inittray()"
     },
     {
@@ -5860,7 +6190,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_tray_rebuildtraymenu",
-      "community": 104,
+      "community": 119,
       "norm_label": "rebuildtraymenu()"
     },
     {
@@ -5870,7 +6200,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_tray_notifyupdateavailable",
-      "community": 104,
+      "community": 119,
       "norm_label": "notifyupdateavailable()"
     },
     {
@@ -5880,7 +6210,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_updater",
-      "community": 104,
+      "community": 121,
       "norm_label": "updater.ts"
     },
     {
@@ -5890,7 +6220,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_updater_au",
-      "community": 104,
+      "community": 121,
       "norm_label": "au"
     },
     {
@@ -5900,7 +6230,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_updater_initautoupdater",
-      "community": 104,
+      "community": 121,
       "norm_label": "initautoupdater()"
     },
     {
@@ -5910,7 +6240,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_updater_checkforupdatemanual",
-      "community": 104,
+      "community": 121,
       "norm_label": "checkforupdatemanual()"
     },
     {
@@ -5920,27 +6250,27 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_afip_test",
-      "community": 1,
+      "community": 104,
       "norm_label": "afip.test.ts"
     },
     {
       "label": "makeSelfSigned()",
       "file_type": "code",
       "source_file": "test/afip.test.ts",
-      "source_location": "L19",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "test_afip_test_makeselfsigned",
-      "community": 1,
+      "community": 104,
       "norm_label": "makeselfsigned()"
     },
     {
       "label": "escapeForXml()",
       "file_type": "code",
       "source_file": "test/afip.test.ts",
-      "source_location": "L33",
+      "source_location": "L35",
       "_origin": "ast",
       "id": "test_afip_test_escapeforxml",
-      "community": 1,
+      "community": 104,
       "norm_label": "escapeforxml()"
     },
     {
@@ -5950,7 +6280,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_air_test",
-      "community": 19,
+      "community": 96,
       "norm_label": "air.test.ts"
     },
     {
@@ -5960,7 +6290,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "test_air_test_jsonresponse",
-      "community": 19,
+      "community": 96,
       "norm_label": "jsonresponse()"
     },
     {
@@ -5970,7 +6300,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "test_air_test_rawresponse",
-      "community": 19,
+      "community": 96,
       "norm_label": "rawresponse()"
     },
     {
@@ -6017,7 +6347,7 @@
       "label": "seedBase()",
       "file_type": "code",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "test_document_links_test_seedbase",
       "community": 96,
@@ -6027,10 +6357,10 @@
       "label": "seedOrder()",
       "file_type": "code",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L24",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "test_document_links_test_seedorder",
-      "community": 106,
+      "community": 29,
       "norm_label": "seedorder()"
     },
     {
@@ -6040,7 +6370,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_document_sync_test",
-      "community": 96,
+      "community": 106,
       "norm_label": "document-sync.test.ts"
     },
     {
@@ -6050,7 +6380,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "test_document_sync_test_one",
-      "community": 96,
+      "community": 106,
       "norm_label": "one()"
     },
     {
@@ -6060,7 +6390,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "test_document_sync_test_count",
-      "community": 96,
+      "community": 106,
       "norm_label": "count()"
     },
     {
@@ -6070,7 +6400,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "test_document_sync_test_stockqty",
-      "community": 96,
+      "community": 106,
       "norm_label": "stockqty()"
     },
     {
@@ -6080,7 +6410,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "test_document_sync_test_cashbalance",
-      "community": 96,
+      "community": 106,
       "norm_label": "cashbalance()"
     },
     {
@@ -6160,7 +6490,7 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "test_dolar_test_seedarticle",
-      "community": 106,
+      "community": 94,
       "norm_label": "seedarticle()"
     },
     {
@@ -6242,6 +6572,16 @@
       "id": "test_kits_test_seedpcarmada",
       "community": 101,
       "norm_label": "seedpcarmada()"
+    },
+    {
+      "label": "libro-iva.test.ts",
+      "file_type": "code",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "test_libro_iva_test",
+      "community": 114,
+      "norm_label": "libro-iva.test.ts"
     },
     {
       "label": "masters.test.ts",
@@ -9150,7 +9490,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard",
-      "community": 105,
+      "community": 12,
       "norm_label": "jwt-auth.guard.ts"
     },
     {
@@ -9160,7 +9500,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard",
-      "community": 105,
+      "community": 12,
       "norm_label": "jwtauthguard"
     },
     {
@@ -9170,7 +9510,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_ts_injectable",
-      "community": 105,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -9180,7 +9520,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_constructor",
-      "community": 105,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -9190,7 +9530,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_canactivate",
-      "community": 105,
+      "community": 12,
       "norm_label": ".canactivate()"
     },
     {
@@ -9200,7 +9540,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_handlerequest",
-      "community": 105,
+      "community": 12,
       "norm_label": ".handlerequest()"
     },
     {
@@ -9260,7 +9600,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard",
-      "community": 105,
+      "community": 12,
       "norm_label": "roles.guard.ts"
     },
     {
@@ -9270,7 +9610,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard",
-      "community": 105,
+      "community": 12,
       "norm_label": "rolesguard"
     },
     {
@@ -9280,7 +9620,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_ts_injectable",
-      "community": 105,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -9290,7 +9630,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard_constructor",
-      "community": 105,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -9300,7 +9640,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard_canactivate",
-      "community": 105,
+      "community": 12,
       "norm_label": ".canactivate()"
     },
     {
@@ -9370,7 +9710,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_healthcontroller",
-      "community": 12,
+      "community": 18,
       "norm_label": "healthcontroller"
     },
     {
@@ -9380,7 +9720,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_ts_controller",
-      "community": 12,
+      "community": 18,
       "norm_label": "controller"
     },
     {
@@ -9390,7 +9730,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_ts_public",
-      "community": 12,
+      "community": 18,
       "norm_label": "public"
     },
     {
@@ -9400,7 +9740,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_ts_get",
-      "community": 12,
+      "community": 18,
       "norm_label": "get"
     },
     {
@@ -9410,7 +9750,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_healthcontroller_constructor",
-      "community": 12,
+      "community": 18,
       "norm_label": ".constructor()"
     },
     {
@@ -9420,7 +9760,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_health_controller_healthcontroller_check",
-      "community": 12,
+      "community": 18,
       "norm_label": ".check()"
     },
     {
@@ -10190,7 +10530,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_constructor",
-      "community": 98,
+      "community": 13,
       "norm_label": ".constructor()"
     },
     {
@@ -10240,7 +10580,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_module",
-      "community": 18,
+      "community": 13,
       "norm_label": "afip.module.ts"
     },
     {
@@ -10600,7 +10940,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module",
-      "community": 105,
+      "community": 12,
       "norm_label": "auth.module.ts"
     },
     {
@@ -10610,7 +10950,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_authmodule",
-      "community": 105,
+      "community": 12,
       "norm_label": "authmodule"
     },
     {
@@ -10620,7 +10960,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_ts_module",
-      "community": 105,
+      "community": 12,
       "norm_label": "module"
     },
     {
@@ -10780,7 +11120,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy",
-      "community": 98,
+      "community": 12,
       "norm_label": "jwt.strategy.ts"
     },
     {
@@ -10790,7 +11130,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtpayload",
-      "community": 98,
+      "community": 12,
       "norm_label": "jwtpayload"
     },
     {
@@ -10800,7 +11140,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy",
-      "community": 105,
+      "community": 12,
       "norm_label": "jwtstrategy"
     },
     {
@@ -10810,7 +11150,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_ts_injectable",
-      "community": 105,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -10820,7 +11160,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_constructor",
-      "community": 105,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -10830,7 +11170,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_validate",
-      "community": 105,
+      "community": 12,
       "norm_label": ".validate()"
     },
     {
@@ -11320,7 +11660,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_controller",
-      "community": 24,
+      "community": 98,
       "norm_label": "clients.controller.ts"
     },
     {
@@ -11640,7 +11980,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller",
-      "community": 98,
+      "community": 16,
       "norm_label": "customization.controller.ts"
     },
     {
@@ -11690,7 +12030,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_ts_get",
-      "community": 16,
+      "community": 98,
       "norm_label": "get"
     },
     {
@@ -11730,7 +12070,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_ts_param",
-      "community": 16,
+      "community": 98,
       "norm_label": "param"
     },
     {
@@ -11750,7 +12090,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_ts_res",
-      "community": 16,
+      "community": 98,
       "norm_label": "res"
     },
     {
@@ -11790,7 +12130,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplates",
-      "community": 16,
+      "community": 98,
       "norm_label": ".gettemplates()"
     },
     {
@@ -11800,7 +12140,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplate",
-      "community": 16,
+      "community": 98,
       "norm_label": ".gettemplate()"
     },
     {
@@ -11830,7 +12170,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_renderdocument",
-      "community": 16,
+      "community": 98,
       "norm_label": ".renderdocument()"
     },
     {
@@ -11930,7 +12270,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_service_customizationservice_getprinttemplates",
-      "community": 16,
+      "community": 98,
       "norm_label": ".getprinttemplates()"
     },
     {
@@ -11940,7 +12280,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_service_customizationservice_getprinttemplate",
-      "community": 16,
+      "community": 98,
       "norm_label": ".getprinttemplate()"
     },
     {
@@ -13180,7 +13520,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_controller",
-      "community": 98,
+      "community": 22,
       "norm_label": "stock.controller.ts"
     },
     {
@@ -13320,7 +13660,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_controller_stockcontroller_getlowstockalerts",
-      "community": 22,
+      "community": 98,
       "norm_label": ".getlowstockalerts()"
     },
     {
@@ -13360,7 +13700,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module_stockmodule",
-      "community": 22,
+      "community": 18,
       "norm_label": "stockmodule"
     },
     {
@@ -13370,7 +13710,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module_ts_module",
-      "community": 22,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -13470,7 +13810,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_controller",
-      "community": 26,
+      "community": 98,
       "norm_label": "suppliers.controller.ts"
     },
     {
@@ -17704,30 +18044,30 @@
       "norm_label": "fase 3 \u2014 integracion en el desktop \u2705 *hecha*"
     },
     {
-      "label": "Fase 4 \u2014 Cobertura de comprobantes \ud83d\udfe0",
+      "label": "Fase 4 \u2014 Cobertura de comprobantes \u2705 *hecha (percepciones pendientes)*",
       "file_type": "document",
       "source_file": "AFIP-ARCA.md",
       "source_location": "L98",
       "_origin": "ast",
-      "id": "afip_arca_fase_4_cobertura_de_comprobantes",
+      "id": "afip_arca_fase_4_cobertura_de_comprobantes_hecha_percepciones_pendientes",
       "community": 112,
-      "norm_label": "fase 4 \u2014 cobertura de comprobantes \ud83d\udfe0"
+      "norm_label": "fase 4 \u2014 cobertura de comprobantes \u2705 *hecha (percepciones pendientes)*"
     },
     {
-      "label": "Fase 5 \u2014 Padr\u00f3n y extras \ud83d\udfe2",
+      "label": "Fase 5 \u2014 Padr\u00f3n y extras \u2705 *hecha (CAEA diferido)*",
       "file_type": "document",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L106",
+      "source_location": "L111",
       "_origin": "ast",
-      "id": "afip_arca_fase_5_padr\u00f3n_y_extras",
+      "id": "afip_arca_fase_5_padr\u00f3n_y_extras_hecha_caea_diferido",
       "community": 112,
-      "norm_label": "fase 5 \u2014 padron y extras \ud83d\udfe2"
+      "norm_label": "fase 5 \u2014 padron y extras \u2705 *hecha (caea diferido)*"
     },
     {
       "label": "Fase 6 \u2014 Homologaci\u00f3n \u2192 Producci\u00f3n \u2192 ARCA \ud83d\udd34 *gate de salida real*",
       "file_type": "document",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L114",
+      "source_location": "L127",
       "_origin": "ast",
       "id": "afip_arca_fase_6_homologaci\u00f3n_producci\u00f3n_arca_gate_de_salida_real",
       "community": 112,
@@ -17737,7 +18077,7 @@
       "label": "Notas t\u00e9cnicas",
       "file_type": "document",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L126",
+      "source_location": "L139",
       "_origin": "ast",
       "id": "afip_arca_notas_t\u00e9cnicas",
       "community": 111,
@@ -17747,7 +18087,7 @@
       "label": "Referencias",
       "file_type": "document",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L138",
+      "source_location": "L151",
       "_origin": "ast",
       "id": "afip_arca_referencias",
       "community": 111,
@@ -19441,7 +19781,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L256",
+      "source_location": "L286",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "package_dependencies_qrcode"
@@ -20107,17 +20447,6 @@
       "source_location": "L27",
       "weight": 1.0,
       "source": "src_afip_service",
-      "target": "src_afip_domain_getinvoicetypecode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/afip-service.ts",
-      "source_location": "L27",
-      "weight": 1.0,
-      "source": "src_afip_service",
       "target": "src_afip_domain_isafipunavailable",
       "confidence_score": 1.0
     },
@@ -20133,11 +20462,99 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_domain_requiresassociatedinvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_domain_resolvevouchertypecode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_domain_validatevoucherforclient",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L28",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_padron",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_padron_buildgetpersonaenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_padron_callpadron",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_padron_padron_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_padron_padronpersona",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L32",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_qr",
@@ -20148,7 +20565,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_qr_buildafipqrurl",
@@ -20158,7 +20575,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L33",
+      "source_location": "L37",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_afipconfig",
@@ -20168,7 +20585,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L31",
+      "source_location": "L35",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_afipenv",
@@ -20178,7 +20595,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L275",
+      "source_location": "L344",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_service_buildassociatedvoucher",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L309",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_buildcaeinputfrominvoice",
@@ -20188,7 +20615,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L43",
+      "source_location": "L47",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_caerequestinput",
@@ -20198,7 +20625,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L55",
+      "source_location": "L61",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_caesuccessdto",
@@ -20208,7 +20635,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L87",
+      "source_location": "L200",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_service_consultarpadron",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L93",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_getafipconfig",
@@ -20218,7 +20655,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L194",
+      "source_location": "L223",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_getlastauthorizednumber",
@@ -20228,7 +20665,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L307",
+      "source_location": "L381",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_getpendingcaeinvoices",
@@ -20238,7 +20675,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L167",
+      "source_location": "L179",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_getvalidta",
@@ -20248,7 +20685,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L299",
+      "source_location": "L373",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_markinvoicependingcae",
@@ -20258,7 +20695,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L156",
+      "source_location": "L168",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_readcachedta",
@@ -20268,7 +20705,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L70",
+      "source_location": "L76",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_readconfigmap",
@@ -20278,7 +20715,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L206",
+      "source_location": "L235",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_requestcae",
@@ -20288,7 +20725,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L142",
+      "source_location": "L148",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_requirecreds",
@@ -20298,7 +20735,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L324",
+      "source_location": "L398",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_retrypendingcae",
@@ -20308,7 +20745,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L313",
+      "source_location": "L387",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_retrypendingresult",
@@ -20318,7 +20755,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L115",
+      "source_location": "L121",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_saveafipcredentials",
@@ -20328,7 +20765,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L105",
+      "source_location": "L111",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_savecredentialsinput",
@@ -20338,7 +20775,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L79",
+      "source_location": "L85",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_setconfigvalue",
@@ -20348,7 +20785,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L181",
+      "source_location": "L164",
+      "weight": 1.0,
+      "source": "src_afip_service",
+      "target": "src_afip_service_takey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L210",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_testafipconnection",
@@ -20358,7 +20805,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L162",
+      "source_location": "L174",
       "weight": 1.0,
       "source": "src_afip_service",
       "target": "src_afip_service_writecachedta",
@@ -20644,7 +21091,18 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L88",
+      "source_location": "L363",
+      "weight": 1.0,
+      "source": "src_afip_service_buildassociatedvoucher",
+      "target": "src_afip_service_readconfigmap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "src_afip_service_getafipconfig",
       "target": "src_afip_service_readconfigmap",
@@ -20655,7 +21113,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L71",
+      "source_location": "L77",
       "weight": 1.0,
       "source": "src_afip_service_readconfigmap",
       "target": "src_db_dball",
@@ -20666,7 +21124,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L143",
+      "source_location": "L149",
       "weight": 1.0,
       "source": "src_afip_service_requirecreds",
       "target": "src_afip_service_readconfigmap",
@@ -20677,7 +21135,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L121",
+      "source_location": "L127",
       "weight": 1.0,
       "source": "src_afip_service_saveafipcredentials",
       "target": "src_afip_service_setconfigvalue",
@@ -20688,7 +21146,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L80",
+      "source_location": "L86",
       "weight": 1.0,
       "source": "src_afip_service_setconfigvalue",
       "target": "src_db_dbrun",
@@ -20699,7 +21157,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L82",
+      "source_location": "L88",
       "weight": 1.0,
       "source": "src_afip_service_setconfigvalue",
       "target": "src_secrets_encryptsecret",
@@ -20710,7 +21168,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L163",
+      "source_location": "L175",
       "weight": 1.0,
       "source": "src_afip_service_writecachedta",
       "target": "src_afip_service_setconfigvalue",
@@ -20722,7 +21180,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L92",
+      "source_location": "L98",
       "weight": 1.0,
       "source": "src_afip_service_getafipconfig",
       "target": "src_afip_crypto_certnotafter"
@@ -20733,7 +21191,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L89",
+      "source_location": "L95",
       "weight": 1.0,
       "source": "src_afip_service_getafipconfig",
       "target": "src_secrets_decryptsecret"
@@ -20743,7 +21201,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L134",
+      "source_location": "L140",
       "weight": 1.0,
       "source": "src_afip_service_saveafipcredentials",
       "target": "src_afip_service_getafipconfig",
@@ -20766,7 +21224,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L806",
+      "source_location": "L807",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_getafipconfig"
@@ -20799,7 +21257,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L120",
+      "source_location": "L126",
       "weight": 1.0,
       "source": "src_afip_service_saveafipcredentials",
       "target": "src_afip_crypto_isvalidcertpem"
@@ -20810,7 +21268,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L124",
+      "source_location": "L130",
       "weight": 1.0,
       "source": "src_afip_service_saveafipcredentials",
       "target": "src_afip_crypto_isvalidkeypem"
@@ -20821,7 +21279,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L132",
+      "source_location": "L138",
       "weight": 1.0,
       "source": "src_afip_service_saveafipcredentials",
       "target": "src_db_dbrun"
@@ -20843,7 +21301,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L824",
+      "source_location": "L825",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_saveafipcredentials"
@@ -20853,7 +21311,18 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L195",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "src_afip_service_consultarpadron",
+      "target": "src_afip_service_requirecreds",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L224",
       "weight": 1.0,
       "source": "src_afip_service_getlastauthorizednumber",
       "target": "src_afip_service_requirecreds",
@@ -20864,7 +21333,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L171",
+      "source_location": "L183",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_service_requirecreds",
@@ -20875,7 +21344,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L207",
+      "source_location": "L236",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_service_requirecreds",
@@ -20886,7 +21355,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L144",
+      "source_location": "L150",
       "weight": 1.0,
       "source": "src_afip_service_requirecreds",
       "target": "src_secrets_decryptsecret",
@@ -20897,7 +21366,29 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L168",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "src_afip_service_readcachedta",
+      "target": "src_afip_service_takey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "src_afip_service_writecachedta",
+      "target": "src_afip_service_takey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L180",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_service_readcachedta",
@@ -20908,7 +21399,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L157",
+      "source_location": "L169",
       "weight": 1.0,
       "source": "src_afip_service_readcachedta",
       "target": "src_db_dbget",
@@ -20919,7 +21410,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L159",
+      "source_location": "L171",
       "weight": 1.0,
       "source": "src_afip_service_readcachedta",
       "target": "src_secrets_decryptsecret",
@@ -20930,7 +21421,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L176",
+      "source_location": "L188",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_service_writecachedta",
@@ -20941,7 +21432,18 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L196",
+      "source_location": "L204",
+      "weight": 1.0,
+      "source": "src_afip_service_consultarpadron",
+      "target": "src_afip_service_getvalidta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L225",
       "weight": 1.0,
       "source": "src_afip_service_getlastauthorizednumber",
       "target": "src_afip_service_getvalidta",
@@ -20953,7 +21455,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L173",
+      "source_location": "L185",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_crypto_signtra"
@@ -20964,7 +21466,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L172",
+      "source_location": "L184",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_wsaa_buildloginticketrequest"
@@ -20975,7 +21477,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L175",
+      "source_location": "L187",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_wsaa_calllogincms"
@@ -20986,7 +21488,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L169",
+      "source_location": "L181",
       "weight": 1.0,
       "source": "src_afip_service_getvalidta",
       "target": "src_afip_wsaa_istavalid"
@@ -20996,7 +21498,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L208",
+      "source_location": "L237",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_service_getvalidta",
@@ -21007,11 +21509,55 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L183",
+      "source_location": "L212",
       "weight": 1.0,
       "source": "src_afip_service_testafipconnection",
       "target": "src_afip_service_getvalidta",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/afip-service.ts",
+      "source_location": "L206",
+      "weight": 1.0,
+      "source": "src_afip_service_consultarpadron",
+      "target": "src_afip_padron_buildgetpersonaenvelope"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/afip-service.ts",
+      "source_location": "L206",
+      "weight": 1.0,
+      "source": "src_afip_service_consultarpadron",
+      "target": "src_afip_padron_callpadron"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_afip_service_consultarpadron",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L913",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_afip_service_consultarpadron"
     },
     {
       "relation": "imports",
@@ -21030,7 +21576,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L833",
+      "source_location": "L834",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_testafipconnection"
@@ -21041,7 +21587,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L199",
+      "source_location": "L228",
       "weight": 1.0,
       "source": "src_afip_service_getlastauthorizednumber",
       "target": "src_afip_wsfe_buildultimoautorizadoenvelope"
@@ -21052,7 +21598,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L199",
+      "source_location": "L228",
       "weight": 1.0,
       "source": "src_afip_service_getlastauthorizednumber",
       "target": "src_afip_wsfe_callwsfe"
@@ -21063,7 +21609,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L199",
+      "source_location": "L228",
       "weight": 1.0,
       "source": "src_afip_service_getlastauthorizednumber",
       "target": "src_afip_wsfe_parseultimoautorizado"
@@ -21074,7 +21620,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L218",
+      "source_location": "L247",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_domain_receptordoctype"
@@ -21085,7 +21631,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L244",
+      "source_location": "L274",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_qr_buildafipqrurl"
@@ -21096,7 +21642,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L231",
+      "source_location": "L261",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_wsfe_buildfecaesolicitarenvelope"
@@ -21107,7 +21653,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L214",
+      "source_location": "L243",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_wsfe_buildultimoautorizadoenvelope"
@@ -21118,7 +21664,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L214",
+      "source_location": "L243",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_wsfe_callwsfe"
@@ -21129,7 +21675,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L231",
+      "source_location": "L261",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_wsfe_parsefecaeresponse"
@@ -21140,7 +21686,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L213",
+      "source_location": "L242",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_afip_wsfe_parseultimoautorizado"
@@ -21151,7 +21697,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L238",
+      "source_location": "L268",
       "weight": 1.0,
       "source": "src_afip_service_requestcae",
       "target": "src_db_dbrun"
@@ -21161,7 +21707,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L329",
+      "source_location": "L403",
       "weight": 1.0,
       "source": "src_afip_service_retrypendingcae",
       "target": "src_afip_service_requestcae",
@@ -21195,10 +21741,10 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L288",
+      "source_location": "L334",
       "weight": 1.0,
       "source": "src_afip_service_buildcaeinputfrominvoice",
-      "target": "src_afip_domain_getinvoicetypecode"
+      "target": "src_afip_domain_requiresassociatedinvoice"
     },
     {
       "relation": "calls",
@@ -21206,7 +21752,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L280",
+      "source_location": "L327",
+      "weight": 1.0,
+      "source": "src_afip_service_buildcaeinputfrominvoice",
+      "target": "src_afip_domain_resolvevouchertypecode"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/afip-service.ts",
+      "source_location": "L322",
+      "weight": 1.0,
+      "source": "src_afip_service_buildcaeinputfrominvoice",
+      "target": "src_afip_domain_validatevoucherforclient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L335",
+      "weight": 1.0,
+      "source": "src_afip_service_buildcaeinputfrominvoice",
+      "target": "src_afip_service_buildassociatedvoucher",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/afip-service.ts",
+      "source_location": "L314",
       "weight": 1.0,
       "source": "src_afip_service_buildcaeinputfrominvoice",
       "target": "src_db_dball"
@@ -21217,7 +21796,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L276",
+      "source_location": "L310",
       "weight": 1.0,
       "source": "src_afip_service_buildcaeinputfrominvoice",
       "target": "src_db_dbget"
@@ -21227,7 +21806,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L329",
+      "source_location": "L403",
       "weight": 1.0,
       "source": "src_afip_service_retrypendingcae",
       "target": "src_afip_service_buildcaeinputfrominvoice",
@@ -21248,9 +21827,31 @@
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L365",
+      "weight": 1.0,
+      "source": "src_afip_service_buildassociatedvoucher",
+      "target": "src_afip_domain_resolvevouchertypecode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip-service.ts",
+      "source_location": "L346",
+      "weight": 1.0,
+      "source": "src_afip_service_buildassociatedvoucher",
+      "target": "src_db_dbget",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L300",
+      "source_location": "L374",
       "weight": 1.0,
       "source": "src_afip_service_markinvoicependingcae",
       "target": "src_db_dbrun"
@@ -21272,7 +21873,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L863",
+      "source_location": "L870",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_markinvoicependingcae"
@@ -21294,7 +21895,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L308",
+      "source_location": "L382",
       "weight": 1.0,
       "source": "src_afip_service_getpendingcaeinvoices",
       "target": "src_db_dball"
@@ -21304,7 +21905,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip-service.ts",
-      "source_location": "L326",
+      "source_location": "L400",
       "weight": 1.0,
       "source": "src_afip_service_retrypendingcae",
       "target": "src_afip_service_getpendingcaeinvoices",
@@ -21327,7 +21928,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L897",
+      "source_location": "L904",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_getpendingcaeinvoices"
@@ -21338,7 +21939,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip-service.ts",
-      "source_location": "L332",
+      "source_location": "L406",
       "weight": 1.0,
       "source": "src_afip_service_retrypendingcae",
       "target": "src_afip_domain_isafipunavailable"
@@ -21360,7 +21961,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L892",
+      "source_location": "L899",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_retrypendingcae"
@@ -21545,10 +22146,40 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/domain.ts",
-      "source_location": "L92",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_afip_domain",
+      "target": "src_afip_domain_normalizeivacondition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L182",
       "weight": 1.0,
       "source": "src_afip_domain",
       "target": "src_afip_domain_receptordoctype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L137",
+      "weight": 1.0,
+      "source": "src_afip_domain",
+      "target": "src_afip_domain_requiresassociatedinvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "src_afip_domain",
+      "target": "src_afip_domain_resolvevouchertypecode",
       "confidence_score": 1.0
     },
     {
@@ -21559,6 +22190,47 @@
       "weight": 1.0,
       "source": "src_afip_domain",
       "target": "src_afip_domain_round2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L146",
+      "weight": 1.0,
+      "source": "src_afip_domain",
+      "target": "src_afip_domain_validatevoucherforclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L93",
+      "weight": 1.0,
+      "source": "src_afip_domain",
+      "target": "src_afip_domain_voucherkind",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "src_afip_domain",
+      "target": "src_afip_domain_voucherletterforclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_domain",
       "confidence_score": 1.0
     },
     {
@@ -21588,9 +22260,20 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L48",
+      "source_location": "L49",
       "weight": 1.0,
       "source": "src_ipc",
+      "target": "src_afip_domain",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_libro_iva",
       "target": "src_afip_domain",
       "confidence_score": 1.0
     },
@@ -21630,6 +22313,17 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_domain_afipunavailableerror",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/afip/wsaa.ts",
       "source_location": "L10",
       "weight": 1.0,
@@ -21664,7 +22358,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L48",
+      "source_location": "L49",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_domain_isafipunavailable",
@@ -21676,7 +22370,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L862",
+      "source_location": "L869",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_domain_isafipunavailable"
@@ -21764,9 +22458,31 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L124",
+      "source_location": "L129",
       "weight": 1.0,
       "source": "src_afip_wsfe_buildfecaesolicitarenvelope",
+      "target": "src_afip_domain_buildivaalicuotas"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_afip_domain_buildivaalicuotas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildlibroivaventas",
       "target": "src_afip_domain_buildivaalicuotas"
     },
     {
@@ -21792,6 +22508,127 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "src_afip_domain_validatevoucherforclient",
+      "target": "src_afip_domain_normalizeivacondition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L108",
+      "weight": 1.0,
+      "source": "src_afip_domain_voucherletterforclient",
+      "target": "src_afip_domain_normalizeivacondition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/domain.ts",
+      "source_location": "L127",
+      "weight": 1.0,
+      "source": "src_afip_domain_resolvevouchertypecode",
+      "target": "src_afip_domain_voucherletterforclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_domain_voucherletterforclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_afip_domain_resolvevouchertypecode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L157",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildlibroivaventas",
+      "target": "src_afip_domain_resolvevouchertypecode"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_domain_resolvevouchertypecode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_domain_requiresassociatedinvoice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_domain_validatevoucherforclient",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_afip_domain_receptordoctype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildlibroivaventas",
+      "target": "src_afip_domain_receptordoctype"
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -21800,6 +22637,227 @@
       "weight": 1.0,
       "source": "test_afip_test",
       "target": "src_afip_domain_receptordoctype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_buildgetpersonaenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_callpadron",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_collectimpuestos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L135",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_escapexml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_padron_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_padronpersona",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_parsepersonaresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_str",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_padron_xmlparser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_wsaa",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_afip_padron",
+      "target": "src_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_padron",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_afip_padron_buildgetpersonaenvelope",
+      "target": "src_afip_padron_escapexml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_padron_buildgetpersonaenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "src_afip_padron_callpadron",
+      "target": "src_afip_padron_parsepersonaresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L78",
+      "weight": 1.0,
+      "source": "src_afip_padron_parsepersonaresponse",
+      "target": "src_afip_padron_collectimpuestos",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_afip_padron_parsepersonaresponse",
+      "target": "src_afip_padron_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/afip.test.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "test_afip_test",
+      "target": "src_afip_padron_parsepersonaresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L96",
+      "weight": 1.0,
+      "source": "src_afip_padron_collectimpuestos",
+      "target": "src_afip_padron_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/afip/padron.ts",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "src_afip_padron_callpadron",
+      "target": "src_afip_padron_finddeep",
       "confidence_score": 1.0
     },
     {
@@ -21827,7 +22885,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/afip.test.ts",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "test_afip_test",
       "target": "src_afip_qr",
@@ -21838,7 +22896,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/afip.test.ts",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "test_afip_test",
       "target": "src_afip_qr_buildafipqrurl",
@@ -22124,7 +23182,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L69",
+      "source_location": "L74",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_afipdate",
@@ -22134,7 +23192,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L63",
+      "source_location": "L68",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_afipmessage",
@@ -22144,7 +23202,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L122",
+      "source_location": "L127",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_buildfecaesolicitarenvelope",
@@ -22154,7 +23212,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L82",
+      "source_location": "L87",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_buildultimoautorizadoenvelope",
@@ -22164,7 +23222,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L54",
+      "source_location": "L59",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_caerejected",
@@ -22174,7 +23232,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L61",
+      "source_location": "L66",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_caeresult",
@@ -22184,7 +23242,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_caesuccess",
@@ -22194,7 +23252,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L216",
+      "source_location": "L233",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_callwsfe",
@@ -22204,7 +23262,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L266",
+      "source_location": "L283",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_collecterrors",
@@ -22214,7 +23272,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L271",
+      "source_location": "L288",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_collectobservations",
@@ -22224,7 +23282,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L257",
+      "source_location": "L274",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_escapexml",
@@ -22254,7 +23312,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L286",
+      "source_location": "L303",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_finddeep",
@@ -22264,7 +23322,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L252",
+      "source_location": "L269",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_formatafipdate",
@@ -22274,7 +23332,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L282",
+      "source_location": "L299",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_formatmessages",
@@ -22284,7 +23342,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L276",
+      "source_location": "L293",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_mapmessage",
@@ -22294,7 +23352,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L179",
+      "source_location": "L196",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_parsefecaeresponse",
@@ -22304,7 +23362,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L101",
+      "source_location": "L106",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_parseultimoautorizado",
@@ -22314,7 +23372,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L76",
+      "source_location": "L81",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_round2",
@@ -22324,7 +23382,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L261",
+      "source_location": "L278",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_toarray",
@@ -22344,7 +23402,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L99",
+      "source_location": "L104",
       "weight": 1.0,
       "source": "src_afip_wsfe",
       "target": "src_afip_wsfe_xmlparser",
@@ -22377,7 +23435,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L142",
+      "source_location": "L158",
       "weight": 1.0,
       "source": "src_afip_wsfe_buildfecaesolicitarenvelope",
       "target": "src_afip_wsfe_afipdate",
@@ -22399,7 +23457,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L125",
+      "source_location": "L130",
       "weight": 1.0,
       "source": "src_afip_wsfe_buildfecaesolicitarenvelope",
       "target": "src_afip_wsfe_round2",
@@ -22410,7 +23468,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L89",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "src_afip_wsfe_buildultimoautorizadoenvelope",
       "target": "src_afip_wsfe_escapexml",
@@ -22432,7 +23490,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L104",
+      "source_location": "L109",
       "weight": 1.0,
       "source": "src_afip_wsfe_parseultimoautorizado",
       "target": "src_afip_wsfe_collecterrors",
@@ -22443,7 +23501,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L103",
+      "source_location": "L108",
       "weight": 1.0,
       "source": "src_afip_wsfe_parseultimoautorizado",
       "target": "src_afip_wsfe_finddeep",
@@ -22454,7 +23512,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L106",
+      "source_location": "L111",
       "weight": 1.0,
       "source": "src_afip_wsfe_parseultimoautorizado",
       "target": "src_afip_wsfe_formatmessages",
@@ -22476,7 +23534,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L158",
+      "source_location": "L147",
       "weight": 1.0,
       "source": "src_afip_wsfe_buildfecaesolicitarenvelope",
       "target": "src_afip_wsfe_escapexml",
@@ -22498,7 +23556,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L187",
+      "source_location": "L204",
       "weight": 1.0,
       "source": "src_afip_wsfe_parsefecaeresponse",
       "target": "src_afip_wsfe_collecterrors",
@@ -22509,7 +23567,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L194",
+      "source_location": "L211",
       "weight": 1.0,
       "source": "src_afip_wsfe_parsefecaeresponse",
       "target": "src_afip_wsfe_collectobservations",
@@ -22520,7 +23578,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L181",
+      "source_location": "L198",
       "weight": 1.0,
       "source": "src_afip_wsfe_parsefecaeresponse",
       "target": "src_afip_wsfe_finddeep",
@@ -22531,7 +23589,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L203",
+      "source_location": "L220",
       "weight": 1.0,
       "source": "src_afip_wsfe_parsefecaeresponse",
       "target": "src_afip_wsfe_formatafipdate",
@@ -22542,7 +23600,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L189",
+      "source_location": "L206",
       "weight": 1.0,
       "source": "src_afip_wsfe_parsefecaeresponse",
       "target": "src_afip_wsfe_formatmessages",
@@ -22564,7 +23622,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L241",
+      "source_location": "L258",
       "weight": 1.0,
       "source": "src_afip_wsfe_callwsfe",
       "target": "src_afip_wsfe_finddeep",
@@ -22597,7 +23655,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L268",
+      "source_location": "L285",
       "weight": 1.0,
       "source": "src_afip_wsfe_collecterrors",
       "target": "src_afip_wsfe_toarray",
@@ -22608,7 +23666,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L273",
+      "source_location": "L290",
       "weight": 1.0,
       "source": "src_afip_wsfe_collectobservations",
       "target": "src_afip_wsfe_toarray",
@@ -22619,7 +23677,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L267",
+      "source_location": "L284",
       "weight": 1.0,
       "source": "src_afip_wsfe_collecterrors",
       "target": "src_afip_wsfe_finddeep",
@@ -22630,7 +23688,7 @@
       "context": "argument",
       "confidence": "INFERRED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L268",
+      "source_location": "L285",
       "weight": 1.0,
       "source": "src_afip_wsfe_collecterrors",
       "target": "src_afip_wsfe_mapmessage",
@@ -22641,7 +23699,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L272",
+      "source_location": "L289",
       "weight": 1.0,
       "source": "src_afip_wsfe_collectobservations",
       "target": "src_afip_wsfe_finddeep",
@@ -22652,7 +23710,7 @@
       "context": "argument",
       "confidence": "INFERRED",
       "source_file": "src/afip/wsfe.ts",
-      "source_location": "L273",
+      "source_location": "L290",
       "weight": 1.0,
       "source": "src_afip_wsfe_collectobservations",
       "target": "src_afip_wsfe_mapmessage",
@@ -23203,7 +24261,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L745",
+      "source_location": "L746",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_getairlocalconfig"
@@ -23247,7 +24305,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L379",
+      "source_location": "L380",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_isairenabled"
@@ -23302,7 +24360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L630",
+      "source_location": "L631",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_enqueueairconfigcloudsync"
@@ -23368,7 +24426,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L628",
+      "source_location": "L629",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_resetairauthcache"
@@ -23708,7 +24766,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L779",
+      "source_location": "L780",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_runairsync"
@@ -23730,7 +24788,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L787",
+      "source_location": "L788",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_testairconnection"
@@ -23763,7 +24821,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L794",
+      "source_location": "L795",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_startairsynctimer"
@@ -23785,7 +24843,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L799",
+      "source_location": "L800",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_stopairsynctimer"
@@ -24475,7 +25533,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L873",
+      "source_location": "L880",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_api_client_iscloudconnected"
@@ -24972,7 +26030,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L645",
+      "source_location": "L646",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_auth_hashpassword"
@@ -25026,7 +26084,7 @@
       "context": "field",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L66",
+      "source_location": "L67",
       "weight": 1.0,
       "source": "src_ipc_ipcdeps",
       "target": "src_auth_sessionuser",
@@ -25945,7 +27003,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L93",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getlaunchatstartup"
@@ -26099,7 +27157,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L100",
+      "source_location": "L101",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getshellpreferences"
@@ -26121,7 +27179,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L103",
+      "source_location": "L104",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_setshellbackground"
@@ -26187,7 +27245,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L106",
+      "source_location": "L107",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getbookmarks"
@@ -26231,7 +27289,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L110",
+      "source_location": "L111",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_addbookmark"
@@ -26275,7 +27333,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L114",
+      "source_location": "L115",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_removebookmark"
@@ -26341,7 +27399,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L122",
+      "source_location": "L123",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getprintpreferences"
@@ -26418,7 +27476,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L140",
+      "source_location": "L141",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_setpreferredprinter"
@@ -26462,7 +27520,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L141",
+      "source_location": "L142",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_setsilentprint"
@@ -26698,7 +27756,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db",
@@ -26712,6 +27770,17 @@
       "source_location": "L11",
       "weight": 1.0,
       "source": "src_kits",
+      "target": "src_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_libro_iva",
       "target": "src_db",
       "confidence_score": 1.0
     },
@@ -26797,7 +27866,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_db",
@@ -26855,6 +27924,17 @@
       "source_location": "L10",
       "weight": 1.0,
       "source": "test_kits_test",
+      "target": "src_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
       "target": "src_db",
       "confidence_score": 1.0
     },
@@ -27171,7 +28251,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_getdb",
@@ -27183,7 +28263,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L263",
+      "source_location": "L264",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_getdb"
@@ -27545,7 +28625,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_nextsequence",
@@ -27557,7 +28637,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L265",
+      "source_location": "L266",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_nextsequence"
@@ -27776,7 +28856,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_formatdocnumber",
@@ -27788,7 +28868,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L266",
+      "source_location": "L267",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_formatdocnumber"
@@ -27842,7 +28922,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_db_initdb",
@@ -27853,7 +28933,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "source": "test_document_links_test_seedbase",
       "target": "src_db_initdb",
@@ -27907,6 +28987,17 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_db_initdb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "test/sequences.test.ts",
       "source_location": "L31",
       "weight": 1.0,
@@ -27941,7 +29032,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_db_closedb",
@@ -27975,7 +29066,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L139",
+      "source_location": "L143",
       "weight": 1.0,
       "source": "src_document_links_getlinksfor",
       "target": "src_db_dball"
@@ -27986,7 +29077,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L198",
+      "source_location": "L219",
       "weight": 1.0,
       "source": "src_document_links_getsourceitems",
       "target": "src_db_dball"
@@ -27997,7 +29088,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L181",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "src_document_links_listclientinvoicesfornote",
+      "target": "src_db_dball"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/document-links.ts",
+      "source_location": "L202",
       "weight": 1.0,
       "source": "src_document_links_listpendingdeliverynotes",
       "target": "src_db_dball"
@@ -28008,7 +29110,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L168",
+      "source_location": "L172",
       "weight": 1.0,
       "source": "src_document_links_listpendingsaleorders",
       "target": "src_db_dball"
@@ -28019,7 +29121,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L102",
+      "source_location": "L106",
       "weight": 1.0,
       "source": "src_document_links_revertsourcesonannul",
       "target": "src_db_dball"
@@ -28128,7 +29230,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_dball",
@@ -28140,7 +29242,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L165",
+      "source_location": "L166",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_dball"
@@ -28176,6 +29278,28 @@
       "source_location": "L87",
       "weight": 1.0,
       "source": "src_kits_getkitcomponents",
+      "target": "src_db_dball"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_db_dball",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L137",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildlibroivaventas",
       "target": "src_db_dball"
     },
     {
@@ -28271,7 +29395,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_db_dball",
@@ -28305,7 +29429,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L83",
+      "source_location": "L87",
       "weight": 1.0,
       "source": "src_document_links_applysourcelink",
       "target": "src_db_dbget"
@@ -28315,7 +29439,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L123",
+      "source_location": "L127",
       "weight": 1.0,
       "source": "src_document_links_resolvedoc",
       "target": "src_db_dbget",
@@ -28436,7 +29560,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_dbget",
@@ -28448,7 +29572,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L167",
+      "source_location": "L168",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_dbget"
@@ -28535,7 +29659,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_db_dbget",
@@ -28624,7 +29748,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L86",
+      "source_location": "L90",
       "weight": 1.0,
       "source": "src_document_links_applysourcelink",
       "target": "src_db_dbrun"
@@ -28635,7 +29759,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/document-links.ts",
-      "source_location": "L110",
+      "source_location": "L114",
       "weight": 1.0,
       "source": "src_document_links_revertsourcesonannul",
       "target": "src_db_dbrun"
@@ -28898,7 +30022,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_dbrun",
@@ -28910,7 +30034,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L185",
+      "source_location": "L186",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_dbrun"
@@ -29096,7 +30220,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_db_dbrun",
@@ -29107,7 +30231,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "source": "test_document_links_test_seedbase",
       "target": "src_db_dbrun",
@@ -29118,7 +30242,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0,
       "source": "test_document_links_test_seedorder",
       "target": "src_db_dbrun",
@@ -29172,8 +30296,19 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_db_dbrun",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_upsertclient",
@@ -29185,7 +30320,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L171",
+      "source_location": "L172",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_upsertclient"
@@ -29228,7 +30363,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_upsertsupplier",
@@ -29240,7 +30375,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L199",
+      "source_location": "L200",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_upsertsupplier"
@@ -29283,7 +30418,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_upsertarticle",
@@ -29295,7 +30430,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L231",
+      "source_location": "L232",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_upsertarticle"
@@ -29349,7 +30484,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_getdashboardkpis",
@@ -29361,7 +30496,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L158",
+      "source_location": "L159",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_getdashboardkpis"
@@ -29411,7 +30546,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L138",
+      "source_location": "L142",
       "weight": 1.0,
       "source": "src_document_links",
       "target": "src_document_links_getlinksfor",
@@ -29421,7 +30556,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L196",
+      "source_location": "L217",
       "weight": 1.0,
       "source": "src_document_links",
       "target": "src_document_links_getsourceitems",
@@ -29441,7 +30576,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L179",
+      "source_location": "L186",
+      "weight": 1.0,
+      "source": "src_document_links",
+      "target": "src_document_links_listclientinvoicesfornote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/document-links.ts",
+      "source_location": "L200",
       "weight": 1.0,
       "source": "src_document_links",
       "target": "src_document_links_listpendingdeliverynotes",
@@ -29451,7 +30596,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L162",
+      "source_location": "L166",
       "weight": 1.0,
       "source": "src_document_links",
       "target": "src_document_links_listpendingsaleorders",
@@ -29481,7 +30626,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L120",
+      "source_location": "L124",
       "weight": 1.0,
       "source": "src_document_links",
       "target": "src_document_links_resolvedoc",
@@ -29491,7 +30636,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L101",
+      "source_location": "L105",
       "weight": 1.0,
       "source": "src_document_links",
       "target": "src_document_links_revertsourcesonannul",
@@ -29533,7 +30678,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links",
@@ -29588,7 +30733,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L90",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "src_document_links_applysourcelink",
       "target": "src_document_links_statusforlink",
@@ -29599,7 +30744,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L109",
+      "source_location": "L113",
       "weight": 1.0,
       "source": "src_document_links_revertsourcesonannul",
       "target": "src_document_links_statusforlink",
@@ -29687,7 +30832,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/document-links.ts",
-      "source_location": "L148",
+      "source_location": "L152",
       "weight": 1.0,
       "source": "src_document_links_getlinksfor",
       "target": "src_document_links_resolvedoc",
@@ -29698,7 +30843,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_getlinksfor",
@@ -29710,7 +30855,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L931",
+      "source_location": "L977",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_getlinksfor"
@@ -29731,7 +30876,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_listpendingsaleorders",
@@ -29743,7 +30888,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L925",
+      "source_location": "L969",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_listpendingsaleorders"
@@ -29764,7 +30909,40 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_document_links_listclientinvoicesfornote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L973",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_document_links_listclientinvoicesfornote"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/document-links.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_document_links_test",
+      "target": "src_document_links_listclientinvoicesfornote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L50",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_listpendingdeliverynotes",
@@ -29776,7 +30954,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L927",
+      "source_location": "L971",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_listpendingdeliverynotes"
@@ -29797,7 +30975,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_getsourceitems",
@@ -29809,7 +30987,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L929",
+      "source_location": "L975",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_getsourceitems"
@@ -30039,7 +31217,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L875",
+      "source_location": "L882",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_sync_builddocenvelope"
@@ -30627,7 +31805,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_documents",
@@ -31232,7 +32410,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_documents_persistdeliverynote",
@@ -31452,7 +32630,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_documents_persistsaleorder",
@@ -31507,7 +32685,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_documents_persistinvoice",
@@ -31606,7 +32784,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "src_documents_annuldocument",
@@ -31989,7 +33167,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L936",
+      "source_location": "L982",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_getlatestrates"
@@ -32022,7 +33200,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L945",
+      "source_location": "L991",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_getratehistory"
@@ -32055,7 +33233,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L963",
+      "source_location": "L1009",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_repricearticlesfromusd"
@@ -32121,7 +33299,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L953",
+      "source_location": "L999",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_refreshdolarnow"
@@ -32326,7 +33504,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L64",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_ipcdeps",
@@ -32336,7 +33514,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L69",
+      "source_location": "L70",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_normalizeshellbackground",
@@ -32346,7 +33524,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L82",
+      "source_location": "L83",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_registeripchandlers",
@@ -32356,7 +33534,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L78",
+      "source_location": "L79",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_safestr",
@@ -32367,7 +33545,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L50",
+      "source_location": "L51",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_kits",
@@ -32378,7 +33556,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L50",
+      "source_location": "L51",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_kits_getkitinfo",
@@ -32389,10 +33567,32 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L50",
+      "source_location": "L51",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_kits_setkitcomponents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_libro_iva",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_libro_iva_buildlibroivaventas",
       "confidence_score": 1.0
     },
     {
@@ -32488,7 +33688,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L172",
+      "source_location": "L173",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_enqueueifcloud",
@@ -32500,7 +33700,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L87",
+      "source_location": "L88",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_ipcdeps"
@@ -32510,7 +33710,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L103",
+      "source_location": "L104",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_normalizeshellbackground",
@@ -32521,7 +33721,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L110",
+      "source_location": "L111",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_safestr",
@@ -32533,7 +33733,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L906",
+      "source_location": "L950",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_kits_getkitinfo"
@@ -32544,7 +33744,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L917",
+      "source_location": "L961",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_kits_setkitcomponents"
@@ -32555,7 +33755,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L622",
+      "source_location": "L923",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_libro_iva_buildlibroivaventas"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L623",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_secrets_encryptsecret"
@@ -32566,7 +33777,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L876",
+      "source_location": "L883",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_sync_enqueuechange"
@@ -32577,7 +33788,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L95",
+      "source_location": "L96",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_tray_setlaunchatstartupenabled"
@@ -32803,6 +34014,292 @@
       "weight": 1.0,
       "source": "test_kits_test",
       "target": "src_kits_explodekitcomponents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_alicuotarecordinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L115",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_buildalicuotarecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_buildcbterecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L133",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_buildlibroivaventas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_cbterecordinput",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_fmtfecha",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_fmtimporte",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_fmtnum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L49",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_fmttext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_invoicerow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_libro_iva",
+      "target": "src_libro_iva_libroivaresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildalicuotarecord",
+      "target": "src_libro_iva_fmtimporte",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildcbterecord",
+      "target": "src_libro_iva_fmtimporte",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_fmtimporte",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildalicuotarecord",
+      "target": "src_libro_iva_fmtnum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildcbterecord",
+      "target": "src_libro_iva_fmtnum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_fmtnum",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildcbterecord",
+      "target": "src_libro_iva_fmttext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_fmttext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildcbterecord",
+      "target": "src_libro_iva_fmtfecha",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_fmtfecha",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L162",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildlibroivaventas",
+      "target": "src_libro_iva_buildcbterecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_buildcbterecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/libro-iva.ts",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "src_libro_iva_buildlibroivaventas",
+      "target": "src_libro_iva_buildalicuotarecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_buildalicuotarecord",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/libro-iva.test.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "test_libro_iva_test",
+      "target": "src_libro_iva_buildlibroivaventas",
       "confidence_score": 1.0
     },
     {
@@ -34507,7 +36004,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/new-client-preload.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "src_new_client_preload",
       "target": "src_new_client_preload_asimovnewclientapi",
@@ -34567,7 +36064,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/new-invoice-preload.ts",
-      "source_location": "L38",
+      "source_location": "L41",
       "weight": 1.0,
       "source": "src_new_invoice_preload",
       "target": "src_new_invoice_preload_asimovnewinvoiceapi",
@@ -34737,7 +36234,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/preload.ts",
-      "source_location": "L338",
+      "source_location": "L340",
       "weight": 1.0,
       "source": "src_preload",
       "target": "src_preload_asimovapi",
@@ -36126,7 +37623,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "test/afip.test.ts",
-      "source_location": "L33",
+      "source_location": "L35",
       "weight": 1.0,
       "source": "test_afip_test",
       "target": "test_afip_test_escapeforxml",
@@ -36136,7 +37633,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "test/afip.test.ts",
-      "source_location": "L19",
+      "source_location": "L21",
       "weight": 1.0,
       "source": "test_afip_test",
       "target": "test_afip_test_makeselfsigned",
@@ -36231,7 +37728,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "test_document_links_test_seedbase",
@@ -36241,7 +37738,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "test/document-links.test.ts",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0,
       "source": "test_document_links_test",
       "target": "test_document_links_test_seedorder",
@@ -56483,7 +57980,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L126",
+      "source_location": "L139",
       "weight": 1.0,
       "source": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
       "target": "afip_arca_notas_t\u00e9cnicas",
@@ -56503,7 +58000,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L138",
+      "source_location": "L151",
       "weight": 1.0,
       "source": "afip_arca_afip_arca_facturaci\u00f3n_electr\u00f3nica_estado_y_plan_de_fases",
       "target": "afip_arca_referencias",
@@ -56566,24 +58063,24 @@
       "source_location": "L98",
       "weight": 1.0,
       "source": "afip_arca_plan_de_fases",
-      "target": "afip_arca_fase_4_cobertura_de_comprobantes",
+      "target": "afip_arca_fase_4_cobertura_de_comprobantes_hecha_percepciones_pendientes",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L106",
+      "source_location": "L111",
       "weight": 1.0,
       "source": "afip_arca_plan_de_fases",
-      "target": "afip_arca_fase_5_padr\u00f3n_y_extras",
+      "target": "afip_arca_fase_5_padr\u00f3n_y_extras_hecha_caea_diferido",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AFIP-ARCA.md",
-      "source_location": "L114",
+      "source_location": "L127",
       "weight": 1.0,
       "source": "afip_arca_plan_de_fases",
       "target": "afip_arca_fase_6_homologaci\u00f3n_producci\u00f3n_arca_gate_de_salida_real",
@@ -57881,5 +59378,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c08854a2022629510577bc9d16ce564791a0e76e"
+  "built_at_commit": "0cf2f6e5ac5bcb6b884c9238eb9ee4e7c58d23f1"
 }

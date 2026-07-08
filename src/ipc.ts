@@ -41,7 +41,7 @@ import {
 } from "./air";
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
 import {
-  getAfipConfig, saveAfipCredentials, testAfipConnection, requestCae as afipRequestCae,
+  getAfipConfig, saveAfipCredentials, testAfipConnection, runAfipDiagnostics, requestCae as afipRequestCae,
   markInvoicePendingCae, retryPendingCae, getPendingCaeInvoices, consultarPadron,
   type SaveCredentialsInput, type CaeRequestInput,
 } from "./afip-service";
@@ -834,6 +834,16 @@ export function registerIpcHandlers(deps: IpcDeps): void {
       return await testAfipConnection();
     } catch (err: unknown) {
       return { ok: false, message: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // Diagnóstico del circuito completo (Fase 6: homologación → producción).
+  ipcMain.handle("afip:diagnostics", async () => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      return { ok: true, data: await runAfipDiagnostics() };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
   });
 

@@ -43,8 +43,10 @@
 - **Percepciones/tributos** (`Tributos` de WSFE), sólo si aplica al rubro
   (resto de Fase 4).
 - **CAEA**: diferido (ver Fase 5) — la cola offline cubre la contingencia.
-- **Homologación → producción**: sin certificar en el ambiente de testing de AFIP
-  (Fase 6). Es el único gate que queda antes de facturar en serio.
+- **Homologación → producción** (Fase 6): el **tooling ya está** (diagnóstico del
+  circuito, selector de ambiente, labels ARCA). Lo que queda es **operativo**:
+  generar el certificado de homologación, pasar el set de certificación de AFIP y
+  cargar el certificado productivo. Es el gate antes de facturar en serio.
 
 ---
 
@@ -124,15 +126,31 @@ la nube.
       `REGINFO_CV_VENTAS_ALICUOTAS.txt` (62 pos.), desde Configuración → AFIP,
       con los comprobantes autorizados (con CAE) del período.
 
-### Fase 6 — Homologación → Producción → ARCA 🔴 *gate de salida real*
+### Fase 6 — Homologación → Producción → ARCA 🟠 *tooling listo; falta el trámite en AFIP*
 
-- [ ] Probar todo el circuito en el **ambiente de homologación** (`wsaahomo` /
-      `wswhomo`) con un certificado de testing.
+**Código (hecho):**
+
+- [x] **Diagnóstico del circuito** (Configuración → AFIP → "🩺 Diagnóstico del
+      circuito"): verifica en un click certificado+vencimiento, CUIT/pto. de
+      venta, salud de WSFE (**FEDummy**, sin autenticación), autenticación WSAA
+      (token/sign) y numeración (`FECompUltimoAutorizado`). Sirve para validar
+      homologación y para chequear producción antes de emitir.
+      Módulo: `runAfipDiagnostics()` en `src/afip-service.ts`.
+- [x] Selector de **ambiente** homologación/producción ya cableado (los endpoints
+      `wswhomo`/`wsaahomo` vs. `servicios1`/`wsaa` se eligen solos).
+- [x] **Rename a ARCA** en las labels primarias (tab y botón "Autorizar
+      AFIP/ARCA", sección de Configuración "AFIP / ARCA"). Los identificadores
+      internos (`afip_*`, canales IPC, códigos de webservice) siguen igual.
+
+**Operativo (requiere acción en el portal de AFIP, no es código):**
+
+- [ ] Generar un **certificado de homologación** y correr el diagnóstico + emitir
+      comprobantes de prueba contra `wswhomo` (usar el botón de diagnóstico).
 - [ ] **Set de pruebas de certificación** de AFIP para habilitar el punto de venta
       de facturación electrónica en producción.
-- [ ] Cambiar `AFIP_ENV=production` y validar contra los endpoints productivos.
-- [ ] **Rename a ARCA** en UI/labels/documentación (webservices y códigos siguen
-      igual; es terminología de marca).
+- [ ] Cargar el **certificado productivo**, cambiar el ambiente a *Producción* en
+      Configuración → AFIP y validar con el diagnóstico contra los endpoints
+      productivos.
 
 ---
 

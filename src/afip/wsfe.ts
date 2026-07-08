@@ -103,6 +103,39 @@ export function buildUltimoAutorizadoEnvelope(ta: AfipTA, cab: FeCabecera): stri
 
 const xmlParser = new XMLParser({ ignoreAttributes: true, removeNSPrefix: true, parseTagValue: false });
 
+// ---------------------------------------------------------------------------
+// FEDummy — health-check del servicio (no requiere autenticación)
+// ---------------------------------------------------------------------------
+
+export interface FeDummyStatus {
+  appServer: string;
+  dbServer: string;
+  authServer: string;
+  ok: boolean;
+}
+
+/** Envelope de FEDummy: sondea el estado de WSFE sin token (útil para diagnóstico). */
+export function buildFEDummyEnvelope(): string {
+  return (
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+    `xmlns:ar="${WSFE_NS}">` +
+    '<soapenv:Header/><soapenv:Body><ar:FEDummy/></soapenv:Body></soapenv:Envelope>'
+  );
+}
+
+export function parseFEDummy(soapXml: string): FeDummyStatus {
+  const parsed = xmlParser.parse(soapXml);
+  const result = findDeep(parsed, 'FEDummyResult');
+  const appServer = String(findDeep(result, 'AppServer') ?? '').toUpperCase();
+  const dbServer = String(findDeep(result, 'DbServer') ?? '').toUpperCase();
+  const authServer = String(findDeep(result, 'AuthServer') ?? '').toUpperCase();
+  return {
+    appServer, dbServer, authServer,
+    ok: appServer === 'OK' && dbServer === 'OK' && authServer === 'OK',
+  };
+}
+
 export function parseUltimoAutorizado(soapXml: string): number {
   const parsed = xmlParser.parse(soapXml);
   const result = findDeep(parsed, 'FECompUltimoAutorizadoResult');
