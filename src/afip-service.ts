@@ -28,6 +28,7 @@ import {
   receptorDocType, isAfipUnavailable, resolveVoucherTypeCode,
   validateVoucherForClient, requiresAssociatedInvoice,
 } from "./afip/domain";
+import { PADRON_SERVICE, PADRON_URLS, buildGetPersonaEnvelope, callPadron, type PadronPersona } from "./afip/padron";
 import { buildAfipQrUrl } from "./afip/qr";
 import * as QRCode from "qrcode";
 
@@ -133,8 +134,8 @@ export function saveAfipCredentials(input: SaveCredentialsInput): { ok: true; ce
   setConfigValue("afip_point_of_sale", String(input.pointOfSale || 1));
   setConfigValue("afip_env", input.env === "produccion" ? "produccion" : "homologacion");
   setConfigValue("afip_enabled", input.enabled === false ? "false" : "true");
-  // Cambió algo de la config → el TA cacheado ya no sirve.
-  dbRun("DELETE FROM system_config WHERE key = 'afip_ta'");
+  // Cambió algo de la config → los TA cacheados (todos los servicios) ya no sirven.
+  dbRun("DELETE FROM system_config WHERE key LIKE 'afip_ta%'");
 
   const cfg = getAfipConfig();
   return { ok: true, certExpires: cfg.certExpires };
@@ -158,28 +159,51 @@ function requireCreds(): { cuit: string; certPem: string; keyPem: string; env: A
   };
 }
 
-function readCachedTa(): AfipTA | null {
-  const row = dbGet<{ value: string }>("SELECT value FROM system_config WHERE key = 'afip_ta'");
+// El TA es por servicio de AFIP ("wsfe", padrón, etc.). La clave histórica
+// `afip_ta` se mantiene para wsfe; el resto usa `afip_ta_<servicio>`.
+function taKey(service: string): string {
+  return service === "wsfe" ? "afip_ta" : `afip_ta_${service}`;
+}
+
+function readCachedTa(service: string): AfipTA | null {
+  const row = dbGet<{ value: string }>("SELECT value FROM system_config WHERE key = ?", [taKey(service)]);
   if (!row?.value) return null;
   try { return JSON.parse(decryptSecret(row.value)) as AfipTA; } catch { return null; }
 }
 
-function writeCachedTa(ta: AfipTA): void {
-  setConfigValue("afip_ta", JSON.stringify(ta), true);
+function writeCachedTa(service: string, ta: AfipTA): void {
+  setConfigValue(taKey(service), JSON.stringify(ta), true);
 }
 
-/** Devuelve un TA válido: reusa el cacheado si sigue vigente; si no, autentica. */
-export async function getValidTA(): Promise<AfipTA> {
-  const cached = readCachedTa();
+/** Devuelve un TA válido para el servicio: reusa el cacheado o autentica. */
+export async function getValidTA(service = "wsfe"): Promise<AfipTA> {
+  const cached = readCachedTa(service);
   if (isTaValid(cached)) return cached as AfipTA;
 
   const creds = requireCreds();
-  const tra = buildLoginTicketRequest("wsfe");
+  const tra = buildLoginTicketRequest(service);
   const cms = signTRA(tra, creds.certPem, creds.keyPem);
   const url = creds.env === "produccion" ? WSAA_URLS.produccion : WSAA_URLS.homologacion;
   const ta = await callLoginCms(url, cms);
-  writeCachedTa(ta);
+  writeCachedTa(service, ta);
   return ta;
+}
+
+// ---------------------------------------------------------------------------
+// Padrón — constancia de inscripción (razón social + condición de IVA)
+// ---------------------------------------------------------------------------
+
+/**
+ * Consulta el CUIT en el padrón de AFIP. Requiere tener habilitado el servicio
+ * "ws_sr_constancia_inscripcion" para el certificado en el portal de AFIP.
+ */
+export async function consultarPadron(cuit: string): Promise<PadronPersona> {
+  const digits = String(cuit ?? "").replace(/\D/g, "");
+  if (digits.length !== 11) throw new Error("Ingresá un CUIT de 11 dígitos para consultar el padrón.");
+  const creds = requireCreds();
+  const ta = await getValidTA(PADRON_SERVICE);
+  const url = creds.env === "produccion" ? PADRON_URLS.produccion : PADRON_URLS.homologacion;
+  return callPadron(url, buildGetPersonaEnvelope(ta, creds.cuit, digits), digits);
 }
 
 /** Prueba de conexión: fuerza (o reusa) el TA y devuelve su expiración. */

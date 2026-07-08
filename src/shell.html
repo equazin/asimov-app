@@ -1161,6 +1161,18 @@
             <span class="save-msg ok" id="afip-save-msg" style="display:none">✓ Guardado</span>
             <span id="afip-test-msg" style="font-size:12px"></span>
           </div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08)">
+            <div style="font-size:12px;font-weight:600;margin-bottom:6px">📚 Libro IVA Ventas (RG 4597)</div>
+            <div class="printer-row" style="gap:10px;align-items:center;flex-wrap:wrap">
+              <label style="font-size:12px;display:flex;gap:6px;align-items:center">Desde <input type="date" id="libro-iva-desde" /></label>
+              <label style="font-size:12px;display:flex;gap:6px;align-items:center">Hasta <input type="date" id="libro-iva-hasta" /></label>
+              <button class="btn btn-outline btn-sm" onclick="exportLibroIva()">⬇️ Exportar TXT</button>
+              <span id="libro-iva-msg" style="font-size:12px"></span>
+            </div>
+            <div style="font-size:11px;opacity:0.6;margin-top:4px">
+              Genera REGINFO_CV_VENTAS_CBTE.txt y REGINFO_CV_VENTAS_ALICUOTAS.txt con los comprobantes autorizados (con CAE) del período.
+            </div>
+          </div>
         </div>
       </div>
       <div class="config-save-bar">
@@ -2708,6 +2720,39 @@
       if (out) { out.style.color = "#e05d5d"; out.textContent = "✗ " + (e.message || "Error"); }
     }
   };
+
+  window.exportLibroIva = async function () {
+    const api = await waitForAsimov();
+    const out = document.getElementById("libro-iva-msg");
+    const desde = document.getElementById("libro-iva-desde").value;
+    const hasta = document.getElementById("libro-iva-hasta").value;
+    if (!desde || !hasta) {
+      if (out) { out.style.color = "#e05d5d"; out.textContent = "✗ Elegí el rango de fechas."; }
+      return;
+    }
+    if (out) { out.style.color = "var(--text-muted)"; out.textContent = "Generando…"; }
+    try {
+      const res = await api.afip.libroIvaExport(desde, hasta);
+      if (out) {
+        out.style.color = res.ok ? "#6ed49a" : "#e05d5d";
+        out.textContent = res.ok
+          ? "✓ " + res.data.count + " comprobante" + (res.data.count === 1 ? "" : "s") + " exportados"
+          : "✗ " + (res.error || "No se pudo exportar");
+      }
+    } catch (e) {
+      if (out) { out.style.color = "#e05d5d"; out.textContent = "✗ " + (e.message || "Error"); }
+    }
+  };
+
+  // Rango por defecto del libro IVA: el mes en curso.
+  (function initLibroIvaDates() {
+    const d = document.getElementById("libro-iva-desde"), h = document.getElementById("libro-iva-hasta");
+    if (!d || !h) return;
+    const pad = (n) => String(n).padStart(2, "0");
+    const now = new Date();
+    d.value = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-01";
+    h.value = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+  })();
 
   async function loadPrinters(api) {
     const sel = document.getElementById("cfg-printer");

@@ -305,6 +305,8 @@ const api = {
     testConnection: () => ipcRenderer.invoke("afip:test-connection") as Promise<{ ok: boolean; message: string; expiration?: string }>,
     requestCae: (input: unknown) => ipcRenderer.invoke("afip:request-cae", input) as Promise<{ ok: boolean; pending?: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
     retryPending: () => ipcRenderer.invoke("afip:retry-pending") as Promise<{ ok: boolean; data?: { authorized: number; stillPending: number; rejected: Array<{ invoiceId: string; error: string }>; pendingLeft: number }; error?: string }>,
+    padron: (cuit: string) => ipcRenderer.invoke("afip:padron", cuit) as Promise<{ ok: boolean; data?: { cuit: string; razonSocial: string; condicionIva: string; domicilio: string; localidad: string; provincia: string; codPostal: string }; error?: string }>,
+    libroIvaExport: (desde: string, hasta: string) => ipcRenderer.invoke("afip:libro-iva-export", desde, hasta) as Promise<{ ok: boolean; data?: { count: number; files: string[] }; error?: string }>,
   },
 
   // Sincronización con la API v2 (Render). Sirve para el badge de estado

@@ -42,9 +42,10 @@ import {
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
 import {
   getAfipConfig, saveAfipCredentials, testAfipConnection, requestCae as afipRequestCae,
-  markInvoicePendingCae, retryPendingCae, getPendingCaeInvoices,
+  markInvoicePendingCae, retryPendingCae, getPendingCaeInvoices, consultarPadron,
   type SaveCredentialsInput, type CaeRequestInput,
 } from "./afip-service";
+import { buildLibroIvaVentas } from "./libro-iva";
 import { isAfipUnavailable } from "./afip/domain";
 import { listPendingSaleOrders, listPendingDeliveryNotes, listClientInvoicesForNote, getSourceItems, getLinksFor } from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
@@ -901,6 +902,43 @@ export function registerIpcHandlers(deps: IpcDeps): void {
         if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
       }
       return { ok: true, data: { ...data, pendingLeft: getPendingCaeInvoices().length } };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // Padrón: CUIT → razón social + condición de IVA + domicilio.
+  ipcMain.handle("afip:padron", async (_event, cuit: unknown) => {
+    try {
+      return { ok: true, data: await consultarPadron(safeStr(cuit, 20)) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // Libro IVA Ventas (RG 4597): genera los dos TXT y los guarda donde elija el usuario.
+  ipcMain.handle("afip:libro-iva-export", async (_event, desde: unknown, hasta: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
+    try {
+      const result = buildLibroIvaVentas(safeStr(desde, 10), safeStr(hasta, 10));
+      if (result.count === 0) {
+        return { ok: false, error: "No hay comprobantes autorizados (con CAE) en ese rango de fechas." };
+      }
+      const win = deps.getMainWindow();
+      const dialogOpts = {
+        title: "Elegí la carpeta donde guardar el Libro IVA Ventas",
+        properties: ["openDirectory", "createDirectory"] as Array<"openDirectory" | "createDirectory">,
+      };
+      const picked = win && !win.isDestroyed()
+        ? await dialog.showOpenDialog(win, dialogOpts)
+        : await dialog.showOpenDialog(dialogOpts);
+      if (picked.canceled || picked.filePaths.length === 0) return { ok: false, error: "Export cancelado." };
+      const dir = picked.filePaths[0];
+      const cbtePath = path.join(dir, "REGINFO_CV_VENTAS_CBTE.txt");
+      const alicPath = path.join(dir, "REGINFO_CV_VENTAS_ALICUOTAS.txt");
+      fs.writeFileSync(cbtePath, result.cbte, "latin1");
+      fs.writeFileSync(alicPath, result.alicuotas, "latin1");
+      return { ok: true, data: { count: result.count, files: [cbtePath, alicPath] } };
     } catch (err: unknown) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }

@@ -42,9 +42,9 @@
 
 - **Percepciones/tributos** (`Tributos` de WSFE), sólo si aplica al rubro
   (resto de Fase 4).
-- **Padrón** (consulta CUIT → condición IVA / razón social): no existe (Fase 5).
+- **CAEA**: diferido (ver Fase 5) — la cola offline cubre la contingencia.
 - **Homologación → producción**: sin certificar en el ambiente de testing de AFIP
-  (Fase 6).
+  (Fase 6). Es el único gate que queda antes de facturar en serio.
 
 ---
 
@@ -108,13 +108,21 @@ la nube.
 - [x] Comprobante tipo **M** (código 51) mapeado. Percepciones/tributos
       (`Tributos` de WSFE): pendiente, sólo si aplica al rubro.
 
-### Fase 5 — Padrón y extras 🟢
+### Fase 5 — Padrón y extras ✅ *hecha (CAEA diferido)*
 
-- [ ] **Consulta de padrón (A13)**: al cargar CUIT del cliente, traer razón social
-      y condición de IVA desde AFIP (autocompleta y valida el tipo de comprobante).
-- [ ] **CAEA** (Código de Autorización Electrónico Anticipado) para contingencia
-      cuando WSFE no responde.
-- [ ] Reportes fiscales: **libro IVA ventas** exportable en formato AFIP.
+- [x] **Consulta de padrón**: botón 🔎 junto al CUIT en el alta de cliente —
+      consulta `ws_sr_constancia_inscripcion` (personaServiceA5) y autocompleta
+      razón social, condición de IVA (monotributo/RI/exento según la constancia)
+      y domicilio fiscal. Requiere habilitar ese servicio para el certificado en
+      el portal de AFIP. El TA de WSAA ahora se cachea **por servicio**.
+- [ ] **CAEA** — *diferido a propósito*: exige régimen quincenal + informar
+      comprobantes (FECAEARegInformativo) y apunta a emisores de alto volumen;
+      la cola offline `pendiente_cae` con reintento automático ya cubre la
+      contingencia de WSFE para este rubro. Retomar sólo si el volumen lo pide.
+- [x] Reportes fiscales: **libro IVA ventas** exportable en formato AFIP
+      (RG 4597): `REGINFO_CV_VENTAS_CBTE.txt` (266 pos.) +
+      `REGINFO_CV_VENTAS_ALICUOTAS.txt` (62 pos.), desde Configuración → AFIP,
+      con los comprobantes autorizados (con CAE) del período.
 
 ### Fase 6 — Homologación → Producción → ARCA 🔴 *gate de salida real*
 

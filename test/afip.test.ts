@@ -16,6 +16,7 @@ import {
   resolveVoucherTypeCode, validateVoucherForClient, requiresAssociatedInvoice, voucherLetterForClient,
 } from "../src/afip/domain";
 import { buildAfipQrUrl } from "../src/afip/qr";
+import { buildGetPersonaEnvelope, parsePersonaResponse } from "../src/afip/padron";
 
 function makeSelfSigned(): { certPem: string; keyPem: string } {
   const keys = forge.pki.rsa.generateKeyPair(2048);
@@ -223,6 +224,52 @@ describe("afip/wsfe — CbtesAsoc (comprobante asociado de NC/ND)", () => {
   it("sin asociados no emite el bloque", () => {
     const env = buildFECAESolicitarEnvelope(ta, { cuit: "30712345678", pointOfSale: 3, invoiceType: 6 }, cbteBase);
     expect(env).not.toContain("CbtesAsoc");
+  });
+});
+
+describe("afip/padron — constancia de inscripción (Fase 5)", () => {
+  const ta = { token: "T", sign: "S", expiration: new Date().toISOString() };
+
+  it("arma el envelope de getPersona con token/sign/cuits", () => {
+    const env = buildGetPersonaEnvelope(ta, "30712345678", "20304050607");
+    expect(env).toContain("<token>T</token>");
+    expect(env).toContain("<cuitRepresentada>30712345678</cuitRepresentada>");
+    expect(env).toContain("<idPersona>20304050607</idPersona>");
+  });
+
+  it("parsea un RI del régimen general (impuesto 30)", () => {
+    const xml =
+      "<Envelope><Body><getPersonaResponse><personaReturn>" +
+      "<datosGenerales><razonSocial>ACME SRL</razonSocial>" +
+      "<domicilioFiscal><direccion>AV SIEMPRE VIVA 123</direccion><localidad>ROSARIO</localidad>" +
+      "<codPostal>2000</codPostal><descripcionProvincia>SANTA FE</descripcionProvincia></domicilioFiscal>" +
+      "</datosGenerales>" +
+      "<datosRegimenGeneral><impuesto><idImpuesto>30</idImpuesto><descripcionImpuesto>IVA</descripcionImpuesto></impuesto></datosRegimenGeneral>" +
+      "</personaReturn></getPersonaResponse></Body></Envelope>";
+    const p = parsePersonaResponse(xml, "30712345678");
+    expect(p.razonSocial).toBe("ACME SRL");
+    expect(p.condicionIva).toBe("Responsable Inscripto");
+    expect(p.domicilio).toBe("AV SIEMPRE VIVA 123");
+    expect(p.provincia).toBe("SANTA FE");
+  });
+
+  it("monotributista (datosMonotributo) y persona física con apellido/nombre", () => {
+    const xml =
+      "<Envelope><Body><getPersonaResponse><personaReturn>" +
+      "<datosGenerales><apellido>PEREZ</apellido><nombre>JUAN</nombre></datosGenerales>" +
+      "<datosMonotributo><categoriaMonotributo>D</categoriaMonotributo></datosMonotributo>" +
+      "</personaReturn></getPersonaResponse></Body></Envelope>";
+    const p = parsePersonaResponse(xml, "20304050607");
+    expect(p.razonSocial).toBe("PEREZ, JUAN");
+    expect(p.condicionIva).toBe("Monotributista");
+  });
+
+  it("CUIT inexistente lanza con el error de la constancia", () => {
+    const xml =
+      "<Envelope><Body><getPersonaResponse><personaReturn>" +
+      "<errorConstancia><error>No existe persona con ese Id</error></errorConstancia>" +
+      "</personaReturn></getPersonaResponse></Body></Envelope>";
+    expect(() => parsePersonaResponse(xml, "20111111112")).toThrow(/No existe persona/);
   });
 });
 

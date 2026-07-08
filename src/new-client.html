@@ -322,6 +322,9 @@ input:focus,select:focus,textarea:focus,.cell-input:focus{
   outline:none !important;
 }
 option{ background:#232833; color:var(--text); }
+.field.with-btn{position:relative}
+.field.with-btn input{padding-right:34px}
+.field.with-btn .field-btn{position:absolute;right:4px;top:20px;width:26px;height:20px;border:none;border-radius:3px;font-size:11px;cursor:pointer;display:grid;place-items:center}
 .picker-btn,.field-btn,.btn-primary,.btn-save,.btn-sm:not(.secondary){
   background:var(--accent) !important;
   color:#fff !important;
@@ -423,7 +426,10 @@ td{ border-color:var(--border) !important; }
         <div class="field span-3"><label class="required-star">Razón Social</label><input type="text" id="txtRazonSocial" placeholder="Nombre o razón social..." /></div>
 
         <div class="field"><label>Titular</label><input type="text" /></div>
-        <div class="field"><label class="required-star">C.U.I.T.</label><input type="text" id="txtCuit" placeholder="XX-XXXXXXXX-X" /></div>
+        <div class="field with-btn"><label class="required-star">C.U.I.T.</label>
+          <input type="text" id="txtCuit" placeholder="XX-XXXXXXXX-X" />
+          <button class="field-btn" id="btnPadron" title="Consultar el CUIT en el padrón de AFIP (autocompleta razón social, condición IVA y domicilio)">🔎</button>
+        </div>
         <div class="field"><label>Condición IVA</label>
           <select id="selIva">
             <option>Responsable Inscripto</option>
@@ -443,8 +449,8 @@ td{ border-color:var(--border) !important; }
 
         <div class="section-title">Domicilio</div>
         <div class="field span-2"><label>Dirección</label><input type="text" id="txtDomicilio" /></div>
-        <div class="field"><label>Localidad</label><input type="text" /></div>
-        <div class="field"><label>C. Postal</label><input type="text" /></div>
+        <div class="field"><label>Localidad</label><input type="text" id="txtLocalidad" /></div>
+        <div class="field"><label>C. Postal</label><input type="text" id="txtCodPostal" /></div>
 
         <div class="field"><label>Provincia</label>
           <select>
@@ -713,6 +719,39 @@ td{ border-color:var(--border) !important; }
     });
 
     /* btnNew removed from footer */
+
+    /* ─── Padrón AFIP: autocompletar desde el CUIT ─── */
+    document.getElementById("btnPadron").addEventListener("click", async () => {
+      const cuit = txtCuit.value.replace(/\D/g, "");
+      if (cuit.length !== 11) { alert("Ingresá un CUIT de 11 dígitos para consultar el padrón."); return; }
+      if (!window.asimovNewClient || !window.asimovNewClient.padronLookup) {
+        alert("La consulta al padrón no está disponible en esta ventana.");
+        return;
+      }
+      const btn = document.getElementById("btnPadron");
+      btn.disabled = true; btn.textContent = "⏳";
+      try {
+        const res = await window.asimovNewClient.padronLookup(cuit);
+        if (!res || !res.ok) throw new Error((res && res.error) || "No se pudo consultar el padrón");
+        const d = res.data;
+        if (d.razonSocial && (!txtRazonSocial.value.trim() ||
+            confirm('AFIP informa "' + d.razonSocial + '". ¿Reemplazar la razón social cargada?'))) {
+          txtRazonSocial.value = d.razonSocial;
+        }
+        const selIva = document.getElementById("selIva");
+        if (selIva && d.condicionIva) selIva.value = d.condicionIva;
+        const dom = document.getElementById("txtDomicilio");
+        if (dom && d.domicilio && !dom.value.trim()) dom.value = d.domicilio;
+        const loc = document.getElementById("txtLocalidad");
+        if (loc && d.localidad && !loc.value.trim()) loc.value = d.localidad;
+        const cp = document.getElementById("txtCodPostal");
+        if (cp && d.codPostal && !cp.value.trim()) cp.value = d.codPostal;
+      } catch (e) {
+        alert("❌ " + (e.message || "No se pudo consultar el padrón de AFIP"));
+      } finally {
+        btn.disabled = false; btn.textContent = "🔎";
+      }
+    });
 
     document.getElementById("btnSave").addEventListener("click", () => {
       if (!txtRazonSocial.value.trim()) { alert("Ingrese la Razón Social."); return; }
