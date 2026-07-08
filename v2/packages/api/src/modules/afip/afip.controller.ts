@@ -50,10 +50,20 @@ export class AfipController {
     return { success: true, data: { lastNumber: number } };
   }
 
+  @Post('credentials')
+  @Roles('owner', 'admin')
+  async saveCredentials(
+    @CurrentUser() user: RequestUser,
+    @Body() body: { cuit: string; certPem: string; keyPem: string; env?: 'homologacion' | 'produccion' },
+  ) {
+    const result = await this.afipService.saveCredentials(user.tenantId, body);
+    return { success: true, data: result };
+  }
+
   @Post('test-auth')
   @Roles('owner', 'admin')
   async testAuth(@CurrentUser() user: RequestUser) {
-    const result = await this.afipService.authenticate(user.tenantId);
-    return { success: true, data: { expirationTime: result.expirationTime } };
+    const result = await this.afipService.testAuth(user.tenantId);
+    return { success: true, data: result };
   }
 }

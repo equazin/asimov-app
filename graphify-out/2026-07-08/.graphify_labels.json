@@ -97,9 +97,16 @@
   "95": "migration.sql",
   "96": "masters.ts",
   "97": "db.ts",
-  "98": "dbGet",
+  "98": "RequestUser",
   "99": "migration.sql",
   "100": "migration.sql",
-  "101": "AuthService",
-  "102": ".audit"
+  "101": "kits.ts",
+  "102": "prisma.service.ts",
+  "103": "AfipController",
+  "104": "health.controller.ts",
+  "105": "createMainWindow",
+  "106": "reports.service.ts",
+  "107": "customization.module.ts",
+  "108": "stock.module.ts",
+  "109": "suppliers.module.ts"
 }

@@ -1,18 +1,43 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma.service';
+import {
+  loadEncKey,
+  encryptSecret,
+  decryptSecret,
+  signTRA,
+  certNotAfter,
+} from './afip-crypto';
+import {
+  WSAA_URLS,
+  buildLoginTicketRequest,
+  callLoginCms,
+  isTaValid,
+  type AfipTA,
+} from './afip-wsaa';
+import {
+  WSFE_URLS,
+  buildUltimoAutorizadoEnvelope,
+  parseUltimoAutorizado,
+  buildFECAESolicitarEnvelope,
+  parseFECAEResponse,
+  callWsfe,
+  type FeCabecera,
+  type FeComprobante,
+} from './afip-wsfe';
+import { receptorDocType, getInvoiceTypeCode } from './afip-domain';
 
-interface AfipAuthResult {
-  token: string;
-  sign: string;
-  expirationTime: string;
-}
+// Re-export de la lógica de dominio para compatibilidad con imports existentes.
+export {
+  AFIP_IVA_CODES,
+  afipIvaCode,
+  buildIvaAlicuotas,
+  getInvoiceTypeCode,
+  type AfipAlicIva,
+} from './afip-domain';
+export { buildLoginTicketRequest } from './afip-wsaa';
 
-interface CaeResult {
-  cae: string;
-  caeExpirationDate: string;
-  invoiceNumber: number;
-}
+const AFIP_PROVIDER = 'afip';
 
 interface AfipInvoiceData {
   documentId: string;
@@ -30,209 +55,194 @@ interface AfipInvoiceData {
   total: number;
   totalIva: number;
   totalNet: number;
+  concepto?: number;
+  date?: Date;
 }
 
-/** Códigos de alícuota de IVA de AFIP (FEParamGetTiposIva). */
-export const AFIP_IVA_CODES: Record<string, number> = {
-  '0': 3,
-  '2.5': 9,
-  '5': 8,
-  '10.5': 4,
-  '21': 5,
-  '27': 6,
-};
-
-/** Devuelve el código de alícuota de AFIP para un porcentaje de IVA (default 21%). */
-export function afipIvaCode(rate: number): number {
-  return AFIP_IVA_CODES[String(rate)] ?? 5;
+interface CaeResultDto {
+  cae: string;
+  caeExpirationDate: string;
+  invoiceNumber: number;
+  observations?: Array<{ code: string; msg: string }>;
 }
 
-// Redondeo a 2 decimales medio-arriba, robusto ante el ruido de punto flotante
-// (p.ej. 4.725 → 4.73, y no 4.72 por 4.725*100 = 472.4999…).
-const round2 = (n: number): number => Math.round(Number((n * 100).toFixed(6))) / 100;
-
-export interface AfipAlicIva {
-  Id: number;
-  BaseImp: number;
-  Importe: number;
-}
-
-/**
- * Agrupa los ítems por alícuota de IVA en el array `AlicIva` que exige WSFE
- * (FECAESolicitar → FeDetReq.Iva). BaseImp = neto gravado por alícuota;
- * Importe = IVA por alícuota. Los importes se redondean a 2 decimales.
- */
-export function buildIvaAlicuotas(
-  items: Array<{ ivaRate: number; subtotal: number }>,
-): AfipAlicIva[] {
-  const byCode = new Map<number, { base: number; iva: number }>();
-  for (const it of items) {
-    const code = afipIvaCode(it.ivaRate);
-    const base = Number(it.subtotal) || 0;
-    const iva = (base * (Number(it.ivaRate) || 0)) / 100;
-    const acc = byCode.get(code) ?? { base: 0, iva: 0 };
-    acc.base += base;
-    acc.iva += iva;
-    byCode.set(code, acc);
-  }
-  return [...byCode.entries()]
-    .map(([Id, v]) => ({ Id, BaseImp: round2(v.base), Importe: round2(v.iva) }))
-    .sort((a, b) => a.Id - b.Id);
-}
-
-/**
- * Arma el LoginTicketRequest (TRA) que WSAA exige. `service` es el webservice
- * destino (p.ej. 'wsfe'). El TRA se firma como CMS/PKCS#7 con el certificado del
- * contribuyente y se envía a LoginCms para obtener el token + sign (TA, vale 12h).
- */
-export function buildLoginTicketRequest(service = 'wsfe', now: Date = new Date()): string {
-  const uniqueId = Math.floor(now.getTime() / 1000);
-  const generationTime = new Date(now.getTime() - 60_000).toISOString();
-  const expirationTime = new Date(now.getTime() + 10 * 60_000).toISOString();
-  return (
-    '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<loginTicketRequest version="1.0">' +
-    `<header><uniqueId>${uniqueId}</uniqueId>` +
-    `<generationTime>${generationTime}</generationTime>` +
-    `<expirationTime>${expirationTime}</expirationTime></header>` +
-    `<service>${service}</service>` +
-    '</loginTicketRequest>'
-  );
+/** Config AFIP del tenant, tal como se guarda en `integration_configs.config`. */
+interface AfipTenantConfig {
+  cuit: string;
+  certEnc?: string;      // certificado (PEM) cifrado
+  keyEnc?: string;       // clave privada (PEM) cifrada
+  env?: 'homologacion' | 'produccion';
+  ta?: AfipTA;           // TA cacheado (token/sign/expiration)
 }
 
 @Injectable()
 export class AfipService {
-  private readonly wsaaUrl: string;
-  private readonly wsfeUrl: string;
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
-  ) {
-    const isProduction = config.get('AFIP_ENV') === 'production';
-    this.wsaaUrl = isProduction
-      ? 'https://wsaa.afip.gob.ar/ws/services/LoginCms'
-      : 'https://wsaahomo.afip.gov.ar/ws/services/LoginCms';
-    this.wsfeUrl = isProduction
-      ? 'https://servicios1.afip.gov.ar/wsfev1/service.asmx'
-      : 'https://wswhomo.afip.gov.ar/wsfev1/service.asmx';
+  ) {}
+
+  private encKey(): Buffer {
+    return loadEncKey(this.config.get<string>('AFIP_ENC_KEY'));
   }
 
-  async authenticate(tenantId: string): Promise<AfipAuthResult> {
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
-    });
-
-    if (!tenant) throw new BadRequestException('Tenant no encontrado');
-
-    const certPath = this.config.get<string>('AFIP_CERT_PATH');
-    const keyPath = this.config.get<string>('AFIP_KEY_PATH');
-
-    if (!certPath || !keyPath) {
-      throw new BadRequestException(
-        'Certificado AFIP no configurado. Configure AFIP_CERT_PATH y AFIP_KEY_PATH.',
-      );
-    }
-
-    // TRA listo para firmar. Lo que falta (requiere el certificado de AFIP):
-    // 1. Firmar este TRA como CMS/PKCS#7 con cert+key del contribuyente.
-    // 2. POST del CMS (base64) a WSAA LoginCms (this.wsaaUrl).
-    // 3. Parsear el LoginTicketResponse → token + sign + expirationTime.
-    // 4. Cachear el TA por tenant+service (vale 12h).
-    const tra = buildLoginTicketRequest('wsfe');
-    void tra;
-    void this.wsaaUrl;
-    return {
-      token: `AFIP_TOKEN_${tenantId}_${Date.now()}`,
-      sign: `AFIP_SIGN_${tenantId}_${Date.now()}`,
-      expirationTime: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
-    };
+  private isProdDefault(): boolean {
+    return this.config.get('AFIP_ENV') === 'production';
   }
 
-  async requestCae(
+  /** Tipo de comprobante AFIP según condición fiscal (delega en afip-domain). */
+  getInvoiceTypeCode(invoiceType: string, fiscalType: string): number {
+    return getInvoiceTypeCode(invoiceType, fiscalType);
+  }
+
+  // ── Configuración de credenciales por tenant ────────────────────────────
+
+  /** Guarda (cifrado) el certificado + clave del contribuyente para un tenant. */
+  async saveCredentials(
     tenantId: string,
-    invoiceData: AfipInvoiceData,
-  ): Promise<CaeResult> {
-    await this.authenticate(tenantId);
+    input: { cuit: string; certPem: string; keyPem: string; env?: 'homologacion' | 'produccion' },
+  ): Promise<{ ok: true; certExpires: string }> {
+    const encKey = this.encKey();
+    if (!/^\d{11}$/.test(String(input.cuit))) {
+      throw new BadRequestException('CUIT inválido: deben ser 11 dígitos.');
+    }
+    let expires: Date;
+    try {
+      expires = certNotAfter(input.certPem);
+    } catch {
+      throw new BadRequestException('El certificado no es un PEM válido.');
+    }
+    const config: AfipTenantConfig = {
+      cuit: input.cuit,
+      certEnc: encryptSecret(input.certPem, encKey),
+      keyEnc: encryptSecret(input.keyPem, encKey),
+      env: input.env ?? (this.isProdDefault() ? 'produccion' : 'homologacion'),
+      // Al cambiar credenciales se invalida el TA cacheado.
+      ta: undefined,
+    };
+    await this.prisma.integrationConfig.upsert({
+      where: { tenantId_provider: { tenantId, provider: AFIP_PROVIDER } },
+      create: { tenantId, provider: AFIP_PROVIDER, config: config as object, active: true },
+      update: { config: config as object, active: true, deletedAt: null },
+    });
+    return { ok: true, certExpires: expires.toISOString() };
+  }
 
-    // Desglose de IVA por alícuota, listo para FeDetReq.Iva de FECAESolicitar.
-    const alicIva = buildIvaAlicuotas(invoiceData.items);
+  private async loadConfig(tenantId: string): Promise<AfipTenantConfig> {
+    const row = await this.prisma.integrationConfig.findUnique({
+      where: { tenantId_provider: { tenantId, provider: AFIP_PROVIDER } },
+    });
+    if (!row || !row.active) {
+      throw new BadRequestException('AFIP no está configurado para esta empresa. Cargá el certificado primero.');
+    }
+    const cfg = row.config as unknown as AfipTenantConfig;
+    if (!cfg?.certEnc || !cfg?.keyEnc || !cfg?.cuit) {
+      throw new BadRequestException('Configuración AFIP incompleta: falta certificado, clave o CUIT.');
+    }
+    return cfg;
+  }
 
-    // Lo que falta (requiere el TA real del WSAA):
-    // 1. Armar el SOAP FECAESolicitar (Auth token/sign/Cuit + FeCAEReq con
-    //    ImpNeto/ImpIVA/ImpTotal + Iva=alicIva).
-    // 2. POST a WSFE (this.wsfeUrl) y parsear CAE + CAEFchVto.
-    // 3. Manejar Errors/Observaciones (duplicado, datos inválidos, etc.).
-    void alicIva;
-    void this.wsfeUrl;
+  private async persistTa(tenantId: string, cfg: AfipTenantConfig, ta: AfipTA): Promise<void> {
+    await this.prisma.integrationConfig.update({
+      where: { tenantId_provider: { tenantId, provider: AFIP_PROVIDER } },
+      data: { config: { ...cfg, ta } as object },
+    });
+  }
 
-    const lastNumber = await this.getLastInvoiceNumber(
-      tenantId,
-      invoiceData.pointOfSale,
-      invoiceData.invoiceType,
+  // ── WSAA: obtener TA (con cache) ─────────────────────────────────────────
+
+  /**
+   * Devuelve un TA válido: reusa el cacheado si sigue vigente (AFIP rechaza
+   * pedir uno nuevo mientras el anterior no venció) y, si no, autentica.
+   */
+  async getTA(tenantId: string): Promise<AfipTA> {
+    const cfg = await this.loadConfig(tenantId);
+    if (isTaValid(cfg.ta)) return cfg.ta as AfipTA;
+
+    const encKey = this.encKey();
+    const certPem = decryptSecret(cfg.certEnc as string, encKey);
+    const keyPem = decryptSecret(cfg.keyEnc as string, encKey);
+    const tra = buildLoginTicketRequest('wsfe');
+    const cms = signTRA(tra, certPem, keyPem);
+    const url = cfg.env === 'produccion' ? WSAA_URLS.produccion : WSAA_URLS.homologacion;
+
+    const ta = await callLoginCms(url, cms);
+    await this.persistTa(tenantId, cfg, ta);
+    return ta;
+  }
+
+  /** Prueba de autenticación (para el botón "Probar conexión"). */
+  async testAuth(tenantId: string): Promise<{ expirationTime: string }> {
+    const ta = await this.getTA(tenantId);
+    return { expirationTime: ta.expiration };
+  }
+
+  // ── WSFE: último autorizado + solicitud de CAE ───────────────────────────
+
+  async getLastInvoiceNumber(tenantId: string, pointOfSale: number, invoiceType: number): Promise<number> {
+    const cfg = await this.loadConfig(tenantId);
+    const ta = await this.getTA(tenantId);
+    const cab: FeCabecera = { cuit: cfg.cuit, pointOfSale, invoiceType };
+    const url = cfg.env === 'produccion' ? WSFE_URLS.produccion : WSFE_URLS.homologacion;
+    const xml = await callWsfe(url, 'FECompUltimoAutorizado', buildUltimoAutorizadoEnvelope(ta, cab));
+    return parseUltimoAutorizado(xml);
+  }
+
+  async requestCae(tenantId: string, invoiceData: AfipInvoiceData): Promise<CaeResultDto> {
+    const cfg = await this.loadConfig(tenantId);
+    const ta = await this.getTA(tenantId);
+    const url = cfg.env === 'produccion' ? WSFE_URLS.produccion : WSFE_URLS.homologacion;
+
+    const cab: FeCabecera = {
+      cuit: cfg.cuit,
+      pointOfSale: invoiceData.pointOfSale,
+      invoiceType: invoiceData.invoiceType,
+    };
+
+    // Número: último autorizado por AFIP + 1 (fuente de verdad, no la DB).
+    const lastNumber = parseUltimoAutorizado(
+      await callWsfe(url, 'FECompUltimoAutorizado', buildUltimoAutorizadoEnvelope(ta, cab)),
     );
-
     const invoiceNumber = lastNumber + 1;
 
-    // Store the CAE in the document
+    const { docType, docNumber } = receptorDocType(invoiceData.clientCuit);
+    const cbte: FeComprobante = {
+      concepto: invoiceData.concepto ?? 1,
+      docType,
+      docNumber,
+      invoiceNumber,
+      date: invoiceData.date ?? new Date(),
+      impNeto: invoiceData.totalNet,
+      impIva: invoiceData.totalIva,
+      impTotal: invoiceData.total,
+      items: invoiceData.items,
+    };
+
+    const envelope = buildFECAESolicitarEnvelope(ta, cab, cbte);
+    const result = parseFECAEResponse(await callWsfe(url, 'FECAESolicitar', envelope));
+
+    if (!result.ok) {
+      const detail = [...result.errors, ...result.observations].map((m) => `[${m.code}] ${m.msg}`).join('; ');
+      throw new BadRequestException(`AFIP rechazó el comprobante: ${detail || 'sin detalle'}`);
+    }
+
+    const number = `${String(invoiceData.pointOfSale).padStart(5, '0')}-${String(result.invoiceNumber).padStart(8, '0')}`;
     await this.prisma.document.update({
       where: { id: invoiceData.documentId },
       data: {
-        cae: `CAE_${Date.now()}`,
-        caeExpiry: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
-        number: `${String(invoiceData.pointOfSale).padStart(5, '0')}-${String(invoiceNumber).padStart(8, '0')}`,
+        cae: result.cae,
+        caeExpiry: new Date(result.caeExpiration),
+        number,
         pointOfSale: String(invoiceData.pointOfSale).padStart(5, '0'),
         invoiceType: String(invoiceData.invoiceType),
       },
     });
 
     return {
-      cae: `CAE_${Date.now()}`,
-      caeExpirationDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-      invoiceNumber,
+      cae: result.cae,
+      caeExpirationDate: new Date(result.caeExpiration).toISOString(),
+      invoiceNumber: result.invoiceNumber,
+      observations: result.observations,
     };
-  }
-
-  async getLastInvoiceNumber(
-    tenantId: string,
-    pointOfSale: number,
-    invoiceType: number,
-  ): Promise<number> {
-    // In production: call FECompUltimoAutorizado on WSFE
-    const lastDoc = await this.prisma.document.findFirst({
-      where: {
-        tenantId,
-        pointOfSale: String(pointOfSale).padStart(5, '0'),
-        invoiceType: String(invoiceType),
-        cae: { not: null },
-      },
-      orderBy: { number: 'desc' },
-      select: { number: true },
-    });
-
-    if (!lastDoc?.number) return 0;
-    const parts = lastDoc.number.split('-');
-    return parts.length === 2 ? parseInt(parts[1], 10) : 0;
-  }
-
-  getInvoiceTypeCode(invoiceType: string, fiscalType: string): number {
-    const typeMap: Record<string, Record<string, number>> = {
-      responsable_inscripto: {
-        A: 1,
-        B: 6,
-        C: 11,
-        credit_note_A: 3,
-        credit_note_B: 8,
-        debit_note_A: 2,
-        debit_note_B: 7,
-      },
-      monotributista: {
-        C: 11,
-        credit_note_C: 13,
-        debit_note_C: 12,
-      },
-    };
-
-    return typeMap[fiscalType]?.[invoiceType] ?? 11;
   }
 }
