@@ -11,3 +11,9 @@ coverage/
 # Local SQLite DBs / dev artifacts
 *.db
 .turbo/
+
+# Basura de hooks/comandos mal escapados (archivos vacios con nombres rotos)
+{*
+(*
+*)
+`
