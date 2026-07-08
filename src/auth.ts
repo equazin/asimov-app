@@ -56,17 +56,28 @@ export function authenticate(identifier: string, password: string): SessionUser 
   return { id: row.id, name: row.name, email: row.email, role: row.role };
 }
 
-export const DEFAULT_ADMIN = { name: "admin", email: "admin@asimov.local", password: "asimov" } as const;
+export const DEFAULT_ADMIN = { name: "admin", email: "admin@asimov.local" } as const;
 
-/** Crea un admin por defecto si la tabla de usuarios está vacía. Devuelve true si sembró. */
-export function seedDefaultAdmin(): boolean {
+/** Genera una contraseña inicial aleatoria y legible (≈72 bits). */
+export function generateInitialPassword(): string {
+  return randomBytes(9).toString("base64url");
+}
+
+/**
+ * Crea un admin por defecto si la tabla de usuarios está vacía, con una
+ * contraseña ALEATORIA (no hardcodeada). Devuelve la contraseña en texto plano
+ * para que el llamador la muestre una única vez al operador, o null si ya había
+ * usuarios (no siembra).
+ */
+export function seedDefaultAdmin(): string | null {
   const count = dbGet<{ c: number }>("SELECT COUNT(*) c FROM users")?.c ?? 0;
-  if (count > 0) return false;
+  if (count > 0) return null;
+  const password = generateInitialPassword();
   dbRun(
     "INSERT INTO users (id, name, email, role, password_hash, active) VALUES (?,?,?,?,?,1)",
-    [randomUUID(), DEFAULT_ADMIN.name, DEFAULT_ADMIN.email, "admin", hashPassword(DEFAULT_ADMIN.password)],
+    [randomUUID(), DEFAULT_ADMIN.name, DEFAULT_ADMIN.email, "admin", hashPassword(password)],
   );
-  return true;
+  return password;
 }
 
 /** Actualiza la contraseña de un usuario existente. */
