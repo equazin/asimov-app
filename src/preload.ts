@@ -286,6 +286,17 @@ const api = {
     stopSyncTimer: () => ipcRenderer.invoke("air:sync-timer:stop"),
   },
 
+  // --- Cotización del dólar (DolarAPI, auto cada 30 min) ---
+  dolar: {
+    latest: () => ipcRenderer.invoke("dolar:latest") as Promise<{ ok: boolean; data?: unknown[]; error?: string }>,
+    history: (casa = "blue", limit = 100) => ipcRenderer.invoke("dolar:history", casa, limit) as Promise<{ ok: boolean; data?: unknown[]; error?: string }>,
+    refresh: () => ipcRenderer.invoke("dolar:refresh") as Promise<{ ok: boolean; data?: unknown[]; error?: string }>,
+    reprice: (casa = "blue") => ipcRenderer.invoke("dolar:reprice", casa) as Promise<{ ok: boolean; data?: { updated: number; rate: number; casa: string }; error?: string }>,
+    onUpdated: (cb: (rates: unknown[]) => void) => {
+      ipcRenderer.on("dolar:updated", (_e, rates: unknown[]) => cb(rates));
+    },
+  },
+
   // Sincronización con la API v2 (Render). Sirve para el badge de estado
   // en el status bar y para forzar un push/pull manual desde la UI.
   cloudSync: {

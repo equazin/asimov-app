@@ -517,6 +517,8 @@ td{ border-color:var(--border) !important; }
             <div class="field"><label>Código</label><input type="text" id="txtCodigo" /></div>
             <div class="field span-3"><label>Descripción</label><input type="text" id="txtDescripcion" placeholder="Nombre del artículo..." /></div>
 
+            <div class="field"><label>Precio venta $</label><input type="number" id="txtPrecio" min="0" step="0.01" placeholder="0.00" /></div>
+            <div class="field"><label>Precio USD (opcional)</label><input type="number" id="txtPrecioUsd" min="0" step="0.01" placeholder="0.00" title="Si lo cargás, el precio en pesos se puede recalcular con la cotización del dólar desde Tesorería → Dólar" /></div>
             <div class="field"><label>Línea</label><input type="text" id="txtLinea" placeholder="Ej: GENÉRICO" /></div>
             <div class="field"><label>Orden en lista</label><input type="number" value="0" /></div>
             <div class="field"><label>Unidad</label><select><option>U</option><option>KG</option><option>LT</option><option>MT</option><option>PACK</option></select></div>
@@ -758,6 +760,8 @@ td{ border-color:var(--border) !important; }
   <script>
     const txtCodigo = document.getElementById("txtCodigo");
     const txtDescripcion = document.getElementById("txtDescripcion");
+    const txtPrecio = document.getElementById("txtPrecio");
+    const txtPrecioUsd = document.getElementById("txtPrecioUsd");
     const txtLinea = document.getElementById("txtLinea");
     const txtCategoria = document.getElementById("txtCategoria");
     const selIva = document.getElementById("selIva");
@@ -784,7 +788,8 @@ td{ border-color:var(--border) !important; }
       const article = {
         codigo: txtCodigo.value.trim(),
         descripcion: txtDescripcion.value.trim().toUpperCase(),
-        importe: (10 + Math.random() * 100).toFixed(2),
+        importe: txtPrecio.value || "0",
+        precio_usd: txtPrecioUsd.value || "0",
         iva: selIva.value,
         st: "0", compro: "0", entr: "0",
         linea: (txtLinea.value.trim() || "GENÉRICO").toUpperCase(),

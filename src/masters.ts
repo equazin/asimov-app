@@ -114,6 +114,7 @@ export interface ArticleForm {
   codigo?: string;
   descripcion?: string;
   importe?: string | number;
+  precio_usd?: string | number;
   iva?: string | number;
   linea?: string;
   categoria?: string;
@@ -129,6 +130,7 @@ export function persistArticleForm(form: ArticleForm): { id: string } {
     category: str(form.categoria),
     unit: "un",
     sale_price: num(form.importe),
+    price_usd: num(form.precio_usd),
     iva_pct: num(form.iva) || 21,
     active: 1,
   });

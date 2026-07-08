@@ -562,6 +562,7 @@
 
     <div class="nav-section">
       <div class="nav-label">Tesorería</div>
+      <div class="nav-item" data-view="dolar"><span class="icon">💲</span> Dólar</div>
       <div class="nav-item" data-view="caja"><span class="icon">💵</span> Caja</div>
       <div class="nav-item" data-view="cta-cte-clientes"><span class="icon">👤</span> Cta. Cte. Clientes</div>
       <div class="nav-item" data-view="cta-cte-proveedores"><span class="icon">🏭</span> Cta. Cte. Prov.</div>
@@ -873,6 +874,47 @@
       </div>
       <div class="table-wrap" id="table-precios">
         <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Dólar ────────────────────────────────────────────── -->
+    <div class="view" id="view-dolar">
+      <div class="view-header">
+        <h1>💲 Cotización del Dólar</h1>
+        <span class="badge" id="badge-dolar-updated">—</span>
+        <button class="btn btn-outline btn-sm" onclick="refreshDolar()">↻ Actualizar ahora</button>
+      </div>
+      <div class="toolbar" style="gap:10px;align-items:center">
+        <span style="font-size:12px;color:var(--text-muted)">Se actualiza automáticamente cada 30 minutos.</span>
+        <div class="toolbar-right" id="dolar-reprice-wrap" style="display:flex;gap:8px;align-items:center">
+          <label for="dolar-reprice-casa" style="font-size:12px;color:var(--text-muted)">Repreciar artículos USD con:</label>
+          <select id="dolar-reprice-casa" style="font-size:12px;padding:4px 6px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:4px">
+            <option value="oficial">Oficial</option>
+            <option value="blue" selected>Blue</option>
+            <option value="bolsa">Bolsa (MEP)</option>
+            <option value="cripto">Cripto</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="repriceDolar()">$ Repreciar ahora</button>
+        </div>
+      </div>
+      <div style="padding:14px 16px;flex-shrink:0">
+        <div class="kpi-grid" id="dolar-cards">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+      <div class="toolbar" style="padding-top:0">
+        <span style="font-size:12px;color:var(--text-muted)">Historial:</span>
+        <select id="dolar-history-casa" onchange="loadDolarHistory()" style="font-size:12px;padding:4px 6px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:4px">
+          <option value="blue" selected>Blue</option>
+          <option value="oficial">Oficial</option>
+          <option value="bolsa">Bolsa (MEP)</option>
+          <option value="contadoconliqui">CCL</option>
+          <option value="cripto">Cripto</option>
+          <option value="tarjeta">Tarjeta</option>
+        </select>
+      </div>
+      <div class="table-wrap" id="table-dolar-history">
+        <div class="empty-state"><span class="emo">💲</span><span>Sin historial todavía.</span></div>
       </div>
     </div>
 
@@ -1314,6 +1356,8 @@
   <span class="sep"></span>
   <span id="status-view">Dashboard</span>
   <span class="sep"></span>
+  <span id="status-dolar" onclick="navigate('dolar')" title="Cotización del dólar — click para ver detalle" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">💲 —</span>
+  <span class="sep"></span>
   <span id="status-count"></span>
   <span class="grow"></span>
   <span id="status-sync" class="off" onclick="runCloudSync()" title="Sincronización con la nube">
@@ -1350,6 +1394,7 @@
     dashboard: { title: "Dashboard" },
     atajos: { title: "Atajos de teclado" },
     config: { title: "Configuración" },
+    dolar: { title: "Cotización del Dólar" },
     pedidos: {
       title: "Pedidos de Venta",
       annul: "sale-order",
@@ -1661,6 +1706,12 @@
       b.style.display = CAN_WRITE ? "" : "none";
     });
 
+    // Repreciar por dólar: solo admins (el main lo exige; esto es solo UX).
+    const repriceWrap = document.getElementById("dolar-reprice-wrap");
+    if (repriceWrap) {
+      repriceWrap.style.display = ["admin", "owner", "superadmin"].includes(currentRole) ? "flex" : "none";
+    }
+
     // Ocultar las secciones del nav que quedaron sin ítems visibles.
     document.querySelectorAll(".nav-section").forEach((sec) => {
       const items = Array.from(sec.querySelectorAll(".nav-item"));
@@ -1692,6 +1743,7 @@
     document.getElementById("status-count").textContent = "";
 
     if (norm === "dashboard") { loadDashboard(); return; }
+    if (norm === "dolar") { loadDolarView(); return; }
     if (norm === "caja") { loadCaja(); return; }
     if (norm === "cta-cte-clientes") { loadCtaCteClientes(); return; }
     if (norm === "cta-cte-proveedores") { loadCtaCteProveedores(); return; }
@@ -1881,6 +1933,121 @@
       kpiGrid.innerHTML = `<div style="color:rgba(245,245,240,0.4);padding:20px">No se pudieron cargar los indicadores.</div>`;
     }
   }
+
+  // ── dólar ────────────────────────────────────────────────────────────
+  const DOLAR_CASA_LABELS = {
+    oficial: "Oficial", blue: "Blue", bolsa: "Bolsa (MEP)",
+    contadoconliqui: "CCL", cripto: "Cripto", tarjeta: "Tarjeta",
+  };
+
+  function fmtRate(v) {
+    return "$" + Number(v || 0).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function fmtRateTime(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso.includes("T") ? iso : iso.replace(" ", "T") + "Z");
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function updateDolarStatusbar(rates) {
+    const el = document.getElementById("status-dolar");
+    if (!el || !Array.isArray(rates) || rates.length === 0) return;
+    const oficial = rates.find(r => r.casa === "oficial");
+    const blue = rates.find(r => r.casa === "blue");
+    const parts = [];
+    if (oficial) parts.push("Of. " + fmtRate(oficial.venta));
+    if (blue) parts.push("Blue " + fmtRate(blue.venta));
+    el.textContent = "💲 " + (parts.join(" · ") || "—");
+  }
+
+  function renderDolarCards(rates) {
+    const grid = document.getElementById("dolar-cards");
+    if (!grid) return;
+    if (!Array.isArray(rates) || rates.length === 0) {
+      grid.innerHTML = `<div style="color:var(--text-muted);padding:12px">Sin cotizaciones todavía. Probá "Actualizar ahora" (requiere internet).</div>`;
+      return;
+    }
+    grid.innerHTML = rates.map(r => `
+      <div class="kpi-card">
+        <div class="kpi-icon">💲</div>
+        <div class="kpi-val">${fmtRate(r.venta)}</div>
+        <div class="kpi-label">${esc(DOLAR_CASA_LABELS[r.casa] || r.nombre || r.casa)} · compra ${fmtRate(r.compra)}</div>
+      </div>`).join("");
+    const badge = document.getElementById("badge-dolar-updated");
+    if (badge) badge.textContent = "Actualizado " + fmtRateTime(rates[0].fetched_at);
+  }
+
+  async function loadDolarView() {
+    try {
+      await waitForAsimov();
+      const res = await asimov().dolar.latest();
+      renderDolarCards(res && res.ok ? res.data : []);
+      await loadDolarHistory();
+    } catch (e) {
+      const grid = document.getElementById("dolar-cards");
+      if (grid) grid.innerHTML = `<div style="color:#c62828;padding:12px">${esc(e.message || "Error al cargar cotizaciones")}</div>`;
+    }
+  }
+
+  async function loadDolarHistory() {
+    const casa = document.getElementById("dolar-history-casa").value;
+    const container = document.getElementById("table-dolar-history");
+    container.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+    try {
+      const res = await asimov().dolar.history(casa, 100);
+      const rows = (res && res.ok && res.data) || [];
+      if (rows.length === 0) {
+        container.innerHTML = `<div class="empty-state"><span class="emo">💲</span><span>Sin historial para ${esc(DOLAR_CASA_LABELS[casa] || casa)}.</span></div>`;
+        return;
+      }
+      container.innerHTML = `<table>
+        <thead><tr><th style="width:160px">Fecha</th><th style="width:120px;text-align:right">Compra</th><th style="width:120px;text-align:right">Venta</th><th>Variación</th></tr></thead>
+        <tbody>${rows.map((r, i) => {
+          const prev = rows[i + 1];
+          const diff = prev ? r.venta - prev.venta : 0;
+          const pct = prev && prev.venta ? (diff / prev.venta) * 100 : 0;
+          const cls = diff > 0 ? "color:#e05d5d" : diff < 0 ? "color:#6ed49a" : "color:var(--text-muted)";
+          const arrow = diff > 0 ? "▲" : diff < 0 ? "▼" : "＝";
+          return `<tr>
+            <td>${fmtRateTime(r.fetched_at)}</td>
+            <td style="text-align:right;font-family:Consolas,monospace">${fmtRate(r.compra)}</td>
+            <td style="text-align:right;font-family:Consolas,monospace;font-weight:600">${fmtRate(r.venta)}</td>
+            <td style="${cls}">${prev ? `${arrow} ${fmtRate(Math.abs(diff))} (${pct.toFixed(2)}%)` : "—"}</td>
+          </tr>`;
+        }).join("")}</tbody></table>`;
+    } catch (e) {
+      container.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${esc(e.message || "Error al cargar historial")}</span></div>`;
+    }
+  }
+
+  window.refreshDolar = async function () {
+    const grid = document.getElementById("dolar-cards");
+    if (grid) grid.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+    try {
+      const res = await asimov().dolar.refresh();
+      if (!res || !res.ok) throw new Error((res && res.error) || "No se pudo actualizar");
+      renderDolarCards(res.data);
+      updateDolarStatusbar(res.data);
+      await loadDolarHistory();
+    } catch (e) {
+      if (grid) grid.innerHTML = `<div style="color:#c62828;padding:12px">${esc(e.message || "Sin conexión con DolarAPI")}</div>`;
+    }
+  };
+
+  window.repriceDolar = async function () {
+    const casa = document.getElementById("dolar-reprice-casa").value;
+    const label = DOLAR_CASA_LABELS[casa] || casa;
+    if (!confirm(`Se recalculará el precio de venta en pesos de TODOS los artículos que tengan precio USD cargado, usando la cotización ${label} (venta).\n\n¿Continuar?`)) return;
+    try {
+      const res = await asimov().dolar.reprice(casa);
+      if (!res || !res.ok) throw new Error((res && res.error) || "No se pudo repreciar");
+      alert(`✅ ${res.data.updated} artículo${res.data.updated === 1 ? "" : "s"} repreciado${res.data.updated === 1 ? "" : "s"} con dólar ${label} a ${fmtRate(res.data.rate)}.`);
+    } catch (e) {
+      alert("❌ " + (e.message || "Error al repreciar"));
+    }
+  };
 
   // ── caja ─────────────────────────────────────────────────────────────
   async function loadCaja() {
@@ -2081,6 +2248,18 @@
       };
       refreshSyncBadge();
       setInterval(refreshSyncBadge, 5000);
+
+      // ── Cotización del dólar en el status bar ─────────────────────────
+      if (api.dolar) {
+        api.dolar.latest().then((res) => {
+          if (res && res.ok) updateDolarStatusbar(res.data);
+        }).catch(() => {});
+        // Push desde el main cada 30 min (o cuando cambia la cotización).
+        api.dolar.onUpdated((rates) => {
+          updateDolarStatusbar(rates);
+          if (currentView === "dolar") { renderDolarCards(rates); loadDolarHistory(); }
+        });
+      }
 
       // Show app version in status bar
       api.appVersion().then((ver) => {
