@@ -1,16 +1,16 @@
 # Graph Report - Asimov ERP  (2026-07-08)
 
 ## Corpus Check
-- 204 files · ~301,738 words
+- 212 files · ~309,340 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1761 nodes · 3235 edges · 103 communities (75 shown, 28 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.7)
+- 1853 nodes · 3473 edges · 113 communities (85 shown, 28 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.62)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2d207ab7`
+- Built from commit: `e911e227`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -107,56 +107,66 @@
 - migration.sql
 - masters.ts
 - db.ts
-- dbGet
+- RequestUser
 - migration.sql
 - migration.sql
-- AuthService
-- .audit
+- kits.ts
+- prisma.service.ts
+- AfipController
+- health.controller.ts
+- customization.module.ts
+- stock.module.ts
+- Fases
+- AFIP / ARCA — Facturación electrónica: estado y plan de fases
+- Plan de fases
+- 7. Usabilidad y navegabilidad — plan de fases 🟢
+- Fase 6 — Billing, QA y Lanzamiento 🔧 EN PROGRESO
+- PENDIENTES.md
 
 ## God Nodes (most connected - your core abstractions)
-1. `RequestUser` - 59 edges
-2. `dbRun()` - 58 edges
-3. `CurrentUser` - 57 edges
-4. `getDb()` - 48 edges
+1. `dbRun()` - 62 edges
+2. `RequestUser` - 60 edges
+3. `CurrentUser` - 58 edges
+4. `getDb()` - 50 edges
 5. `PrismaService` - 47 edges
-6. `registerIpcHandlers()` - 44 edges
-7. `dbAll()` - 31 edges
-8. `dbGet()` - 28 edges
+6. `registerIpcHandlers()` - 46 edges
+7. `dbAll()` - 34 edges
+8. `dbGet()` - 32 edges
 9. `BillingService` - 19 edges
 10. `compilerOptions` - 19 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `run()` --indirect_call--> `d()`  [INFERRED]
   scripts/verify-shell-bridge.js → src/comprobante-print.js
-- `queueRow()` --calls--> `getDb()`  [EXTRACTED]
-  test/sync.test.ts → src/db.ts
-- `seedArticle()` --calls--> `dbRun()`  [EXTRACTED]
-  test/dolar.test.ts → src/db.ts
-- `count()` --calls--> `getDb()`  [EXTRACTED]
-  test/document-sync.test.ts → src/db.ts
 - `row()` --calls--> `getDb()`  [EXTRACTED]
   test/masters.test.ts → src/db.ts
+- `queueRow()` --calls--> `getDb()`  [EXTRACTED]
+  test/sync.test.ts → src/db.ts
+- `stockOf()` --calls--> `dbGet()`  [EXTRACTED]
+  test/kits.test.ts → src/db.ts
+- `seedOrder()` --calls--> `dbRun()`  [EXTRACTED]
+  test/document-links.test.ts → src/db.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (103 total, 28 thin omitted)
+## Communities (113 total, 28 thin omitted)
 
 ### Community 0 - "documents.ts"
-Cohesion: 0.05
-Nodes (102): authenticate(), DEFAULT_ADMIN, ensureUser(), generateInitialPassword(), hashPassword(), seedDefaultAdmin(), setUserPassword(), verifyPassword() (+94 more)
+Cohesion: 0.14
+Nodes (40): formatDocNumber(), nextSequence(), DocumentSource, AnnulEffect, ANNULLABLE, AnnulResult, applyCashDelta(), applyStockDelta() (+32 more)
 
 ### Community 1 - "ipc.ts"
-Cohesion: 0.14
-Nodes (32): addBookmark(), BookmarkEntry, DEFAULTS, DesktopConfig, getBookmarks(), getPrintPreferences(), getShell(), PrintPreferences (+24 more)
+Cohesion: 0.32
+Nodes (11): getDb(), annulDocument(), reverseCashFor(), reverseStockFor(), cashBalance(), count(), one(), stockQty() (+3 more)
 
 ### Community 2 - "page.tsx"
 Cohesion: 0.07
 Nodes (58): actionOptions, actionVariant, AuditEntry, AuditPage(), DashboardLayout(), DashboardData, DashboardPage(), SubscriptionRow (+50 more)
 
 ### Community 3 - "sync.ts"
-Cohesion: 0.08
-Nodes (61): apiCreateDocument(), apiFetch(), apiGetClient(), apiGetClients(), apiGetDocuments(), apiGetProduct(), apiGetProducts(), apiGetStock() (+53 more)
+Cohesion: 0.07
+Nodes (67): apiCreateDocument(), apiFetch(), apiGetClient(), apiGetClients(), apiGetDocuments(), apiGetProduct(), apiGetProducts(), apiGetStock() (+59 more)
 
 ### Community 4 - "main.ts"
 Cohesion: 0.05
@@ -167,16 +177,16 @@ Cohesion: 0.08
 Nodes (33): LoginScreen(), styles, Index(), RootLayout(), ClientRow, styles, DashboardKpis, DashboardScreen() (+25 more)
 
 ### Community 6 - "dependencies"
-Cohesion: 0.04
-Nodes (48): dependencies, @asimov/shared, bcryptjs, class-transformer, class-validator, helmet, @nestjs/common, @nestjs/config (+40 more)
+Cohesion: 0.09
+Nodes (23): dependencies, @asimov/shared, bcryptjs, class-transformer, class-validator, fast-xml-parser, helmet, @nestjs/common (+15 more)
 
 ### Community 7 - "BillingService"
 Cohesion: 0.07
 Nodes (19): Cron, BillingController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param (+11 more)
 
 ### Community 8 - "Fases"
-Cohesion: 0.05
-Nodes (38): API v2 (`v2/packages/api/src/modules/sync/`), Asimov Desktop ↔ Nube — Sincronización multi-PC, Decisiones pendientes (definir antes de implementar), Desktop (`src/`), Estado actual (lo que YA existe), Impacto en releases, Lo que FALTA para cumplir el objetivo, Modelo conceptual (+30 more)
+Cohesion: 0.20
+Nodes (10): API v2 (`v2/packages/api/src/modules/sync/`), Asimov Desktop ↔ Nube — Sincronización multi-PC, Decisiones pendientes (definir antes de implementar), Desktop (`src/`), Estado actual (lo que YA existe), Impacto en releases, Lo que FALTA para cumplir el objetivo, Modelo conceptual (+2 more)
 
 ### Community 9 - "package.json"
 Cohesion: 0.05
@@ -191,12 +201,12 @@ Cohesion: 0.10
 Nodes (17): ProductsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+9 more)
 
 ### Community 12 - "PrismaService"
-Cohesion: 0.12
-Nodes (10): PlanLimitGuard, Injectable, TenantStatusGuard, Injectable, PrismaService, Injectable, makeConfig(), makeJwt() (+2 more)
+Cohesion: 0.08
+Nodes (18): PlanLimitGuard, Injectable, TenantStatusGuard, Injectable, HealthController, Controller, Get, Public (+10 more)
 
 ### Community 13 - "afip.service.ts"
-Cohesion: 0.18
-Nodes (11): AFIP_IVA_CODES, AfipAlicIva, AfipAuthResult, AfipInvoiceData, afipIvaCode(), AfipService, buildIvaAlicuotas(), buildLoginTicketRequest() (+3 more)
+Cohesion: 0.07
+Nodes (52): certNotAfter(), decryptSecret(), encryptSecret(), isEncrypted(), loadEncKey(), signTRA(), AFIP_IVA_CODES, AfipAlicIva (+44 more)
 
 ### Community 14 - "TenantController"
 Cohesion: 0.07
@@ -207,7 +217,7 @@ Cohesion: 0.06
 Nodes (30): dependencies, @asimov/shared, date-fns, expo, expo-camera, expo-local-authentication, expo-notifications, expo-router (+22 more)
 
 ### Community 16 - "CustomizationService"
-Cohesion: 0.10
+Cohesion: 0.09
 Nodes (15): CustomizationController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param, Patch (+7 more)
 
 ### Community 17 - "package.json"
@@ -215,23 +225,23 @@ Cohesion: 0.07
 Nodes (29): default, import, types, default, dependencies, zod, devDependencies, typescript (+21 more)
 
 ### Community 18 - "app.module.ts"
-Cohesion: 0.16
-Nodes (12): Global, AppModule, Module, PrismaModule, Module, bootstrap(), AfipModule, Module (+4 more)
+Cohesion: 0.12
+Nodes (16): Global, AppModule, Module, PrismaModule, Module, bootstrap(), AfipModule, Module (+8 more)
 
 ### Community 19 - "AuthService"
-Cohesion: 0.10
-Nodes (30): AirLocalConfig, airPost(), AirProductNormalized, AirRateLimitError, airRequest(), AirSyncResult, asArray(), extractJson() (+22 more)
+Cohesion: 0.05
+Nodes (89): AirLocalConfig, airPost(), AirProductNormalized, AirRateLimitError, airRequest(), AirSyncResult, asArray(), enqueueAirConfigCloudSync() (+81 more)
 
 ### Community 20 - "dependencies"
 Cohesion: 0.07
 Nodes (27): dependencies, @asimov/shared, clsx, date-fns, lucide-react, next, react, react-dom (+19 more)
 
 ### Community 21 - "ReportsController"
-Cohesion: 0.11
-Nodes (16): ReportsController, ApiBearerAuth, ApiTags, Controller, Get, Query, Res, Roles (+8 more)
+Cohesion: 0.16
+Nodes (10): ReportsController, ApiBearerAuth, ApiTags, Controller, Get, Query, Res, Roles (+2 more)
 
 ### Community 22 - "StockController"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (14): StockController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param, Post (+6 more)
 
 ### Community 23 - "What You Must Do When Invoked"
@@ -243,8 +253,8 @@ Cohesion: 0.10
 Nodes (17): ClientsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+9 more)
 
 ### Community 25 - "DocumentsService"
-Cohesion: 0.15
-Nodes (12): DocumentsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Get, Param (+4 more)
+Cohesion: 0.10
+Nodes (16): DocumentsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Get, Param (+8 more)
 
 ### Community 26 - "SuppliersController"
 Cohesion: 0.10
@@ -259,8 +269,8 @@ Cohesion: 0.09
 Nodes (22): 1. Competidores — Argentina, 2. Competidores — España, 3. Contexto legal (argumento de venta), 4. Análisis de landings (qué tomamos de cada una), 5. Propuesta de planes Asimov (3 planes, por país), 6. FAQ definidas según el research, Argentina (ARS/mes + IVA), Asimov ERP — Research de mercado y precios (+14 more)
 
 ### Community 29 - "RequestUser"
-Cohesion: 0.22
-Nodes (23): enqueueAirConfigCloudSync(), fetchArticulosPage(), getAirLocalConfig(), isAirEnabled(), resetAirAuthCache(), runAirSync(), startAirSyncTimer(), stopAirSyncTimer() (+15 more)
+Cohesion: 0.15
+Nodes (15): closeDb(), initDb(), applySourceLink(), DOC_TABLES, getLinksFor(), LinkableDocType, PendingDoc, ResolvedLink (+7 more)
 
 ### Community 30 - "SyncService"
 Cohesion: 0.10
@@ -391,52 +401,92 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ### Community 94 - "getDb"
-Cohesion: 0.24
-Nodes (15): computeArsPrice(), DOLAR_CASAS, DolarRate, fetchDolarRates(), getLatestRates(), parseDolarResponse(), refreshDolarNow(), repriceArticlesFromUsd() (+7 more)
+Cohesion: 0.25
+Nodes (16): dbAll(), computeArsPrice(), DOLAR_CASAS, DolarRate, fetchDolarRates(), getLatestRates(), getRateHistory(), parseDolarResponse() (+8 more)
 
 ### Community 95 - "migration.sql"
 Cohesion: 0.19
 Nodes (25): "account_movements", "audit_logs", "cash_accounts", "cash_movements", "clients", "document_items", "documents", "feature_flags" (+17 more)
 
 ### Community 96 - "masters.ts"
-Cohesion: 0.30
-Nodes (5): CurrentUser, Public(), RequestUser, Roles(), JwtPayload
+Cohesion: 0.20
+Nodes (16): DashboardKpis, getDashboardKpis(), upsertArticle(), upsertClient(), upsertSupplier(), setKitComponents(), ArticleForm, ClientForm (+8 more)
 
 ### Community 97 - "db.ts"
-Cohesion: 0.35
-Nodes (11): getLaunchAtStartup(), setLaunchAtStartup(), applyLaunchAtStartup(), createTrayIcon(), iconPath(), initTray(), rebuildTrayMenu(), setLaunchAtStartupEnabled() (+3 more)
+Cohesion: 0.15
+Nodes (13): scripts, build, db:deploy, db:generate, db:migrate, db:seed, db:studio, dev (+5 more)
 
-### Community 98 - "dbGet"
-Cohesion: 0.18
-Nodes (6): DocumentsModule, Module, CreateDocumentDto, DocumentsService, baseDto, Injectable
+### Community 98 - "RequestUser"
+Cohesion: 0.16
+Nodes (14): CurrentUser, Public(), RequestUser, Roles(), AfipController, ApiBearerAuth, ApiTags, Body (+6 more)
 
-### Community 101 - "AuthService"
-Cohesion: 0.19
-Nodes (9): AfipController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param, Post (+1 more)
+### Community 101 - "kits.ts"
+Cohesion: 0.27
+Nodes (10): computeBuildableStock(), explodeKitComponents(), getKitComponents(), getKitInfo(), KitComponent, KitComponentInput, KitInfo, seedArticle() (+2 more)
 
-### Community 102 - ".audit"
-Cohesion: 0.33
-Nodes (4): HealthController, Controller, Get, Public
+### Community 102 - "prisma.service.ts"
+Cohesion: 0.17
+Nodes (12): devDependencies, @nestjs/cli, @nestjs/schematics, @nestjs/testing, prisma, tsx, @types/bcryptjs, @types/express (+4 more)
+
+### Community 103 - "AfipController"
+Cohesion: 0.50
+Nodes (3): name, private, version
+
+### Community 104 - "health.controller.ts"
+Cohesion: 0.25
+Nodes (12): dbRun(), applyDocEnvelope(), buildDocEnvelope(), deleteDocLocal(), DOC_TABLES, DocTableMap, replaceRow(), reverseCash() (+4 more)
+
+### Community 107 - "customization.module.ts"
+Cohesion: 0.42
+Nodes (9): authenticate(), DEFAULT_ADMIN, ensureUser(), generateInitialPassword(), hashPassword(), seedDefaultAdmin(), setUserPassword(), verifyPassword() (+1 more)
+
+### Community 108 - "stock.module.ts"
+Cohesion: 0.22
+Nodes (9): 1. Sync multi-PC — completar cobertura 🟡, 2. Fase 6.5 — Tests 🟡, 3. Fase 6.6 — Billing real y lanzamiento 🟡, 4. Panel maestro — completar funciones 🟢, 5. App móvil 🟢, 6. Higiene / técnico 🟢, Asimov ERP — Pendientes / Roadmap, Estado general (+1 more)
+
+### Community 110 - "Fases"
+Cohesion: 0.22
+Nodes (9): Fase 0.1 — Monorepo + Shared Package ✅ COMPLETADA, Fase 0.2 — Esquema Prisma Multi-Tenant ✅ COMPLETADA, Fase 1.1 — API NestJS Core ✅ COMPLETADA, Fase 1.2 — Módulos ERP (CRUD) ✅ COMPLETADA, Fase 2 — Panel Maestro Admin (Next.js) ✅ COMPLETADA, Fase 3 — Migración Desktop Electron → API Client ✅ COMPLETADA, Fase 4 — App Móvil Android + iOS (Expo) ✅ COMPLETADA, Fase 5 — AFIP + Reportes + Personalización Avanzada ✅ COMPLETADA (+1 more)
+
+### Community 111 - "AFIP / ARCA — Facturación electrónica: estado y plan de fases"
+Cohesion: 0.29
+Nodes (6): AFIP / ARCA — Facturación electrónica: estado y plan de fases, Estado actual, ❌ Lo que está STUBBEADO / falta, ✅ Lo que YA está (lógica de dominio testeable), Notas técnicas, Referencias
+
+### Community 112 - "Plan de fases"
+Cohesion: 0.29
+Nodes (7): Fase 1 — WSAA real (autenticación) 🔴 *bloqueante de todo lo demás*, Fase 2 — WSFE real (emisión de CAE) 🔴, Fase 3 — Integración en el desktop 🟠, Fase 4 — Cobertura de comprobantes 🟠, Fase 5 — Padrón y extras 🟢, Fase 6 — Homologación → Producción → ARCA 🔴 *gate de salida real*, Plan de fases
+
+### Community 113 - "7. Usabilidad y navegabilidad — plan de fases 🟢"
+Cohesion: 0.29
+Nodes (7): 7. Usabilidad y navegabilidad — plan de fases 🟢, Fase A — Tablas del shell (alto impacto, bajo esfuerzo) 🎯, Fase B — Búsqueda y navegación global, Fase C — Trazabilidad visible y drill-down, Fase D — Flujos de documentos, Fase E — Apartados nuevos, Fase F — Deuda multi-PC de v4.8.0
+
+### Community 115 - "Fase 6 — Billing, QA y Lanzamiento 🔧 EN PROGRESO"
+Cohesion: 0.29
+Nodes (7): 6.1 — Billing (Mercado Pago + Stripe) ✅ COMPLETADA, 6.2 — Ciclo de morosidad automatizado ✅ COMPLETADA, 6.3 — Build verde + tooling monorepo ✅ COMPLETADA, 6.4 — CI/CD ✅ SCAFFOLDEADO, 6.5 — Tests 🔧 EN PROGRESO, 6.6 — Lanzamiento 🔧 EN PROGRESO, Fase 6 — Billing, QA y Lanzamiento 🔧 EN PROGRESO
+
+### Community 116 - "PENDIENTES.md"
+Cohesion: 0.40
+Nodes (3): Asimov ERP v2 — Plan de Trabajo SaaS Multi-Tenant, Resumen, Stack Tecnológico
 
 ## Knowledge Gaps
-- **693 isolated node(s):** `name`, `productName`, `version`, `description`, `type` (+688 more)
+- **719 isolated node(s):** `name`, `productName`, `version`, `description`, `type` (+714 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `RequestUser` connect `masters.ts` to `auth.module.ts`, `AuthService`, `BillingService`, `sequences.controller.ts`, `ProductsController`, `CustomizationService`, `ReportsController`, `StockController`, `ClientsController`, `DocumentsService`, `SuppliersController`, `SyncService`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `CurrentUser` connect `masters.ts` to `AuthService`, `sequences.controller.ts`, `BillingService`, `ProductsController`, `CustomizationService`, `ReportsController`, `StockController`, `ClientsController`, `DocumentsService`, `SuppliersController`, `SyncService`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `PrismaService` connect `PrismaService` to `masters.ts`, `dbGet`, `auth.module.ts`, `.audit`, `BillingService`, `sequences.controller.ts`, `ProductsController`, `afip.service.ts`, `TenantController`, `CustomizationService`, `app.module.ts`, `ReportsController`, `StockController`, `ClientsController`, `SuppliersController`, `SyncService`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `PrismaService` connect `PrismaService` to `RequestUser`, `auth.module.ts`, `sequences.controller.ts`, `BillingService`, `ProductsController`, `afip.service.ts`, `TenantController`, `CustomizationService`, `app.module.ts`, `ReportsController`, `StockController`, `ClientsController`, `DocumentsService`, `SuppliersController`, `SyncService`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `RequestUser` connect `RequestUser` to `auth.module.ts`, `sequences.controller.ts`, `BillingService`, `ProductsController`, `CustomizationService`, `ReportsController`, `StockController`, `ClientsController`, `DocumentsService`, `SuppliersController`, `SyncService`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `CurrentUser` connect `RequestUser` to `sequences.controller.ts`, `BillingService`, `ProductsController`, `CustomizationService`, `ReportsController`, `StockController`, `ClientsController`, `DocumentsService`, `SuppliersController`, `SyncService`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `name`, `productName`, `version` to the rest of the system?**
-  _694 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _720 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `documents.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05476190476190476 - nodes in this community are weakly interconnected._
-- **Should `ipc.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.13903743315508021 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13732004429678848 - nodes in this community are weakly interconnected._
 - **Should `page.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.06518987341772152 - nodes in this community are weakly interconnected._
+- **Should `sync.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.0684931506849315 - nodes in this community are weakly interconnected._

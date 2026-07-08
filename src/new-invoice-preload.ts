@@ -16,6 +16,12 @@ const api = {
   saveInvoice: (invoice: any) => {
     ipcRenderer.send("shell:invoice-saved", { invoice });
   },
+  // Autoriza en AFIP: persiste la factura y pide el CAE en un paso; devuelve
+  // el CAE/número sin cerrar la ventana (para imprimir con CAE).
+  authorizeInvoice: (invoice: any) =>
+    ipcRenderer.invoke("shell:invoice-authorize", { invoice }) as Promise<{ ok: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
+  afipStatus: () =>
+    ipcRenderer.invoke("afip:status") as Promise<{ ok: boolean; data?: { enabled: boolean; cuit: string }; error?: string }>,
   // Documentos entrelazados: traer pedido/remito pendiente del cliente
   listPendingSaleOrders: (clientId: string) =>
     ipcRenderer.invoke("db:doc-links:pending-sale-orders", clientId, "invoice"),

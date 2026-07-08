@@ -1118,6 +1118,50 @@
             <span class="save-msg ok" id="printer-save-msg" style="display:none">✓ Guardada</span>
           </div>
         </div>
+
+        <!-- AFIP / ARCA -->
+        <div class="config-section">
+          <h3>🧾 AFIP / ARCA — Facturación electrónica</h3>
+          <p class="cfg-hint">
+            Cargá el certificado y la clave privada del contribuyente (los generás en el portal de AFIP/ARCA).
+            El desktop se conecta directo a AFIP para pedir el CAE. El certificado se guarda cifrado en esta PC.
+          </p>
+          <div id="afip-status-line" style="font-size:12px;margin-bottom:10px;padding:6px 10px;border-radius:4px;background:rgba(255,255,255,0.05);display:none"></div>
+          <div class="printer-row" style="flex-wrap:wrap;gap:12px">
+            <div class="config-field" style="min-width:180px">
+              <label>CUIT emisor (11 dígitos)</label>
+              <input type="text" id="afip-cuit" placeholder="30712345678" maxlength="13" />
+            </div>
+            <div class="config-field" style="min-width:120px">
+              <label>Punto de venta</label>
+              <input type="number" id="afip-pos" min="1" value="1" />
+            </div>
+            <div class="config-field" style="min-width:160px">
+              <label>Ambiente</label>
+              <select id="afip-env">
+                <option value="homologacion">Homologación (pruebas)</option>
+                <option value="produccion">Producción</option>
+              </select>
+            </div>
+            <label class="cfg-check"><input type="checkbox" id="afip-enabled" /> Habilitar facturación electrónica</label>
+          </div>
+          <div class="printer-row" style="flex-wrap:wrap;gap:12px;margin-top:8px">
+            <div class="config-field" style="min-width:240px;flex:1">
+              <label>Certificado (.crt / .pem) <span id="afip-cert-state" style="opacity:0.7"></span></label>
+              <input type="file" id="afip-cert-file" accept=".crt,.pem,.cer,.txt" />
+            </div>
+            <div class="config-field" style="min-width:240px;flex:1">
+              <label>Clave privada (.key) <span id="afip-key-state" style="opacity:0.7"></span></label>
+              <input type="file" id="afip-key-file" accept=".key,.pem,.txt" />
+            </div>
+          </div>
+          <div class="printer-row" style="margin-top:8px;gap:10px;align-items:center">
+            <button class="btn btn-primary btn-sm" onclick="saveAfip()">💾 Guardar AFIP</button>
+            <button class="btn btn-outline btn-sm" onclick="testAfip()">🔌 Probar conexión</button>
+            <span class="save-msg ok" id="afip-save-msg" style="display:none">✓ Guardado</span>
+            <span id="afip-test-msg" style="font-size:12px"></span>
+          </div>
+        </div>
       </div>
       <div class="config-save-bar">
         <button class="btn btn-primary" onclick="saveConfig()">💾 Guardar cambios</button>
@@ -2571,10 +2615,96 @@
         </div>
       `).join("");
       await loadPrinters(api);
+      await loadAfipConfig(api);
     } catch (e) {
       grid.innerHTML = `<div style="padding:20px;color:var(--danger)">${e.message}</div>`;
     }
   }
+
+  // ── Configuración AFIP ──────────────────────────────────────────────────
+  async function loadAfipConfig(api) {
+    if (!api.afip) return;
+    try {
+      const res = await api.afip.status();
+      if (!res || !res.ok || !res.data) return;
+      const d = res.data;
+      const cuit = document.getElementById("afip-cuit");
+      const pos = document.getElementById("afip-pos");
+      const env = document.getElementById("afip-env");
+      const enabled = document.getElementById("afip-enabled");
+      if (cuit) cuit.value = d.cuit || "";
+      if (pos) pos.value = d.pointOfSale || 1;
+      if (env) env.value = d.env || "homologacion";
+      if (enabled) enabled.checked = !!d.enabled;
+      const certState = document.getElementById("afip-cert-state");
+      const keyState = document.getElementById("afip-key-state");
+      if (certState) certState.textContent = d.hasCert ? "· cargado ✓" : "· sin cargar";
+      if (keyState) keyState.textContent = d.hasKey ? "· cargada ✓" : "· sin cargar";
+      const line = document.getElementById("afip-status-line");
+      if (line) {
+        if (d.enabled && d.hasCert && d.hasKey) {
+          const exp = d.certExpires ? new Date(d.certExpires).toLocaleDateString("es-AR") : "—";
+          const envLabel = d.env === "produccion" ? "PRODUCCIÓN" : "Homologación";
+          line.style.display = "block";
+          line.style.color = d.env === "produccion" ? "#6ed49a" : "#f5a524";
+          line.textContent = `● Facturación electrónica activa · ${envLabel} · certificado vence ${exp}`;
+        } else {
+          line.style.display = "block";
+          line.style.color = "var(--text-muted)";
+          line.textContent = "○ Facturación electrónica no configurada todavía.";
+        }
+      }
+    } catch { /* silencio */ }
+  }
+
+  function readFileText(inputId) {
+    return new Promise((resolve) => {
+      const el = document.getElementById(inputId);
+      const file = el && el.files && el.files[0];
+      if (!file) { resolve(undefined); return; }
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => resolve(undefined);
+      reader.readAsText(file);
+    });
+  }
+
+  window.saveAfip = async function () {
+    const api = await waitForAsimov();
+    const msg = document.getElementById("afip-save-msg");
+    try {
+      const [certPem, keyPem] = await Promise.all([readFileText("afip-cert-file"), readFileText("afip-key-file")]);
+      const res = await api.afip.saveCredentials({
+        cuit: document.getElementById("afip-cuit").value.trim(),
+        pointOfSale: parseInt(document.getElementById("afip-pos").value, 10) || 1,
+        env: document.getElementById("afip-env").value,
+        enabled: document.getElementById("afip-enabled").checked,
+        certPem, keyPem,
+      });
+      if (!res || !res.ok) throw new Error((res && res.error) || "No se pudo guardar");
+      if (msg) { msg.style.display = "inline"; setTimeout(() => { msg.style.display = "none"; }, 2500); }
+      document.getElementById("afip-cert-file").value = "";
+      document.getElementById("afip-key-file").value = "";
+      await loadAfipConfig(api);
+    } catch (e) {
+      alert("❌ " + (e.message || "Error al guardar la configuración de AFIP"));
+    }
+  };
+
+  window.testAfip = async function () {
+    const api = await waitForAsimov();
+    const out = document.getElementById("afip-test-msg");
+    if (out) { out.style.color = "var(--text-muted)"; out.textContent = "Conectando con AFIP…"; }
+    try {
+      const res = await api.afip.testConnection();
+      if (out) {
+        out.style.color = res.ok ? "#6ed49a" : "#e05d5d";
+        out.textContent = (res.ok ? "✓ " : "✗ ") + (res.message || "");
+      }
+    } catch (e) {
+      if (out) { out.style.color = "#e05d5d"; out.textContent = "✗ " + (e.message || "Error"); }
+    }
+  };
 
   async function loadPrinters(api) {
     const sel = document.getElementById("cfg-printer");

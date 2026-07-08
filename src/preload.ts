@@ -297,6 +297,15 @@ const api = {
     },
   },
 
+  // --- AFIP / ARCA (facturación electrónica, desktop directo) ---
+  afip: {
+    status: () => ipcRenderer.invoke("afip:status") as Promise<{ ok: boolean; data?: { enabled: boolean; cuit: string; pointOfSale: number; env: string; hasCert: boolean; hasKey: boolean; certExpires: string | null }; error?: string }>,
+    saveCredentials: (input: { cuit: string; pointOfSale: number; env: string; certPem?: string; keyPem?: string; enabled?: boolean }) =>
+      ipcRenderer.invoke("afip:save-credentials", input) as Promise<{ ok: boolean; data?: { certExpires: string | null }; error?: string }>,
+    testConnection: () => ipcRenderer.invoke("afip:test-connection") as Promise<{ ok: boolean; message: string; expiration?: string }>,
+    requestCae: (input: unknown) => ipcRenderer.invoke("afip:request-cae", input) as Promise<{ ok: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
+  },
+
   // Sincronización con la API v2 (Render). Sirve para el badge de estado
   // en el status bar y para forzar un push/pull manual desde la UI.
   cloudSync: {

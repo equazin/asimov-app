@@ -97,6 +97,22 @@
   "95": "migration.sql",
   "96": "masters.ts",
   "97": "db.ts",
+  "98": "RequestUser",
   "99": "migration.sql",
-  "100": "migration.sql"
+  "100": "migration.sql",
+  "101": "kits.ts",
+  "102": "prisma.service.ts",
+  "103": "AfipController",
+  "104": "health.controller.ts",
+  "105": "document-links.test.ts",
+  "106": "config.ts",
+  "107": "customization.module.ts",
+  "108": "stock.module.ts",
+  "109": "makeStandaloneForm",
+  "110": "Fases",
+  "111": "AFIP / ARCA — Facturación electrónica: estado y plan de fases",
+  "112": "Plan de fases",
+  "113": "7. Usabilidad y navegabilidad — plan de fases 🟢",
+  "115": "Fase 6 — Billing, QA y Lanzamiento 🔧 EN PROGRESO",
+  "116": "PENDIENTES.md"
 }

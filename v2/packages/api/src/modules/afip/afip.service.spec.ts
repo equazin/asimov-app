@@ -51,8 +51,8 @@ describe('buildLoginTicketRequest — TRA del WSAA', () => {
     const tra = buildLoginTicketRequest('wsfe', now);
     expect(tra).toContain('<service>wsfe</service>');
     expect(tra).toContain('<loginTicketRequest version="1.0">');
-    // generationTime en el pasado, expirationTime en el futuro
-    expect(tra).toContain('<generationTime>2026-07-07T11:59:00.000Z</generationTime>');
+    // generationTime en el pasado, expirationTime en el futuro (ventana ±10 min)
+    expect(tra).toContain('<generationTime>2026-07-07T11:50:00.000Z</generationTime>');
     expect(tra).toContain('<expirationTime>2026-07-07T12:10:00.000Z</expirationTime>');
     expect(tra).toContain('<uniqueId>' + Math.floor(now.getTime() / 1000) + '</uniqueId>');
   });

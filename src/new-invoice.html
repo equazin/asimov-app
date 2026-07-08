@@ -1020,7 +1020,7 @@ td{ border-color:var(--border) !important; }
     <button class="footer-btn btn-exit" id="btnExit">🚪 Salir <span class="kbd">ESC</span></button>
     <div class="footer-spacer"></div>
     <button class="footer-btn btn-print" id="btnPrint">🖨️ Imprimir <span class="kbd">F9</span></button>
-    <button class="footer-btn btn-print" disabled title="Enviar a AFIP para obtener CAE (requiere conexión)">📋 Autorizar AFIP</button>
+    <button class="footer-btn btn-print" id="btnAutorizarAfip" title="Guardar y enviar a AFIP para obtener el CAE (requiere certificado configurado)">📋 Autorizar AFIP</button>
     <button class="footer-btn btn-cancel" disabled>🗑️ Anular</button>
     <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
   </div>
@@ -1416,20 +1416,21 @@ td{ border-color:var(--border) !important; }
     /* ─── Footer buttons ─── */
     /* btnNew removed in new theme */
 
-    document.getElementById("btnSave").addEventListener("click", function() {
+    // Valida y arma el payload de la factura. Devuelve null si falta algo.
+    function buildInvoicePayload() {
       if (!document.getElementById("txtClienteNombre").value.trim()) {
         alert("Seleccione un cliente antes de guardar.");
         document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "comprobante") t.click(); });
         document.getElementById("txtClienteNombre").focus();
-        return;
+        return null;
       }
       if (items.length === 0) {
         alert("Agregue al menos un ítem a la factura.");
         document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "items") t.click(); });
-        return;
+        return null;
       }
       recalcTotals();
-      var invoice = {
+      return {
         tipo: tipoActual,
         ptoVta: document.getElementById("txtPtoVta").value,
         nroFact: document.getElementById("txtNroFact").value,
@@ -1442,7 +1443,78 @@ td{ border-color:var(--border) !important; }
         observaciones: document.getElementById("txtObsCliente").value,
         origen: origenDoc,
       };
+    }
+
+    document.getElementById("btnSave").addEventListener("click", function() {
+      var invoice = buildInvoicePayload();
+      if (!invoice) return;
       if (window.asimovNewInvoice) window.asimovNewInvoice.saveInvoice(invoice);
+    });
+
+    // ─── Autorizar en AFIP (guarda + pide CAE, sin cerrar la ventana) ───
+    function setAfipAuthorized(data) {
+      window._caeData = data;
+      var cae = document.getElementById("txtCAE");
+      var venc = document.getElementById("txtFechaCAE");
+      if (cae) cae.value = data.cae || "";
+      if (venc) venc.value = data.caeExpiration || "";
+      var sel = document.getElementById("selEstadoAFIP");
+      if (sel) sel.value = "Autorizada";
+      var inf = document.getElementById("infAfip");
+      if (inf) { inf.textContent = "Autorizada"; inf.style.color = "#2a8a2a"; }
+      var banner = document.getElementById("afipEstadoBanner");
+      if (banner) {
+        banner.className = "afip-estado autorizada";
+        banner.innerHTML = '<span class="estado-icon">✅</span><div class="estado-text">' +
+          '<strong>Autorizada por AFIP</strong><span>CAE ' + (data.cae || "") + ' · N° ' + (data.number || "") + '</span></div>';
+      }
+      if (data.number) {
+        var parts = String(data.number).split("-");
+        if (parts.length === 2) {
+          document.getElementById("txtPtoVta").value = parts[0];
+          document.getElementById("txtNroFact").value = parts[1];
+        }
+      }
+    }
+
+    document.getElementById("btnAutorizarAfip").addEventListener("click", async function() {
+      var btn = this;
+      var invoice = buildInvoicePayload();
+      if (!invoice) return;
+      if (window._caeData && window._caeData.cae) {
+        alert("Esta factura ya tiene CAE: " + window._caeData.cae);
+        return;
+      }
+      if (!window.asimovNewInvoice || !window.asimovNewInvoice.authorizeInvoice) {
+        alert("La facturación electrónica no está disponible en esta ventana.");
+        return;
+      }
+      // Chequeo rápido de configuración antes de intentar.
+      try {
+        var st = await window.asimovNewInvoice.afipStatus();
+        if (!st || !st.ok || !st.data || !st.data.enabled) {
+          alert("La facturación electrónica no está configurada.\n\nAndá a Configuración → AFIP, cargá el certificado y la clave, y habilitala.");
+          return;
+        }
+      } catch (_) { /* seguimos; el main revalida */ }
+
+      btn.disabled = true;
+      var original = btn.innerHTML;
+      btn.innerHTML = "⏳ Autorizando…";
+      try {
+        var res = await window.asimovNewInvoice.authorizeInvoice(invoice);
+        if (!res || !res.ok) throw new Error((res && res.error) || "AFIP no autorizó el comprobante");
+        setAfipAuthorized(res.data);
+        var obs = (res.data.observations || []).map(function(o){ return "[" + o.code + "] " + o.msg; }).join("\n");
+        alert("✅ Factura autorizada por AFIP.\n\nCAE: " + res.data.cae + "\nVence: " + res.data.caeExpiration +
+              "\nN°: " + res.data.number + (obs ? "\n\nObservaciones:\n" + obs : ""));
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "afip") t.click(); });
+      } catch (e) {
+        alert("❌ " + (e.message || "No se pudo autorizar en AFIP"));
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
     });
 
     /* ─── Impresión de comprobante ─── */
@@ -1472,6 +1544,10 @@ td{ border-color:var(--border) !important; }
           return { code: it.codigo, description: it.descripcion, qty: it.cantidad, unit: it.unidad, unitPrice: it.precio, ivaPct: it.iva, lineTotal: Number(it.cantidad) * Number(it.precio) };
         }),
         totals: { subtotal: t.subtotal, iva: t.iva, perc: t.perc || 0, total: t.total },
+        // Datos de AFIP cuando la factura ya fue autorizada (CAE + QR).
+        cae: window._caeData ? window._caeData.cae : "",
+        caeExpiration: window._caeData ? window._caeData.caeExpiration : "",
+        qrDataUrl: window._caeData ? window._caeData.qrDataUrl : "",
       };
     };
     document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("factura"); });

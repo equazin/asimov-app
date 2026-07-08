@@ -18,8 +18,10 @@ import { registerCloudIpcHandlers } from "./ipc-cloud";
 import { getStoredUser } from "./api-client";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
-import { initDb, dbAll } from "./db";
+import { initDb, dbAll, dbGet } from "./db";
 import { startDolarAutoUpdate } from "./dolar";
+import { requestCae } from "./afip-service";
+import { getInvoiceTypeCode } from "./afip/domain";
 import { isAirEnabled } from "./air";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
 import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
@@ -538,6 +540,38 @@ if (!gotLock) {
         catch (err) { console.error("[invoice] no se pudo guardar:", err); }
       }
       if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) newInvoiceWindow.close();
+    });
+    // Autorizar en AFIP desde el formulario: persiste la factura y pide el CAE en
+    // un solo paso, sin cerrar la ventana (para que el operador imprima con CAE).
+    ipcMain.handle("shell:invoice-authorize", async (_event, data: { invoice?: Record<string, unknown> }) => {
+      const invoice = data?.invoice;
+      if (!invoice) return { ok: false, error: "Sin datos de factura." };
+      try {
+        const { id } = persistInvoice(invoice as Record<string, unknown>);
+        const inv = dbGet<{ subtotal: number; iva_amount: number; total: number; tipo: string; client_id: string }>(
+          "SELECT subtotal, iva_amount, total, tipo, client_id FROM invoices WHERE id = ?", [id],
+        );
+        if (!inv) return { ok: false, error: "No se pudo leer la factura recién guardada." };
+        const items = dbAll<{ iva_pct: number; subtotal: number }>(
+          "SELECT iva_pct, subtotal FROM invoice_items WHERE invoice_id = ?", [id],
+        );
+        const client = inv.client_id
+          ? dbGet<{ cuit: string }>("SELECT cuit FROM clients WHERE id = ?", [inv.client_id])
+          : undefined;
+        const result = await requestCae({
+          invoiceId: id,
+          invoiceType: getInvoiceTypeCode(String(inv.tipo || "B"), "responsable_inscripto"),
+          clientCuit: client?.cuit ?? "",
+          net: inv.subtotal,
+          iva: inv.iva_amount,
+          total: inv.total,
+          items: items.map((it) => ({ ivaRate: Number(it.iva_pct) || 0, subtotal: Number(it.subtotal) || 0 })),
+        });
+        notifyShell("shell:invoice-saved");
+        return { ok: true, data: result };
+      } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : String(err) };
+      }
     });
     ipcMain.on("shell:delivery-note-saved", (_event, data: { delivery?: unknown }) => {
       if (data && data.delivery) {
