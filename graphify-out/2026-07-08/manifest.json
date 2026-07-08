@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "v2/packages/api/package.json": {
-    "mtime": 1783091198.6425533,
-    "ast_hash": "37065b0d7cc27c6803459cd317faeaf5",
+    "mtime": 1783520100.87336,
+    "ast_hash": "079106e8167ddc63791754d72460412e",
     "semantic_hash": ""
   },
   "v2/packages/api/prisma/migrations/0000_init/migration.sql": {
@@ -515,8 +515,8 @@
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.controller.ts": {
-    "mtime": 1783087199.4729028,
-    "ast_hash": "43ec1e47cb50459ed8e7b6a7a5208f16",
+    "mtime": 1783520397.4603436,
+    "ast_hash": "87482a6392db30349c68e25c902c4995",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.module.ts": {
@@ -525,13 +525,13 @@
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.service.spec.ts": {
-    "mtime": 1783498953.510787,
-    "ast_hash": "4056f79f709b3ef33cfe0cff52e978fa",
+    "mtime": 1783520385.5367076,
+    "ast_hash": "fe17f6a13517089c0f6cabccffab3775",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/afip/afip.service.ts": {
-    "mtime": 1783498953.5122902,
-    "ast_hash": "265a439e07530a95b55a66609237ae20",
+    "mtime": 1783520378.4165995,
+    "ast_hash": "cb47236ba47f6cfb2de3c6d36e5657af",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/auth/auth.controller.ts": {
@@ -1160,8 +1160,8 @@
     "semantic_hash": ""
   },
   "v2/pnpm-workspace.yaml": {
-    "mtime": 1783087199.503621,
-    "ast_hash": "b8f57dbb2e104a579dd7bd60a6801cc9",
+    "mtime": 1783520061.8791432,
+    "ast_hash": "2e0b795eb5d89d1cd0d771eb87fcdbfe",
     "semantic_hash": ""
   },
   "branding/asimov-icon-master.svg": {
@@ -1352,6 +1352,31 @@
   "AFIP-ARCA.md": {
     "mtime": 1783519603.1149256,
     "ast_hash": "0b1eb95280de561de900e95a338462ac",
+    "semantic_hash": ""
+  },
+  "v2/packages/api/src/modules/afip/afip-crypto.ts": {
+    "mtime": 1783520152.45105,
+    "ast_hash": "917cc245c84c1ea099129fd03a91e2f2",
+    "semantic_hash": ""
+  },
+  "v2/packages/api/src/modules/afip/afip-domain.ts": {
+    "mtime": 1783520291.5718567,
+    "ast_hash": "e0157ce392ca36df59db8d0d2be55887",
+    "semantic_hash": ""
+  },
+  "v2/packages/api/src/modules/afip/afip-integration.spec.ts": {
+    "mtime": 1783520469.2733653,
+    "ast_hash": "5a8397f5458ad52a58f3c80343003c29",
+    "semantic_hash": ""
+  },
+  "v2/packages/api/src/modules/afip/afip-wsaa.ts": {
+    "mtime": 1783520194.9966767,
+    "ast_hash": "1223e94d5e2262be8128128e38ee87d3",
+    "semantic_hash": ""
+  },
+  "v2/packages/api/src/modules/afip/afip-wsfe.ts": {
+    "mtime": 1783520262.7258182,
+    "ast_hash": "a12603fee11bba304fc098951135584e",
     "semantic_hash": ""
   }
 }

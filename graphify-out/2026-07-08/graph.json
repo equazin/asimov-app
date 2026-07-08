@@ -890,7 +890,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_air_getairlocalconfig",
-      "community": 29,
+      "community": 19,
       "norm_label": "getairlocalconfig()"
     },
     {
@@ -900,7 +900,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_air_isairenabled",
-      "community": 29,
+      "community": 19,
       "norm_label": "isairenabled()"
     },
     {
@@ -910,7 +910,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_air_enqueueairconfigcloudsync",
-      "community": 29,
+      "community": 19,
       "norm_label": "enqueueairconfigcloudsync()"
     },
     {
@@ -1030,7 +1030,7 @@
       "source_location": "L251",
       "_origin": "ast",
       "id": "src_air_fetcharticulospage",
-      "community": 29,
+      "community": 19,
       "norm_label": "fetcharticulospage()"
     },
     {
@@ -1180,7 +1180,7 @@
       "source_location": "L412",
       "_origin": "ast",
       "id": "src_air_runairsync",
-      "community": 29,
+      "community": 19,
       "norm_label": "runairsync()"
     },
     {
@@ -1190,7 +1190,7 @@
       "source_location": "L531",
       "_origin": "ast",
       "id": "src_air_testairconnection",
-      "community": 29,
+      "community": 19,
       "norm_label": "testairconnection()"
     },
     {
@@ -1200,7 +1200,7 @@
       "source_location": "L557",
       "_origin": "ast",
       "id": "src_air_startairsynctimer",
-      "community": 29,
+      "community": 19,
       "norm_label": "startairsynctimer()"
     },
     {
@@ -1210,7 +1210,7 @@
       "source_location": "L575",
       "_origin": "ast",
       "id": "src_air_stopairsynctimer",
-      "community": 29,
+      "community": 19,
       "norm_label": "stopairsynctimer()"
     },
     {
@@ -1510,7 +1510,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_auth_sessionuser",
-      "community": 29,
+      "community": 19,
       "norm_label": "sessionuser"
     },
     {
@@ -1780,7 +1780,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_config",
-      "community": 105,
+      "community": 19,
       "norm_label": "config.ts"
     },
     {
@@ -1790,7 +1790,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_config_windowbounds",
-      "community": 105,
+      "community": 4,
       "norm_label": "windowbounds"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_config_shellbackground",
-      "community": 105,
+      "community": 19,
       "norm_label": "shellbackground"
     },
     {
@@ -1810,7 +1810,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_config_bookmarkentry",
-      "community": 105,
+      "community": 19,
       "norm_label": "bookmarkentry"
     },
     {
@@ -1820,7 +1820,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_config_shellpreferences",
-      "community": 105,
+      "community": 19,
       "norm_label": "shellpreferences"
     },
     {
@@ -1830,7 +1830,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_config_printpreferences",
-      "community": 105,
+      "community": 19,
       "norm_label": "printpreferences"
     },
     {
@@ -1840,7 +1840,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "src_config_desktopconfig",
-      "community": 105,
+      "community": 19,
       "norm_label": "desktopconfig"
     },
     {
@@ -1850,7 +1850,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_config_defaults",
-      "community": 105,
+      "community": 19,
       "norm_label": "defaults"
     },
     {
@@ -1860,7 +1860,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_config_store",
-      "community": 105,
+      "community": 19,
       "norm_label": "store"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_location": "L81",
       "_origin": "ast",
       "id": "src_config_getlaunchatstartup",
-      "community": 97,
+      "community": 19,
       "norm_label": "getlaunchatstartup()"
     },
     {
@@ -1900,7 +1900,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_config_setlaunchatstartup",
-      "community": 97,
+      "community": 19,
       "norm_label": "setlaunchatstartup()"
     },
     {
@@ -1910,7 +1910,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_config_getshell",
-      "community": 105,
+      "community": 19,
       "norm_label": "getshell()"
     },
     {
@@ -1920,7 +1920,7 @@
       "source_location": "L97",
       "_origin": "ast",
       "id": "src_config_getshellpreferences",
-      "community": 29,
+      "community": 19,
       "norm_label": "getshellpreferences()"
     },
     {
@@ -1930,7 +1930,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "src_config_setshellbackground",
-      "community": 105,
+      "community": 19,
       "norm_label": "setshellbackground()"
     },
     {
@@ -1940,7 +1940,7 @@
       "source_location": "L113",
       "_origin": "ast",
       "id": "src_config_getbookmarks",
-      "community": 105,
+      "community": 19,
       "norm_label": "getbookmarks()"
     },
     {
@@ -1950,7 +1950,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "src_config_addbookmark",
-      "community": 105,
+      "community": 19,
       "norm_label": "addbookmark()"
     },
     {
@@ -1960,7 +1960,7 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "src_config_removebookmark",
-      "community": 105,
+      "community": 19,
       "norm_label": "removebookmark()"
     },
     {
@@ -1970,7 +1970,7 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "src_config_getprintpreferences",
-      "community": 1,
+      "community": 19,
       "norm_label": "getprintpreferences()"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "src_config_setpreferredprinter",
-      "community": 1,
+      "community": 19,
       "norm_label": "setpreferredprinter()"
     },
     {
@@ -1990,7 +1990,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_config_setsilentprint",
-      "community": 1,
+      "community": 19,
       "norm_label": "setsilentprint()"
     },
     {
@@ -2010,7 +2010,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_db_getdb",
-      "community": 0,
+      "community": 1,
       "norm_label": "getdb()"
     },
     {
@@ -2070,7 +2070,7 @@
       "source_location": "L758",
       "_origin": "ast",
       "id": "src_db_initdb",
-      "community": 96,
+      "community": 29,
       "norm_label": "initdb()"
     },
     {
@@ -2090,7 +2090,7 @@
       "source_location": "L794",
       "_origin": "ast",
       "id": "src_db_dball",
-      "community": 29,
+      "community": 94,
       "norm_label": "dball()"
     },
     {
@@ -2290,7 +2290,7 @@
       "source_location": "L162",
       "_origin": "ast",
       "id": "src_document_links_listpendingsaleorders",
-      "community": 29,
+      "community": 19,
       "norm_label": "listpendingsaleorders()"
     },
     {
@@ -2300,7 +2300,7 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_document_links_listpendingdeliverynotes",
-      "community": 29,
+      "community": 19,
       "norm_label": "listpendingdeliverynotes()"
     },
     {
@@ -2310,7 +2310,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_document_links_getsourceitems",
-      "community": 29,
+      "community": 19,
       "norm_label": "getsourceitems()"
     },
     {
@@ -2370,7 +2370,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_document_sync_docenvelope",
-      "community": 104,
+      "community": 3,
       "norm_label": "docenvelope"
     },
     {
@@ -2780,7 +2780,7 @@
       "source_location": "L592",
       "_origin": "ast",
       "id": "src_documents_reversestockfor",
-      "community": 0,
+      "community": 1,
       "norm_label": "reversestockfor()"
     },
     {
@@ -2790,7 +2790,7 @@
       "source_location": "L603",
       "_origin": "ast",
       "id": "src_documents_reversecashfor",
-      "community": 0,
+      "community": 1,
       "norm_label": "reversecashfor()"
     },
     {
@@ -2830,7 +2830,7 @@
       "source_location": "L643",
       "_origin": "ast",
       "id": "src_documents_annuldocument",
-      "community": 0,
+      "community": 1,
       "norm_label": "annuldocument()"
     },
     {
@@ -2940,7 +2940,7 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "src_dolar_getratehistory",
-      "community": 29,
+      "community": 94,
       "norm_label": "getratehistory()"
     },
     {
@@ -3010,7 +3010,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_ipc",
-      "community": 29,
+      "community": 19,
       "norm_label": "ipc.ts"
     },
     {
@@ -3020,7 +3020,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_ipc_enqueueifcloud",
-      "community": 29,
+      "community": 19,
       "norm_label": "enqueueifcloud()"
     },
     {
@@ -3030,7 +3030,7 @@
       "source_location": "L57",
       "_origin": "ast",
       "id": "src_ipc_ipcdeps",
-      "community": 29,
+      "community": 19,
       "norm_label": "ipcdeps"
     },
     {
@@ -3040,7 +3040,7 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "src_ipc_normalizeshellbackground",
-      "community": 29,
+      "community": 19,
       "norm_label": "normalizeshellbackground()"
     },
     {
@@ -3050,7 +3050,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_ipc_safestr",
-      "community": 29,
+      "community": 19,
       "norm_label": "safestr()"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "src_ipc_registeripchandlers",
-      "community": 29,
+      "community": 19,
       "norm_label": "registeripchandlers()"
     },
     {
@@ -3110,7 +3110,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_kits_setkitcomponents",
-      "community": 101,
+      "community": 96,
       "norm_label": "setkitcomponents()"
     },
     {
@@ -3120,7 +3120,7 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "src_kits_getkitcomponents",
-      "community": 29,
+      "community": 101,
       "norm_label": "getkitcomponents()"
     },
     {
@@ -3140,7 +3140,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "src_kits_getkitinfo",
-      "community": 29,
+      "community": 101,
       "norm_label": "getkitinfo()"
     },
     {
@@ -3490,7 +3490,7 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "src_main_registerglobalshortcuts",
-      "community": 1,
+      "community": 4,
       "norm_label": "registerglobalshortcuts()"
     },
     {
@@ -3500,7 +3500,7 @@
       "source_location": "L266",
       "_origin": "ast",
       "id": "src_main_opennativeform",
-      "community": 106,
+      "community": 4,
       "norm_label": "opennativeform()"
     },
     {
@@ -3610,7 +3610,7 @@
       "source_location": "L898",
       "_origin": "ast",
       "id": "src_main_makestandaloneform",
-      "community": 106,
+      "community": 4,
       "norm_label": "makestandaloneform()"
     },
     {
@@ -3620,7 +3620,7 @@
       "source_location": "L920",
       "_origin": "ast",
       "id": "src_main_createnewarticlewindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewarticlewindowstandalone()"
     },
     {
@@ -3630,7 +3630,7 @@
       "source_location": "L924",
       "_origin": "ast",
       "id": "src_main_createnewclientwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewclientwindowstandalone()"
     },
     {
@@ -3640,7 +3640,7 @@
       "source_location": "L928",
       "_origin": "ast",
       "id": "src_main_createnewsupplierwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewsupplierwindowstandalone()"
     },
     {
@@ -3650,7 +3650,7 @@
       "source_location": "L932",
       "_origin": "ast",
       "id": "src_main_createnewsaleorderwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewsaleorderwindowstandalone()"
     },
     {
@@ -3660,7 +3660,7 @@
       "source_location": "L936",
       "_origin": "ast",
       "id": "src_main_createnewquotewindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewquotewindowstandalone()"
     },
     {
@@ -3670,7 +3670,7 @@
       "source_location": "L940",
       "_origin": "ast",
       "id": "src_main_createnewinvoicewindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewinvoicewindowstandalone()"
     },
     {
@@ -3680,7 +3680,7 @@
       "source_location": "L944",
       "_origin": "ast",
       "id": "src_main_createnewdeliverynotewindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewdeliverynotewindowstandalone()"
     },
     {
@@ -3690,7 +3690,7 @@
       "source_location": "L948",
       "_origin": "ast",
       "id": "src_main_createnewreceiptwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewreceiptwindowstandalone()"
     },
     {
@@ -3700,7 +3700,7 @@
       "source_location": "L952",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseorderwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewpurchaseorderwindowstandalone()"
     },
     {
@@ -3710,7 +3710,7 @@
       "source_location": "L956",
       "_origin": "ast",
       "id": "src_main_createnewgoodsreceiptwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewgoodsreceiptwindowstandalone()"
     },
     {
@@ -3720,7 +3720,7 @@
       "source_location": "L960",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseinvoicewindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewpurchaseinvoicewindowstandalone()"
     },
     {
@@ -3730,7 +3730,7 @@
       "source_location": "L964",
       "_origin": "ast",
       "id": "src_main_createnewpaymentorderwindowstandalone",
-      "community": 106,
+      "community": 4,
       "norm_label": "createnewpaymentorderwindowstandalone()"
     },
     {
@@ -3840,7 +3840,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_menu",
-      "community": 1,
+      "community": 19,
       "norm_label": "menu.ts"
     },
     {
@@ -3850,7 +3850,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_menu_menudeps",
-      "community": 1,
+      "community": 19,
       "norm_label": "menudeps"
     },
     {
@@ -3860,7 +3860,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_menu_nativeformtype",
-      "community": 1,
+      "community": 19,
       "norm_label": "nativeformtype"
     },
     {
@@ -3870,7 +3870,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_menu_focusedwindow",
-      "community": 1,
+      "community": 19,
       "norm_label": "focusedwindow()"
     },
     {
@@ -3880,7 +3880,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_menu_focusedcontents",
-      "community": 1,
+      "community": 19,
       "norm_label": "focusedcontents()"
     },
     {
@@ -3890,7 +3890,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_menu_broadcast",
-      "community": 1,
+      "community": 19,
       "norm_label": "broadcast()"
     },
     {
@@ -3900,7 +3900,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "src_menu_navigate",
-      "community": 1,
+      "community": 19,
       "norm_label": "navigate()"
     },
     {
@@ -3910,7 +3910,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_menu_currenttitle",
-      "community": 1,
+      "community": 19,
       "norm_label": "currenttitle()"
     },
     {
@@ -3920,7 +3920,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_menu_currentpath",
-      "community": 1,
+      "community": 19,
       "norm_label": "currentpath()"
     },
     {
@@ -3930,7 +3930,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_menu_setbackground",
-      "community": 1,
+      "community": 19,
       "norm_label": "setbackground()"
     },
     {
@@ -3940,7 +3940,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "src_menu_choosebackgroundimage",
-      "community": 1,
+      "community": 19,
       "norm_label": "choosebackgroundimage()"
     },
     {
@@ -3950,7 +3950,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_menu_showprintersetup",
-      "community": 1,
+      "community": 19,
       "norm_label": "showprintersetup()"
     },
     {
@@ -3960,7 +3960,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "src_menu_bookmarkmenuitems",
-      "community": 1,
+      "community": 19,
       "norm_label": "bookmarkmenuitems()"
     },
     {
@@ -3970,7 +3970,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "src_menu_nativeentry",
-      "community": 1,
+      "community": 19,
       "norm_label": "nativeentry"
     },
     {
@@ -3980,7 +3980,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "src_menu_modules",
-      "community": 1,
+      "community": 19,
       "norm_label": "modules"
     },
     {
@@ -3990,7 +3990,7 @@
       "source_location": "L196",
       "_origin": "ast",
       "id": "src_menu_modulemenu",
-      "community": 1,
+      "community": 19,
       "norm_label": "modulemenu()"
     },
     {
@@ -4000,7 +4000,7 @@
       "source_location": "L210",
       "_origin": "ast",
       "id": "src_menu_buildappmenu",
-      "community": 1,
+      "community": 19,
       "norm_label": "buildappmenu()"
     },
     {
@@ -4640,7 +4640,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_sync_enqueuechange",
-      "community": 29,
+      "community": 96,
       "norm_label": "enqueuechange()"
     },
     {
@@ -4830,7 +4830,7 @@
       "source_location": "L497",
       "_origin": "ast",
       "id": "src_sync_applyairconfig",
-      "community": 19,
+      "community": 3,
       "norm_label": "applyairconfig()"
     },
     {
@@ -4940,7 +4940,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_tray",
-      "community": 97,
+      "community": 19,
       "norm_label": "tray.ts"
     },
     {
@@ -4950,7 +4950,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_tray_traydeps",
-      "community": 97,
+      "community": 19,
       "norm_label": "traydeps"
     },
     {
@@ -4960,7 +4960,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_tray_iconpath",
-      "community": 97,
+      "community": 19,
       "norm_label": "iconpath()"
     },
     {
@@ -4970,7 +4970,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_tray_createtrayicon",
-      "community": 97,
+      "community": 19,
       "norm_label": "createtrayicon()"
     },
     {
@@ -4980,7 +4980,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_tray_showwindow",
-      "community": 97,
+      "community": 19,
       "norm_label": "showwindow()"
     },
     {
@@ -4990,7 +4990,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_tray_applylaunchatstartup",
-      "community": 97,
+      "community": 19,
       "norm_label": "applylaunchatstartup()"
     },
     {
@@ -5010,7 +5010,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_tray_synclaunchatstartup",
-      "community": 97,
+      "community": 19,
       "norm_label": "synclaunchatstartup()"
     },
     {
@@ -5020,7 +5020,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_tray_setlaunchatstartupenabled",
-      "community": 97,
+      "community": 19,
       "norm_label": "setlaunchatstartupenabled()"
     },
     {
@@ -5030,7 +5030,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "src_tray_inittray",
-      "community": 97,
+      "community": 19,
       "norm_label": "inittray()"
     },
     {
@@ -5040,7 +5040,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_tray_rebuildtraymenu",
-      "community": 97,
+      "community": 19,
       "norm_label": "rebuildtraymenu()"
     },
     {
@@ -5050,7 +5050,7 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "src_tray_notifyupdateavailable",
-      "community": 97,
+      "community": 19,
       "norm_label": "notifyupdateavailable()"
     },
     {
@@ -5060,7 +5060,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_updater",
-      "community": 97,
+      "community": 4,
       "norm_label": "updater.ts"
     },
     {
@@ -5070,7 +5070,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_updater_au",
-      "community": 97,
+      "community": 4,
       "norm_label": "au"
     },
     {
@@ -5090,7 +5090,7 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_updater_checkforupdatemanual",
-      "community": 97,
+      "community": 4,
       "norm_label": "checkforupdatemanual()"
     },
     {
@@ -5100,7 +5100,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_air_test",
-      "community": 19,
+      "community": 29,
       "norm_label": "air.test.ts"
     },
     {
@@ -5110,7 +5110,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "test_air_test_jsonresponse",
-      "community": 19,
+      "community": 29,
       "norm_label": "jsonresponse()"
     },
     {
@@ -5120,7 +5120,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "test_air_test_rawresponse",
-      "community": 19,
+      "community": 29,
       "norm_label": "rawresponse()"
     },
     {
@@ -5130,7 +5130,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "test_air_test_seedairconfig",
-      "community": 19,
+      "community": 29,
       "norm_label": "seedairconfig()"
     },
     {
@@ -5190,7 +5190,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_document_sync_test",
-      "community": 96,
+      "community": 1,
       "norm_label": "document-sync.test.ts"
     },
     {
@@ -5200,7 +5200,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "test_document_sync_test_one",
-      "community": 96,
+      "community": 1,
       "norm_label": "one()"
     },
     {
@@ -5210,7 +5210,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "test_document_sync_test_count",
-      "community": 96,
+      "community": 1,
       "norm_label": "count()"
     },
     {
@@ -5220,7 +5220,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "test_document_sync_test_stockqty",
-      "community": 96,
+      "community": 1,
       "norm_label": "stockqty()"
     },
     {
@@ -5230,7 +5230,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "test_document_sync_test_cashbalance",
-      "community": 96,
+      "community": 1,
       "norm_label": "cashbalance()"
     },
     {
@@ -5320,7 +5320,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_helpers",
-      "community": 96,
+      "community": 1,
       "norm_label": "helpers.ts"
     },
     {
@@ -5330,7 +5330,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "test_helpers_inittestdb",
-      "community": 96,
+      "community": 1,
       "norm_label": "inittestdb()"
     },
     {
@@ -5340,7 +5340,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "test_helpers_resetledger",
-      "community": 96,
+      "community": 1,
       "norm_label": "resetledger()"
     },
     {
@@ -5350,7 +5350,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "test_helpers_seedarticle",
-      "community": 96,
+      "community": 1,
       "norm_label": "seedarticle()"
     },
     {
@@ -7360,7 +7360,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_package",
-      "community": 6,
+      "community": 103,
       "norm_label": "package.json"
     },
     {
@@ -7370,7 +7370,7 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "v2_packages_api_package_name",
-      "community": 6,
+      "community": 103,
       "norm_label": "name"
     },
     {
@@ -7380,7 +7380,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "v2_packages_api_package_version",
-      "community": 6,
+      "community": 103,
       "norm_label": "version"
     },
     {
@@ -7390,7 +7390,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_package_private",
-      "community": 6,
+      "community": 103,
       "norm_label": "private"
     },
     {
@@ -7400,7 +7400,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts",
-      "community": 6,
+      "community": 97,
       "norm_label": "scripts"
     },
     {
@@ -7410,7 +7410,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_build",
-      "community": 6,
+      "community": 97,
       "norm_label": "build"
     },
     {
@@ -7420,7 +7420,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_dev",
-      "community": 6,
+      "community": 97,
       "norm_label": "dev"
     },
     {
@@ -7430,7 +7430,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_start",
-      "community": 6,
+      "community": 97,
       "norm_label": "start"
     },
     {
@@ -7440,7 +7440,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_start_prod",
-      "community": 6,
+      "community": 97,
       "norm_label": "start:prod"
     },
     {
@@ -7450,7 +7450,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_db_deploy",
-      "community": 6,
+      "community": 97,
       "norm_label": "db:deploy"
     },
     {
@@ -7460,7 +7460,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_lint",
-      "community": 6,
+      "community": 97,
       "norm_label": "lint"
     },
     {
@@ -7470,7 +7470,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_test",
-      "community": 6,
+      "community": 97,
       "norm_label": "test"
     },
     {
@@ -7480,7 +7480,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_test_watch",
-      "community": 6,
+      "community": 97,
       "norm_label": "test:watch"
     },
     {
@@ -7490,7 +7490,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_db_generate",
-      "community": 6,
+      "community": 97,
       "norm_label": "db:generate"
     },
     {
@@ -7500,7 +7500,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_db_migrate",
-      "community": 6,
+      "community": 97,
       "norm_label": "db:migrate"
     },
     {
@@ -7510,7 +7510,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_db_studio",
-      "community": 6,
+      "community": 97,
       "norm_label": "db:studio"
     },
     {
@@ -7520,7 +7520,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "v2_packages_api_package_scripts_db_seed",
-      "community": 6,
+      "community": 97,
       "norm_label": "db:seed"
     },
     {
@@ -7664,20 +7664,40 @@
       "norm_label": "class-validator"
     },
     {
-      "label": "helmet",
+      "label": "fast-xml-parser",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
       "source_location": "L33",
+      "_origin": "ast",
+      "id": "v2_packages_api_package_dependencies_fast_xml_parser",
+      "community": 6,
+      "norm_label": "fast-xml-parser"
+    },
+    {
+      "label": "helmet",
+      "file_type": "code",
+      "source_file": "v2/packages/api/package.json",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_helmet",
       "community": 6,
       "norm_label": "helmet"
     },
     {
+      "label": "node-forge",
+      "file_type": "code",
+      "source_file": "v2/packages/api/package.json",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "v2_packages_api_package_dependencies_node_forge",
+      "community": 6,
+      "norm_label": "node-forge"
+    },
+    {
       "label": "otplib",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L34",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_otplib",
       "community": 6,
@@ -7687,7 +7707,7 @@
       "label": "passport",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L35",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_passport",
       "community": 6,
@@ -7697,7 +7717,7 @@
       "label": "passport-jwt",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L36",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_passport_jwt",
       "community": 6,
@@ -7707,7 +7727,7 @@
       "label": "reflect-metadata",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L37",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_reflect_metadata",
       "community": 6,
@@ -7717,7 +7737,7 @@
       "label": "rxjs",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L38",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_rxjs",
       "community": 6,
@@ -7727,7 +7747,7 @@
       "label": "zod",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L39",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "v2_packages_api_package_dependencies_zod",
       "community": 6,
@@ -7737,110 +7757,120 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L41",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies",
-      "community": 6,
+      "community": 102,
       "norm_label": "devdependencies"
     },
     {
       "label": "@nestjs/cli",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L42",
+      "source_location": "L44",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_nestjs_cli",
-      "community": 6,
+      "community": 102,
       "norm_label": "@nestjs/cli"
     },
     {
       "label": "@nestjs/schematics",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L43",
+      "source_location": "L45",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_nestjs_schematics",
-      "community": 6,
+      "community": 102,
       "norm_label": "@nestjs/schematics"
     },
     {
       "label": "@nestjs/testing",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L44",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_nestjs_testing",
-      "community": 6,
+      "community": 102,
       "norm_label": "@nestjs/testing"
     },
     {
       "label": "@types/bcryptjs",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L45",
+      "source_location": "L47",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_types_bcryptjs",
-      "community": 6,
+      "community": 102,
       "norm_label": "@types/bcryptjs"
     },
     {
       "label": "@types/express",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L46",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_types_express",
-      "community": 6,
+      "community": 102,
       "norm_label": "@types/express"
+    },
+    {
+      "label": "@types/node-forge",
+      "file_type": "code",
+      "source_file": "v2/packages/api/package.json",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "v2_packages_api_package_devdependencies_types_node_forge",
+      "community": 102,
+      "norm_label": "@types/node-forge"
     },
     {
       "label": "@types/passport-jwt",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L47",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_types_passport_jwt",
-      "community": 6,
+      "community": 102,
       "norm_label": "@types/passport-jwt"
     },
     {
       "label": "prisma",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L48",
+      "source_location": "L51",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_prisma",
-      "community": 6,
+      "community": 102,
       "norm_label": "prisma"
     },
     {
       "label": "tsx",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L49",
+      "source_location": "L52",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_tsx",
-      "community": 6,
+      "community": 102,
       "norm_label": "tsx"
     },
     {
       "label": "typescript",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L50",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_typescript",
-      "community": 6,
+      "community": 102,
       "norm_label": "typescript"
     },
     {
       "label": "vitest",
       "file_type": "code",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L51",
+      "source_location": "L54",
       "_origin": "ast",
       "id": "v2_packages_api_package_devdependencies_vitest",
-      "community": 6,
+      "community": 102,
       "norm_label": "vitest"
     },
     {
@@ -8430,7 +8460,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard",
-      "community": 37,
+      "community": 12,
       "norm_label": "tenant-status.guard.ts"
     },
     {
@@ -8440,7 +8470,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_tenantstatusguard",
-      "community": 37,
+      "community": 12,
       "norm_label": "tenantstatusguard"
     },
     {
@@ -8450,7 +8480,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_ts_injectable",
-      "community": 37,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -8460,7 +8490,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_tenantstatusguard_constructor",
-      "community": 37,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -8470,7 +8500,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_tenantstatusguard_canactivate",
-      "community": 37,
+      "community": 12,
       "norm_label": ".canactivate()"
     },
     {
@@ -8664,6 +8694,546 @@
       "norm_label": "bootstrap()"
     },
     {
+      "label": "afip-crypto.ts",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto",
+      "community": 13,
+      "norm_label": "afip-crypto.ts"
+    },
+    {
+      "label": "loadEncKey()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto_loadenckey",
+      "community": 13,
+      "norm_label": "loadenckey()"
+    },
+    {
+      "label": "encryptSecret()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto_encryptsecret",
+      "community": 13,
+      "norm_label": "encryptsecret()"
+    },
+    {
+      "label": "decryptSecret()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto_decryptsecret",
+      "community": 13,
+      "norm_label": "decryptsecret()"
+    },
+    {
+      "label": "isEncrypted()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L68",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto_isencrypted",
+      "community": 13,
+      "norm_label": "isencrypted()"
+    },
+    {
+      "label": "signTRA()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto_signtra",
+      "community": 13,
+      "norm_label": "signtra()"
+    },
+    {
+      "label": "certNotAfter()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_crypto_certnotafter",
+      "community": 13,
+      "norm_label": "certnotafter()"
+    },
+    {
+      "label": "afip-domain.ts",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain",
+      "community": 13,
+      "norm_label": "afip-domain.ts"
+    },
+    {
+      "label": "AFIP_IVA_CODES",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_afip_iva_codes",
+      "community": 13,
+      "norm_label": "afip_iva_codes"
+    },
+    {
+      "label": "afipIvaCode()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_afipivacode",
+      "community": 13,
+      "norm_label": "afipivacode()"
+    },
+    {
+      "label": "round2()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_round2",
+      "community": 13,
+      "norm_label": "round2()"
+    },
+    {
+      "label": "AfipAlicIva",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_afipaliciva",
+      "community": 13,
+      "norm_label": "afipaliciva"
+    },
+    {
+      "label": "buildIvaAlicuotas()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "community": 13,
+      "norm_label": "buildivaalicuotas()"
+    },
+    {
+      "label": "getInvoiceTypeCode()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_getinvoicetypecode",
+      "community": 13,
+      "norm_label": "getinvoicetypecode()"
+    },
+    {
+      "label": "receptorDocType()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L76",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_domain_receptordoctype",
+      "community": 13,
+      "norm_label": "receptordoctype()"
+    },
+    {
+      "label": "afip-integration.spec.ts",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "community": 13,
+      "norm_label": "afip-integration.spec.ts"
+    },
+    {
+      "label": "makeSelfSigned()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_integration_spec_makeselfsigned",
+      "community": 13,
+      "norm_label": "makeselfsigned()"
+    },
+    {
+      "label": "KEY32",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_integration_spec_key32",
+      "community": 13,
+      "norm_label": "key32"
+    },
+    {
+      "label": "escapeForXml()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L266",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_integration_spec_escapeforxml",
+      "community": 13,
+      "norm_label": "escapeforxml()"
+    },
+    {
+      "label": "afip-wsaa.ts",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "community": 13,
+      "norm_label": "afip-wsaa.ts"
+    },
+    {
+      "label": "AfipTA",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "community": 13,
+      "norm_label": "afipta"
+    },
+    {
+      "label": "WSAA_URLS",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_wsaa_urls",
+      "community": 13,
+      "norm_label": "wsaa_urls"
+    },
+    {
+      "label": "buildLoginTicketRequest()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_buildloginticketrequest",
+      "community": 13,
+      "norm_label": "buildloginticketrequest()"
+    },
+    {
+      "label": "buildLoginCmsEnvelope()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_buildlogincmsenvelope",
+      "community": 13,
+      "norm_label": "buildlogincmsenvelope()"
+    },
+    {
+      "label": "xmlParser",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_xmlparser",
+      "community": 13,
+      "norm_label": "xmlparser"
+    },
+    {
+      "label": "extractLoginCmsReturn()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_extractlogincmsreturn",
+      "community": 13,
+      "norm_label": "extractlogincmsreturn()"
+    },
+    {
+      "label": "parseLoginTicketResponse()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L72",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_parseloginticketresponse",
+      "community": 13,
+      "norm_label": "parseloginticketresponse()"
+    },
+    {
+      "label": "isTaValid()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L90",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_istavalid",
+      "community": 13,
+      "norm_label": "istavalid()"
+    },
+    {
+      "label": "callLoginCms()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "community": 13,
+      "norm_label": "calllogincms()"
+    },
+    {
+      "label": "findDeep()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L120",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsaa_finddeep",
+      "community": 13,
+      "norm_label": "finddeep()"
+    },
+    {
+      "label": "afip-wsfe.ts",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "community": 13,
+      "norm_label": "afip-wsfe.ts"
+    },
+    {
+      "label": "WSFE_URLS",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_wsfe_urls",
+      "community": 13,
+      "norm_label": "wsfe_urls"
+    },
+    {
+      "label": "FeCabecera",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_fecabecera",
+      "community": 13,
+      "norm_label": "fecabecera"
+    },
+    {
+      "label": "FeComprobante",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_fecomprobante",
+      "community": 13,
+      "norm_label": "fecomprobante"
+    },
+    {
+      "label": "CaeSuccess",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_caesuccess",
+      "community": 13,
+      "norm_label": "caesuccess"
+    },
+    {
+      "label": "CaeRejected",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_caerejected",
+      "community": 13,
+      "norm_label": "caerejected"
+    },
+    {
+      "label": "CaeResult",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_caeresult",
+      "community": 13,
+      "norm_label": "caeresult"
+    },
+    {
+      "label": "AfipMessage",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L63",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_afipmessage",
+      "community": 13,
+      "norm_label": "afipmessage"
+    },
+    {
+      "label": "afipDate()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_afipdate",
+      "community": 13,
+      "norm_label": "afipdate()"
+    },
+    {
+      "label": "round2()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L76",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_round2",
+      "community": 13,
+      "norm_label": "round2()"
+    },
+    {
+      "label": "buildUltimoAutorizadoEnvelope()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L82",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope",
+      "community": 13,
+      "norm_label": "buildultimoautorizadoenvelope()"
+    },
+    {
+      "label": "xmlParser",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_xmlparser",
+      "community": 13,
+      "norm_label": "xmlparser"
+    },
+    {
+      "label": "parseUltimoAutorizado()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L101",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "community": 13,
+      "norm_label": "parseultimoautorizado()"
+    },
+    {
+      "label": "buildFECAESolicitarEnvelope()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "community": 13,
+      "norm_label": "buildfecaesolicitarenvelope()"
+    },
+    {
+      "label": "parseFECAEResponse()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L179",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "community": 13,
+      "norm_label": "parsefecaeresponse()"
+    },
+    {
+      "label": "callWsfe()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L216",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_callwsfe",
+      "community": 13,
+      "norm_label": "callwsfe()"
+    },
+    {
+      "label": "formatAfipDate()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L244",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_formatafipdate",
+      "community": 13,
+      "norm_label": "formatafipdate()"
+    },
+    {
+      "label": "escapeXml()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L249",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_escapexml",
+      "community": 13,
+      "norm_label": "escapexml()"
+    },
+    {
+      "label": "toArray()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L253",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_toarray",
+      "community": 13,
+      "norm_label": "toarray()"
+    },
+    {
+      "label": "collectErrors()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L258",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "community": 13,
+      "norm_label": "collecterrors()"
+    },
+    {
+      "label": "collectObservations()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L263",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_collectobservations",
+      "community": 13,
+      "norm_label": "collectobservations()"
+    },
+    {
+      "label": "mapMessage()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L268",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_mapmessage",
+      "community": 13,
+      "norm_label": "mapmessage()"
+    },
+    {
+      "label": "formatMessages()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L274",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_formatmessages",
+      "community": 13,
+      "norm_label": "formatmessages()"
+    },
+    {
+      "label": "findDeep()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L278",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "community": 13,
+      "norm_label": "finddeep()"
+    },
+    {
       "label": "afip.controller.ts",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
@@ -8680,7 +9250,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller",
-      "community": 13,
+      "community": 98,
       "norm_label": "afipcontroller"
     },
     {
@@ -8690,7 +9260,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_apitags",
-      "community": 13,
+      "community": 98,
       "norm_label": "apitags"
     },
     {
@@ -8700,7 +9270,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_apibearerauth",
-      "community": 13,
+      "community": 98,
       "norm_label": "apibearerauth"
     },
     {
@@ -8710,7 +9280,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_controller",
-      "community": 13,
+      "community": 98,
       "norm_label": "controller"
     },
     {
@@ -8720,7 +9290,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_post",
-      "community": 13,
+      "community": 98,
       "norm_label": "post"
     },
     {
@@ -8730,7 +9300,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_roles",
-      "community": 13,
+      "community": 98,
       "norm_label": "roles"
     },
     {
@@ -8740,7 +9310,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_body",
-      "community": 13,
+      "community": 98,
       "norm_label": "body"
     },
     {
@@ -8750,7 +9320,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_get",
-      "community": 13,
+      "community": 98,
       "norm_label": "get"
     },
     {
@@ -8760,7 +9330,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_param",
-      "community": 13,
+      "community": 98,
       "norm_label": "param"
     },
     {
@@ -8780,7 +9350,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_requestcae",
-      "community": 13,
+      "community": 98,
       "norm_label": ".requestcae()"
     },
     {
@@ -8790,17 +9360,27 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_getlastnumber",
-      "community": 13,
+      "community": 98,
       "norm_label": ".getlastnumber()"
+    },
+    {
+      "label": ".saveCredentials()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "community": 98,
+      "norm_label": ".savecredentials()"
     },
     {
       "label": ".testAuth()",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
-      "source_location": "L55",
+      "source_location": "L65",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
-      "community": 13,
+      "community": 98,
       "norm_label": ".testauth()"
     },
     {
@@ -8854,100 +9434,40 @@
       "norm_label": "afip.service.ts"
     },
     {
-      "label": "AfipAuthResult",
-      "file_type": "code",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afipauthresult",
-      "community": 13,
-      "norm_label": "afipauthresult"
-    },
-    {
-      "label": "CaeResult",
-      "file_type": "code",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L11",
-      "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_caeresult",
-      "community": 13,
-      "norm_label": "caeresult"
-    },
-    {
       "label": "AfipInvoiceData",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L17",
+      "source_location": "L42",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_service_afipinvoicedata",
       "community": 13,
       "norm_label": "afipinvoicedata"
     },
     {
-      "label": "AFIP_IVA_CODES",
+      "label": "CaeResultDto",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L36",
+      "source_location": "L62",
       "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afip_iva_codes",
+      "id": "v2_packages_api_src_modules_afip_afip_service_caeresultdto",
       "community": 13,
-      "norm_label": "afip_iva_codes"
+      "norm_label": "caeresultdto"
     },
     {
-      "label": "afipIvaCode()",
+      "label": "AfipTenantConfig",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L46",
+      "source_location": "L70",
       "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afipivacode",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afiptenantconfig",
       "community": 13,
-      "norm_label": "afipivacode()"
-    },
-    {
-      "label": "round2()",
-      "file_type": "code",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L52",
-      "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_round2",
-      "community": 13,
-      "norm_label": "round2()"
-    },
-    {
-      "label": "AfipAlicIva",
-      "file_type": "code",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L54",
-      "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afipaliciva",
-      "community": 13,
-      "norm_label": "afipaliciva"
-    },
-    {
-      "label": "buildIvaAlicuotas()",
-      "file_type": "code",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L65",
-      "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_buildivaalicuotas",
-      "community": 13,
-      "norm_label": "buildivaalicuotas()"
-    },
-    {
-      "label": "buildLoginTicketRequest()",
-      "file_type": "code",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L88",
-      "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_buildloginticketrequest",
-      "community": 13,
-      "norm_label": "buildloginticketrequest()"
+      "norm_label": "afiptenantconfig"
     },
     {
       "label": "AfipService",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L104",
+      "source_location": "L79",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_service_afipservice",
       "community": 13,
@@ -8967,51 +9487,111 @@
       "label": ".constructor()",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L108",
+      "source_location": "L80",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_constructor",
-      "community": 13,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
-      "label": ".authenticate()",
+      "label": ".encKey()",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L121",
+      "source_location": "L85",
       "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_authenticate",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_enckey",
       "community": 13,
-      "norm_label": ".authenticate()"
+      "norm_label": ".enckey()"
     },
     {
-      "label": ".requestCae()",
+      "label": ".isProdDefault()",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L152",
+      "source_location": "L89",
       "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_isproddefault",
       "community": 13,
-      "norm_label": ".requestcae()"
+      "norm_label": ".isproddefault()"
+    },
+    {
+      "label": ".getInvoiceTypeCode()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_getinvoicetypecode",
+      "community": 13,
+      "norm_label": ".getinvoicetypecode()"
+    },
+    {
+      "label": ".saveCredentials()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L101",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials",
+      "community": 13,
+      "norm_label": ".savecredentials()"
+    },
+    {
+      "label": ".loadConfig()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L131",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_loadconfig",
+      "community": 13,
+      "norm_label": ".loadconfig()"
+    },
+    {
+      "label": ".persistTa()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L145",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_persistta",
+      "community": 13,
+      "norm_label": ".persistta()"
+    },
+    {
+      "label": ".getTA()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L158",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "community": 13,
+      "norm_label": ".getta()"
+    },
+    {
+      "label": ".testAuth()",
+      "file_type": "code",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L175",
+      "_origin": "ast",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_testauth",
+      "community": 13,
+      "norm_label": ".testauth()"
     },
     {
       "label": ".getLastInvoiceNumber()",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L196",
+      "source_location": "L182",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
       "community": 13,
       "norm_label": ".getlastinvoicenumber()"
     },
     {
-      "label": ".getInvoiceTypeCode()",
+      "label": ".requestCae()",
       "file_type": "code",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L218",
+      "source_location": "L191",
       "_origin": "ast",
-      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_getinvoicetypecode",
+      "id": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
       "community": 13,
-      "norm_label": ".getinvoicetypecode()"
+      "norm_label": ".requestcae()"
     },
     {
       "label": "auth.controller.ts",
@@ -9020,7 +9600,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller",
-      "community": 37,
+      "community": 98,
       "norm_label": "auth.controller.ts"
     },
     {
@@ -9030,7 +9610,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller",
-      "community": 103,
+      "community": 14,
       "norm_label": "authcontroller"
     },
     {
@@ -9040,7 +9620,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apitags",
-      "community": 103,
+      "community": 14,
       "norm_label": "apitags"
     },
     {
@@ -9050,7 +9630,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_controller",
-      "community": 103,
+      "community": 14,
       "norm_label": "controller"
     },
     {
@@ -9060,7 +9640,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_public",
-      "community": 103,
+      "community": 14,
       "norm_label": "public"
     },
     {
@@ -9070,7 +9650,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_post",
-      "community": 103,
+      "community": 14,
       "norm_label": "post"
     },
     {
@@ -9080,7 +9660,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "httpcode",
-      "community": 103,
+      "community": 14,
       "norm_label": "httpcode"
     },
     {
@@ -9090,7 +9670,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apioperation",
-      "community": 103,
+      "community": 14,
       "norm_label": "apioperation"
     },
     {
@@ -9100,7 +9680,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_body",
-      "community": 103,
+      "community": 14,
       "norm_label": "body"
     },
     {
@@ -9110,7 +9690,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "headers",
-      "community": 103,
+      "community": 14,
       "norm_label": "headers"
     },
     {
@@ -9120,7 +9700,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_constructor",
-      "community": 103,
+      "community": 14,
       "norm_label": ".constructor()"
     },
     {
@@ -9130,7 +9710,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_login",
-      "community": 103,
+      "community": 14,
       "norm_label": ".login()"
     },
     {
@@ -9140,7 +9720,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_register",
-      "community": 103,
+      "community": 14,
       "norm_label": ".register()"
     },
     {
@@ -9150,7 +9730,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_refresh",
-      "community": 103,
+      "community": 14,
       "norm_label": ".refresh()"
     },
     {
@@ -9160,7 +9740,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_logout",
-      "community": 103,
+      "community": 14,
       "norm_label": ".logout()"
     },
     {
@@ -9180,7 +9760,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_authmodule",
-      "community": 109,
+      "community": 37,
       "norm_label": "authmodule"
     },
     {
@@ -9190,7 +9770,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_ts_module",
-      "community": 109,
+      "community": 37,
       "norm_label": "module"
     },
     {
@@ -9200,7 +9780,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec",
-      "community": 102,
+      "community": 12,
       "norm_label": "auth.service.spec.ts"
     },
     {
@@ -9210,7 +9790,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeprismamock",
-      "community": 102,
+      "community": 12,
       "norm_label": "makeprismamock()"
     },
     {
@@ -9220,7 +9800,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makejwt",
-      "community": 102,
+      "community": 12,
       "norm_label": "makejwt()"
     },
     {
@@ -9230,7 +9810,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeconfig",
-      "community": 102,
+      "community": 12,
       "norm_label": "makeconfig()"
     },
     {
@@ -9240,7 +9820,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeservice",
-      "community": 102,
+      "community": 12,
       "norm_label": "makeservice()"
     },
     {
@@ -9250,7 +9830,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_validreg",
-      "community": 102,
+      "community": 12,
       "norm_label": "validreg"
     },
     {
@@ -9260,7 +9840,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service",
-      "community": 37,
+      "community": 12,
       "norm_label": "auth.service.ts"
     },
     {
@@ -9270,7 +9850,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice",
-      "community": 114,
+      "community": 14,
       "norm_label": "authservice"
     },
     {
@@ -9280,7 +9860,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_ts_injectable",
-      "community": 114,
+      "community": 14,
       "norm_label": "injectable"
     },
     {
@@ -9290,7 +9870,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_constructor",
-      "community": 114,
+      "community": 14,
       "norm_label": ".constructor()"
     },
     {
@@ -9300,7 +9880,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_login",
-      "community": 114,
+      "community": 14,
       "norm_label": ".login()"
     },
     {
@@ -9310,7 +9890,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_registertenant",
-      "community": 114,
+      "community": 14,
       "norm_label": ".registertenant()"
     },
     {
@@ -9320,7 +9900,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_refreshtoken",
-      "community": 114,
+      "community": 14,
       "norm_label": ".refreshtoken()"
     },
     {
@@ -9330,7 +9910,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_logout",
-      "community": 103,
+      "community": 14,
       "norm_label": ".logout()"
     },
     {
@@ -9340,7 +9920,7 @@
       "source_location": "L226",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_generatetokens",
-      "community": 114,
+      "community": 14,
       "norm_label": ".generatetokens()"
     },
     {
@@ -9350,7 +9930,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy",
-      "community": 12,
+      "community": 98,
       "norm_label": "jwt.strategy.ts"
     },
     {
@@ -9360,7 +9940,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtpayload",
-      "community": 12,
+      "community": 98,
       "norm_label": "jwtpayload"
     },
     {
@@ -9370,7 +9950,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy",
-      "community": 12,
+      "community": 37,
       "norm_label": "jwtstrategy"
     },
     {
@@ -9380,7 +9960,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_ts_injectable",
-      "community": 12,
+      "community": 37,
       "norm_label": "injectable"
     },
     {
@@ -9390,7 +9970,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_constructor",
-      "community": 12,
+      "community": 37,
       "norm_label": ".constructor()"
     },
     {
@@ -9400,7 +9980,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_jwt_strategy_jwtstrategy_validate",
-      "community": 12,
+      "community": 37,
       "norm_label": ".validate()"
     },
     {
@@ -9590,7 +10170,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_billing_billing_module_billingmodule",
-      "community": 7,
+      "community": 18,
       "norm_label": "billingmodule"
     },
     {
@@ -9600,7 +10180,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_billing_billing_module_ts_module",
-      "community": 7,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -10090,7 +10670,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module",
-      "community": 18,
+      "community": 24,
       "norm_label": "clients.module.ts"
     },
     {
@@ -10100,7 +10680,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module_clientsmodule",
-      "community": 18,
+      "community": 24,
       "norm_label": "clientsmodule"
     },
     {
@@ -10110,7 +10690,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module_ts_module",
-      "community": 18,
+      "community": 24,
       "norm_label": "module"
     },
     {
@@ -10120,7 +10700,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_service",
-      "community": 12,
+      "community": 24,
       "norm_label": "clients.service.ts"
     },
     {
@@ -10260,7 +10840,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_ts_get",
-      "community": 98,
+      "community": 16,
       "norm_label": "get"
     },
     {
@@ -10360,7 +10940,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplates",
-      "community": 98,
+      "community": 16,
       "norm_label": ".gettemplates()"
     },
     {
@@ -10370,7 +10950,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_customization_customization_controller_customizationcontroller_gettemplate",
-      "community": 98,
+      "community": 16,
       "norm_label": ".gettemplate()"
     },
     {
@@ -10570,7 +11150,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_controller",
-      "community": 98,
+      "community": 25,
       "norm_label": "documents.controller.ts"
     },
     {
@@ -10750,7 +11330,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_module",
-      "community": 18,
+      "community": 25,
       "norm_label": "documents.module.ts"
     },
     {
@@ -10780,7 +11360,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_spec",
-      "community": 12,
+      "community": 25,
       "norm_label": "documents.service.spec.ts"
     },
     {
@@ -10790,7 +11370,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_spec_makeprismamock",
-      "community": 12,
+      "community": 25,
       "norm_label": "makeprismamock()"
     },
     {
@@ -10800,7 +11380,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_spec_basedto",
-      "community": 12,
+      "community": 25,
       "norm_label": "basedto"
     },
     {
@@ -10810,7 +11390,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service",
-      "community": 12,
+      "community": 25,
       "norm_label": "documents.service.ts"
     },
     {
@@ -10820,7 +11400,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_documents_documents_service_createdocumentdto",
-      "community": 12,
+      "community": 25,
       "norm_label": "createdocumentdto"
     },
     {
@@ -11420,7 +12000,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module",
-      "community": 21,
+      "community": 18,
       "norm_label": "reports.module.ts"
     },
     {
@@ -11430,7 +12010,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_reportsmodule",
-      "community": 21,
+      "community": 18,
       "norm_label": "reportsmodule"
     },
     {
@@ -11440,7 +12020,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_ts_module",
-      "community": 21,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -11450,7 +12030,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service",
-      "community": 21,
+      "community": 12,
       "norm_label": "reports.service.ts"
     },
     {
@@ -11460,7 +12040,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_reportperiod",
-      "community": 21,
+      "community": 12,
       "norm_label": "reportperiod"
     },
     {
@@ -11470,7 +12050,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_salesreport",
-      "community": 21,
+      "community": 12,
       "norm_label": "salesreport"
     },
     {
@@ -11480,7 +12060,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_stockreport",
-      "community": 21,
+      "community": 12,
       "norm_label": "stockreport"
     },
     {
@@ -11490,7 +12070,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_accountreport",
-      "community": 21,
+      "community": 12,
       "norm_label": "accountreport"
     },
     {
@@ -11890,7 +12470,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_controller_stockcontroller_getlowstockalerts",
-      "community": 98,
+      "community": 22,
       "norm_label": ".getlowstockalerts()"
     },
     {
@@ -12350,7 +12930,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_controller",
-      "community": 30,
+      "community": 98,
       "norm_label": "sync.controller.ts"
     },
     {
@@ -12630,7 +13210,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller",
-      "community": 109,
+      "community": 14,
       "norm_label": "tenant.controller.ts"
     },
     {
@@ -12850,7 +13430,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module",
-      "community": 109,
+      "community": 14,
       "norm_label": "tenant.module.ts"
     },
     {
@@ -12860,7 +13440,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module_tenantmodule",
-      "community": 109,
+      "community": 18,
       "norm_label": "tenantmodule"
     },
     {
@@ -12870,7 +13450,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module_ts_module",
-      "community": 109,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -12880,7 +13460,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service",
-      "community": 109,
+      "community": 14,
       "norm_label": "tenant.service.ts"
     },
     {
@@ -12890,7 +13470,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice",
-      "community": 109,
+      "community": 14,
       "norm_label": "tenantservice"
     },
     {
@@ -12900,7 +13480,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_ts_injectable",
-      "community": 109,
+      "community": 14,
       "norm_label": "injectable"
     },
     {
@@ -12910,7 +13490,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_constructor",
-      "community": 12,
+      "community": 14,
       "norm_label": ".constructor()"
     },
     {
@@ -35872,7 +36452,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0,
       "source": "v2_packages_api_package",
       "target": "v2_packages_api_package_devdependencies",
@@ -36085,6 +36665,16 @@
       "source_location": "L33",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
+      "target": "v2_packages_api_package_dependencies_fast_xml_parser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/package.json",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_helmet",
       "confidence_score": 1.0
     },
@@ -36172,7 +36762,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L34",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "v2_packages_api_package_dependencies",
+      "target": "v2_packages_api_package_dependencies_node_forge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/package.json",
+      "source_location": "L36",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_otplib",
@@ -36182,7 +36782,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L35",
+      "source_location": "L37",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_passport",
@@ -36192,7 +36792,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L36",
+      "source_location": "L38",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_passport_jwt",
@@ -36212,7 +36812,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L37",
+      "source_location": "L39",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_reflect_metadata",
@@ -36222,7 +36822,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L38",
+      "source_location": "L40",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_rxjs",
@@ -36232,7 +36832,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L39",
+      "source_location": "L41",
       "weight": 1.0,
       "source": "v2_packages_api_package_dependencies",
       "target": "v2_packages_api_package_dependencies_zod",
@@ -36242,7 +36842,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L42",
+      "source_location": "L44",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_nestjs_cli",
@@ -36252,7 +36852,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L43",
+      "source_location": "L45",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_nestjs_schematics",
@@ -36262,7 +36862,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L44",
+      "source_location": "L46",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_nestjs_testing",
@@ -36272,7 +36872,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L48",
+      "source_location": "L51",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_prisma",
@@ -36282,7 +36882,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L49",
+      "source_location": "L52",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_tsx",
@@ -36292,7 +36892,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L45",
+      "source_location": "L47",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_types_bcryptjs",
@@ -36302,7 +36902,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L46",
+      "source_location": "L48",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_types_express",
@@ -36312,10 +36912,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L47",
+      "source_location": "L49",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
-      "target": "v2_packages_api_package_devdependencies_types_passport_jwt",
+      "target": "v2_packages_api_package_devdependencies_types_node_forge",
       "confidence_score": 1.0
     },
     {
@@ -36325,6 +36925,16 @@
       "source_location": "L50",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
+      "target": "v2_packages_api_package_devdependencies_types_passport_jwt",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/package.json",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_typescript",
       "confidence_score": 1.0
     },
@@ -36332,7 +36942,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/package.json",
-      "source_location": "L51",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "v2_packages_api_package_devdependencies",
       "target": "v2_packages_api_package_devdependencies_vitest",
@@ -37669,6 +38279,17 @@
       "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
       "source_location": "L55",
       "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "target": "v2_packages_api_src_common_decorators_requestuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L65",
+      "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
       "target": "v2_packages_api_src_common_decorators_requestuser",
       "confidence_score": 1.0
@@ -38304,7 +38925,18 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
-      "source_location": "L55",
+      "source_location": "L56",
+      "weight": 1.0,
+      "context": "decorator",
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "target": "v2_packages_api_src_common_decorators_currentuser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L65",
       "weight": 1.0,
       "context": "decorator",
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
@@ -39758,7 +40390,7 @@
       "context": "parameter_type",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L108",
+      "source_location": "L80",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_constructor",
       "target": "v2_packages_api_src_common_prisma_service_prismaservice",
@@ -40129,6 +40761,1662 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_crypto",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_certnotafter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_crypto",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_decryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_crypto",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_encryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_crypto",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_isencrypted",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_crypto",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_loadenckey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-crypto.ts",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_crypto",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_signtra",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_loadenckey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_loadenckey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_enckey",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_loadenckey"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_encryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_encryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L117",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_encryptsecret"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_decryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_decryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L163",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_decryptsecret"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_isencrypted",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_signtra",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_signtra",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L166",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_signtra"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_certnotafter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_certnotafter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L111",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_crypto_certnotafter"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afip_iva_codes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipaliciva",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipivacode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_getinvoicetypecode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_receptordoctype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_round2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_domain",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_domain",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afip_iva_codes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipivacode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipivacode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.spec.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipivacode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-domain.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_round2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipaliciva",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_afipaliciva",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.spec.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_buildivaalicuotas"
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_getinvoicetypecode",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_receptordoctype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_receptordoctype",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L208",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_domain_receptordoctype"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L266",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_integration_spec_escapeforxml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L47",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_integration_spec_key32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_integration_spec_makeselfsigned",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildlogincmsenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildloginticketrequest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_extractlogincmsreturn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_istavalid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_parseloginticketresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_afipdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_formatafipdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-integration.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_integration_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildlogincmsenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildloginticketrequest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L60",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_extractlogincmsreturn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_istavalid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_parseloginticketresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_wsaa_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_xmlparser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L145",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_persistta",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L75",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afiptenantconfig",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_afipta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_wsaa_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "re_exports",
+      "context": "re-export",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildloginticketrequest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L165",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildloginticketrequest"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.spec.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_spec",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildloginticketrequest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L107",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_buildlogincmsenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_extractlogincmsreturn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa_extractlogincmsreturn",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_parseloginticketresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa_parseloginticketresponse",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_istavalid",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L160",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_istavalid"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L169",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsaa.ts",
+      "source_location": "L113",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsaa_calllogincms",
+      "target": "v2_packages_api_src_modules_afip_afip_wsaa_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_afipdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_afipmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L82",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_caerejected",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_caeresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_caesuccess",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L216",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_callwsfe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L258",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L263",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_collectobservations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L249",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_escapexml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L22",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_fecabecera",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_fecomprobante",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L278",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L244",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_formatafipdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L274",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_formatmessages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L268",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_mapmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L179",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L76",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_round2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L253",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_toarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_wsfe_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_xmlparser",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_wsfe_urls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_fecabecera",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_fecomprobante",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L142",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_afipdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_round2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L204",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_buildultimoautorizadoenvelope",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_escapexml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L188",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parseultimoautorizado",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_formatmessages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L221",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_buildfecaesolicitarenvelope",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_escapexml",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L222",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L194",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_collectobservations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L181",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L203",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_formatafipdate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L189",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_parsefecaeresponse",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_formatmessages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_callwsfe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_callwsfe"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L204",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_callwsfe"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L233",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_callwsfe",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L260",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_toarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L265",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_collectobservations",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_toarray",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L259",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L260",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_collecterrors",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_mapmessage",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L264",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_collectobservations",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_finddeep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "source_file": "v2/packages/api/src/modules/afip/afip-wsfe.ts",
+      "source_location": "L265",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_wsfe_collectobservations",
+      "target": "v2_packages_api_src_modules_afip_afip_wsfe_mapmessage",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
       "source_location": "L9",
       "weight": 1.0,
@@ -40206,6 +42494,16 @@
       "source_location": "L55",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller",
+      "target": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller",
       "target": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
       "confidence_score": 1.0
     },
@@ -40271,6 +42569,17 @@
       "source_location": "L53",
       "weight": 1.0,
       "context": "decorator",
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_controller_ts_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L63",
+      "weight": 1.0,
+      "context": "decorator",
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
       "target": "v2_packages_api_src_modules_afip_afip_controller_ts_post",
       "confidence_score": 1.0
@@ -40304,6 +42613,17 @@
       "source_location": "L54",
       "weight": 1.0,
       "context": "decorator",
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_controller_ts_roles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L64",
+      "weight": 1.0,
+      "context": "decorator",
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
       "target": "v2_packages_api_src_modules_afip_afip_controller_ts_roles",
       "confidence_score": 1.0
@@ -40316,6 +42636,17 @@
       "weight": 1.0,
       "context": "decorator",
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_controller_ts_body",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "context": "decorator",
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
       "target": "v2_packages_api_src_modules_afip_afip_controller_ts_body",
       "confidence_score": 1.0
     },
@@ -40380,10 +42711,21 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
-      "source_location": "L56",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "v2/packages/api/src/modules/afip/afip.controller.ts",
+      "source_location": "L66",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_authenticate"
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_testauth"
     },
     {
       "relation": "contains",
@@ -40447,77 +42789,14 @@
       "source_location": "L2",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_spec",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipivacode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.spec.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_spec",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipservice",
       "confidence_score": 1.0
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.spec.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_spec",
-      "target": "v2_packages_api_src_modules_afip_afip_service_buildivaalicuotas",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.spec.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_spec",
-      "target": "v2_packages_api_src_modules_afip_afip_service_buildloginticketrequest",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L36",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afip_iva_codes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L54",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipaliciva",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipauthresult",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L17",
+      "source_location": "L42",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipinvoicedata",
@@ -40527,17 +42806,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L46",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipivacode",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L104",
+      "source_location": "L79",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipservice",
@@ -40547,101 +42816,27 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L65",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_buildivaalicuotas",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L88",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_buildloginticketrequest",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L11",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_caeresult",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L52",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service",
-      "target": "v2_packages_api_src_modules_afip_afip_service_round2",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
       "source_location": "L70",
       "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_buildivaalicuotas",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipivacode",
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afiptenantconfig",
       "confidence_score": 1.0
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L79",
+      "source_location": "L62",
       "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_buildivaalicuotas",
-      "target": "v2_packages_api_src_modules_afip_afip_service_round2",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L159",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
-      "target": "v2_packages_api_src_modules_afip_afip_service_buildivaalicuotas",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L142",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_authenticate",
-      "target": "v2_packages_api_src_modules_afip_afip_service_buildloginticketrequest",
+      "source": "v2_packages_api_src_modules_afip_afip_service",
+      "target": "v2_packages_api_src_modules_afip_afip_service_caeresultdto",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L121",
-      "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_authenticate",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "method",
-      "confidence": "EXTRACTED",
-      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L108",
+      "source_location": "L80",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_constructor",
@@ -40651,7 +42846,17 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L218",
+      "source_location": "L85",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_enckey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L94",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getinvoicetypecode",
@@ -40661,7 +42866,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L196",
+      "source_location": "L182",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
@@ -40671,17 +42876,77 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L152",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_isproddefault",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_loadconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L145",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_persistta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L191",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
       "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
       "confidence_score": 1.0
     },
     {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L175",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_testauth",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L103",
+      "source_location": "L78",
       "weight": 1.0,
       "context": "decorator",
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice",
@@ -40693,10 +42958,10 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L156",
+      "source_location": "L162",
       "weight": 1.0,
-      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_authenticate",
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_enckey",
       "confidence_score": 1.0
     },
     {
@@ -40704,10 +42969,98 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
-      "source_location": "L169",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_enckey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_savecredentials",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_isproddefault",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L183",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_loadconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L159",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_loadconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L192",
       "weight": 1.0,
       "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
-      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_loadconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L170",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_persistta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L184",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_getlastinvoicenumber",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L193",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_requestcae",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "v2/packages/api/src/modules/afip/afip.service.ts",
+      "source_location": "L176",
+      "weight": 1.0,
+      "source": "v2_packages_api_src_modules_afip_afip_service_afipservice_testauth",
+      "target": "v2_packages_api_src_modules_afip_afip_service_afipservice_getta",
       "confidence_score": 1.0
     },
     {
@@ -52860,5 +55213,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ce937ab888c7bd68b8190f4e0c30e8f2e67bd8e9"
+  "built_at_commit": "e911e227fe4805e5633774a75a10e3b3538cb78b"
 }
