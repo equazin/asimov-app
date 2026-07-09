@@ -28,6 +28,9 @@
   font-family: "Segoe UI", Arial, sans-serif;
   font-size: 11px;
   line-height: 1.4;
+  /* Imprimir fondos/colores (bandas de color, acento navy, zebra de la tabla). */
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 .cbt * { box-sizing: border-box; }
 .cbt .logo { height: 34px; display: block; }
@@ -38,12 +41,13 @@
 .cbt .num { font-variant-numeric: tabular-nums; }
 
 /* ---------- Membretes por tipo ---------- */
-/* Factura */
-.mb-factura .band { background: var(--navy); display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
-.mb-factura .right { display: flex; align-items: center; gap: 12px; color: #fff; text-align: right; }
-.mb-factura .letter { width: 44px; height: 44px; border: 2px solid #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; }
-.mb-factura .meta .big { font-size: 15px; font-weight: 800; letter-spacing: .04em; }
-.mb-factura .sub { display: flex; justify-content: space-between; gap: 18px; padding: 10px 20px 4px; }
+/* Factura — membrete claro (logo oscuro sobre blanco, acento navy) */
+.mb-factura .band { background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; border-bottom: 3px solid var(--navy); }
+.mb-factura .band .logo { height: auto; width: 210px; }
+.mb-factura .right { display: flex; align-items: center; gap: 14px; color: var(--ink); text-align: right; }
+.mb-factura .letter { width: 46px; height: 46px; border: 2px solid var(--navy); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: var(--navy); }
+.mb-factura .meta .big { font-size: 16px; font-weight: 800; letter-spacing: .04em; color: var(--navy); }
+.mb-factura .sub { display: flex; justify-content: space-between; gap: 18px; padding: 12px 20px 4px; }
 .mb-factura .fbox { border: 1px solid var(--line); border-radius: 6px; padding: 7px 11px; font-size: 10px; line-height: 1.55; min-width: 220px; }
 .mb-factura .fbox .k { color: var(--muted); } .mb-factura .fbox .v { font-weight: 700; }
 

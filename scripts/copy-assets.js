@@ -45,6 +45,14 @@ if (fs.existsSync(bartezLogo)) {
   console.log("[copy-assets] bartez-logo.png -> dist/");
 }
 
+// Logo horizontal en alta resolución (2000x500, RGBA) para el membrete impreso.
+const bartezLogoHi = path.join(root, "build", "bartez-logo-negro.png");
+const bartezLogoHiOut = path.join(distDir, "bartez-logo-negro.png");
+if (fs.existsSync(bartezLogoHi)) {
+  fs.copyFileSync(bartezLogoHi, bartezLogoHiOut);
+  console.log("[copy-assets] bartez-logo-negro.png -> dist/");
+}
+
 const appIcon = path.join(root, "build", "icon.png");
 const appIconOut = path.join(distDir, "icon.png");
 if (fs.existsSync(appIcon)) {

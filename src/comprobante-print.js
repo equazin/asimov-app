@@ -8,13 +8,13 @@
 (function () {
   "use strict";
 
-  var LOGO = "bartez-logo.png"; // copiado a dist/ junto a los HTML
+  var LOGO = "bartez-logo.png"; // logo reversado (claro), para membretes con banda de color
+  var LOGO_FACTURA = "bartez-logo-negro.png"; // logo horizontal alta-res (oscuro), membrete claro de factura
 
   var EMISOR = {
     nombre: "BARTEZ",
     sub: "de Andrés Benitez",
     dir: "9 de Julio 3418 · CP 2000 · Rosario · Santa Fe",
-    tel: "Tel. (0341) 430-3151 / 430-4476 / 435-4230 / 435-4906",
     web: "ventas@bartez.com.ar · www.bartez.com.ar",
     iva: "Responsable Inscripto",
     cuit: "20-21774424-6",
@@ -36,7 +36,7 @@
   function mbFactura(data) {
     return (
       '<div class="band">' +
-        '<img class="logo" src="' + LOGO + '" alt="Bartez" />' +
+        '<img class="logo" src="' + LOGO_FACTURA + '" alt="Bartez" />' +
         '<div class="right">' +
           '<div class="letter">' + esc(d(data.letter, "X")) + "</div>" +
           '<div class="meta">' +
@@ -120,7 +120,7 @@
     );
   }
   function emisorFiscal() {
-    return "<b>" + EMISOR.nombre + "</b> — " + EMISOR.sub + "<br/>" + EMISOR.dir + "<br/>" + EMISOR.tel + "<br/>" + EMISOR.web;
+    return "<b>" + EMISOR.nombre + "</b> — " + EMISOR.sub + "<br/>" + EMISOR.dir + "<br/>" + EMISOR.web;
   }
 
   // ---------- Destinatario ----------
