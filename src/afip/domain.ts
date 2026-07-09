@@ -109,6 +109,24 @@ export function voucherLetterForClient(clientIvaCondition: string | null | undef
 }
 
 /**
+ * Condición de IVA del receptor (RG 5616 — `CondicionIVAReceptorId`, obligatorio
+ * desde 2025 en `FECAESolicitar`). Valores de `FEParamGetCondicionIvaReceptor`:
+ *   1 Responsable Inscripto · 4 Exento · 5 Consumidor Final ·
+ *   6 Responsable Monotributo · 7 Sujeto No Categorizado.
+ */
+export const CONDICION_IVA_RECEPTOR: Record<string, number> = {
+  responsable_inscripto: 1,
+  exento: 4,
+  consumidor_final: 5,
+  monotributista: 6,
+  no_responsable: 7,
+};
+
+export function condicionIvaReceptorId(clientIvaCondition: string | null | undefined): number {
+  return CONDICION_IVA_RECEPTOR[normalizeIvaCondition(clientIvaCondition)] ?? 5;
+}
+
+/**
  * Código AFIP del comprobante a partir del tipo del formulario (A/B/C/M/NC/ND)
  * y la condición de IVA del cliente. Para NC/ND la letra se deriva del cliente
  * (RI → A, resto → B). Emisor monotributista: siempre serie C (11/12/13).

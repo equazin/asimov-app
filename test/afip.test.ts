@@ -15,6 +15,7 @@ import {
   afipIvaCode, buildIvaAlicuotas, getInvoiceTypeCode, receptorDocType,
   AfipUnavailableError, isAfipUnavailable,
   resolveVoucherTypeCode, validateVoucherForClient, requiresAssociatedInvoice, voucherLetterForClient,
+  condicionIvaReceptorId,
 } from "../src/afip/domain";
 import { buildAfipQrUrl } from "../src/afip/qr";
 import { buildGetPersonaEnvelope, parsePersonaResponse } from "../src/afip/padron";
@@ -153,6 +154,11 @@ describe("afip/wsfe", () => {
     expect(env).toContain("<ar:CbteDesde>43</ar:CbteDesde>");
     expect(env).toContain("<ar:ImpIVA>21</ar:ImpIVA>");
     expect(env).toContain("<ar:Id>5</ar:Id>");
+    // RG 5616: CondicionIVAReceptorId obligatorio, default 5 (consumidor final)
+    expect(env).toContain("<ar:CondicionIVAReceptorId>5</ar:CondicionIVAReceptorId>");
+    // Debe ir DESPUÉS de MonCotiz y ANTES de Iva
+    expect(env.indexOf("<ar:MonCotiz>")).toBeLessThan(env.indexOf("<ar:CondicionIVAReceptorId>"));
+    expect(env.indexOf("<ar:CondicionIVAReceptorId>")).toBeLessThan(env.indexOf("<ar:Iva>"));
     const envC = buildFECAESolicitarEnvelope(ta, { ...cab, invoiceType: 11 }, cbte);
     expect(envC).not.toContain("<ar:Iva>");
     expect(envC).toContain("<ar:ImpIVA>0</ar:ImpIVA>");
@@ -214,6 +220,15 @@ describe("afip/domain — Fase 4: NC/ND, letra según cliente y validación", ()
     expect(requiresAssociatedInvoice("nd")).toBe(true);
     expect(requiresAssociatedInvoice("A")).toBe(false);
     expect(requiresAssociatedInvoice("")).toBe(false);
+  });
+
+  it("condicionIvaReceptorId mapea la condición del cliente (RG 5616)", () => {
+    expect(condicionIvaReceptorId("Responsable Inscripto")).toBe(1);
+    expect(condicionIvaReceptorId("Exento")).toBe(4);
+    expect(condicionIvaReceptorId("Consumidor Final")).toBe(5);
+    expect(condicionIvaReceptorId("Monotributista")).toBe(6);
+    expect(condicionIvaReceptorId("No Responsable")).toBe(7);
+    expect(condicionIvaReceptorId(null)).toBe(5); // default consumidor final
   });
 });
 

@@ -27,7 +27,7 @@ import {
 } from "./afip/wsfe";
 import {
   receptorDocType, isAfipUnavailable, resolveVoucherTypeCode,
-  validateVoucherForClient, requiresAssociatedInvoice,
+  validateVoucherForClient, requiresAssociatedInvoice, condicionIvaReceptorId,
 } from "./afip/domain";
 import { PADRON_SERVICE, PADRON_URLS, buildGetPersonaEnvelope, callPadron, type PadronPersona } from "./afip/padron";
 import { buildAfipQrUrl } from "./afip/qr";
@@ -57,6 +57,8 @@ export interface CaeRequestInput {
   items: Array<{ ivaRate: number; subtotal: number }>;
   /** Comprobante(s) asociado(s) — obligatorio para NC/ND (RG 4540). */
   cbtesAsoc?: Array<{ tipo: number; ptoVta: number; nro: number; cuit?: string }>;
+  /** Condición de IVA del receptor (RG 5616). Default 5 = Consumidor Final. */
+  condicionIvaReceptor?: number;
 }
 
 export interface CaeSuccessDto {
@@ -355,6 +357,7 @@ export async function requestCae(input: CaeRequestInput): Promise<CaeSuccessDto>
     impTotal: input.total,
     items: input.items,
     cbtesAsoc: input.cbtesAsoc,
+    condicionIvaReceptorId: input.condicionIvaReceptor ?? 5,
   };
 
   const result = parseFECAEResponse(await callWsfe(url, "FECAESolicitar", buildFECAESolicitarEnvelope(ta, cab, cbte)));
@@ -433,6 +436,7 @@ export function buildCaeInputFromInvoice(invoiceId: string): CaeRequestInput {
     cbtesAsoc: requiresAssociatedInvoice(tipo)
       ? [buildAssociatedVoucher(invoiceId, client?.fiscal_type)]
       : undefined,
+    condicionIvaReceptor: condicionIvaReceptorId(client?.fiscal_type),
   };
 }
 

@@ -46,6 +46,8 @@ export interface FeComprobante {
    * original a la que acredita/debita. `cuit` es el del EMISOR del asociado.
    */
   cbtesAsoc?: Array<{ tipo: number; ptoVta: number; nro: number; cuit?: string }>;
+  /** Condición de IVA del receptor (RG 5616). Default 5 = Consumidor Final. */
+  condicionIvaReceptorId?: number;
 }
 
 export interface CaeSuccess {
@@ -196,6 +198,8 @@ export function buildFECAESolicitarEnvelope(ta: AfipTA, cab: FeCabecera, cbte: F
     `<ar:ImpIVA>${impIva}</ar:ImpIVA>` +
     '<ar:MonId>PES</ar:MonId>' +
     '<ar:MonCotiz>1</ar:MonCotiz>' +
+    // RG 5616: condición de IVA del receptor, obligatorio. Va tras MonCotiz.
+    `<ar:CondicionIVAReceptorId>${cbte.condicionIvaReceptorId ?? 5}</ar:CondicionIVAReceptorId>` +
     cbtesAsocXml +
     ivaXml;
 

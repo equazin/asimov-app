@@ -869,6 +869,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
               cuit: c.cuit ? safeStr(c.cuit, 20) : undefined,
             }))
           : undefined,
+        condicionIvaReceptor: r.condicionIvaReceptor !== undefined ? Number(r.condicionIvaReceptor) : undefined,
       };
       if (!input.invoiceId) return { ok: false, error: "Falta el identificador de la factura." };
       let data;
