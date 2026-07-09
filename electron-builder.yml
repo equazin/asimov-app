@@ -2,6 +2,13 @@ appId: ar.com.bartez.asimov
 productName: Asimov
 copyright: © Bartez Tecnología
 
+# Compila los módulos nativos (better-sqlite3) DESDE FUENTE para el Electron
+# target, en vez de bajar un prebuilt que puede tener ABI equivocado
+# (NODE_MODULE_VERSION). Evita el crash de arranque "compiled against a
+# different Node.js version" cuando node_modules quedó compilado para Node.
+buildDependenciesFromSource: true
+npmRebuild: true
+
 directories:
   output: release
   buildResources: build
