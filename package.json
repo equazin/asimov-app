@@ -1,7 +1,7 @@
 {
   "name": "asimov-app",
   "productName": "Asimov",
-  "version": "4.12.2",
+  "version": "4.12.3",
   "description": "Asimov — App de escritorio del ERP Bartez Tecnología.",
   "repository": {
     "type": "git",
@@ -16,15 +16,17 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/copy-assets.js",
+    "rebuild:electron": "electron-rebuild -f -w better-sqlite3",
+    "rebuild:node": "npm rebuild better-sqlite3",
     "dev": "npm run build && cross-env BARTEZ_DEV=1 electron .",
     "start": "npm run build && electron .",
-    "dist": "npm run build && electron-builder",
-    "dist:dir": "npm run build && electron-builder --dir",
+    "dist": "npm run build && npm run rebuild:electron && electron-builder",
+    "dist:dir": "npm run build && npm run rebuild:electron && electron-builder --dir",
     "smoke-test": "npm run build && node scripts/smoke-test.js",
-    "test": "vitest run",
+    "test": "npm run rebuild:node && vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "release": "npm run build && electron-builder --publish always",
+    "release": "npm run build && npm run rebuild:electron && electron-builder --publish always",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "dependencies": {
