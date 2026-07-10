@@ -223,6 +223,20 @@ export async function airRequest(query: string): Promise<unknown[]> {
           `AIR ${query}: respuesta no-JSON (posible notice de PHP): ${text.replace(/\s+/g, " ").slice(0, 160)}`,
         );
       }
+      // HTTP 200 con envelope de error ({error_id,…}): también sería tomado
+      // como página vacía por asArray() y truncaría el catálogo en silencio.
+      if (json && typeof json === "object" && !Array.isArray(json)) {
+        const o = json as Record<string, unknown>;
+        if (o.error_id !== undefined || o.error_name !== undefined) {
+          const airErr = parseAirError(text);
+          if (airErr.id === 403) {
+            throw new AirRateLimitError(
+              `AIR rate-limit en ${query}: ${airErr.detail ?? "demasiadas consultas"}.`,
+            );
+          }
+          throw new Error(`AIR ${query}: error ${airErr.id ?? "?"} ${airErr.name ?? ""} ${airErr.detail ?? ""}`.trim());
+        }
+      }
       return asArray(json);
     }
 
@@ -316,6 +330,7 @@ function parseActive(v: unknown): boolean {
 const KEYS = {
   codiart: ["codiart", "codigo", "cod", "id", "articulo", "idarticulo"],
   name: ["descripcion", "descrip", "nombre", "detalle", "desc", "name", "title"],
+  ivaObj: ["impuesto_iva", "impuestoiva", "iva_obj"],
   rubro: ["rubro"],
   grupo: ["grupo"],
   categoria: ["categoria", "category"],
@@ -370,8 +385,14 @@ export function mapAirProduct(raw: unknown): AirProductNormalized | null {
     stockEntrante = toInt(flatEntrante);
   }
 
-  const rawIva = toNum(pick(o, KEYS.iva));
-  const ivaPct = rawIva !== null && [0, 10.5, 21, 27].includes(rawIva) ? rawIva : 21;
+  // AIR manda el IVA anidado: impuesto_iva.alicuota (p.ej. 10.5 en informática).
+  // Se prueba primero el objeto anidado y después las claves planas heredadas.
+  const ivaObj = pick(o, KEYS.ivaObj);
+  const nestedIva = ivaObj && typeof ivaObj === "object"
+    ? toNum((ivaObj as Raw).alicuota)
+    : null;
+  const rawIva = nestedIva !== null ? nestedIva : toNum(pick(o, KEYS.iva));
+  const ivaPct = rawIva !== null && [0, 2.5, 5, 10.5, 21, 27].includes(rawIva) ? rawIva : 21;
 
   return {
     codiart,

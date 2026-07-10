@@ -91,6 +91,16 @@ describe("air — mapAirProduct", () => {
     expect(mapAirProduct({ cod: "H5" })!.ivaPct).toBe(21); // default
     expect(mapAirProduct({ cod: "H6", iva: 15 })!.ivaPct).toBe(21); // invalid → default
   });
+
+  it("parsea IVA anidado en impuesto_iva.alicuota (formato real de AIR)", () => {
+    // La API manda la alícuota dentro del objeto impuesto_iva, no como campo plano.
+    expect(mapAirProduct({ codigo: "I1", impuesto_iva: { alicuota: 10.5, base_imponible: 100 } })!.ivaPct).toBe(10.5);
+    expect(mapAirProduct({ codigo: "I2", impuesto_iva: { alicuota: 21 } })!.ivaPct).toBe(21);
+    // El anidado tiene prioridad sobre un campo plano heredado.
+    expect(mapAirProduct({ codigo: "I3", iva: 21, impuesto_iva: { alicuota: 10.5 } })!.ivaPct).toBe(10.5);
+    // Alícuota anidada inválida sin campo plano → default 21.
+    expect(mapAirProduct({ codigo: "I4", impuesto_iva: { alicuota: 99 } })!.ivaPct).toBe(21);
+  });
 });
 
 describe("air — mapAirProducts", () => {
@@ -178,5 +188,31 @@ describe("air — transporte HTTP", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(airRequest("?q=articulos&page=0")).rejects.toThrow(/no-JSON/);
+  });
+
+  it("HTTP 200 con envelope de error NO se toma como página vacía (truncaría el catálogo)", async () => {
+    seedAirConfig();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
+      .mockResolvedValueOnce(
+        jsonResponse({ error_id: 403, error_name: "Too many queries detected", error_detail: "esperá 5 min" }, 200),
+      );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=9")).rejects.toBeInstanceOf(AirRateLimitError);
+  });
+
+  it("HTTP 200 con envelope de error genérico lanza con el detalle", async () => {
+    seedAirConfig();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ token: "tok-1" }))
+      .mockResolvedValueOnce(jsonResponse({ error_id: 500, error_name: "Server error" }, 200));
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(airRequest("?q=articulos&page=3")).rejects.toThrow(/error 500/);
   });
 });

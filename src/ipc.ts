@@ -401,7 +401,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
               iva_pct, stock as stock_total, 0 as min_qty, 'air' as source
        FROM air_products
        WHERE active = 1 ${air.clause}
-       ORDER BY description LIMIT 5000`, air.params);
+       ORDER BY description LIMIT 20000`, air.params);
 
     return [...(localRows as unknown[]), ...(airRows as unknown[])];
   });
@@ -764,13 +764,17 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("air:enabled", () => isAirEnabled());
 
   ipcMain.handle("air:products:list", (_event, search: unknown) => {
-    const q = `%${safeStr(search)}%`;
+    // Igual que en Stock: "NB+LENOVO" busca filas que contengan TODOS los términos.
+    const terms = safeStr(search).split("+").map(t => t.trim()).filter(Boolean);
+    const conditions = terms.map(() => "(air_code LIKE ? OR description LIKE ? OR brand LIKE ? OR category LIKE ?)");
+    const params = terms.flatMap(t => { const q = `%${t}%`; return [q, q, q, q]; });
+    const where = conditions.length ? " AND " + conditions.join(" AND ") : "";
     return dbAll(
       `SELECT id, air_code, description, brand, category, price_usd, price_ars, iva_pct, stock, active, synced_at
        FROM air_products
-       WHERE active = 1 AND (air_code LIKE ? OR description LIKE ? OR brand LIKE ? OR category LIKE ?)
+       WHERE active = 1${where}
        ORDER BY description LIMIT 500`,
-      [q, q, q, q],
+      params,
     );
   });
 
