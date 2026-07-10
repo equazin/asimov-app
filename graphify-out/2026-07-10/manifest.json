@@ -1,6 +1,6 @@
 {
   ".claude/launch.json": {
-    "mtime": 1783661033.2066278,
+    "mtime": 1783636466.487372,
     "ast_hash": "e8f550937e913290685f9b569347197e",
     "semantic_hash": ""
   },
@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1783661139.2808561,
-    "ast_hash": "0d4c697b4535dc4f5118fb64cf225880",
+    "mtime": 1783636515.199854,
+    "ast_hash": "a11791bede13c813c03adbd969cdb92b",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "src/comprobante-print.js": {
-    "mtime": 1783636820.268923,
-    "ast_hash": "88314807e7326c02d21ac38fb2357eb2",
+    "mtime": 1783636346.95977,
+    "ast_hash": "e02a747673aa5d4185e5e470f89895e7",
     "semantic_hash": ""
   },
   "src/config.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1783637091.7661166,
-    "ast_hash": "dcd99e46340a691ef331d611841b0b70",
+    "mtime": 1783633898.7159367,
+    "ast_hash": "82496d388602a25b932c37d77ac5ee5b",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1783637100.4100983,
-    "ast_hash": "3e97a6da69502955580043562747b611",
+    "mtime": 1783543450.8252642,
+    "ast_hash": "dc0941082b5921596c57aa908bfc9937",
     "semantic_hash": ""
   },
   "src/product-selection-preload.ts": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1783660946.4440722,
-    "ast_hash": "2f316c7926864add2211e91d7bfce7d9",
+    "mtime": 1783543488.3951201,
+    "ast_hash": "05f3e06f71cdc5a7e1258b57ee90768a",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "src/afip-service.ts": {
-    "mtime": 1783637075.4605553,
-    "ast_hash": "a06ce88c821fb6271a598234ba1e8fe5",
+    "mtime": 1783633887.253401,
+    "ast_hash": "49a1ad41762a2baff12c1351c00c05ef",
     "semantic_hash": ""
   },
   "src/afip/crypto.ts": {
