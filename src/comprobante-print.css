@@ -4,8 +4,13 @@
  * new-quote. En pantalla el #print-area está oculto; al imprimir se oculta el
  * chrome de la app y se muestra sólo el comprobante.
  *
- * El logo de Bartez es reversado (claro), por eso cada membrete lo apoya sobre
- * una franja de color distinta por tipo de documento.
+ * Membrete "Corporativo dos columnas": la cabecera se divide por una línea
+ * vertical — izquierda: logo + datos de la empresa; derecha: letra fiscal (si
+ * aplica), nombre del comprobante, número/fecha y datos fiscales en una línea.
+ * El color de acento cambia por tipo de documento (Factura navy, Remito slate,
+ * Recibo verde, Pedido índigo, Presupuesto teal) y se aplica a la barra
+ * vertical izquierda del bloque derecho, al nombre del documento y al borde de
+ * la caja de la letra fiscal.
  */
 
 #print-area { display: none; }
@@ -24,55 +29,180 @@
   --navy:#0D2B4E; --blue:#1478C0; --teal:#0E7C86; --slate:#34506E;
   --green:#1E7A46; --indigo:#2E3A8C; --orange:#F26522;
   --ink:#1c2430; --muted:#5a6673; --line:#d8dee6; --zebra:#f4f6f9;
+  --danger:#b23b3b;
+  /* Sobrescrito por cada .mb-* para pintar la banda lateral, el nombre del doc
+     y el borde de la letra fiscal con el color del tipo de comprobante. */
+  --accent: var(--navy);
   color: var(--ink);
   font-family: "Segoe UI", Arial, sans-serif;
   font-size: 11px;
   line-height: 1.4;
-  /* Imprimir fondos/colores (bandas de color, acento navy, zebra de la tabla). */
+  /* Imprimir fondos/colores (bandas de color, gradient sutil, acento). */
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 .cbt * { box-sizing: border-box; }
-.cbt .logo { height: 34px; display: block; }
-.cbt .logo.sm { height: 26px; }
-.cbt .logo.lg { height: 40px; }
-.cbt .fiscal { font-size: 10px; line-height: 1.5; color: var(--muted); }
-.cbt .fiscal b { color: var(--ink); }
 .cbt .num { font-variant-numeric: tabular-nums; }
 
-/* ---------- Membretes por tipo ---------- */
-/* Factura — membrete claro (logo oscuro sobre blanco, acento navy) */
-.mb-factura .band { background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; border-bottom: 3px solid var(--navy); }
-.mb-factura .band .logo { height: auto; width: 210px; }
-.mb-factura .right { display: flex; align-items: center; gap: 14px; color: var(--ink); text-align: right; }
-.mb-factura .letter { width: 46px; height: 46px; border: 2px solid var(--navy); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: var(--navy); }
-.mb-factura .meta .big { font-size: 16px; font-weight: 800; letter-spacing: .04em; color: var(--navy); }
-.mb-factura .sub { display: flex; justify-content: space-between; gap: 18px; padding: 12px 20px 4px; }
-.mb-factura .fbox { border: 1px solid var(--line); border-radius: 6px; padding: 7px 11px; font-size: 10px; line-height: 1.55; min-width: 220px; }
-.mb-factura .fbox .k { color: var(--muted); } .mb-factura .fbox .v { font-weight: 700; }
+/* Acento por tipo */
+.mb-factura     { --accent: var(--navy); }
+.mb-pedido      { --accent: var(--indigo); }
+.mb-presupuesto { --accent: var(--teal); }
+.mb-remito      { --accent: var(--slate); }
+.mb-recibo      { --accent: var(--green); }
 
-/* Pedido / Presupuesto / Remito / Recibo — membrete claro con acento por tipo */
-.mb-pedido .band, .mb-presupuesto .band, .mb-remito .band, .mb-recibo .band {
-  background: #fff; display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px 12px; border-bottom: 3px solid var(--slate);
+/* ---------- Membrete: cabecera de dos columnas ---------- */
+.cbt .band {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
 }
-.mb-pedido .band { border-bottom-color: var(--indigo); }
-.mb-presupuesto .band { border-bottom-color: var(--teal); }
-.mb-remito .band { border-bottom-color: var(--slate); }
-.mb-recibo .band { border-bottom-color: var(--green); }
-.mb-pedido .band .logo, .mb-presupuesto .band .logo, .mb-remito .band .logo, .mb-recibo .band .logo { height: auto; width: 210px; }
-.mb-pedido .right, .mb-presupuesto .right, .mb-remito .right, .mb-recibo .right { text-align: right; color: var(--ink); }
-.mb-pedido .big, .mb-presupuesto .big, .mb-remito .big, .mb-recibo .big { font-size: 20px; font-weight: 800; letter-spacing: .04em; }
-.mb-pedido .big { color: var(--indigo); }
-.mb-presupuesto .big { color: var(--teal); }
-.mb-remito .big { color: var(--slate); }
-.mb-recibo .big { color: var(--green); }
-.mb-pedido .right .k, .mb-presupuesto .right .k, .mb-remito .right .k, .mb-recibo .right .k { font-size: 9.5px; color: var(--muted); }
-.mb-pedido .sub, .mb-presupuesto .sub, .mb-remito .sub, .mb-recibo .sub { display: flex; justify-content: space-between; gap: 18px; padding: 12px 20px 4px; }
-.badge-nofac { display: inline-block; font-size: 8.5px; font-weight: 700; color: #b23b3b; border: 1px dashed #d9a3a3; border-radius: 4px; padding: 2px 7px; letter-spacing: .04em; }
-.mb-recibo .amount { border: 2px solid var(--green); border-radius: 8px; padding: 8px 14px; text-align: right; min-width: 170px; }
-.mb-recibo .amount .k { font-size: 8.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
-.mb-recibo .amount .v { font-size: 20px; font-weight: 800; color: var(--green); }
+
+/* Columna izquierda: logo + datos del emisor */
+.cbt .band-left {
+  padding: 18px 20px 16px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cbt .band-left .logo {
+  width: 220px;
+  height: auto;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+.cbt .band-left .addr {
+  font-size: 10px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.cbt .band-left .addr b { color: var(--ink); font-size: 10.5px; }
+
+/* Columna derecha: letra fiscal + nombre del doc + Nº/Fecha + datos fiscales */
+.cbt .band-right {
+  padding: 18px 22px 16px;
+  background: linear-gradient(180deg, #f8fafc, #eef2f7);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+/* Barra vertical de acento pegada al borde izquierdo del bloque. */
+.cbt .band-right::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+  background: var(--accent);
+}
+.cbt .band-right .top-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.cbt .letter-box {
+  width: 46px;
+  height: 56px;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cbt .letter-box .l {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.cbt .letter-box .c {
+  font-size: 7.5px;
+  letter-spacing: .12em;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.cbt .doc-info { flex: 1; min-width: 0; }
+.cbt .doc-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.005em;
+  line-height: 1;
+}
+.cbt .doc-sub {
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.cbt .num-block {
+  font-size: 10.5px;
+  color: var(--ink);
+  line-height: 1.55;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.cbt .num-block .k {
+  font-size: 8px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  display: inline-block;
+  min-width: 60px;
+}
+.cbt .num-block b { font-weight: 700; }
+.cbt .fiscal-line {
+  font-size: 9.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-top: auto;
+}
+.cbt .fiscal-line b { color: var(--ink); font-weight: 700; }
+
+/* Badge "DOCUMENTO NO VÁLIDO COMO FACTURA" para remito. */
+.cbt .badge-nofac {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--danger);
+  border: 1px dashed #d9a3a3;
+  border-radius: 3px;
+  padding: 2px 6px;
+  letter-spacing: .04em;
+  margin-top: 6px;
+}
+
+/* Recuadro del total recibido (recibo). Reemplaza la caja separada del
+   diseño anterior — ahora vive dentro del bloque derecho. */
+.cbt .amount {
+  margin-top: auto;
+  text-align: right;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.cbt .amount .k {
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+.cbt .amount .v {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
 
 /* ---------- Bloque destinatario (cliente/proveedor) ---------- */
 .cbt .party { margin: 10px 20px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; font-size: 10.5px; }

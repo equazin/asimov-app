@@ -22,6 +22,9 @@
     inicio: "01/2019",
   };
 
+  // Código AFIP asociado a cada letra fiscal (RG 100/98).
+  var LETTER_CODE = { A: "COD 01", B: "COD 06", C: "COD 11", M: "COD 51" };
+
   var fmt = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", minimumFractionDigits: 2 });
   function money(n) { var v = Number(n); return fmt.format(isFinite(v) ? v : 0); }
   function num3(n) { var v = Number(n); return (isFinite(v) ? v : 0).toLocaleString("es-AR", { maximumFractionDigits: 3 }); }
@@ -32,71 +35,129 @@
   }
   function d(v, def) { v = String(v == null ? "" : v).trim(); return v || (def || ""); }
 
-  // ---------- Membretes por tipo ----------
-  function mbFactura(data) {
-    return (
-      '<div class="band">' +
-        '<img class="logo" src="' + LOGO_FACTURA + '" alt="Bartez" />' +
-        '<div class="right">' +
-          '<div class="letter">' + esc(d(data.letter, "X")) + "</div>" +
-          '<div class="meta">' +
-            '<div class="big">FACTURA</div>' +
-            "<div>N° <span class=\"num\">" + esc(data.number) + "</span></div>" +
-            "<div>" + esc(data.date) + "</div>" +
-          "</div>" +
-        "</div>" +
-      "</div>" +
-      '<div class="sub">' +
-        '<div class="fiscal">' + emisorFiscal() + "</div>" +
-        '<div class="fbox">' +
-          '<div><span class="k">IVA:</span> <span class="v">' + EMISOR.iva + "</span></div>" +
-          '<div><span class="k">CUIT:</span> <span class="v">' + EMISOR.cuit + "</span></div>" +
-          '<div><span class="k">Ing. Brutos:</span> <span class="v">' + EMISOR.iibb + "</span></div>" +
-          '<div><span class="k">Inicio act.:</span> <span class="v">' + EMISOR.inicio + "</span></div>" +
-        "</div>" +
-      "</div>"
-    );
-  }
-  // Encabezado común (membrete claro con logo alta-res + bloque derecho).
-  function docBand(title, subtitle, metaHtml) {
-    return (
-      '<div class="band">' +
-        '<img class="logo" src="' + LOGO_FACTURA + '" alt="Bartez" />' +
-        '<div class="right">' +
-          '<div class="big">' + title + "</div>" +
-          (subtitle ? '<div class="k">' + subtitle + "</div>" : "") +
-          (metaHtml || "") +
-        "</div>" +
-      "</div>"
-    );
-  }
-  function docSub(rightHtml) {
-    return '<div class="sub"><div class="fiscal">' + emisorFiscal() + "</div>" +
-      (rightHtml || "<div></div>") + "</div>";
-  }
-  function mbPedido(data) {
-    return docBand("PEDIDO", "Nota de venta",
-        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>") +
-      docSub('<div class="fiscal" style="text-align:right">Vendedor: <b>' + esc(d(data.vendedor, "—")) + "</b></div>");
-  }
-  function mbPresupuesto(data) {
-    return docBand("PRESUPUESTO", "Cotización",
-        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>" +
-        '<div class="k">Validez: <b>' + esc(d(data.validez, "15 días")) + "</b></div>") +
-      docSub("");
-  }
-  function mbRemito(data) {
-    return docBand("REMITO", '<span class="badge-nofac">DOCUMENTO NO VÁLIDO COMO FACTURA</span>',
-        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>") +
-      docSub('<div class="fiscal" style="text-align:right">Transporte: <b>' + esc(d(data.transporte, "—")) + "</b></div>");
-  }
-  function mbRecibo(data) {
-    return docBand("RECIBO", null,
-        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>") +
-      docSub('<div class="amount"><div class="k">Total recibido</div><div class="v">' + money(data.total) + "</div></div>");
-  }
+  // ---------- Cabecera común (dos columnas) ----------
   function emisorFiscal() {
     return "<b>" + EMISOR.nombre + "</b> — " + EMISOR.sub + "<br/>" + EMISOR.dir + "<br/>" + EMISOR.web;
+  }
+  function fullFiscalLine() {
+    return "IVA: <b>" + EMISOR.iva + "</b> · CUIT: <b>" + EMISOR.cuit + "</b><br/>" +
+           "IIBB: <b>" + EMISOR.iibb + "</b> · Inicio act.: <b>" + EMISOR.inicio + "</b>";
+  }
+  function bandLeft() {
+    return (
+      '<div class="band-left">' +
+        '<img class="logo" src="' + LOGO_FACTURA + '" alt="Bartez" />' +
+        '<div class="addr">' + emisorFiscal() + "</div>" +
+      "</div>"
+    );
+  }
+  /*
+   * bandRight(opts):
+   *   letter      — letra fiscal (A/B/C/M/X). Si está, dibuja la caja con código.
+   *   docName     — título del comprobante (FACTURA / REMITO / …).
+   *   docSub      — subtítulo bajo el título (opcional).
+   *   badge       — HTML opcional (usado por remito para el "no válido como factura").
+   *   numRows     — array de { k, v } → filas "Nº / Fecha / Vendedor / …".
+   *   fiscalLine  — HTML con los datos fiscales del emisor (opcional).
+   *   amount      — { label, value } → bloque "Total recibido" para el recibo.
+   */
+  function bandRight(opts) {
+    var letterBox = "";
+    if (opts.letter) {
+      var code = LETTER_CODE[opts.letter] || "";
+      letterBox =
+        '<div class="letter-box"><span class="l">' + esc(opts.letter) + "</span>" +
+        (code ? '<span class="c">' + esc(code) + "</span>" : "") +
+        "</div>";
+    }
+    var badge = opts.badge ? "<div>" + opts.badge + "</div>" : "";
+    var numRows = (opts.numRows || []).map(function (r) {
+      return '<div><span class="k">' + esc(r.k) + "</span> <b>" + esc(r.v) + "</b></div>";
+    }).join("");
+    var fiscal = opts.fiscalLine ? '<div class="fiscal-line">' + opts.fiscalLine + "</div>" : "";
+    var amount = opts.amount
+      ? '<div class="amount"><div class="k">' + esc(opts.amount.label) + "</div>" +
+          '<div class="v">' + opts.amount.value + "</div></div>"
+      : "";
+
+    return (
+      '<div class="band-right">' +
+        '<div class="top-row">' +
+          letterBox +
+          '<div class="doc-info">' +
+            '<div class="doc-name">' + esc(opts.docName) + "</div>" +
+            (opts.docSub ? '<div class="doc-sub">' + esc(opts.docSub) + "</div>" : "") +
+            badge +
+            (numRows ? '<div class="num-block">' + numRows + "</div>" : "") +
+          "</div>" +
+        "</div>" +
+        fiscal +
+        amount +
+      "</div>"
+    );
+  }
+  function band(opts) {
+    return '<div class="band">' + bandLeft() + bandRight(opts) + "</div>";
+  }
+
+  // ---------- Membretes por tipo ----------
+  function mbFactura(data) {
+    return band({
+      letter: d(data.letter, "X"),
+      docName: "FACTURA",
+      numRows: [
+        { k: "Nº", v: data.number },
+        { k: "Fecha", v: data.date },
+      ],
+      fiscalLine: fullFiscalLine(),
+    });
+  }
+  function mbPedido(data) {
+    return band({
+      docName: "PEDIDO",
+      docSub: "Nota de venta",
+      numRows: [
+        { k: "Nº", v: data.number },
+        { k: "Fecha", v: data.date },
+        { k: "Vendedor", v: d(data.vendedor, "—") },
+      ],
+      fiscalLine: fullFiscalLine(),
+    });
+  }
+  function mbPresupuesto(data) {
+    return band({
+      docName: "PRESUPUESTO",
+      docSub: "Cotización",
+      numRows: [
+        { k: "Nº", v: data.number },
+        { k: "Fecha", v: data.date },
+        { k: "Validez", v: d(data.validez, "15 días") },
+      ],
+      fiscalLine: fullFiscalLine(),
+    });
+  }
+  function mbRemito(data) {
+    return band({
+      docName: "REMITO",
+      badge: '<span class="badge-nofac">DOCUMENTO NO VÁLIDO COMO FACTURA</span>',
+      numRows: [
+        { k: "Nº", v: data.number },
+        { k: "Fecha", v: data.date },
+        { k: "Transporte", v: d(data.transporte, "—") },
+      ],
+      fiscalLine: fullFiscalLine(),
+    });
+  }
+  function mbRecibo(data) {
+    return band({
+      docName: "RECIBO",
+      numRows: [
+        { k: "Nº", v: data.number },
+        { k: "Fecha", v: data.date },
+      ],
+      fiscalLine: fullFiscalLine(),
+      amount: { label: "Total recibido", value: money(data.total) },
+    });
   }
 
   // ---------- Destinatario ----------
