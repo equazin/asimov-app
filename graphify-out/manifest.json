@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1783661139.2808561,
-    "ast_hash": "0d4c697b4535dc4f5118fb64cf225880",
+    "mtime": 1783661888.1322193,
+    "ast_hash": "3e3948731f4393044a243b094f55d2da",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1783660946.4440722,
-    "ast_hash": "2f316c7926864add2211e91d7bfce7d9",
+    "mtime": 1783661632.1721182,
+    "ast_hash": "c6bb8a1cbe59ba07d00897496d7d6104",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {

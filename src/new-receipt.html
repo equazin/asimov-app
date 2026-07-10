@@ -1231,7 +1231,8 @@ td{ border-color:var(--border) !important; }
     });
 
     /* ─── Footer buttons ─── */
-    document.getElementById("btnNew").addEventListener("click", function() {
+    var btnNew = document.getElementById("btnNew");
+    if (btnNew) btnNew.addEventListener("click", function() {
       facturas = []; nextFactId = 1; clienteData = null; cheques = []; nextChequeId = 1;
       methodAmts = { efectivo: 0, transferencia: 0, cheque: 0, tarjeta: 0, otros: 0 };
       var now = new Date();
