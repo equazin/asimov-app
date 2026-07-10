@@ -129,6 +129,7 @@ const api = {
   },
   quotes: {
     list: (search = "") => ipcRenderer.invoke("db:quotes:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:quotes:get", id),
   },
   invoices: {
     list: (search = "") => ipcRenderer.invoke("db:invoices:list", search),
@@ -137,9 +138,11 @@ const api = {
   },
   deliveryNotes: {
     list: (search = "") => ipcRenderer.invoke("db:delivery-notes:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:delivery-notes:get", id),
   },
   receipts: {
     list: (search = "") => ipcRenderer.invoke("db:receipts:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:receipts:get", id),
   },
 
   // DB — Compras
@@ -304,6 +307,7 @@ const api = {
       ipcRenderer.invoke("afip:save-credentials", input) as Promise<{ ok: boolean; data?: { certExpires: string | null }; error?: string }>,
     testConnection: () => ipcRenderer.invoke("afip:test-connection") as Promise<{ ok: boolean; message: string; expiration?: string }>,
     diagnostics: () => ipcRenderer.invoke("afip:diagnostics") as Promise<{ ok: boolean; data?: { env: string; ok: boolean; steps: Array<{ id: string; label: string; status: "ok" | "warn" | "error" | "skip"; detail: string }> }; error?: string }>,
+    invoiceQr: (invoiceId: string) => ipcRenderer.invoke("afip:invoice-qr", invoiceId) as Promise<{ ok: boolean; data?: { qrUrl: string; qrDataUrl: string }; error?: string }>,
     requestCae: (input: unknown) => ipcRenderer.invoke("afip:request-cae", input) as Promise<{ ok: boolean; pending?: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
     retryPending: () => ipcRenderer.invoke("afip:retry-pending") as Promise<{ ok: boolean; data?: { authorized: number; stillPending: number; rejected: Array<{ invoiceId: string; error: string }>; pendingLeft: number }; error?: string }>,
     padron: (cuit: string) => ipcRenderer.invoke("afip:padron", cuit) as Promise<{ ok: boolean; data?: { cuit: string; razonSocial: string; condicionIva: string; domicilio: string; localidad: string; provincia: string; codPostal: string }; error?: string }>,

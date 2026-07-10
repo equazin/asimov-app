@@ -506,6 +506,9 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+  <!-- Motor de impresión de comprobantes (reimpresión desde las listas). -->
+  <link rel="stylesheet" href="comprobante-print.css" />
+  <script src="comprobante-print.js" defer></script>
 </head>
 <body>
 <div id="app">
@@ -1459,6 +1462,7 @@
     pedidos: {
       title: "Pedidos de Venta",
       annul: "sale-order",
+      print: "pedido",
       load: (s) => asimov().saleOrders.list(s),
       cols: [
         { label: "Número",   key: "number",      w: "110px" },
@@ -1471,6 +1475,7 @@
     cotizaciones: {
       title: "Cotizaciones",
       annul: "quote",
+      print: "presupuesto",
       load: (s) => asimov().quotes.list(s),
       cols: [
         { label: "Número",   key: "number",       w: "110px" },
@@ -1595,6 +1600,7 @@
     facturas: {
       title: "Facturas de Venta",
       annul: "invoice",
+      print: "factura",
       load: (s) => asimov().invoices.list(s),
       cols: [
         { label: "Número",    key: "number",         w: "130px" },
@@ -1608,6 +1614,7 @@
     remitos: {
       title: "Remitos",
       annul: "delivery-note",
+      print: "remito",
       load: (s) => asimov().deliveryNotes.list(s),
       cols: [
         { label: "Número",    key: "number",         w: "110px" },
@@ -1619,6 +1626,7 @@
     recibos: {
       title: "Recibos",
       annul: "receipt",
+      print: "recibo",
       load: (s) => asimov().receipts.list(s),
       cols: [
         { label: "Número",    key: "number",         w: "110px" },
@@ -1885,7 +1893,66 @@
       }
     },
     annulDoc: (type, id, btn) => annulDoc(type, id, btn),
+    reprintDoc: (type, id, btn) => reprintDoc(type, id, btn),
   };
+
+  // Normaliza los ítems de la DB al shape que espera el motor de impresión.
+  function mapPrintItems(items) {
+    return (items || []).map(function (it) {
+      var qty = it.qty != null ? it.qty : (it.qty_delivered != null ? it.qty_delivered : 1);
+      return {
+        code: it.code || "",
+        description: it.description || "",
+        qty: qty,
+        unit: it.unit || "un",
+        unitPrice: it.unit_price != null ? it.unit_price : 0,
+        ivaPct: it.iva_pct != null ? it.iva_pct : 21,
+        lineTotal: it.subtotal != null ? it.subtotal : (Number(qty) * Number(it.unit_price || 0)),
+      };
+    });
+  }
+
+  // Reimprime un documento ya guardado: lo trae de la DB, lo mapea al formato del
+  // membrete y dispara la impresión. Para facturas con CAE, regenera el QR de AFIP.
+  async function reprintDoc(type, id, btn) {
+    if (!id) return;
+    if (btn) { btn._t = btn.textContent; btn.disabled = true; btn.textContent = "…"; }
+    try {
+      await waitForAsimov();
+      const api = asimov();
+      let data;
+      if (type === "factura") {
+        const inv = await api.invoices.get(id);
+        data = {
+          letter: inv.tipo || "B", number: inv.number, date: fmtDate(inv.date),
+          party: { name: inv.client_name || "", cuit: "", iva: "", address: "" },
+          notes: inv.notes || "", items: mapPrintItems(inv.items),
+          totals: { subtotal: inv.subtotal, iva: inv.iva_amount, total: inv.total },
+          cae: inv.cae || "", caeExpiration: inv.cae_expiry || "", qrDataUrl: "",
+        };
+        if (inv.client_id) { try { const c = await api.clients.get(inv.client_id); if (c) { data.party.cuit = c.cuit || ""; data.party.iva = c.fiscal_type || ""; data.party.address = c.address || ""; } } catch (_) {} }
+        if (inv.cae) { try { const qr = await api.afip.invoiceQr(id); if (qr && qr.ok && qr.data) data.qrDataUrl = qr.data.qrDataUrl; } catch (_) {} }
+      } else if (type === "pedido") {
+        const o = await api.saleOrders.get(id);
+        data = { number: o.number, date: fmtDate(o.date), party: { name: o.client_name || "" }, vendedor: "", notes: o.notes || "", items: mapPrintItems(o.items), totals: { subtotal: o.subtotal, iva: o.iva_amount, total: o.total } };
+      } else if (type === "presupuesto") {
+        const q = await api.quotes.get(id);
+        data = { number: q.number, date: fmtDate(q.date), validez: q.valid_until || "", party: { name: q.client_name || "" }, notes: q.notes || "", items: mapPrintItems(q.items), totals: { total: q.total } };
+      } else if (type === "remito") {
+        const r = await api.deliveryNotes.get(id);
+        data = { number: r.number, date: fmtDate(r.date), party: { name: r.client_name || "" }, transporte: "", notes: r.notes || "", items: mapPrintItems(r.items) };
+      } else if (type === "recibo") {
+        const rc = await api.receipts.get(id);
+        data = { number: rc.number, date: fmtDate(rc.date), total: rc.total, party: { name: rc.client_name || "" }, notes: rc.notes || "", items: [] };
+      } else { return; }
+      window.renderComprobante(type, data);
+      setTimeout(function () { window.print(); }, 80);
+    } catch (e) {
+      alert((e && e.message) || "No se pudo imprimir el documento.");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = btn._t || "🖨"; }
+    }
+  }
 
   // Anula un documento confirmado desde su lista: revierte efectos (stock/caja)
   // en el main y marca el estado como "anulado". Refresca la vista al terminar.
@@ -1908,9 +1975,10 @@
   }
 
   // ── table renderer ───────────────────────────────────────────────────
-  function renderTable(containerId, badgeId, cols, rows, annul) {
+  function renderTable(containerId, badgeId, cols, rows, annul, printType) {
     const container = document.getElementById(containerId);
     if (!container) return;
+    const hasAction = printType || (annul && CAN_WRITE);
 
     if (!rows || rows.length === 0) {
       container.innerHTML = `<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>`;
@@ -1922,7 +1990,7 @@
 
     const ths = cols.map(c =>
       `<th style="${c.w ? `width:${c.w};` : ""}${c.align ? `text-align:${c.align};` : ""}">${c.label}</th>`
-    ).join("") + (annul && CAN_WRITE ? `<th style="width:96px;text-align:center;">Acción</th>` : "");
+    ).join("") + (hasAction ? `<th style="width:150px;text-align:center;">Acción</th>` : "");
 
     const trs = rows.map(row => {
       const tds = cols.map(c => {
@@ -1932,11 +2000,17 @@
         return `<td${style}>${val}</td>`;
       }).join("");
       let actionTd = "";
-      if (annul && CAN_WRITE) {
+      if (hasAction) {
+        const rid = esc(String(row.id ?? ""));
         const anulado = /anul|cancel/i.test(String(row.status ?? ""));
-        actionTd = anulado
-          ? `<td style="text-align:center;color:var(--muted)">—</td>`
-          : `<td style="text-align:center"><button class="btn btn-outline btn-sm" onclick="A.annulDoc('${annul}','${esc(String(row.id ?? ""))}',this)">Anular</button></td>`;
+        let btns = "";
+        if (printType) {
+          btns += `<button class="btn btn-outline btn-sm" title="Ver / reimprimir" onclick="A.reprintDoc('${printType}','${rid}',this)">🖨 Imprimir</button>`;
+        }
+        if (annul && CAN_WRITE && !anulado) {
+          btns += `<button class="btn btn-outline btn-sm" onclick="A.annulDoc('${annul}','${rid}',this)">Anular</button>`;
+        }
+        actionTd = `<td style="text-align:center;white-space:nowrap;display:flex;gap:6px;justify-content:center;">${btns || "—"}</td>`;
       }
       return `<tr>${tds}${actionTd}</tr>`;
     }).join("");
@@ -1960,7 +2034,7 @@
     try {
       await waitForAsimov();
       const rows = await def.load(search);
-      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul);
+      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul, def.print);
     } catch (e) {
       const el = document.getElementById("table-" + viewId);
       if (el) el.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;
@@ -3363,5 +3437,6 @@
 
 })();
 </script>
+<div id="print-area"></div>
 </body>
 </html>

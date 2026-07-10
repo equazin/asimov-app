@@ -43,6 +43,7 @@ import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd
 import {
   getAfipConfig, saveAfipCredentials, testAfipConnection, runAfipDiagnostics, requestCae as afipRequestCae,
   markInvoicePendingCae, retryPendingCae, getPendingCaeInvoices, consultarPadron,
+  buildStoredInvoiceQr,
   type SaveCredentialsInput, type CaeRequestInput,
 } from "./afip-service";
 import { buildLibroIvaVentas } from "./libro-iva";
@@ -318,17 +319,32 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const q = `%${safeStr(search)}%`;
     return dbAll("SELECT * FROM quotes WHERE (number LIKE ? OR client_name LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q]);
   });
+  ipcMain.handle("db:quotes:get", (_event, id: unknown) => {
+    const quote = dbGet("SELECT * FROM quotes WHERE id = ?", [safeStr(id)]);
+    const items = dbAll("SELECT * FROM quote_items WHERE quote_id = ?", [safeStr(id)]);
+    return { ...quote, items };
+  });
 
   // --- DB: Remitos ---------------------------------------------------------
   ipcMain.handle("db:delivery-notes:list", (_event, search: unknown) => {
     const q = `%${safeStr(search)}%`;
     return dbAll("SELECT * FROM delivery_notes WHERE (number LIKE ? OR client_name LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q]);
   });
+  ipcMain.handle("db:delivery-notes:get", (_event, id: unknown) => {
+    const note = dbGet("SELECT * FROM delivery_notes WHERE id = ?", [safeStr(id)]);
+    const items = dbAll("SELECT * FROM delivery_note_items WHERE note_id = ?", [safeStr(id)]);
+    return { ...note, items };
+  });
 
   // --- DB: Recibos ---------------------------------------------------------
   ipcMain.handle("db:receipts:list", (_event, search: unknown) => {
     const q = `%${safeStr(search)}%`;
     return dbAll("SELECT * FROM receipts WHERE (number LIKE ? OR client_name LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q]);
+  });
+  ipcMain.handle("db:receipts:get", (_event, id: unknown) => {
+    const receipt = dbGet("SELECT * FROM receipts WHERE id = ?", [safeStr(id)]);
+    const items = dbAll("SELECT * FROM receipt_items WHERE receipt_id = ?", [safeStr(id)]);
+    return { ...receipt, items };
   });
 
   // --- DB: Órdenes de compra -----------------------------------------------
@@ -834,6 +850,15 @@ export function registerIpcHandlers(deps: IpcDeps): void {
       return await testAfipConnection();
     } catch (err: unknown) {
       return { ok: false, message: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // QR de una factura ya autorizada, para reimprimirla (no se persiste).
+  ipcMain.handle("afip:invoice-qr", async (_event, invoiceId: unknown) => {
+    try {
+      return { ok: true, data: await buildStoredInvoiceQr(safeStr(invoiceId)) };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
   });
 

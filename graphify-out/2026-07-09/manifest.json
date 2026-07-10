@@ -1,6 +1,6 @@
 {
   ".claude/launch.json": {
-    "mtime": 1783636466.487372,
+    "mtime": 1783518550.0150597,
     "ast_hash": "e8f550937e913290685f9b569347197e",
     "semantic_hash": ""
   },
@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1783636515.199854,
-    "ast_hash": "a11791bede13c813c03adbd969cdb92b",
+    "mtime": 1783634288.1635227,
+    "ast_hash": "125960f3fd1d2783a64290422f463e02",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -25,8 +25,8 @@
     "semantic_hash": ""
   },
   "scripts/copy-assets.js": {
-    "mtime": 1783636064.814352,
-    "ast_hash": "73b6a44e43d1efacd941528121d72ca5",
+    "mtime": 1783498953.1504657,
+    "ast_hash": "0c47cbcfe3fe8d49a649a5b5fba12751",
     "semantic_hash": ""
   },
   "scripts/generate-icons.js": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "src/comprobante-print.js": {
-    "mtime": 1783636346.95977,
-    "ast_hash": "e02a747673aa5d4185e5e470f89895e7",
+    "mtime": 1783523070.0227888,
+    "ast_hash": "21e9a9ef2faba30af68754f801f85697",
     "semantic_hash": ""
   },
   "src/config.ts": {
@@ -1090,8 +1090,8 @@
     "semantic_hash": ""
   },
   "src/new-invoice.html": {
-    "mtime": 1783634671.2460158,
-    "ast_hash": "9e480d08631bf68c617f2250600e0c3e",
+    "mtime": 1783543617.3389108,
+    "ast_hash": "34ef372fdafed47f438a5066166bf5c0",
     "semantic_hash": ""
   },
   "src/new-payment-order.html": {

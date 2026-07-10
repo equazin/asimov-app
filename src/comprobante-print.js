@@ -57,67 +57,43 @@
       "</div>"
     );
   }
-  function mbPedido(data) {
+  // Encabezado común (membrete claro con logo alta-res + bloque derecho).
+  function docBand(title, subtitle, metaHtml) {
     return (
       '<div class="band">' +
-        '<img class="logo lg" src="' + LOGO + '" alt="Bartez" />' +
+        '<img class="logo" src="' + LOGO_FACTURA + '" alt="Bartez" />' +
         '<div class="right">' +
-          '<div class="big">PEDIDO</div>' +
-          '<div class="k">NOTA DE VENTA</div>' +
-          '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>" +
+          '<div class="big">' + title + "</div>" +
+          (subtitle ? '<div class="k">' + subtitle + "</div>" : "") +
+          (metaHtml || "") +
         "</div>" +
-      "</div>" +
-      '<div class="sub"><div class="fiscal">' + emisorFiscal() +
-        '</div><div class="fiscal" style="text-align:right">Vendedor: <b>' + esc(d(data.vendedor, "—")) + "</b></div></div>"
+      "</div>"
     );
+  }
+  function docSub(rightHtml) {
+    return '<div class="sub"><div class="fiscal">' + emisorFiscal() + "</div>" +
+      (rightHtml || "<div></div>") + "</div>";
+  }
+  function mbPedido(data) {
+    return docBand("PEDIDO", "Nota de venta",
+        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>") +
+      docSub('<div class="fiscal" style="text-align:right">Vendedor: <b>' + esc(d(data.vendedor, "—")) + "</b></div>");
   }
   function mbPresupuesto(data) {
-    return (
-      '<div class="wrap">' +
-        '<div class="side">' +
-          '<img class="logo sm" src="' + LOGO + '" alt="Bartez" />' +
-          '<div class="emisor"><b>' + EMISOR.sub + "</b><br/>" + EMISOR.dir.split(" · ").slice(0, 2).join("<br/>") +
-            "<br/>CUIT " + EMISOR.cuit + "<br/>IVA " + EMISOR.iva + "<br/>" + "ventas@bartez.com.ar</div>" +
-        "</div>" +
-        '<div class="main">' +
-          '<div class="title">PRESUPUESTO<small>PRESUPUESTO / COTIZACIÓN</small></div>' +
-          '<div class="row">' +
-            '<div><div class="k">Número</div><div class="v">' + esc(data.number) + "</div></div>" +
-            '<div><div class="k">Fecha</div><div class="v">' + esc(data.date) + "</div></div>" +
-            '<div><div class="k">Validez</div><div class="v">' + esc(d(data.validez, "15 días")) + "</div></div>" +
-          "</div>" +
-        "</div>" +
-      "</div>"
-    );
+    return docBand("PRESUPUESTO", "Cotización",
+        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>" +
+        '<div class="k">Validez: <b>' + esc(d(data.validez, "15 días")) + "</b></div>") +
+      docSub("");
   }
   function mbRemito(data) {
-    return (
-      '<div class="band"><img class="logo" src="' + LOGO + '" alt="Bartez" /></div>' +
-      '<div class="body">' +
-        '<div class="title">REMITO</div>' +
-        '<div class="note">DOCUMENTO NO VÁLIDO COMO FACTURA</div>' +
-        '<div class="meta">' +
-          '<div><div class="k">Número</div><div class="v">' + esc(data.number) + "</div></div>" +
-          '<div><div class="k">Fecha</div><div class="v">' + esc(data.date) + "</div></div>" +
-          '<div><div class="k">Transporte</div><div class="v">' + esc(d(data.transporte, "—")) + "</div></div>" +
-        "</div>" +
-        '<div class="fiscal"><b>' + EMISOR.sub + "</b> · CUIT " + EMISOR.cuit + " · 9 de Julio 3418, Rosario · IVA " + EMISOR.iva + "</div>" +
-      "</div>"
-    );
+    return docBand("REMITO", '<span class="badge-nofac">DOCUMENTO NO VÁLIDO COMO FACTURA</span>',
+        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>") +
+      docSub('<div class="fiscal" style="text-align:right">Transporte: <b>' + esc(d(data.transporte, "—")) + "</b></div>");
   }
   function mbRecibo(data) {
-    return (
-      '<div class="wrap">' +
-        '<div class="band">' +
-          '<img class="logo sm" src="' + LOGO + '" alt="Bartez" />' +
-          '<div class="t"><b>' + EMISOR.sub + "</b><br/>CUIT " + EMISOR.cuit + "<br/>9 de Julio 3418, Rosario</div>" +
-        "</div>" +
-        '<div class="main">' +
-          '<div class="title">RECIBO<small>N° ' + esc(data.number) + " · " + esc(data.date) + "</small></div>" +
-          '<div class="amount"><div class="k">Total recibido</div><div class="v">' + money(data.total) + "</div></div>" +
-        "</div>" +
-      "</div>"
-    );
+    return docBand("RECIBO", null,
+        '<div class="k">N° <span class="num">' + esc(data.number) + "</span> · " + esc(data.date) + "</div>") +
+      docSub('<div class="amount"><div class="k">Total recibido</div><div class="v">' + money(data.total) + "</div></div>");
   }
   function emisorFiscal() {
     return "<b>" + EMISOR.nombre + "</b> — " + EMISOR.sub + "<br/>" + EMISOR.dir + "<br/>" + EMISOR.web;

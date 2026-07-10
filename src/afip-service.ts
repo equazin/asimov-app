@@ -399,6 +399,38 @@ export async function requestCae(input: CaeRequestInput): Promise<CaeSuccessDto>
   };
 }
 
+/**
+ * Reconstruye el QR de AFIP (RG 4892) de una factura YA autorizada, para poder
+ * reimprimirla (el qrDataUrl no se persiste). Devuelve "" si no tiene CAE.
+ */
+export async function buildStoredInvoiceQr(invoiceId: string): Promise<{ qrUrl: string; qrDataUrl: string }> {
+  const inv = dbGet<{ date: string; point_of_sale: string; tipo: string; number: string; total: number; cae: string | null; client_id: string }>(
+    "SELECT date, point_of_sale, tipo, number, total, cae, client_id FROM invoices WHERE id = ?", [invoiceId],
+  );
+  if (!inv || !inv.cae) return { qrUrl: "", qrDataUrl: "" };
+  const client = inv.client_id
+    ? dbGet<{ cuit: string; fiscal_type: string }>("SELECT cuit, fiscal_type FROM clients WHERE id = ?", [inv.client_id])
+    : undefined;
+  const cfg = readConfigMap();
+  const { docType, docNumber } = receptorDocType(client?.cuit);
+  const nroCmp = parseInt(String(inv.number).split("-").pop() ?? "0", 10) || 0;
+
+  const qrUrl = buildAfipQrUrl({
+    fecha: String(inv.date).slice(0, 10),
+    cuit: Number(cfg.afip_cuit) || 0,
+    ptoVta: parseInt(String(inv.point_of_sale), 10) || 1,
+    tipoCmp: resolveVoucherTypeCode(String(inv.tipo || "B"), client?.fiscal_type),
+    nroCmp,
+    importe: inv.total,
+    tipoDocRec: docType,
+    nroDocRec: Number(docNumber) || 0,
+    codAut: Number(inv.cae),
+  });
+  let qrDataUrl = "";
+  try { qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 180 }); } catch { /* sin QR si falla */ }
+  return { qrUrl, qrDataUrl };
+}
+
 // ---------------------------------------------------------------------------
 // Modo offline — facturas "pendiente de CAE" y reintento
 // ---------------------------------------------------------------------------
