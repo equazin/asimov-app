@@ -130,7 +130,25 @@
       font-weight: 600;
       color: #fff;
       letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       flex: 1;
+    }
+    .view-header h1 .ic {
+      width: 15px; height: 15px; stroke: var(--accent-hi); fill: none;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+    .search-icon .ic {
+      width: 13px; height: 13px; stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      display: block;
+    }
+    .btn .ic {
+      width: 13px; height: 13px; stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      display: inline-block; vertical-align: -2px; margin-right: 3px;
     }
     .view-header .badge {
       font-size: 10.5px;
@@ -316,7 +334,11 @@
     }
     .shortcut:hover { background: var(--accent-lt); border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
     .shortcut:active { transform: none; }
-    .shortcut .s-icon { font-size: 22px; }
+    .shortcut .s-icon { display: inline-flex; align-items: center; justify-content: center; }
+    .shortcut .s-icon .ic {
+      width: 22px; height: 22px; stroke: var(--accent-hi); fill: none;
+      stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+    }
     .shortcut .s-label { font-size: 11px; font-weight: 600; color: var(--text); }
     .shortcut .s-key { font-size: 9.5px; color: var(--muted); }
     .dash-section-title {
@@ -548,6 +570,8 @@
     <symbol id="i-bookopen" viewBox="0 0 24 24"><path d="M2.5 5C5 4 8 4.2 12 6.5 16 4.2 19 4 21.5 5v14c-2.5-1-5.5-.8-9.5 1.5-4-2.3-7-2.5-9.5-1.5z"/><path d="M12 6.5V20"/></symbol>
     <symbol id="i-message" viewBox="0 0 24 24"><path d="M4 4.5h16v12H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.7 6.3.8-4.6 4.3 1.2 6.2L12 17l-5.6 3 1.2-6.2L3 9.5l6.3-.8z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4v5h-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
     <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.1M9.5 10h.1M13 10h.1M16.5 10h.1M6 14h.1M9 14h6M17.5 14h.1"/></symbol>
   </defs>
 </svg>
@@ -661,14 +685,14 @@
         <div>
           <div class="dash-section-title">Accesos rápidos</div>
           <div class="shortcuts-grid">
-            <div class="shortcut" data-view="pedidos"><span class="s-icon">📋</span><span class="s-label">Ventas</span><span class="s-key">Ctrl+2</span></div>
-            <div class="shortcut" data-view="ordenes-compra"><span class="s-icon">🛒</span><span class="s-label">Compras</span><span class="s-key">Ctrl+3</span></div>
-            <div class="shortcut" data-view="stock"><span class="s-icon">📦</span><span class="s-label">Stock</span><span class="s-key">Ctrl+4</span></div>
-            <div class="shortcut" data-view="facturas"><span class="s-icon">🧾</span><span class="s-label">Facturación</span><span class="s-key">Ctrl+5</span></div>
-            <div class="shortcut" data-view="caja"><span class="s-icon">💵</span><span class="s-label">Tesorería</span><span class="s-key">Ctrl+6</span></div>
-            <div class="shortcut" data-view="tickets"><span class="s-icon">🔧</span><span class="s-label">RMA</span><span class="s-key">Ctrl+8</span></div>
-            <div class="shortcut" data-view="atajos"><span class="s-icon">⌨️</span><span class="s-label">Atajos</span><span class="s-key">F1</span></div>
-            <div class="shortcut" data-view="alertas-stock"><span class="s-icon">⚠️</span><span class="s-label">Alertas</span></div>
+            <div class="shortcut" data-view="pedidos"><span class="s-icon"><svg class="ic"><use href="#i-clip"/></svg></span><span class="s-label">Ventas</span><span class="s-key">Ctrl+2</span></div>
+            <div class="shortcut" data-view="ordenes-compra"><span class="s-icon"><svg class="ic"><use href="#i-cart"/></svg></span><span class="s-label">Compras</span><span class="s-key">Ctrl+3</span></div>
+            <div class="shortcut" data-view="stock"><span class="s-icon"><svg class="ic"><use href="#i-box"/></svg></span><span class="s-label">Stock</span><span class="s-key">Ctrl+4</span></div>
+            <div class="shortcut" data-view="facturas"><span class="s-icon"><svg class="ic"><use href="#i-file"/></svg></span><span class="s-label">Facturación</span><span class="s-key">Ctrl+5</span></div>
+            <div class="shortcut" data-view="caja"><span class="s-icon"><svg class="ic"><use href="#i-wallet"/></svg></span><span class="s-label">Tesorería</span><span class="s-key">Ctrl+6</span></div>
+            <div class="shortcut" data-view="tickets"><span class="s-icon"><svg class="ic"><use href="#i-wrench"/></svg></span><span class="s-label">RMA</span><span class="s-key">Ctrl+8</span></div>
+            <div class="shortcut" data-view="atajos"><span class="s-icon"><svg class="ic"><use href="#i-keyboard"/></svg></span><span class="s-label">Atajos</span><span class="s-key">F1</span></div>
+            <div class="shortcut" data-view="alertas-stock"><span class="s-icon"><svg class="ic"><use href="#i-alert"/></svg></span><span class="s-label">Alertas</span></div>
           </div>
         </div>
       </div>
@@ -677,13 +701,13 @@
     <!-- ── Pedidos de Venta ─────────────────────────────────── -->
     <div class="view" id="view-pedidos">
       <div class="view-header">
-        <h1>📋 Pedidos de Venta</h1>
+        <h1><svg class="ic"><use href="#i-clip"/></svg> Pedidos de Venta</h1>
         <span class="badge" id="badge-pedidos">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('sale-order')">+ Nuevo Pedido</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar pedido, cliente..." oninput="A.loadView('pedidos',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('pedidos')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar pedido, cliente..." oninput="A.loadView('pedidos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('pedidos')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-pedidos">
         <div class="loading"><div class="spinner"></div></div>
@@ -693,13 +717,13 @@
     <!-- ── Cotizaciones ─────────────────────────────────────── -->
     <div class="view" id="view-cotizaciones">
       <div class="view-header">
-        <h1>💰 Cotizaciones</h1>
+        <h1><svg class="ic"><use href="#i-tag"/></svg> Cotizaciones</h1>
         <span class="badge" id="badge-cotizaciones">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('quote')">+ Nueva Cotización</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar cotización, cliente..." oninput="A.loadView('cotizaciones',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cotizaciones')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar cotización, cliente..." oninput="A.loadView('cotizaciones',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cotizaciones')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-cotizaciones">
         <div class="loading"><div class="spinner"></div></div>
@@ -709,13 +733,13 @@
     <!-- ── Clientes ─────────────────────────────────────────── -->
     <div class="view" id="view-clientes">
       <div class="view-header">
-        <h1>👥 Clientes</h1>
+        <h1><svg class="ic"><use href="#i-users"/></svg> Clientes</h1>
         <span class="badge" id="badge-clientes">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('client')">+ Nuevo Cliente</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar razón social, CUIT..." oninput="A.loadView('clientes',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('clientes')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar razón social, CUIT..." oninput="A.loadView('clientes',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('clientes')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-clientes">
         <div class="loading"><div class="spinner"></div></div>
@@ -725,12 +749,12 @@
     <!-- ── Oportunidades ───────────────────────────────────── -->
     <div class="view" id="view-oportunidades">
       <div class="view-header">
-        <h1>🎯 Oportunidades</h1>
+        <h1><svg class="ic"><use href="#i-target"/></svg> Oportunidades</h1>
         <span class="badge" id="badge-oportunidades">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar oportunidad..." oninput="A.loadView('oportunidades',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('oportunidades')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar oportunidad..." oninput="A.loadView('oportunidades',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('oportunidades')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-oportunidades">
         <div class="loading"><div class="spinner"></div></div>
@@ -740,13 +764,13 @@
     <!-- ── Órdenes de Compra ─────────────────────────────── -->
     <div class="view" id="view-ordenes-compra">
       <div class="view-header">
-        <h1>🛒 Órdenes de Compra</h1>
+        <h1><svg class="ic"><use href="#i-cart"/></svg> Órdenes de Compra</h1>
         <span class="badge" id="badge-ordenes-compra">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('purchase-order')">+ Nueva Orden</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar orden, proveedor..." oninput="A.loadView('ordenes-compra',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('ordenes-compra')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar orden, proveedor..." oninput="A.loadView('ordenes-compra',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('ordenes-compra')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-ordenes-compra">
         <div class="loading"><div class="spinner"></div></div>
@@ -756,13 +780,13 @@
     <!-- ── Recepciones ──────────────────────────────────────── -->
     <div class="view" id="view-recepciones">
       <div class="view-header">
-        <h1>📥 Recepciones de Mercadería</h1>
+        <h1><svg class="ic"><use href="#i-inbox"/></svg> Recepciones de Mercadería</h1>
         <span class="badge" id="badge-recepciones">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('goods-receipt')">+ Nueva Recepción</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar recepción, proveedor..." oninput="A.loadView('recepciones',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recepciones')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar recepción, proveedor..." oninput="A.loadView('recepciones',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recepciones')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-recepciones">
         <div class="loading"><div class="spinner"></div></div>
@@ -772,13 +796,13 @@
     <!-- ── Proveedores ──────────────────────────────────────── -->
     <div class="view" id="view-proveedores">
       <div class="view-header">
-        <h1>🏭 Proveedores</h1>
+        <h1><svg class="ic"><use href="#i-factory"/></svg> Proveedores</h1>
         <span class="badge" id="badge-proveedores">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('supplier')">+ Nuevo Proveedor</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar razón social, CUIT..." oninput="A.loadView('proveedores',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('proveedores')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar razón social, CUIT..." oninput="A.loadView('proveedores',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('proveedores')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-proveedores">
         <div class="loading"><div class="spinner"></div></div>
@@ -788,13 +812,13 @@
     <!-- ── Stock ────────────────────────────────────────────── -->
     <div class="view" id="view-stock">
       <div class="view-header">
-        <h1>📦 Stock</h1>
+        <h1><svg class="ic"><use href="#i-box"/></svg> Stock</h1>
         <span class="badge" id="badge-stock">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('article')">+ Nuevo Artículo</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar con + (ej: NB+16GB+LENOVO)" oninput="A.debouncedSearch('stock',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('stock')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar con + (ej: NB+16GB+LENOVO)" oninput="A.debouncedSearch('stock',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('stock')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-stock">
         <div class="loading"><div class="spinner"></div></div>
@@ -804,12 +828,12 @@
     <!-- ── Movimientos de Stock ─────────────────────────────── -->
     <div class="view" id="view-movimientos">
       <div class="view-header">
-        <h1>↔️ Movimientos de Stock</h1>
+        <h1><svg class="ic"><use href="#i-swap"/></svg> Movimientos de Stock</h1>
         <span class="badge" id="badge-movimientos">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar artículo, depósito..." oninput="A.loadView('movimientos',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('movimientos')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar artículo, depósito..." oninput="A.loadView('movimientos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('movimientos')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-movimientos">
         <div class="loading"><div class="spinner"></div></div>
@@ -819,11 +843,11 @@
     <!-- ── Depósitos ────────────────────────────────────────── -->
     <div class="view" id="view-depositos">
       <div class="view-header">
-        <h1>🏢 Depósitos</h1>
+        <h1><svg class="ic"><use href="#i-building"/></svg> Depósitos</h1>
         <span class="badge" id="badge-depositos">—</span>
       </div>
       <div class="toolbar">
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('depositos')">↻ Refrescar</button></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('depositos')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-depositos">
         <div class="loading"><div class="spinner"></div></div>
@@ -833,12 +857,12 @@
     <!-- ── Números de Serie ─────────────────────────────────── -->
     <div class="view" id="view-series">
       <div class="view-header">
-        <h1>🔢 Números de Serie</h1>
+        <h1><svg class="ic"><use href="#i-hash"/></svg> Números de Serie</h1>
         <span class="badge" id="badge-series">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar serie, artículo..." oninput="A.loadView('series',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('series')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar serie, artículo..." oninput="A.loadView('series',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('series')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-series">
         <div class="loading"><div class="spinner"></div></div>
@@ -848,11 +872,11 @@
     <!-- ── Alertas de Stock ─────────────────────────────────── -->
     <div class="view" id="view-alertas-stock">
       <div class="view-header">
-        <h1>⚠️ Alertas de Stock Bajo</h1>
+        <h1><svg class="ic"><use href="#i-alert"/></svg> Alertas de Stock Bajo</h1>
         <span class="badge" id="badge-alertas-stock">—</span>
       </div>
       <div class="toolbar">
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('alertas-stock')">↻ Refrescar</button></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('alertas-stock')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-alertas-stock">
         <div class="loading"><div class="spinner"></div></div>
@@ -862,13 +886,13 @@
     <!-- ── Facturas ─────────────────────────────────────────── -->
     <div class="view" id="view-facturas">
       <div class="view-header">
-        <h1>🧾 Facturas de Venta</h1>
+        <h1><svg class="ic"><use href="#i-file"/></svg> Facturas de Venta</h1>
         <span class="badge" id="badge-facturas">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('invoice')">+ Nueva Factura</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('facturas',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('facturas')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('facturas',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('facturas')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-facturas">
         <div class="loading"><div class="spinner"></div></div>
@@ -878,13 +902,13 @@
     <!-- ── Remitos ──────────────────────────────────────────── -->
     <div class="view" id="view-remitos">
       <div class="view-header">
-        <h1>🚚 Remitos</h1>
+        <h1><svg class="ic"><use href="#i-truck"/></svg> Remitos</h1>
         <span class="badge" id="badge-remitos">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('delivery-note')">+ Nuevo Remito</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('remitos',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('remitos')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('remitos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('remitos')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-remitos">
         <div class="loading"><div class="spinner"></div></div>
@@ -894,13 +918,13 @@
     <!-- ── Recibos ──────────────────────────────────────────── -->
     <div class="view" id="view-recibos">
       <div class="view-header">
-        <h1>📄 Recibos</h1>
+        <h1><svg class="ic"><use href="#i-receipt"/></svg> Recibos</h1>
         <span class="badge" id="badge-recibos">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('receipt')">+ Nuevo Recibo</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('recibos',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recibos')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('recibos',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recibos')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-recibos">
         <div class="loading"><div class="spinner"></div></div>
@@ -910,11 +934,11 @@
     <!-- ── Lista de Precios ─────────────────────────────────── -->
     <div class="view" id="view-precios">
       <div class="view-header">
-        <h1>🏷️ Listas de Precios</h1>
+        <h1><svg class="ic"><use href="#i-pricetag"/></svg> Listas de Precios</h1>
         <span class="badge" id="badge-precios">—</span>
       </div>
       <div class="toolbar">
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('precios')">↻ Refrescar</button></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('precios')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-precios">
         <div class="loading"><div class="spinner"></div></div>
@@ -924,7 +948,7 @@
     <!-- ── Dólar ────────────────────────────────────────────── -->
     <div class="view" id="view-dolar">
       <div class="view-header">
-        <h1>💲 Cotización del Dólar</h1>
+        <h1><svg class="ic"><use href="#i-dollar"/></svg> Cotización del Dólar</h1>
         <span class="badge" id="badge-dolar-updated">—</span>
         <button class="btn btn-outline btn-sm" onclick="refreshDolar()">↻ Actualizar ahora</button>
       </div>
@@ -965,7 +989,7 @@
     <!-- ── Caja ─────────────────────────────────────────────── -->
     <div class="view" id="view-caja">
       <div class="view-header">
-        <h1>💵 Caja y Cuentas</h1>
+        <h1><svg class="ic"><use href="#i-wallet"/></svg> Caja y Cuentas</h1>
         <button class="btn btn-primary" onclick="A.openNativeForm('payment-order')">+ Orden de Pago</button>
       </div>
       <div class="caja-grid">
@@ -983,12 +1007,12 @@
     <!-- ── Tickets ──────────────────────────────────────────── -->
     <div class="view" id="view-tickets">
       <div class="view-header">
-        <h1>🔧 Tickets de Soporte</h1>
+        <h1><svg class="ic"><use href="#i-wrench"/></svg> Tickets de Soporte</h1>
         <span class="badge" id="badge-tickets">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar ticket, cliente..." oninput="A.loadView('tickets',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('tickets')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar ticket, cliente..." oninput="A.loadView('tickets',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('tickets')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-tickets">
         <div class="loading"><div class="spinner"></div></div>
@@ -998,12 +1022,12 @@
     <!-- ── Órdenes de Trabajo ───────────────────────────────── -->
     <div class="view" id="view-ordenes-trabajo">
       <div class="view-header">
-        <h1>⚙️ Órdenes de Trabajo</h1>
+        <h1><svg class="ic"><use href="#i-gear"/></svg> Órdenes de Trabajo</h1>
         <span class="badge" id="badge-ordenes-trabajo">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar OT, cliente..." oninput="A.loadView('ordenes-trabajo',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('ordenes-trabajo')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar OT, cliente..." oninput="A.loadView('ordenes-trabajo',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('ordenes-trabajo')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-ordenes-trabajo">
         <div class="loading"><div class="spinner"></div></div>
@@ -1013,12 +1037,12 @@
     <!-- ── Garantías ────────────────────────────────────────── -->
     <div class="view" id="view-garantias">
       <div class="view-header">
-        <h1>🛡️ Garantías</h1>
+        <h1><svg class="ic"><use href="#i-shield"/></svg> Garantías</h1>
         <span class="badge" id="badge-garantias">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar garantía, cliente, serie..." oninput="A.loadView('garantias',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('garantias')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar garantía, cliente, serie..." oninput="A.loadView('garantias',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('garantias')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-garantias">
         <div class="loading"><div class="spinner"></div></div>
@@ -1028,12 +1052,12 @@
     <!-- ── Cuentas CRM ────────────────────────────────────── -->
     <div class="view" id="view-cuentas-crm">
       <div class="view-header">
-        <h1>🏢 Cuentas CRM</h1>
+        <h1><svg class="ic"><use href="#i-building"/></svg> Cuentas CRM</h1>
         <span class="badge" id="badge-cuentas-crm">—</span>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon">🔍</span><input type="search" placeholder="Buscar cuenta, industria..." oninput="A.loadView('cuentas-crm',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cuentas-crm')">↻ Refrescar</button></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar cuenta, industria..." oninput="A.loadView('cuentas-crm',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cuentas-crm')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-cuentas-crm">
         <div class="loading"><div class="spinner"></div></div>
@@ -1043,9 +1067,9 @@
     <!-- ── Cta. Cte. Clientes ────────────────────────────── -->
     <div class="view" id="view-cta-cte-clientes">
       <div class="view-header">
-        <h1>👤 Cuenta Corriente Clientes</h1>
+        <h1><svg class="ic"><use href="#i-user"/></svg> Cuenta Corriente Clientes</h1>
         <div class="search-wrap" style="max-width:220px;margin-left:8px;">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span>
           <input type="search" id="search-ctacte-clientes" placeholder="Buscar cliente..." oninput="filterCtaCteClientes(this.value)" />
         </div>
       </div>
@@ -1064,9 +1088,9 @@
     <!-- ── Cta. Cte. Proveedores ─────────────────────────── -->
     <div class="view" id="view-cta-cte-proveedores">
       <div class="view-header">
-        <h1>🏭 Cuenta Corriente Proveedores</h1>
+        <h1><svg class="ic"><use href="#i-factory"/></svg> Cuenta Corriente Proveedores</h1>
         <div class="search-wrap" style="max-width:220px;margin-left:8px;">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span>
           <input type="search" id="search-ctacte-proveedores" placeholder="Buscar proveedor..." oninput="filterCtaCteSuppliers(this.value)" />
         </div>
       </div>
@@ -1084,7 +1108,7 @@
 
     <!-- ── Diario ─────────────────────────────────────────── -->
     <div class="view" id="view-diario">
-      <div class="view-header"><h1>📓 Diario de Caja</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-book"/></svg> Diario de Caja</h1></div>
       <div class="report-toolbar">
         <label>Desde <input type="date" id="diario-from" /></label>
         <label>Hasta <input type="date" id="diario-to" /></label>
@@ -1097,7 +1121,7 @@
 
     <!-- ── Reportes ───────────────────────────────────────── -->
     <div class="view" id="view-reportes">
-      <div class="view-header"><h1>📊 Reportes</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-chart"/></svg> Reportes</h1></div>
       <div class="report-toolbar">
         <label>Desde <input type="date" id="report-from" /></label>
         <label>Hasta <input type="date" id="report-to" /></label>
@@ -1116,7 +1140,7 @@
 
     <!-- ── Export Contable ────────────────────────────────── -->
     <div class="view" id="view-export-contable" style="overflow-y:auto">
-      <div class="view-header"><h1>📤 Export Contable</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-export"/></svg> Export Contable</h1></div>
       <div class="export-panel">
         <div class="export-card">
           <h3>Facturas de Venta</h3>
@@ -1143,7 +1167,7 @@
 
     <!-- ── Configuración del Sistema ────────────────────────── -->
     <div class="view" id="view-config" style="flex-direction:column">
-      <div class="view-header"><h1>🔧 Configuración del Sistema</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-wrench"/></svg> Configuración del Sistema</h1></div>
       <div style="flex:1;overflow-y:auto;background:var(--bg)">
         <div class="config-grid" id="config-grid">
           <div class="loading"><div class="spinner"></div></div>
@@ -1232,7 +1256,7 @@
 
     <!-- ── Integraciones ──────────────────────────────── -->
     <div class="view" id="view-integraciones" style="flex-direction:column">
-      <div class="view-header"><h1>🔌 Integraciones</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-plug"/></svg> Integraciones</h1></div>
       <div style="flex:1;overflow-y:auto;background:var(--bg)">
 
         <!-- AIR S.R.L. Card -->
@@ -1308,7 +1332,7 @@
 
     <!-- ── Atajos de teclado ──────────────────────────────── -->
     <div class="view" id="view-atajos" style="flex-direction:column">
-      <div class="view-header"><h1>⌨️ Atajos de teclado</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-keyboard"/></svg> Atajos de teclado</h1></div>
       <div style="flex:1;overflow-y:auto;background:var(--bg);padding:18px">
         <div class="shortcuts-cols">
           <div class="sc-card">
@@ -1345,7 +1369,7 @@
     <!-- ── Usuarios y Roles ───────────────────────────────── -->
     <div class="view" id="view-usuarios">
       <div class="view-header">
-        <h1>👥 Usuarios y Roles</h1>
+        <h1><svg class="ic"><use href="#i-users"/></svg> Usuarios y Roles</h1>
         <span class="badge" id="badge-usuarios">—</span>
         <button class="btn btn-primary" onclick="toggleUserForm()">+ Nuevo Usuario</button>
       </div>
@@ -1371,9 +1395,9 @@
     <!-- ── Base de Conocimiento ───────────────────────────── -->
     <div class="view" id="view-knowledge">
       <div class="view-header">
-        <h1>📚 Base de Conocimiento</h1>
+        <h1><svg class="ic"><use href="#i-bookopen"/></svg> Base de Conocimiento</h1>
         <div class="search-wrap" style="max-width:200px;margin-left:8px">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span>
           <input type="search" placeholder="Buscar artículo..." oninput="filterKnowledge(this.value)" />
         </div>
         <button class="btn btn-primary" onclick="newKnowledge()">+ Nuevo Artículo</button>
@@ -1391,9 +1415,9 @@
     <!-- ── Conversaciones ────────────────────────────────── -->
     <div class="view" id="view-conversaciones">
       <div class="view-header">
-        <h1>💬 Conversaciones</h1>
+        <h1><svg class="ic"><use href="#i-message"/></svg> Conversaciones</h1>
         <div class="search-wrap" style="max-width:200px;margin-left:8px">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span>
           <input type="search" placeholder="Buscar conversación..." oninput="filterConversations(this.value)" />
         </div>
         <button class="btn btn-primary" onclick="newConversation()">+ Nueva</button>
@@ -1410,7 +1434,7 @@
 
     <!-- ── Favoritos / Apariencia ─────────────────────────── -->
     <div class="view" id="view-favoritos" style="overflow-y:auto">
-      <div class="view-header"><h1>⭐ Favoritos y Apariencia</h1></div>
+      <div class="view-header"><h1><svg class="ic"><use href="#i-star"/></svg> Favoritos y Apariencia</h1></div>
       <div class="fav-section">
         <div class="fav-card">
           <h3>⭐ Favoritos (accesos directos)</h3>
@@ -1441,11 +1465,11 @@
     <!-- ── Auditoría ──────────────────────────────────────── -->
     <div class="view" id="view-auditoria">
       <div class="view-header">
-        <h1>🔍 Auditoría — Últimas Operaciones</h1>
+        <h1><svg class="ic"><use href="#i-magnify"/></svg> Auditoría — Últimas Operaciones</h1>
         <span class="badge" id="badge-auditoria">—</span>
       </div>
       <div class="toolbar">
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('auditoria')">↻ Refrescar</button></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('auditoria')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-auditoria">
         <div class="loading"><div class="spinner"></div></div>
