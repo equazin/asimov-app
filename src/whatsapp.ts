@@ -181,6 +181,19 @@ async function sendMessageRemote(waId: string, message: string): Promise<RemoteW
   );
 }
 
+async function sendTemplateRemote(
+  waId: string,
+  template: string,
+  languageCode: string,
+  bodyParams: string[],
+  preview: string,
+): Promise<RemoteWaMessage> {
+  return v1Post<RemoteWaMessage>(
+    `/api/v1/conversations/${encodeURIComponent(waId)}/template`,
+    { template, languageCode, bodyParams, preview },
+  );
+}
+
 // ─── Mappers al schema local ────────────────────────────────────────────────
 
 /** Preview corto del último mensaje para la lista (imagen/audio → placeholder). */
@@ -262,6 +275,19 @@ async function getMessagesRemote(chatId: string, _sinceIso: string | null): Prom
 
 async function sendMessageOverBot(chatId: string, body: string): Promise<RemoteMessage> {
   const m = await sendMessageRemote(chatId, body);
+  const mapped = mapMessage(m);
+  mapped.chat_id = chatId;
+  return mapped;
+}
+
+async function sendTemplateOverBot(
+  chatId: string,
+  template: string,
+  languageCode: string,
+  bodyParams: string[],
+  preview: string,
+): Promise<RemoteMessage> {
+  const m = await sendTemplateRemote(chatId, template, languageCode, bodyParams, preview);
   const mapped = mapMessage(m);
   mapped.chat_id = chatId;
   return mapped;
@@ -433,6 +459,37 @@ export async function sendMessage(chatId: string, body: string): Promise<LocalMe
   dbRun(
     `UPDATE wa_chats SET last_message = ?, last_message_at = ?, synced_at = datetime('now') WHERE id = ?`,
     [trimmed.slice(0, 120), remote.sent_at, chatId],
+  );
+
+  return dbGet<LocalMessage>(
+    `SELECT id, chat_id, direction, body, media_url, media_kind, sent_at, status
+     FROM wa_messages WHERE id = ?`,
+    [remote.id],
+  ) ?? null;
+}
+
+/**
+ * Envía una plantilla aprobada de WhatsApp — para reabrir chats fuera de la
+ * ventana de 24h, donde Meta no permite texto libre.
+ */
+export async function sendTemplate(
+  chatId: string,
+  template: string,
+  languageCode: string,
+  bodyParams: string[],
+  preview: string,
+): Promise<LocalMessage | null> {
+  if (!isWhatsappEnabled()) throw new Error("WhatsApp: integración deshabilitada.");
+  const name = template.trim();
+  if (!name) throw new Error("Falta la plantilla.");
+
+  const remote = await sendTemplateOverBot(chatId, name, languageCode, bodyParams, preview);
+  upsertMessage(remote, JSON.stringify(remote));
+
+  const previewText = (preview || `[plantilla: ${name}]`).slice(0, 120);
+  dbRun(
+    `UPDATE wa_chats SET last_message = ?, last_message_at = ?, synced_at = datetime('now') WHERE id = ?`,
+    [previewText, remote.sent_at, chatId],
   );
 
   return dbGet<LocalMessage>(

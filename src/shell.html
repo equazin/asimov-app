@@ -614,6 +614,12 @@
     .wa-composer .wa-send:hover { background: #1FB855; }
     .wa-composer .wa-send:disabled { opacity: 0.4; cursor: not-allowed; }
     .wa-composer .wa-send svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .wa-composer .wa-tpl {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      height: 40px; padding: 0 12px; border-radius: 18px; cursor: pointer;
+      font: 600 11.5px "Segoe UI", system-ui, sans-serif; white-space: nowrap; flex-shrink: 0;
+    }
+    .wa-composer .wa-tpl:hover { border-color: var(--accent-hi); color: var(--text); }
     .wa-empty-ic { width: 42px; height: 42px; stroke: var(--muted); fill: none; stroke-width: 1.4; opacity: 0.5; margin-bottom: 8px; }
 
     /* Puntito de estado de la conexión con el bot en el header de la vista. */
@@ -3660,6 +3666,7 @@
           ${msgs.length ? msgs.map(m => renderWaMessage(m)).join("") : '<div style="margin:auto;color:var(--muted);font-size:12px">Sin mensajes en este chat.</div>'}
         </div>
         <div class="wa-composer">
+          <button class="wa-tpl" type="button" onclick="openTemplatePicker('${esc(id)}')" title="Enviar una plantilla aprobada (para reabrir el chat fuera de las 24hs)">Plantilla</button>
           <textarea id="wa-composer-input" placeholder="Escribí un mensaje..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage('${esc(id)}');}"></textarea>
           <button class="wa-send" onclick="sendMessage('${esc(id)}')" title="Enviar (Enter)"><svg><use href="#i-send"/></svg></button>
         </div>`;
@@ -3703,6 +3710,83 @@
     } finally {
       if (btn) btn.disabled = false;
     }
+  }
+
+  // Plantillas de WhatsApp. name + lang DEBEN coincidir EXACTO con lo aprobado
+  // en el Meta Business Manager. `params` son las variables {{1}}, {{2}}… del cuerpo.
+  const WA_TEMPLATES = [
+    {
+      name: "reenganche_cotizacion",
+      lang: "es_AR",
+      label: "Reenganche — cotización lista",
+      preview: (nombre) => `Hola ${nombre || "{{1}}"}, desde Bartez Tecnología preparamos la cotización que nos pediste. ¿Te la enviamos por acá?`,
+    },
+    {
+      name: "consulta_tipo_cotizacion",
+      lang: "es_AR",
+      label: "Consulta — qué tipo de cotización necesita",
+      preview: (nombre) => `Hola ${nombre || "{{1}}"}, soy del equipo de Bartez Tecnología. Para avanzar con tu cotización, ¿qué tipo de equipamiento necesitás? (notebooks, PCs, servidores, redes, etc.)`,
+    },
+  ];
+
+  async function openTemplatePicker(chatId) {
+    const chat = _convData.find((c) => c.id === chatId) || {};
+    const defaultName = (chat.name && !/^\d+$/.test(chat.name)) ? chat.name : "";
+    const overlay = document.createElement("div");
+    overlay.className = "asimov-modal-overlay";
+    const opts = WA_TEMPLATES.map((t, i) => '<option value="' + i + '">' + esc(t.label) + '</option>').join("");
+    overlay.innerHTML =
+      '<div class="asimov-modal" role="dialog" aria-modal="true">' +
+        '<div class="am-header"><span>Enviar plantilla de WhatsApp</span><button type="button" class="am-close" aria-label="Cerrar">&times;</button></div>' +
+        '<form class="am-body">' +
+          '<label class="am-field"><span>Plantilla</span><select data-tpl>' + opts + '</select></label>' +
+          '<label class="am-field"><span>Nombre (variable {{1}})</span><input type="text" data-name value="' + esc(defaultName) + '" placeholder="Nombre del contacto" /></label>' +
+          '<div class="am-field"><span>Vista previa</span><div data-preview style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12.5px;color:var(--text);white-space:pre-wrap"></div></div>' +
+          '<p style="font-size:11px;color:var(--muted);margin:2px 0 0">Se usa para reabrir el chat fuera de las 24hs. La plantilla debe estar aprobada en Meta con el mismo nombre e idioma.</p>' +
+          '<div class="am-actions">' +
+            '<button type="button" class="btn btn-outline btn-sm am-cancel">Cancelar</button>' +
+            '<button type="submit" class="btn btn-primary btn-sm">Enviar plantilla</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    const form = overlay.querySelector("form");
+    const sel = overlay.querySelector("[data-tpl]");
+    const nameInput = overlay.querySelector("[data-name]");
+    const previewEl = overlay.querySelector("[data-preview]");
+    const close = () => { overlay.remove(); document.removeEventListener("keydown", onKey); };
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    const renderPreview = () => {
+      const t = WA_TEMPLATES[parseInt(sel.value, 10) || 0];
+      previewEl.textContent = t.preview(nameInput.value.trim());
+    };
+    sel.addEventListener("change", renderPreview);
+    nameInput.addEventListener("input", renderPreview);
+    renderPreview();
+    overlay.querySelector(".am-close").addEventListener("click", close);
+    overlay.querySelector(".am-cancel").addEventListener("click", close);
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const t = WA_TEMPLATES[parseInt(sel.value, 10) || 0];
+      const nombre = nameInput.value.trim();
+      if (!nombre) { nameInput.focus(); return; }
+      const preview = t.preview(nombre);
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true; btn.textContent = "Enviando…";
+      try {
+        const api = await waitForAsimov();
+        const res = await api.whatsapp.sendTemplate(chatId, t.name, t.lang, [nombre], preview);
+        if (!res.ok) { alert("No se pudo enviar la plantilla: " + (res.error || "error desconocido")); btn.disabled = false; btn.textContent = "Enviar plantilla"; return; }
+        close();
+        await openConversation(chatId);
+        _convData = await api.whatsapp.listChats("");
+      } catch (err) {
+        alert("Error: " + (err && err.message ? err.message : err));
+        btn.disabled = false; btn.textContent = "Enviar plantilla";
+      }
+    });
+    setTimeout(() => nameInput.focus(), 30);
   }
 
   async function newConversation() {
@@ -3799,6 +3883,7 @@
 
   window.filterConversations = filterConversations;
   window.openConversation = openConversation;
+  window.openTemplatePicker = openTemplatePicker;
   window.newConversation = newConversation;
   window.sendMessage = sendMessage;
   window.syncWaNow = syncWaNow;

@@ -299,6 +299,8 @@ const api = {
     listMessages: (chatId: string) => ipcRenderer.invoke("wa:messages:list", chatId),
     sendMessage: (chatId: string, body: string) =>
       ipcRenderer.invoke("wa:messages:send", { chatId, body }) as Promise<{ ok: boolean; message?: unknown; error?: string }>,
+    sendTemplate: (chatId: string, template: string, languageCode: string, bodyParams: string[], preview: string) =>
+      ipcRenderer.invoke("wa:messages:send-template", { chatId, template, languageCode, bodyParams, preview }) as Promise<{ ok: boolean; message?: unknown; error?: string }>,
     runSync: () => ipcRenderer.invoke("wa:sync:run"),
     syncHistory: () => ipcRenderer.invoke("wa:sync:history"),
     testConnection: () => ipcRenderer.invoke("wa:test-connection") as Promise<{ ok: boolean; message: string; chatCount?: number }>,

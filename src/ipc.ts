@@ -46,6 +46,7 @@ import {
   listLocalMessages,
   runWhatsappSync,
   sendMessage as sendWhatsappMessage,
+  sendTemplate as sendWhatsappTemplate,
   testWhatsappConnection,
   startWhatsappPoll,
   stopWhatsappPoll,
@@ -866,6 +867,28 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const r = (raw ?? {}) as { chatId?: unknown; body?: unknown };
     try {
       const msg = await sendWhatsappMessage(safeStr(r.chatId), safeStr(r.body, 4096));
+      return { ok: true, message: msg };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("wa:messages:send-template", async (_event, raw: unknown) => {
+    const r = (raw ?? {}) as {
+      chatId?: unknown; template?: unknown; languageCode?: unknown;
+      bodyParams?: unknown; preview?: unknown;
+    };
+    try {
+      const params = Array.isArray(r.bodyParams)
+        ? r.bodyParams.map((p) => safeStr(p, 1024))
+        : [];
+      const msg = await sendWhatsappTemplate(
+        safeStr(r.chatId),
+        safeStr(r.template, 512),
+        safeStr(r.languageCode, 16) || "es_AR",
+        params,
+        safeStr(r.preview, 4096),
+      );
       return { ok: true, message: msg };
     } catch (err: unknown) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
