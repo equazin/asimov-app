@@ -289,6 +289,23 @@ const api = {
     stopSyncTimer: () => ipcRenderer.invoke("air:sync-timer:stop"),
   },
 
+  // --- Bot de WhatsApp de Bartez ---
+  whatsapp: {
+    getConfig: () => ipcRenderer.invoke("wa:config:get") as Promise<{
+      enabled: boolean; baseUrl: string; botPhone: string; pollIntervalMinutes: number; hasToken: boolean;
+    }>,
+    isEnabled: () => ipcRenderer.invoke("wa:enabled") as Promise<boolean>,
+    listChats: (search = "") => ipcRenderer.invoke("wa:chats:list", search),
+    listMessages: (chatId: string) => ipcRenderer.invoke("wa:messages:list", chatId),
+    sendMessage: (chatId: string, body: string) =>
+      ipcRenderer.invoke("wa:messages:send", { chatId, body }) as Promise<{ ok: boolean; message?: unknown; error?: string }>,
+    runSync: () => ipcRenderer.invoke("wa:sync:run"),
+    syncHistory: () => ipcRenderer.invoke("wa:sync:history"),
+    testConnection: () => ipcRenderer.invoke("wa:test-connection") as Promise<{ ok: boolean; message: string; chatCount?: number }>,
+    startPoll: () => ipcRenderer.invoke("wa:poll:start"),
+    stopPoll: () => ipcRenderer.invoke("wa:poll:stop"),
+  },
+
   // --- Cotización del dólar (DolarAPI, auto cada 30 min) ---
   dolar: {
     latest: () => ipcRenderer.invoke("dolar:latest") as Promise<{ ok: boolean; data?: unknown[]; error?: string }>,

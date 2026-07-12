@@ -615,6 +615,47 @@ CREATE TABLE IF NOT EXISTS air_sync_runs (
 );
 
 -- ============================================================
+-- INTEGRACIONES — Bot de WhatsApp de Bartez
+-- Cache local de la bandeja; el "source of truth" es el bot (poll cada N seg).
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS wa_chats (
+  id              TEXT PRIMARY KEY,     -- id remoto del chat en el bot
+  phone           TEXT NOT NULL,        -- E.164 sin '+', ej. "5493414123456"
+  name            TEXT,                 -- push name del contacto o razón social si linkea a cliente
+  client_id       TEXT,                 -- opcional: cliente vinculado del ERP
+  avatar_url      TEXT,
+  last_message    TEXT,                 -- preview del último mensaje (para la lista)
+  last_message_at TEXT,                 -- ISO 8601
+  unread_count    INTEGER NOT NULL DEFAULT 0,
+  archived        INTEGER NOT NULL DEFAULT 0,
+  synced_at       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS wa_messages (
+  id              TEXT PRIMARY KEY,     -- id del mensaje en el bot (wa_message_id upstream)
+  chat_id         TEXT NOT NULL,
+  direction       TEXT NOT NULL DEFAULT 'in',  -- 'in' | 'out'
+  body            TEXT,
+  media_url       TEXT,                 -- imagen/audio/documento remoto
+  media_kind      TEXT,                 -- 'image' | 'audio' | 'document' | 'video' | null
+  sent_at         TEXT NOT NULL,        -- ISO 8601 del bot (no de la DB local)
+  status          TEXT NOT NULL DEFAULT 'received', -- pending|sent|delivered|read|failed|received
+  raw_json        TEXT,
+  FOREIGN KEY (chat_id) REFERENCES wa_chats(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS wa_sync_runs (
+  id             TEXT PRIMARY KEY,
+  started_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  finished_at    TEXT,
+  status         TEXT NOT NULL DEFAULT 'running',
+  chats_synced   INTEGER NOT NULL DEFAULT 0,
+  messages_synced INTEGER NOT NULL DEFAULT 0,
+  error_message  TEXT
+);
+
+-- ============================================================
 -- Esquemas / Kits (artículo compuesto por otros artículos)
 -- ============================================================
 
@@ -679,6 +720,9 @@ CREATE INDEX IF NOT EXISTS idx_doc_links_source ON document_links(source_type, s
 CREATE INDEX IF NOT EXISTS idx_doc_links_target ON document_links(target_type, target_id);
 CREATE INDEX IF NOT EXISTS idx_kit_components_kit ON kit_components(kit_article_id);
 CREATE INDEX IF NOT EXISTS idx_exchange_rates_casa    ON exchange_rates(casa, fetched_at);
+CREATE INDEX IF NOT EXISTS idx_wa_chats_phone         ON wa_chats(phone);
+CREATE INDEX IF NOT EXISTS idx_wa_chats_last          ON wa_chats(last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_wa_messages_chat       ON wa_messages(chat_id, sent_at);
 `;
 // ---------------------------------------------------------------------------
 // Secuencias (autonumeración)

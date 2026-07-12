@@ -39,6 +39,18 @@ import {
   enqueueAirConfigCloudSync,
   resetAirAuthCache,
 } from "./air";
+import {
+  getWhatsappConfig,
+  isWhatsappEnabled,
+  listLocalChats,
+  listLocalMessages,
+  runWhatsappSync,
+  sendMessage as sendWhatsappMessage,
+  testWhatsappConnection,
+  startWhatsappPoll,
+  stopWhatsappPoll,
+  enqueueWhatsappConfigCloudSync,
+} from "./whatsapp";
 import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
 import {
   getAfipConfig, saveAfipCredentials, testAfipConnection, runAfipDiagnostics, requestCae as afipRequestCae,
@@ -626,7 +638,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   // --- DB: Sistema Config --------------------------------------------------
   // Claves cuyo valor son secretos: se cifran en reposo (safeStorage) y nunca se
   // devuelven en el volcado genérico de configuración.
-  const SECRET_CONFIG_KEYS = new Set(["air_password", "afip_cert", "afip_key", "afip_ta"]);
+  const SECRET_CONFIG_KEYS = new Set(["air_password", "afip_cert", "afip_key", "afip_ta", "wa_token"]);
   ipcMain.handle("db:config:get-all", () =>
     dbAll<{ key: string; value: string }>("SELECT key, value FROM system_config ORDER BY key")
       .map((r) => (SECRET_CONFIG_KEYS.has(r.key) ? { key: r.key, value: "" } : r))
@@ -645,6 +657,11 @@ export function registerIpcHandlers(deps: IpcDeps): void {
         try { resetAirAuthCache(); } catch { /* best-effort */ }
       }
       try { enqueueAirConfigCloudSync(); } catch { /* best-effort */ }
+    }
+    if (key.startsWith("wa_")) {
+      // Cambió URL/token/enabled del bot: reiniciar el poll con la config nueva.
+      try { stopWhatsappPoll(); if (isWhatsappEnabled()) startWhatsappPoll(); } catch { /* best-effort */ }
+      try { enqueueWhatsappConfigCloudSync(); } catch { /* best-effort */ }
     }
     return { ok: true };
   });
@@ -820,6 +837,66 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     stopAirSyncTimer();
     return { ok: true };
   });
+
+  // --- WhatsApp Bot Integration ---------------------------------------------
+
+  ipcMain.handle("wa:config:get", () => {
+    // Nunca devolvemos el token: la UI sólo confirma si está seteado.
+    const cfg = getWhatsappConfig();
+    return {
+      enabled: cfg.enabled,
+      baseUrl: cfg.baseUrl,
+      botPhone: cfg.botPhone,
+      pollIntervalMinutes: cfg.pollIntervalMinutes,
+      hasToken: cfg.token.length > 0,
+    };
+  });
+
+  ipcMain.handle("wa:enabled", () => isWhatsappEnabled());
+
+  ipcMain.handle("wa:chats:list", (_event, search: unknown) => listLocalChats(safeStr(search)));
+
+  ipcMain.handle("wa:messages:list", (_event, chatId: unknown) => {
+    const id = safeStr(chatId);
+    if (!id) return [];
+    return listLocalMessages(id);
+  });
+
+  ipcMain.handle("wa:messages:send", async (_event, raw: unknown) => {
+    const r = (raw ?? {}) as { chatId?: unknown; body?: unknown };
+    try {
+      const msg = await sendWhatsappMessage(safeStr(r.chatId), safeStr(r.body, 4096));
+      return { ok: true, message: msg };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("wa:sync:run", async () => {
+    try {
+      return await runWhatsappSync();
+    } catch (err: unknown) {
+      return { status: "error", error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("wa:sync:history", () =>
+    dbAll(
+      `SELECT id, started_at, finished_at, status, chats_synced, messages_synced, error_message
+       FROM wa_sync_runs ORDER BY started_at DESC LIMIT 20`,
+    )
+  );
+
+  ipcMain.handle("wa:test-connection", async () => {
+    try {
+      return await testWhatsappConnection();
+    } catch (err: unknown) {
+      return { ok: false, message: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  ipcMain.handle("wa:poll:start", () => { startWhatsappPoll(); return { ok: true }; });
+  ipcMain.handle("wa:poll:stop", () => { stopWhatsappPoll(); return { ok: true }; });
 
   // ── AFIP / ARCA — facturación electrónica (desktop directo) ──────────
   ipcMain.handle("afip:status", () => {

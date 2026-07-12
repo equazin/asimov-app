@@ -470,6 +470,43 @@
       font: 12px "Segoe UI", system-ui, sans-serif; background: var(--input-bg);
     }
 
+    /* ── Modal genérico (reemplazo de window.prompt) ─────── */
+    .asimov-modal-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      animation: amFade 120ms ease-out;
+    }
+    @keyframes amFade { from { opacity: 0 } to { opacity: 1 } }
+    .asimov-modal {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; min-width: 360px; max-width: 460px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      color: var(--text); font: 12px "Segoe UI", system-ui, sans-serif;
+    }
+    .asimov-modal .am-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      background: var(--header-bg);
+      border-radius: 8px 8px 0 0;
+      font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .asimov-modal .am-close {
+      background: transparent; border: 0; color: var(--muted); cursor: pointer;
+      font-size: 18px; line-height: 1; padding: 2px 6px; border-radius: 4px;
+    }
+    .asimov-modal .am-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .asimov-modal .am-body { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+    .asimov-modal .am-field { display: flex; flex-direction: column; gap: 4px; }
+    .asimov-modal .am-field > span { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .asimov-modal .am-req { color: var(--danger); font-style: normal; }
+    .asimov-modal .am-field input {
+      padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--input-bg); color: var(--text); font: inherit; outline: none;
+    }
+    .asimov-modal .am-field input:focus { border-color: var(--accent-hi); box-shadow: 0 0 0 2px rgba(76,158,227,0.25); }
+    .asimov-modal .am-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
     /* ── Knowledge / Conversaciones ──────────────────────── */
     .kb-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg); }
     .kb-item {
@@ -492,16 +529,107 @@
     .kb-editor textarea { flex: 1; resize: none; min-height: 240px; }
     .kb-editor-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-    /* Conversation messages */
-    .conv-thread { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; background: #1f232a; }
-    .conv-msg { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; max-width: 85%; }
-    .conv-msg.usuario { align-self: flex-end; background: var(--accent-lt); border-color: var(--accent); }
-    .conv-msg .msg-author { font-size: 9.5px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
-    .conv-msg .msg-body { font-size: 12px; white-space: pre-wrap; }
-    .conv-msg .msg-time { font-size: 9.5px; color: var(--muted); margin-top: 3px; text-align: right; }
-    .conv-input-bar { padding: 8px 10px; border-top: 1px solid var(--border); background: var(--panel); display: flex; gap: 8px; flex-shrink: 0; }
-    .conv-input-bar textarea { flex: 1; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius); font: 12px "Segoe UI", system-ui, sans-serif; resize: none; height: 42px; }
-    .conv-input-bar textarea:focus { outline: none; border-color: var(--accent); }
+    /* ── Bandeja WhatsApp ───────────────────────────────── */
+    /* Layout tipo cliente de WhatsApp Desktop: lista a la izq, hilo a la der. */
+    .wa-grid { flex: 1; display: grid; grid-template-columns: 320px 1fr; min-height: 0; background: var(--bg); }
+    .wa-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--panel); }
+    .wa-list::-webkit-scrollbar { width: 8px; } .wa-list::-webkit-scrollbar-thumb { background: #1E2733; border-radius: 4px; }
+    .wa-chat {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+      transition: background 100ms;
+    }
+    .wa-chat:hover { background: rgba(76,158,227,0.06); }
+    .wa-chat.selected { background: var(--accent-lt); }
+    .wa-avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #fff; font-weight: 700; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wa-chat-body { flex: 1; min-width: 0; }
+    .wa-chat-row { display: flex; align-items: baseline; gap: 6px; }
+    .wa-chat-name { font-weight: 600; font-size: 12.5px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .wa-chat-time { font-size: 10px; color: var(--muted); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .wa-chat-preview { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+    .wa-chat-preview .wa-unread {
+      background: #25D366; color: #05100A; font-weight: 800; font-size: 10px;
+      min-width: 18px; height: 18px; border-radius: 999px; padding: 0 6px;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-left: auto; flex-shrink: 0;
+    }
+    .wa-thread { display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+    .wa-thread-header {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--header-bg); border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .wa-thread-header .wa-avatar { width: 32px; height: 32px; font-size: 12px; }
+    .wa-thread-header .h-name { font-weight: 700; font-size: 13px; }
+    .wa-thread-header .h-phone { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .wa-msg-list {
+      flex: 1; overflow-y: auto; padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 4px;
+      background:
+        radial-gradient(1200px 800px at 100% 0%, rgba(37,211,102,0.03), transparent 60%),
+        var(--bg);
+    }
+    .wa-msg-list::-webkit-scrollbar { width: 8px; } .wa-msg-list::-webkit-scrollbar-thumb { background: #1E2733; border-radius: 4px; }
+    .wa-msg {
+      max-width: 72%; padding: 6px 10px 4px; border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel); position: relative;
+      align-self: flex-start;
+    }
+    /* Salientes: burbuja verde WhatsApp (variante oscura). */
+    .wa-msg.out {
+      align-self: flex-end;
+      background: #114D3D; border-color: #1F6A55;
+    }
+    .wa-msg + .wa-msg { margin-top: 2px; }
+    .wa-msg-body { font-size: 12.5px; line-height: 1.35; color: var(--text); white-space: pre-wrap; word-wrap: break-word; }
+    .wa-msg-meta {
+      font-size: 9.5px; color: var(--muted); margin-top: 2px;
+      text-align: right; font-variant-numeric: tabular-nums;
+      display: flex; justify-content: flex-end; align-items: center; gap: 4px;
+    }
+    .wa-msg-status { font-size: 10px; letter-spacing: .04em; }
+    .wa-msg-status.read { color: #4C9EE3; }
+    .wa-msg-status.failed { color: var(--danger); }
+    .wa-composer {
+      display: flex; gap: 8px; padding: 10px 12px;
+      background: var(--panel); border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .wa-composer textarea {
+      flex: 1; background: var(--input-bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 8px 14px; font: 12.5px "Segoe UI", system-ui, sans-serif;
+      resize: none; height: 40px; outline: none;
+    }
+    .wa-composer textarea:focus { border-color: var(--accent-hi); }
+    .wa-composer .wa-send {
+      background: #25D366; border: 0; color: #05100A; font-weight: 700;
+      width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wa-composer .wa-send:hover { background: #1FB855; }
+    .wa-composer .wa-send:disabled { opacity: 0.4; cursor: not-allowed; }
+    .wa-composer .wa-send svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .wa-empty-ic { width: 42px; height: 42px; stroke: var(--muted); fill: none; stroke-width: 1.4; opacity: 0.5; margin-bottom: 8px; }
+
+    /* Puntito de estado de la conexión con el bot en el header de la vista. */
+    .wa-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted); margin-left: 4px; vertical-align: middle;
+    }
+    .wa-dot.ok { background: #25D366; box-shadow: 0 0 6px rgba(37,211,102,0.5); }
+    .wa-dot.off { background: var(--danger); }
+
+    /* Badge del ícono del canal en Integraciones. */
+    .int-badge {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .int-badge .ic { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 
     /* ── Favoritos / Apariencia ───────────────────────────── */
     .fav-section { padding: 16px; max-width: 600px; display: flex; flex-direction: column; gap: 16px; }
@@ -571,6 +699,7 @@
     <symbol id="i-message" viewBox="0 0 24 24"><path d="M4 4.5h16v12H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.7 6.3.8-4.6 4.3 1.2 6.2L12 17l-5.6 3 1.2-6.2L3 9.5l6.3-.8z"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4v5h-5"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M3 12 21 3 15 21l-3-8-9-1z"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
     <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.1M9.5 10h.1M13 10h.1M16.5 10h.1M6 14h.1M9 14h6M17.5 14h.1"/></symbol>
   </defs>
@@ -1327,6 +1456,47 @@
           </div>
         </div>
 
+        <!-- Bot WhatsApp Card -->
+        <div class="config-section" style="margin:18px;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <span class="int-badge" style="background:rgba(67,199,132,.15);color:#25D366"><svg class="ic"><use href="#i-message"/></svg></span>
+            <div>
+              <h3 style="margin:0;color:var(--text);font-size:15px;font-weight:700">Bot de WhatsApp</h3>
+              <span style="font-size:11px;color:var(--text-muted)">Bandeja de mensajes del bot de Bartez — poll cada N minutos</span>
+            </div>
+            <label class="cfg-check" style="margin-left:auto">
+              <input type="checkbox" id="wa-enabled" /> Habilitada
+            </label>
+          </div>
+
+          <div class="config-grid" style="max-width:100%">
+            <div class="config-field">
+              <label>URL base del bot</label>
+              <input type="text" id="wa-base-url" placeholder="https://bot.bartez.com.ar/api" />
+            </div>
+            <div class="config-field">
+              <label>Token de acceso</label>
+              <input type="password" id="wa-token" placeholder="••••••••" autocomplete="off" />
+            </div>
+            <div class="config-field">
+              <label>Nº del bot (WhatsApp Business)</label>
+              <input type="text" id="wa-bot-phone" placeholder="+54 341 000 0000" />
+            </div>
+            <div class="config-field">
+              <label>Intervalo de poll (min)</label>
+              <input type="number" id="wa-poll-interval" placeholder="1" min="1" max="60" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center">
+            <button class="btn btn-primary btn-sm" onclick="saveWaConfig()">Guardar</button>
+            <button class="btn btn-outline btn-sm" onclick="testWaConnection()">Probar conexión</button>
+            <button class="btn btn-outline btn-sm" onclick="runWaSync()">Sincronizar ahora</button>
+            <span class="save-msg ok" id="wa-save-msg" style="display:none">✓ Guardado</span>
+            <span id="wa-status-msg" style="font-size:11px;color:var(--text-muted)"></span>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1412,22 +1582,23 @@
       </div>
     </div>
 
-    <!-- ── Conversaciones ────────────────────────────────── -->
+    <!-- ── Conversaciones (Bot de WhatsApp) ──────────────── -->
     <div class="view" id="view-conversaciones">
       <div class="view-header">
-        <h1><svg class="ic"><use href="#i-message"/></svg> Conversaciones</h1>
-        <div class="search-wrap" style="max-width:200px;margin-left:8px">
+        <h1><svg class="ic"><use href="#i-message"/></svg> Conversaciones <span id="wa-status-dot" class="wa-dot" title=""></span></h1>
+        <div class="search-wrap" style="max-width:220px;margin-left:8px">
           <span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span>
-          <input type="search" placeholder="Buscar conversación..." oninput="filterConversations(this.value)" />
+          <input type="search" placeholder="Buscar por número o nombre..." oninput="filterConversations(this.value)" />
         </div>
-        <button class="btn btn-primary" onclick="newConversation()">+ Nueva</button>
+        <button class="btn btn-outline btn-sm" onclick="syncWaNow()"><svg class="ic"><use href="#i-refresh"/></svg> Sincronizar</button>
+        <button class="btn btn-primary" onclick="newConversation()">+ Nuevo contacto</button>
       </div>
-      <div class="ctacte-grid">
-        <div class="kb-list" id="conv-list">
+      <div class="wa-grid">
+        <div class="wa-list" id="conv-list">
           <div class="loading"><div class="spinner"></div></div>
         </div>
-        <div class="kb-detail" id="conv-detail" style="display:flex;flex-direction:column">
-          <div class="empty-state" style="flex:1"><span class="emo">💬</span><span>Seleccioná una conversación.</span></div>
+        <div class="wa-thread" id="conv-detail">
+          <div class="empty-state" style="flex:1"><svg class="wa-empty-ic"><use href="#i-message"/></svg><span>Seleccioná una conversación para ver los mensajes.</span></div>
         </div>
       </div>
     </div>
@@ -3004,10 +3175,86 @@
         await refreshAirStats();
         await refreshAirHistory();
       }
+      await loadWaConfig();
     } catch (e) {
       document.getElementById("air-status-msg").textContent = "Error cargando config: " + e.message;
     }
   }
+
+  // ── Bot WhatsApp — config en la sección Integraciones ────────────────────
+  async function loadWaConfig() {
+    try {
+      const api = await waitForAsimov();
+      const cfg = await api.whatsapp.getConfig();
+      document.getElementById("wa-enabled").checked = cfg.enabled;
+      document.getElementById("wa-base-url").value  = cfg.baseUrl || "";
+      // Placeholder si ya hay token guardado (nunca lo devolvemos por seguridad).
+      const tokenEl = document.getElementById("wa-token");
+      tokenEl.value = "";
+      tokenEl.placeholder = cfg.hasToken ? "•••••••• (guardado)" : "Token del bot";
+      document.getElementById("wa-bot-phone").value = cfg.botPhone || "";
+      document.getElementById("wa-poll-interval").value = cfg.pollIntervalMinutes || 1;
+    } catch (_) { /* silencioso */ }
+  }
+
+  async function saveWaConfig() {
+    const msg = document.getElementById("wa-save-msg");
+    msg.style.display = "none";
+    try {
+      const api = await waitForAsimov();
+      const tokenInput = document.getElementById("wa-token").value;
+      const fields = {
+        wa_enabled:       document.getElementById("wa-enabled").checked ? "true" : "false",
+        wa_base_url:      document.getElementById("wa-base-url").value.trim(),
+        wa_bot_phone:     document.getElementById("wa-bot-phone").value.trim(),
+        wa_poll_interval: document.getElementById("wa-poll-interval").value || "1",
+      };
+      // El token sólo se guarda si el usuario escribió uno nuevo — evita
+      // pisar el token cifrado con el placeholder vacío que devuelve la UI.
+      if (tokenInput.trim().length) fields.wa_token = tokenInput.trim();
+      for (const [k, v] of Object.entries(fields)) await api.config.set(k, v);
+      msg.textContent = "✓ Guardado"; msg.className = "save-msg ok"; msg.style.display = "inline";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+      if (fields.wa_enabled === "true") await api.whatsapp.startPoll();
+      else await api.whatsapp.stopPoll();
+    } catch (e) {
+      msg.textContent = "Error: " + e.message; msg.className = "save-msg"; msg.style.display = "inline";
+    }
+  }
+  window.saveWaConfig = saveWaConfig;
+
+  async function testWaConnection() {
+    const el = document.getElementById("wa-status-msg");
+    el.textContent = "Probando conexión…"; el.style.color = "var(--text-muted)";
+    try {
+      const api = await waitForAsimov();
+      const r = await api.whatsapp.testConnection();
+      el.textContent = r.ok ? "✓ " + r.message : "✗ " + r.message;
+      el.style.color = r.ok ? "#22c55e" : "var(--danger)";
+    } catch (e) {
+      el.textContent = "✗ " + e.message; el.style.color = "var(--danger)";
+    }
+  }
+  window.testWaConnection = testWaConnection;
+
+  async function runWaSync() {
+    const el = document.getElementById("wa-status-msg");
+    el.textContent = "Sincronizando…"; el.style.color = "var(--accent)";
+    try {
+      const api = await waitForAsimov();
+      const r = await api.whatsapp.runSync();
+      if (r.status === "ok") {
+        el.textContent = "✓ " + r.chatsSynced + " chats, " + r.messagesSynced + " mensajes.";
+        el.style.color = "#22c55e";
+      } else {
+        el.textContent = "✗ " + (r.error || "Error desconocido");
+        el.style.color = "var(--danger)";
+      }
+    } catch (e) {
+      el.textContent = "✗ " + e.message; el.style.color = "var(--danger)";
+    }
+  }
+  window.runWaSync = runWaSync;
 
   async function refreshAirStats() {
     try {
@@ -3294,36 +3541,102 @@
   window.saveKbArticle = saveKbArticle;
   window.deleteKbArticle = deleteKbArticle;
 
-  // ── Conversaciones ───────────────────────────────────────────────────────
+  // ── Conversaciones — Bandeja del Bot de WhatsApp ─────────────────────────
+  //
+  // La vista antes era una bandeja interna del ERP; ahora refleja los chats
+  // del bot de WhatsApp de Bartez. Toda la data la sirve el módulo `whatsapp`
+  // vía IPC (`api.whatsapp.*`), con cache local en la DB.
   let _convData = [];
   let _convCurrentId = null;
 
   async function loadConversaciones() {
     document.getElementById("conv-list").innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-    document.getElementById("conv-detail").innerHTML = '<div class="empty-state" style="flex:1"><span class="emo">💬</span><span>Seleccioná una conversación.</span></div>';
+    document.getElementById("conv-detail").innerHTML = '<div class="empty-state" style="flex:1"><svg class="wa-empty-ic"><use href="#i-message"/></svg><span>Seleccioná una conversación para ver los mensajes.</span></div>';
     _convCurrentId = null;
     try {
       const api = await waitForAsimov();
-      _convData = await api.conversations.list("");
+      const enabled = await api.whatsapp.isEnabled();
+      updateWaStatusDot(enabled ? "ok" : "off", enabled ? "Bot conectado" : "Integración deshabilitada");
+      _convData = await api.whatsapp.listChats("");
       renderConvList(_convData);
+      if (!_convData.length && !enabled) {
+        document.getElementById("conv-list").innerHTML =
+          '<div class="empty-state" style="padding:24px;text-align:center">' +
+          '<svg class="wa-empty-ic"><use href="#i-plug"/></svg>' +
+          '<div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:4px">Bot no configurado</div>' +
+          '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Configurá URL y token en Integraciones para ver los chats.</div>' +
+          '<button class="btn btn-primary btn-sm" onclick="A.loadView(\'integraciones\')">Ir a Integraciones</button></div>';
+      }
     } catch (e) {
-      document.getElementById("conv-list").innerHTML = `<div class="empty-state"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+      document.getElementById("conv-list").innerHTML =
+        '<div class="empty-state"><svg class="wa-empty-ic"><use href="#i-alert"/></svg><span>' + esc(e.message) + '</span></div>';
     }
+  }
+
+  function updateWaStatusDot(state, tip) {
+    const d = document.getElementById("wa-status-dot");
+    if (!d) return;
+    d.className = "wa-dot " + (state || "");
+    if (tip) d.title = tip;
   }
 
   function filterConversations(q) {
     const lower = q.toLowerCase();
-    renderConvList(_convData.filter(r => String(r.title).toLowerCase().includes(lower) || String(r.client_name || "").toLowerCase().includes(lower)));
+    renderConvList(_convData.filter(r =>
+      String(r.name || "").toLowerCase().includes(lower) ||
+      String(r.phone || "").includes(lower) ||
+      String(r.last_message || "").toLowerCase().includes(lower)
+    ));
   }
 
   function renderConvList(rows) {
     const el = document.getElementById("conv-list");
-    if (!rows.length) { el.innerHTML = '<div class="empty-state"><span class="emo">📭</span><span>Sin conversaciones.</span></div>'; return; }
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:24px;text-align:center"><svg class="wa-empty-ic"><use href="#i-message"/></svg><span>Sin conversaciones.</span></div>';
+      return;
+    }
     el.innerHTML = rows.map(r => `
-      <div class="kb-item${_convCurrentId === r.id ? " selected" : ""}" onclick="openConversation('${r.id}')">
-        <div class="kbi-title">${esc(r.title)}</div>
-        <div class="kbi-cat">${esc(r.client_name || "Sin cliente")} · ${r.msg_count || 0} mensajes · <span class="${r.status === "abierta" ? "pill-abierto" : "pill-cerrado"}">${r.status}</span></div>
+      <div class="wa-chat${_convCurrentId === r.id ? " selected" : ""}" onclick="openConversation('${esc(r.id)}')">
+        <div class="wa-avatar">${initialsFor(r)}</div>
+        <div class="wa-chat-body">
+          <div class="wa-chat-row">
+            <span class="wa-chat-name">${esc(r.name || formatPhone(r.phone))}</span>
+            <span class="wa-chat-time">${fmtTimeShort(r.last_message_at)}</span>
+          </div>
+          <div class="wa-chat-preview">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.last_message || "")}</span>
+            ${(r.unread_count | 0) > 0 ? `<span class="wa-unread">${r.unread_count | 0}</span>` : ""}
+          </div>
+        </div>
       </div>`).join("");
+  }
+
+  function initialsFor(chat) {
+    const source = (chat.name || chat.phone || "?").trim();
+    const parts = source.split(/[\s.]+/).filter(Boolean);
+    const s = (parts[0] || "").charAt(0) + (parts[1] || "").charAt(0);
+    return esc((s || source.charAt(0) || "?").toUpperCase());
+  }
+
+  function formatPhone(p) {
+    if (!p) return "";
+    const s = String(p).replace(/\D/g, "");
+    // Argentina E.164: 549 + área + número. Formato liviano "+54 9 341 000 0000".
+    if (s.startsWith("549")) return "+54 9 " + s.slice(3, 6) + " " + s.slice(6, 10) + "-" + s.slice(10);
+    if (s.startsWith("54"))  return "+54 "  + s.slice(2, 5) + " " + s.slice(5, 9)  + "-" + s.slice(9);
+    return "+" + s;
+  }
+
+  function fmtTimeShort(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) {
+      return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+    }
+    const diff = (today - d) / 86400000;
+    if (diff < 7) return ["dom","lun","mar","mié","jue","vie","sáb"][d.getDay()];
+    return d.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" });
   }
 
   async function openConversation(id) {
@@ -3333,71 +3646,163 @@
     det.innerHTML = '<div class="loading" style="flex:1"><div class="spinner"></div></div>';
     try {
       const api  = await waitForAsimov();
-      const conv = await api.conversations.get(id);
-      const msgs = (conv.messages || []).map(m => `
-        <div class="conv-msg${m.author === "usuario" ? " usuario" : ""}">
-          <div class="msg-author">${esc(m.author)}</div>
-          <div class="msg-body">${esc(m.body)}</div>
-          <div class="msg-time">${fmtDatetime(m.created_at)}</div>
-        </div>`).join("") || '<div style="padding:20px;color:var(--muted);font-size:12px">Sin mensajes aún.</div>';
-      const isClosed = conv.status === "cerrada";
+      const chat = _convData.find(c => c.id === id) || {};
+      const msgs = await api.whatsapp.listMessages(id);
       det.innerHTML = `
-        <div style="padding:8px 12px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:center;gap:10px;flex-shrink:0">
-          <span style="font-weight:700;font-size:12px;flex:1">${esc(conv.title)}</span>
-          ${conv.client_name ? `<span style="font-size:11px;color:var(--muted)">${esc(conv.client_name)}</span>` : ""}
-          ${fmtPill(conv.status)}
-          ${!isClosed ? `<button class="btn btn-outline btn-sm" onclick="closeConversation('${id}')">Cerrar</button>` : ""}
+        <div class="wa-thread-header">
+          <div class="wa-avatar">${initialsFor(chat)}</div>
+          <div style="flex:1;min-width:0">
+            <div class="h-name">${esc(chat.name || formatPhone(chat.phone))}</div>
+            <div class="h-phone">${esc(formatPhone(chat.phone))}${chat.client_id ? " · cliente vinculado" : ""}</div>
+          </div>
         </div>
-        <div class="conv-thread" id="conv-thread-${id}">${msgs}</div>
-        ${!isClosed ? `
-        <div class="conv-input-bar">
-          <textarea id="conv-msg-input-${id}" placeholder="Escribí un mensaje..." onkeydown="if(event.ctrlKey&&event.key==='Enter')sendMessage('${id}')"></textarea>
-          <button class="btn btn-primary btn-sm" onclick="sendMessage('${id}')">Enviar</button>
-        </div>` : ""}`;
-      const thread = document.getElementById(`conv-thread-${id}`);
-      if (thread) thread.scrollTop = thread.scrollHeight;
+        <div class="wa-msg-list" id="wa-msg-list-${esc(id)}">
+          ${msgs.length ? msgs.map(m => renderWaMessage(m)).join("") : '<div style="margin:auto;color:var(--muted);font-size:12px">Sin mensajes en este chat.</div>'}
+        </div>
+        <div class="wa-composer">
+          <textarea id="wa-composer-input" placeholder="Escribí un mensaje..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage('${esc(id)}');}"></textarea>
+          <button class="wa-send" onclick="sendMessage('${esc(id)}')" title="Enviar (Enter)"><svg><use href="#i-send"/></svg></button>
+        </div>`;
+      const list = document.getElementById(`wa-msg-list-${id}`);
+      if (list) list.scrollTop = list.scrollHeight;
+      const input = document.getElementById("wa-composer-input");
+      if (input) input.focus();
     } catch (e) {
-      det.innerHTML = `<div class="empty-state" style="flex:1"><span class="emo">⚠️</span><span>${e.message}</span></div>`;
+      det.innerHTML = `<div class="empty-state" style="flex:1"><svg class="wa-empty-ic"><use href="#i-alert"/></svg><span>${esc(e.message)}</span></div>`;
+    }
+  }
+
+  function renderWaMessage(m) {
+    const dir = m.direction === "out" ? "out" : "in";
+    const statusText = { pending:"⏳", sent:"✓", delivered:"✓✓", read:"✓✓", failed:"⚠" }[m.status] || "";
+    const statusClass = m.status === "read" ? " read" : m.status === "failed" ? " failed" : "";
+    return `<div class="wa-msg ${dir}">
+      <div class="wa-msg-body">${esc(m.body || (m.media_kind ? "[" + m.media_kind + "]" : ""))}</div>
+      <div class="wa-msg-meta">${fmtTimeShort(m.sent_at)}${dir === "out" ? ` <span class="wa-msg-status${statusClass}">${statusText}</span>` : ""}</div>
+    </div>`;
+  }
+
+  async function sendMessage(chatId) {
+    const input = document.getElementById("wa-composer-input");
+    if (!input) return;
+    const body = input.value.trim();
+    if (!body) return;
+    input.value = "";
+    const btn = document.querySelector(".wa-send");
+    if (btn) btn.disabled = true;
+    try {
+      const api = await waitForAsimov();
+      const res = await api.whatsapp.sendMessage(chatId, body);
+      if (!res.ok) {
+        alert("No se pudo enviar: " + (res.error || "error desconocido"));
+        input.value = body;
+        return;
+      }
+      await openConversation(chatId);
+      _convData = await api.whatsapp.listChats("");
+    } finally {
+      if (btn) btn.disabled = false;
     }
   }
 
   async function newConversation() {
-    const title = prompt("Título de la conversación:");
-    if (!title) return;
-    const client = prompt("Cliente (opcional, dejá vacío si no aplica):", "") || "";
+    // El "nuevo contacto" del bot: elegís un número + mensaje inicial y el bot
+    // lo dispara. Reemplaza al viejo "nueva conversación interna".
+    const data = await asimovPromptModal({
+      title: "Nuevo contacto de WhatsApp",
+      fields: [
+        { key: "phone", label: "Número (con código de país)", required: true, autofocus: true, placeholder: "+54 9 341 000 0000" },
+        { key: "body",  label: "Mensaje inicial",             required: true,                  placeholder: "Escribí el mensaje..." },
+      ],
+      submit: "Enviar",
+    });
+    if (!data) return;
+    const phone = data.phone.replace(/\D/g, "");
+    if (!phone) { alert("Número inválido."); return; }
     const api = await waitForAsimov();
-    const res = await api.conversations.create({ title, client_name: client });
-    _convData = await api.conversations.list("");
-    _convCurrentId = res.id;
-    renderConvList(_convData);
-    await openConversation(res.id);
+    // Convención con el bot: el chat_id de un contacto nuevo puede coincidir
+    // con el phone; si el bot devuelve otro formato, se ajusta acá.
+    const res = await api.whatsapp.sendMessage(phone, data.body);
+    if (!res.ok) { alert("No se pudo enviar: " + (res.error || "error desconocido")); return; }
+    await syncWaNow();
+    if (_convData.some(c => c.id === phone)) await openConversation(phone);
   }
 
-  async function sendMessage(convId) {
-    const input = document.getElementById(`conv-msg-input-${convId}`);
-    const body  = input.value.trim();
-    if (!body) return;
-    const api = await waitForAsimov();
-    await api.conversations.addMessage({ conversation_id: convId, author: "usuario", body });
-    input.value = "";
-    await openConversation(convId);
-    _convData = await api.conversations.list("");
+  async function syncWaNow() {
+    try {
+      const api = await waitForAsimov();
+      updateWaStatusDot("", "Sincronizando…");
+      await api.whatsapp.runSync();
+      _convData = await api.whatsapp.listChats("");
+      renderConvList(_convData);
+      updateWaStatusDot("ok", "Bot conectado");
+    } catch (e) {
+      updateWaStatusDot("off", e.message);
+    }
   }
 
-  async function closeConversation(convId) {
-    if (!confirm("¿Cerrar esta conversación?")) return;
-    const api = await waitForAsimov();
-    await api.conversations.close(convId);
-    _convData = await api.conversations.list("");
-    renderConvList(_convData);
-    await openConversation(convId);
+  /*
+   * Prompt modal reutilizable — reemplazo de window.prompt() para Electron.
+   * Devuelve un objeto con { [field.key]: valor } o null si el usuario cancela.
+   */
+  function asimovPromptModal(opts) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "asimov-modal-overlay";
+      overlay.innerHTML =
+        '<div class="asimov-modal" role="dialog" aria-modal="true" aria-labelledby="am-title">' +
+          '<div class="am-header"><span id="am-title">' + esc(opts.title || "") + '</span>' +
+            '<button type="button" class="am-close" aria-label="Cerrar">&times;</button></div>' +
+          '<form class="am-body">' +
+            opts.fields.map((f, i) =>
+              '<label class="am-field">' +
+                '<span>' + esc(f.label) + (f.required ? ' <em class="am-req">*</em>' : '') + '</span>' +
+                '<input type="text" data-key="' + esc(f.key) + '"' +
+                  (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') +
+                  (i === 0 || f.autofocus ? ' data-autofocus="1"' : '') +
+                  (f.required ? ' required' : '') + ' />' +
+              '</label>'
+            ).join("") +
+            '<div class="am-actions">' +
+              '<button type="button" class="btn btn-outline btn-sm am-cancel">Cancelar</button>' +
+              '<button type="submit" class="btn btn-primary btn-sm">' + esc(opts.submit || "Aceptar") + '</button>' +
+            '</div>' +
+          '</form>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      const form = overlay.querySelector("form");
+      const close = (data) => { overlay.remove(); document.removeEventListener("keydown", onKey); resolve(data); };
+      const onKey = (e) => { if (e.key === "Escape") close(null); };
+      document.addEventListener("keydown", onKey);
+      overlay.querySelector(".am-close").addEventListener("click", () => close(null));
+      overlay.querySelector(".am-cancel").addEventListener("click", () => close(null));
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) close(null); });
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const out = {};
+        let missing = null;
+        form.querySelectorAll("input[data-key]").forEach((inp) => {
+          const val = inp.value;
+          out[inp.dataset.key] = val;
+          if (inp.required && !val.trim() && !missing) missing = inp;
+        });
+        if (missing) { missing.focus(); return; }
+        close(out);
+      });
+      setTimeout(() => {
+        const first = overlay.querySelector("input[data-autofocus]");
+        if (first) first.focus();
+      }, 20);
+    });
   }
+  window.asimovPromptModal = asimovPromptModal;
 
   window.filterConversations = filterConversations;
   window.openConversation = openConversation;
   window.newConversation = newConversation;
   window.sendMessage = sendMessage;
-  window.closeConversation = closeConversation;
+  window.syncWaNow = syncWaNow;
+  window.loadConversaciones = loadConversaciones;
 
   // ── Favoritos / Apariencia ───────────────────────────────────────────────
   async function loadFavoritos() {
