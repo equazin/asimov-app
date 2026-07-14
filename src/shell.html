@@ -529,6 +529,13 @@
     }
     .invoice-fiscal-error { border-color: rgba(229,84,75,0.55); color: #F0B9B5; }
     .invoice-fiscal-notice { color: var(--muted); }
+    .invoice-print-settings {
+      display: flex; flex-direction: column; gap: 9px; padding: 11px;
+      border: 1px solid var(--border); border-radius: 7px; background: var(--input-bg);
+    }
+    .invoice-print-toggle { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text); }
+    .invoice-print-toggle input { margin-top: 2px; }
+    .invoice-print-settings .am-field input:disabled { opacity: .55; cursor: not-allowed; }
     @media (max-width: 560px) {
       .invoice-fiscal-grid { grid-template-columns: 1fr; }
       .invoice-fiscal-summary { align-items: flex-start; flex-direction: column; }
@@ -2228,9 +2235,12 @@
       let data;
       if (type === "factura") {
         const inv = await api.invoices.get(id);
+        const consolidated = Number(inv.consolidated_print || 0) === 1;
         const showKitComponents = inv.show_kit_components == null || Number(inv.show_kit_components) === 1;
         let printItems = mapPrintItems(inv.items);
-        if (showKitComponents) printItems = await hydratePrintKits(printItems);
+        // Sólo hidratar kits si NO estamos en modo consolidado (el consolidado
+        // ya trata a todos los ítems como sub-líneas del renglón único).
+        if (!consolidated && showKitComponents) printItems = await hydratePrintKits(printItems);
         data = {
           letter: inv.tipo || "B", number: inv.number, date: fmtDate(inv.date),
           party: { name: inv.client_name || "", cuit: "", iva: "", address: "" },
@@ -2238,6 +2248,8 @@
           totals: { subtotal: inv.subtotal, iva: inv.iva_amount, total: inv.total },
           usdRate: inv.usd_rate != null ? Number(inv.usd_rate) : 0,
           showKitComponents: showKitComponents,
+          consolidated: consolidated,
+          consolidatedLabel: inv.consolidated_label || "Equipo armado",
           cae: inv.cae || "", caeExpiration: inv.cae_expiry || "", qrDataUrl: "",
         };
         if (inv.client_id) { try { const c = await api.clients.get(inv.client_id); if (c) { data.party.cuit = c.cuit || ""; data.party.iva = c.fiscal_type || ""; data.party.address = c.address || ""; } } catch (_) {} }
@@ -2335,6 +2347,7 @@
     const canAuthorize = CAN_AUTHORIZE_ARCA && (!afipData || afipData.canAuthorize !== false);
     const configIncomplete = afipData && (!afipData.enabled || !afipData.cuit || !afipData.hasCert || !afipData.hasKey);
     const canRequestCae = canAuthorize && !configIncomplete;
+    const consolidatedPrint = Number(invoice.consolidated_print || 0) === 1;
     const statusPill = fmtInvoiceFiscalPill(invoice);
     const errorBlock = invoice.afip_error
       ? `<div class="invoice-fiscal-error"><strong>Respuesta de ARCA:</strong> ${esc(String(invoice.afip_error))}</div>`
@@ -2370,10 +2383,23 @@
             <div class="invoice-fiscal-field"><span class="label">CAE</span><span class="value">${esc(String(invoice.cae || "Sin CAE"))}</span></div>
             <div class="invoice-fiscal-field"><span class="label">Vencimiento del CAE</span><span class="value">${invoice.cae_expiry ? fmtDate(invoice.cae_expiry) : "—"}</span></div>
           </div>
+          <div class="invoice-print-settings">
+            <label class="invoice-print-toggle">
+              <input type="checkbox" class="invoice-consolidated" ${consolidatedPrint ? "checked" : ""} />
+              <span>Imprimir todos los productos como <strong>un solo renglón con el precio total</strong>. Los componentes quedan debajo, sin precios individuales.</span>
+            </label>
+            <label class="am-field">
+              <span>Descripción del renglón principal</span>
+              <input type="text" class="invoice-consolidated-label" maxlength="160"
+                value="${escAttr(String(invoice.consolidated_label || "Equipo armado"))}"
+                placeholder="Ej.: PC completa" ${consolidatedPrint ? "" : "disabled"} />
+            </label>
+          </div>
           ${errorBlock}
           ${notice}
           <div class="am-actions">
             <button type="button" class="btn btn-outline btn-sm am-cancel">Cerrar</button>
+            <button type="button" class="btn btn-outline btn-sm invoice-save-print">Guardar formato</button>
             <button type="button" class="btn btn-outline btn-sm invoice-print">Imprimir${hasCae ? " con QR" : ""}</button>
             ${!hasCae && !isAnulled && configIncomplete && canAuthorize
               ? '<button type="button" class="btn btn-outline btn-sm invoice-config">Configurar ARCA</button>'
@@ -2396,13 +2422,54 @@
     overlay.querySelector(".am-close").addEventListener("click", close);
     overlay.querySelector(".am-cancel").addEventListener("click", close);
     overlay.addEventListener("click", (event) => { if (event.target === overlay) close(); });
-    overlay.querySelector(".invoice-print").addEventListener("click", (event) => reprintDoc("factura", id, event.currentTarget));
+    const consolidatedToggle = overlay.querySelector(".invoice-consolidated");
+    const consolidatedLabel = overlay.querySelector(".invoice-consolidated-label");
+    const savePrintButton = overlay.querySelector(".invoice-save-print");
+    consolidatedToggle.addEventListener("change", () => {
+      consolidatedLabel.disabled = !consolidatedToggle.checked;
+      if (consolidatedToggle.checked) consolidatedLabel.focus();
+    });
+    const savePrintPreferences = async (showConfirmation) => {
+      const api = await waitForAsimov();
+      const result = await api.invoices.setPrintPreferences({
+        id,
+        consolidated: consolidatedToggle.checked,
+        consolidatedLabel: consolidatedLabel.value.trim(),
+      });
+      if (!result || !result.ok) {
+        alert((result && result.error) || "No se pudo guardar el formato de impresión.");
+        return false;
+      }
+      invoice.consolidated_print = result.data.consolidatedPrint;
+      invoice.consolidated_label = result.data.consolidatedLabel;
+      if (showConfirmation) alert("Formato de impresión guardado.");
+      return true;
+    };
+    savePrintButton.addEventListener("click", async () => {
+      savePrintButton.disabled = true;
+      try { await savePrintPreferences(true); }
+      finally { if (savePrintButton.isConnected) savePrintButton.disabled = false; }
+    });
+    overlay.querySelector(".invoice-print").addEventListener("click", async (event) => {
+      const printButton = event.currentTarget;
+      printButton.disabled = true;
+      try {
+        if (await savePrintPreferences(false)) await reprintDoc("factura", id, printButton);
+      } finally {
+        if (printButton.isConnected) printButton.disabled = false;
+      }
+    });
     const configButton = overlay.querySelector(".invoice-config");
     if (configButton) configButton.addEventListener("click", () => { close(); navigate("config"); });
     const authorizeButton = overlay.querySelector(".invoice-authorize");
     if (authorizeButton) {
-      authorizeButton.addEventListener("click", () => {
+      authorizeButton.addEventListener("click", async () => {
         const actionButton = authorizeButton;
+        actionButton.disabled = true;
+        if (!await savePrintPreferences(false)) {
+          if (actionButton.isConnected) actionButton.disabled = false;
+          return;
+        }
         close();
         void authorizeStoredInvoice(id, actionButton);
       });

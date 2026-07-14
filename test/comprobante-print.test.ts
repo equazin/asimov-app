@@ -135,4 +135,35 @@ describe("impresión monocroma de comprobantes", () => {
     // usa NBSP U+00A0 entre el símbolo y el número).
     expect(area.innerHTML).toContain("$ 497.741,30");
   });
+
+  it("consolida productos sueltos en un solo renglón valorizado y conserva el detalle sin precios", () => {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, {
+      window,
+      document: { getElementById: () => area },
+      Intl, Number, String, isFinite, setTimeout,
+    });
+    const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
+
+    renderComprobante("factura", {
+      consolidated: true,
+      consolidatedLabel: "PC gaming completa",
+      items: [
+        { code: "CPU-1", description: "Procesador Ryzen", qty: 1, unitPrice: 199.12, ivaPct: 21 },
+        { code: "MB-1", description: "Motherboard", qty: 1, unitPrice: 83.45, ivaPct: 21 },
+      ],
+      totals: { subtotal: 282.57, iva: 59.34, total: 341.91 },
+    });
+
+    const itemsTable = area.innerHTML.match(/<table class="items">[\s\S]*?<\/table>/)?.[0] || "";
+    expect(itemsTable).toContain("PC gaming completa");
+    expect(itemsTable).toContain("Procesador Ryzen");
+    expect(itemsTable).toContain("Motherboard");
+    expect(itemsTable.match(/class="kit-component"/g)).toHaveLength(2);
+    expect(itemsTable.match(/282,57/g)).toHaveLength(2);
+    expect(itemsTable).not.toContain("199,12");
+    expect(itemsTable).not.toContain("83,45");
+    expect(itemsTable).toMatch(/kit-component[\s\S]*colspan="3"/);
+  });
 });

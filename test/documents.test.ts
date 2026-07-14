@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
-  annulDocument,
+  annulDocument, setInvoicePrintPreferences,
 } from "../src/documents";
 import { getDb } from "../src/db";
 import { initTestDb, seedArticle } from "./helpers";
@@ -170,6 +170,64 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     const h2 = one("SELECT usd_rate, show_kit_components FROM invoices WHERE id=?", res.id);
     expect(h2.usd_rate).toBeCloseTo(1510.5);
     expect(h2.show_kit_components).toBe(0);
+  });
+
+  it("factura: guarda consolidated_print + consolidated_label (con fallback de label)", () => {
+    // Default: consolidated_print = 0 y label = null cuando el form no lo pide.
+    const off = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+      totales: { total: 121 },
+    });
+    const h1 = one("SELECT consolidated_print, consolidated_label FROM invoices WHERE id=?", off.id);
+    expect(h1.consolidated_print).toBe(0);
+    expect(h1.consolidated_label).toBeNull();
+
+    // Activado con label explícito.
+    const withLabel = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+      totales: { total: 121 },
+      consolidarItems: true,
+      descripcionConsolidada: "PC gaming a medida",
+    });
+    const h2 = one("SELECT consolidated_print, consolidated_label FROM invoices WHERE id=?", withLabel.id);
+    expect(h2.consolidated_print).toBe(1);
+    expect(h2.consolidated_label).toBe("PC gaming a medida");
+
+    // Activado SIN label: se guarda el fallback "Equipo armado" en vez de null.
+    const noLabel = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+      totales: { total: 121 },
+      consolidarItems: true,
+    });
+    const h3 = one("SELECT consolidated_print, consolidated_label FROM invoices WHERE id=?", noLabel.id);
+    expect(h3.consolidated_print).toBe(1);
+    expect(h3.consolidated_label).toBe("Equipo armado");
+  });
+
+  it("factura: permite cambiar el formato consolidado después de guardarla", () => {
+    const invoice = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [
+        { codigo: "CPU", descripcion: "Procesador", cantidad: 1, precio: 200, iva: 21 },
+        { codigo: "MB", descripcion: "Motherboard", cantidad: 1, precio: 83, iva: 21 },
+      ],
+    });
+
+    const enabled = setInvoicePrintPreferences(invoice.id, true, "PC completa");
+    expect(enabled).toEqual({ id: invoice.id, consolidatedPrint: 1, consolidatedLabel: "PC completa" });
+    expect(one("SELECT consolidated_print, consolidated_label FROM invoices WHERE id=?", invoice.id)).toMatchObject({
+      consolidated_print: 1,
+      consolidated_label: "PC completa",
+    });
+
+    setInvoicePrintPreferences(invoice.id, false, "texto ignorado");
+    expect(one("SELECT consolidated_print, consolidated_label FROM invoices WHERE id=?", invoice.id)).toMatchObject({
+      consolidated_print: 0,
+      consolidated_label: null,
+    });
   });
 
   it("orden de compra: total calculado server-side desde los ítems", () => {

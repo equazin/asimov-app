@@ -43,6 +43,7 @@ import { registerDolarIpc } from "./ipc/dolar";
 import { registerAirIpc } from "./ipc/air";
 import { registerWhatsappIpc } from "./ipc/wa";
 import { registerAfipIpc } from "./ipc/afip";
+import { setInvoicePrintPreferences } from "./documents";
 
 export function registerIpcHandlers(deps: IpcDeps): void {
   // Grupos autocontenidos extraídos a src/ipc/*.
@@ -191,6 +192,19 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const inv = dbGet("SELECT * FROM invoices WHERE id = ?", [safeStr(id)]);
     const items = dbAll("SELECT * FROM invoice_items WHERE invoice_id = ?", [safeStr(id)]);
     return { ...inv, items };
+  });
+  ipcMain.handle("db:invoices:set-print-preferences", (_event, input: unknown) => {
+    const data = input && typeof input === "object" ? input as Record<string, unknown> : {};
+    try {
+      const saved = setInvoicePrintPreferences(
+        safeStr(data.id),
+        data.consolidated === true,
+        safeStr(data.consolidatedLabel),
+      );
+      return { ok: true, data: saved };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : "No se pudo guardar el formato de impresión." };
+    }
   });
   ipcMain.handle("db:invoices:save", (_event, row: unknown) => {
     const r = row as Record<string, unknown>;

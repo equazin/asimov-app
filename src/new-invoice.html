@@ -749,6 +749,18 @@ td{ border-color:var(--border) !important; }
           </label>
         </div>
 
+        <div class="field span-3" style="display:flex;align-items:center;gap:8px;padding-top:6px;">
+          <input type="checkbox" id="chkConsolidar" style="width:16px;height:16px;cursor:pointer;" />
+          <label for="chkConsolidar" style="cursor:pointer;margin:0;font-size:11px;line-height:1.3;">
+            Consolidar todos los ítems en <b>un solo renglón</b> al imprimir (para armados a medida sin kit en el catálogo).
+          </label>
+        </div>
+        <div class="field span-3">
+          <label for="txtConsolidarLabel">Descripción del renglón consolidado</label>
+          <input type="text" id="txtConsolidarLabel" placeholder="Ej.: PC gaming a medida"
+            disabled style="opacity:0.55;" />
+        </div>
+
         <div class="section-title">Referencias</div>
         <div class="field">
           <label>Pedido origen</label>
@@ -1093,6 +1105,15 @@ td{ border-color:var(--border) !important; }
       document.getElementById("txtFechaVenc").value = venc.toISOString().slice(0, 10);
       document.getElementById("txtPrimerVenc").value = venc.toISOString().slice(0, 10);
       updateHeader();
+      // Habilita/deshabilita el input de descripción según el checkbox de consolidar.
+      var chkCons = document.getElementById("chkConsolidar");
+      var txtConsLabel = document.getElementById("txtConsolidarLabel");
+      chkCons.addEventListener("change", function() {
+        txtConsLabel.disabled = !chkCons.checked;
+        txtConsLabel.style.opacity = chkCons.checked ? "1" : "0.55";
+        if (chkCons.checked && !txtConsLabel.value.trim()) txtConsLabel.focus();
+      });
+
       // Cotización USD → ARS: default con el último "oficial.venta" del sync
       // de DolarAPI. Si falla o no hay dato, queda vacío y el usuario tipea.
       if (window.asimovNewInvoice && window.asimovNewInvoice.dolarLatest) {
@@ -1545,6 +1566,8 @@ td{ border-color:var(--border) !important; }
         origen: origenDoc,
         cotizacionUsd: parseFloat(document.getElementById("txtCotizacionUsd").value) || null,
         mostrarComponentesKit: document.getElementById("chkMostrarKit").checked,
+        consolidarItems: document.getElementById("chkConsolidar").checked,
+        descripcionConsolidada: document.getElementById("txtConsolidarLabel").value.trim(),
       };
     }
 
@@ -1668,6 +1691,8 @@ td{ border-color:var(--border) !important; }
         notes: document.getElementById("txtObsCliente").value,
         usdRate: parseFloat(document.getElementById("txtCotizacionUsd").value) || 0,
         showKitComponents: showKits,
+        consolidated: document.getElementById("chkConsolidar").checked,
+        consolidatedLabel: document.getElementById("txtConsolidarLabel").value.trim() || "Equipo armado",
         items: items.map(function (it) {
           return {
             articleId: it.articleId || "",
@@ -1715,7 +1740,17 @@ td{ border-color:var(--border) !important; }
     async function printFactura() {
       var data = window.getPrintData();
       if (!data) return;
-      if (data.showKitComponents) data.items = await hydrateKitComponents(data.items);
+      // El modo consolidado ya usa todos los ítems como sub-líneas del renglón
+      // único, así que si está activo no tiene sentido hidratar kits encima.
+      if (data.consolidated) {
+        if (!data.consolidatedLabel) {
+          alert("Cargá una descripción para el renglón consolidado.");
+          document.getElementById("txtConsolidarLabel").focus();
+          return;
+        }
+      } else if (data.showKitComponents) {
+        data.items = await hydrateKitComponents(data.items);
+      }
       window.renderComprobante("factura", data);
       setTimeout(function() { window.print(); }, 40);
     }

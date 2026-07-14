@@ -20,6 +20,15 @@ describe("estado fiscal de facturas en el shell", () => {
     expect(shell).not.toMatch(/<input[^>]+(?:cae|estado fiscal)/i);
   });
 
+  it("permite consolidar una factura ya guardada antes de imprimirla o autorizarla", () => {
+    expect(shell).toContain('class="invoice-consolidated"');
+    expect(shell).toContain('class="invoice-consolidated-label"');
+    expect(shell).toContain("un solo renglón con el precio total");
+    expect(shell).toContain("api.invoices.setPrintPreferences");
+    expect(shell).toContain('await savePrintPreferences(false)) await reprintDoc("factura"');
+    expect(shell).toMatch(/authorizeButton\.addEventListener[\s\S]*await savePrintPreferences\(false\)[\s\S]*authorizeStoredInvoice/);
+  });
+
   it("reconoce todos los roles administrativos en renderer y proceso principal", () => {
     const roles = '["admin", "owner", "superadmin"]';
     expect(shell).toContain(`${roles}.includes(currentRole)`);

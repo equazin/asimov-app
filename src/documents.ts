@@ -470,6 +470,13 @@ export interface InvoiceForm {
   /** Preferencia por factura: al imprimir, desplegar (true/undefined) u ocultar
    *  (false) los componentes de cada ítem que sea un kit. Default = true. */
   mostrarComponentesKit?: boolean;
+  /** Modo consolidado: al imprimir mostrar UN solo renglón (con `descripcionConsolidada`)
+   *  y todos los ítems reales como sub-líneas sin precio. Útil para armados custom
+   *  que no ameritan crear un kit en el catálogo. */
+  consolidarItems?: boolean;
+  /** Descripción que se imprime como línea principal cuando `consolidarItems=true`.
+   *  Ejemplos: "PC gaming a medida", "Kit oficina completo". */
+  descripcionConsolidada?: string;
 }
 
 export function persistInvoice(form: InvoiceForm): PersistResult {
@@ -492,18 +499,21 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
     const usdRate = Number.isFinite(cotiz) && cotiz > 0 ? cotiz : null;
     // Default true si no vino explícitamente en el form (compat con formularios previos).
     const showKits = form.mostrarComponentesKit === false ? 0 : 1;
+    const consolidated = form.consolidarItems === true ? 1 : 0;
+    const consolidatedLabel = consolidated ? (str(form.descripcionConsolidada) || "Equipo armado") : null;
     dbRun(
-      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes,usd_rate,show_kit_components)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes,usd_rate,show_kit_components,consolidated_print,consolidated_label)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
        ON CONFLICT(id) DO UPDATE SET
          number=excluded.number, client_id=excluded.client_id, client_name=excluded.client_name,
          date=excluded.date, tipo=excluded.tipo, point_of_sale=excluded.point_of_sale,
          status='borrador', subtotal=excluded.subtotal, iva_amount=excluded.iva_amount,
          total=excluded.total, afip_error=NULL, notes=excluded.notes,
-         usd_rate=excluded.usd_rate, show_kit_components=excluded.show_kit_components`,
+         usd_rate=excluded.usd_rate, show_kit_components=excluded.show_kit_components,
+         consolidated_print=excluded.consolidated_print, consolidated_label=excluded.consolidated_label`,
       [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, tipo, pos, "borrador",
        totals.subtotal, totals.ivaAmount, totals.total, null, str(form.observaciones),
-       usdRate, showKits],
+       usdRate, showKits, consolidated, consolidatedLabel],
     );
     dbRun("DELETE FROM invoice_items WHERE invoice_id = ?", [id]);
     for (const it of items) {
@@ -519,6 +529,32 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
   tx();
   enqueueDocSnapshot("invoice", id);
   return { id, number };
+}
+
+export function setInvoicePrintPreferences(
+  invoiceId: string,
+  consolidateItems: boolean,
+  consolidatedLabel?: string,
+): { id: string; consolidatedPrint: number; consolidatedLabel: string | null } {
+  const id = str(invoiceId);
+  if (!id) throw new Error("La factura no es válida.");
+  const invoice = dbGet<{ id: string; consolidated_print: number; consolidated_label: string | null }>(
+    "SELECT id, consolidated_print, consolidated_label FROM invoices WHERE id = ?",
+    [id],
+  );
+  if (!invoice) throw new Error("No se encontró la factura.");
+
+  const consolidatedPrint = consolidateItems ? 1 : 0;
+  const label = consolidatedPrint ? (str(consolidatedLabel, 160) || "Equipo armado") : null;
+  if (Number(invoice.consolidated_print || 0) === consolidatedPrint && invoice.consolidated_label === label) {
+    return { id, consolidatedPrint, consolidatedLabel: label };
+  }
+  dbRun(
+    "UPDATE invoices SET consolidated_print = ?, consolidated_label = ? WHERE id = ?",
+    [consolidatedPrint, label, id],
+  );
+  enqueueDocSnapshot("invoice", id);
+  return { id, consolidatedPrint, consolidatedLabel: label };
 }
 
 export interface PurchaseDocItem {

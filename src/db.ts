@@ -249,6 +249,8 @@ CREATE TABLE IF NOT EXISTS invoices (
   notes         TEXT,
   usd_rate      REAL,                              -- Cotización USD → ARS usada al emitir (para el pie de la factura impresa)
   show_kit_components INTEGER NOT NULL DEFAULT 1,  -- Al imprimir: 1 = desplegar componentes del kit como sub-líneas; 0 = una sola línea por kit
+  consolidated_print INTEGER NOT NULL DEFAULT 0,   -- Al imprimir: 1 = un solo renglón consolidado con la descripción de consolidated_label y todos los ítems como sub-líneas sin precio
+  consolidated_label TEXT,                         -- Descripción del renglón consolidado (ej. PC gaming a medida); ignorada si consolidated_print = 0
   created_at    TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (client_id) REFERENCES clients(id)
 );
@@ -823,6 +825,11 @@ export function initDb(dbPath?: string): void {
   // Preferencia por factura: desplegar (1) u ocultar (0) los componentes del
   // kit en la impresión. Default = 1 (como en el sistema anterior).
   try { _db.exec("ALTER TABLE invoices ADD COLUMN show_kit_components INTEGER NOT NULL DEFAULT 1"); } catch {}
+  // Modo "consolidado": al imprimir, se muestra UN solo renglón (label + total)
+  // y todos los ítems reales como sub-líneas sin precio individual. Sirve para
+  // armados custom (PC a medida) sin necesidad de definir el kit en el catálogo.
+  try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_print INTEGER NOT NULL DEFAULT 0"); } catch {}
+  try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_label TEXT"); } catch {}
   _db.exec(`
     UPDATE invoices
        SET status = 'autorizada', afip_error = NULL

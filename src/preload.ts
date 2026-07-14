@@ -135,6 +135,8 @@ const api = {
     list: (search = "") => ipcRenderer.invoke("db:invoices:list", search),
     get: (id: string) => ipcRenderer.invoke("db:invoices:get", id),
     save: (row: unknown) => ipcRenderer.invoke("db:invoices:save", row),
+    setPrintPreferences: (input: { id: string; consolidated: boolean; consolidatedLabel?: string }) =>
+      ipcRenderer.invoke("db:invoices:set-print-preferences", input),
   },
   deliveryNotes: {
     list: (search = "") => ipcRenderer.invoke("db:delivery-notes:list", search),

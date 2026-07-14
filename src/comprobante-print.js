@@ -177,6 +177,40 @@
       "<th>Código</th><th>Descripción</th><th class=\"c\">Cant.</th>" +
       (withPrices ? "<th class=\"r\">P. Unit.</th><th class=\"c\">%IVA</th><th class=\"r\">Importe</th>" : "<th class=\"c\">U.M.</th>") +
       "</tr></thead>";
+
+    // Modo consolidado: un solo renglón principal con la descripción provista y
+    // el total neto (subtotal), y todos los ítems reales como sub-líneas
+    // informativas sin precio individual. La totalización fiscal (IVA por
+    // alícuota + total) sigue calculándose sobre los ítems reales en el bloque
+    // de totales, no acá.
+    if (withPrices && data.consolidated && items.length > 0) {
+      var t = data.totals || {};
+      var mainNet = Number(t.subtotal != null ? t.subtotal : items.reduce(function (acc, it) {
+        return acc + Number(it.qty || 0) * Number(it.unitPrice || 0);
+      }, 0));
+      var label = String(data.consolidatedLabel || "Equipo armado");
+      var mainRow =
+        "<tr>" +
+        "<td>—</td>" +
+        "<td>" + esc(label) + "</td>" +
+        '<td class="c">1</td>' +
+        '<td class="r">' + money(mainNet) + "</td>" +
+        '<td class="c">—</td>' +
+        '<td class="r">' + money(mainNet) + "</td>" +
+        "</tr>";
+      var subRows = items.map(function (it) {
+        return (
+          '<tr class="kit-component">' +
+          '<td class="kit-comp-code">' + esc(it.code || "") + "</td>" +
+          '<td class="kit-comp-desc">' + esc(it.description || "") + "</td>" +
+          '<td class="c">' + num3(it.qty) + "</td>" +
+          '<td colspan="3"></td>' +
+          "</tr>"
+        );
+      }).join("");
+      return '<table class="items">' + head + "<tbody>" + mainRow + subRows + "</tbody></table>";
+    }
+
     var body = items.map(function (it) {
       var line = withPrices ? (Number(it.qty) * Number(it.unitPrice)) : 0;
       var mainRow =
