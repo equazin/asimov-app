@@ -796,9 +796,7 @@ CREATE INDEX IF NOT EXISTS idx_exchange_rates_casa    ON exchange_rates(casa, fe
 CREATE INDEX IF NOT EXISTS idx_wa_chats_phone         ON wa_chats(phone);
 CREATE INDEX IF NOT EXISTS idx_wa_chats_last          ON wa_chats(last_message_at DESC);
 CREATE INDEX IF NOT EXISTS idx_wa_messages_chat       ON wa_messages(chat_id, sent_at);
-CREATE INDEX IF NOT EXISTS idx_opportunities_client   ON opportunities(client_id);
 CREATE INDEX IF NOT EXISTS idx_opportunities_stage    ON opportunities(stage);
-CREATE INDEX IF NOT EXISTS idx_opportunities_status   ON opportunities(status);
 CREATE INDEX IF NOT EXISTS idx_crm_activities_client  ON crm_activities(client_id);
 CREATE INDEX IF NOT EXISTS idx_crm_activities_type    ON crm_activities(type);
 CREATE INDEX IF NOT EXISTS idx_crm_activities_date    ON crm_activities(created_at);
@@ -909,26 +907,10 @@ export function initDb(dbPath?: string): void {
   // armados custom (PC a medida) sin necesidad de definir el kit en el catálogo.
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_print INTEGER NOT NULL DEFAULT 0"); } catch {}
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_label TEXT"); } catch {}
-  // CRM unification: columnas CRM en clients
-  try { _db.exec("ALTER TABLE clients ADD COLUMN industry TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE clients ADD COLUMN website TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE clients ADD COLUMN lead_source TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE clients ADD COLUMN account_status TEXT NOT NULL DEFAULT 'active'"); } catch {}
-  try { _db.exec("ALTER TABLE clients ADD COLUMN crm_notes TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE clients ADD COLUMN assigned_to TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE clients ADD COLUMN last_contact_at TEXT"); } catch {}
-  // CRM: columnas nuevas en opportunities
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN client_id TEXT REFERENCES clients(id)"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN stage_id TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN assigned_to TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN source TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN status TEXT NOT NULL DEFAULT 'open'"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN won_at TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN lost_at TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN lost_reason TEXT"); } catch {}
-  try { _db.exec("ALTER TABLE opportunities ADD COLUMN updated_at TEXT NOT NULL DEFAULT (datetime('now'))"); } catch {}
+  migrateCrmSchema();
   migrateInvoiceNumberUniqueness();
   migrateCrmUnification();
+  ensureCrmIndexes();
   _db.exec(`
     UPDATE invoices
        SET status = 'autorizada', afip_error = NULL
@@ -947,6 +929,64 @@ export function initDb(dbPath?: string): void {
   if (!cashExists) {
     _db.prepare("INSERT INTO cash_accounts (id, name) VALUES (?, ?)").run("ca-default", "Caja Principal");
   }
+}
+
+/**
+ * Actualiza el esquema CRM anterior a la unificación con `clients`.
+ *
+ * Los índices que usan columnas nuevas se crean después de esta migración:
+ * SQLite ejecuta todo SCHEMA_SQL aun cuando `CREATE TABLE IF NOT EXISTS` deja
+ * intacta una tabla legacy, por lo que intentar indexar `client_id` antes del
+ * ALTER impedía que la aplicación llegara a crear su primera ventana.
+ */
+function migrateCrmSchema(): void {
+  const db = getDb();
+
+  const addMissingColumns = (table: "clients" | "opportunities", definitions: Record<string, string>) => {
+    const existing = new Set(
+      (db.pragma(`table_info(${table})`) as Array<{ name: string }>).map((column) => column.name),
+    );
+    for (const [name, definition] of Object.entries(definitions)) {
+      if (existing.has(name)) continue;
+      db.exec(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}`);
+      existing.add(name);
+    }
+  };
+
+  addMissingColumns("clients", {
+    industry: "TEXT",
+    website: "TEXT",
+    lead_source: "TEXT",
+    account_status: "TEXT NOT NULL DEFAULT 'active'",
+    crm_notes: "TEXT",
+    assigned_to: "TEXT",
+    last_contact_at: "TEXT",
+  });
+  addMissingColumns("opportunities", {
+    client_id: "TEXT REFERENCES clients(id)",
+    stage_id: "TEXT",
+    assigned_to: "TEXT",
+    source: "TEXT",
+    status: "TEXT NOT NULL DEFAULT 'open'",
+    won_at: "TEXT",
+    lost_at: "TEXT",
+    lost_reason: "TEXT",
+    // SQLite no permite agregar a una tabla con datos un default no constante
+    // como datetime('now'); CRM ya asigna este valor al crear/editar registros.
+    updated_at: "TEXT",
+  });
+  db.exec(`
+    UPDATE opportunities
+       SET updated_at = COALESCE(updated_at, created_at, datetime('now'))
+     WHERE updated_at IS NULL OR trim(updated_at) = '';
+  `);
+}
+
+function ensureCrmIndexes(): void {
+  getDb().exec(`
+    CREATE INDEX IF NOT EXISTS idx_opportunities_client ON opportunities(client_id);
+    CREATE INDEX IF NOT EXISTS idx_opportunities_status ON opportunities(status);
+  `);
 }
 
 /**

@@ -191,7 +191,10 @@ function createLoginWindow(): BrowserWindow {
       sandbox: true,
     },
   });
-  loginWindow.once("ready-to-show", () => loginWindow?.show());
+  loginWindow.once("ready-to-show", () => {
+    loginWindow?.show();
+    console.log("[startup] window-ready:login");
+  });
   loginWindow.on("closed", () => { loginWindow = null; });
   loginWindow.setMenu(null);
   loginWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
@@ -793,6 +796,14 @@ if (!gotLock) {
       if (currentUser) mainWindow = createMainWindow();
       else createLoginWindow();
     });
+  }).catch((error: unknown) => {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("[startup] Asimov no pudo iniciar:", error);
+    dialog.showErrorBox(
+      "Asimov no pudo iniciar",
+      `No se pudo preparar la base de datos local.\n\n${detail}\n\nLa aplicación se cerrará sin modificar tus comprobantes.`,
+    );
+    app.quit();
   });
 
   app.on("window-all-closed", () => {

@@ -34,18 +34,24 @@ child.stderr.on("data", (chunk) => {
 });
 
 let stdout = "";
+let windowReady = false;
 child.stdout.on("data", (chunk) => {
   stdout += chunk.toString();
+  if (stdout.includes("[startup] window-ready:login")) windowReady = true;
 });
 
 let exited = false;
 let requestedShutdown = false;
+let failure = "";
 child.on("exit", (code, signal) => {
   exited = true;
   if (code !== null && code !== 0) {
     console.error(`[smoke-test] FALLO: la app salió con código ${code}`);
     if (stderr) console.error("[smoke-test] stderr:", stderr.slice(0, 2000));
     process.exit(1);
+  }
+  if (code === 0 && !requestedShutdown) {
+    failure = "la app se cerró antes de completar la verificación de la ventana";
   }
   if (signal && !requestedShutdown) {
     console.error(`[smoke-test] FALLO: la app fue terminada por señal ${signal}`);
@@ -56,6 +62,14 @@ child.on("exit", (code, signal) => {
 // Esperar a que se estabilice, luego matar limpiamente
 setTimeout(() => {
   if (exited) return;
+  if (!windowReady) {
+    failure = "la app quedó activa pero no mostró la ventana de ingreso";
+    console.error(`[smoke-test] FALLO: ${failure}`);
+    if (stderr) console.error("[smoke-test] stderr:", stderr.slice(0, 2000));
+    requestedShutdown = true;
+    child.kill("SIGTERM");
+    return;
+  }
   console.log(`[smoke-test] App estable después de ${SETTLE_MS}ms. Cerrando...`);
   requestedShutdown = true;
   child.kill("SIGTERM");
@@ -78,6 +92,10 @@ setTimeout(() => {
 
 child.on("close", () => {
   if (!exited) exited = true;
+  if (failure) {
+    console.error(`[smoke-test] FALLO: ${failure}`);
+    process.exit(1);
+  }
   if (stderr.toLowerCase().includes("error") || stderr.toLowerCase().includes("crash")) {
     console.warn("[smoke-test] Advertencia: stderr contiene errores:");
     console.warn(stderr.slice(0, 1000));
