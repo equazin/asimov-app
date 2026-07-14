@@ -6,6 +6,7 @@ const shell = readFileSync(resolve(process.cwd(), "src/shell.html"), "utf8");
 const main = readFileSync(resolve(process.cwd(), "src/main.ts"), "utf8");
 const preload = readFileSync(resolve(process.cwd(), "src/new-invoice-preload.ts"), "utf8");
 const invoiceForm = readFileSync(resolve(process.cwd(), "src/new-invoice.html"), "utf8");
+const shellPreload = readFileSync(resolve(process.cwd(), "src/preload.ts"), "utf8");
 
 describe("estado fiscal de facturas en el shell", () => {
   it("abre el detalle fiscal con doble clic y también por teclado", () => {
@@ -49,6 +50,20 @@ describe("estado fiscal de facturas en el shell", () => {
     expect(invoiceForm).toContain("id: currentInvoiceId");
     expect(invoiceForm).toContain("if (res && res.invoiceId) currentInvoiceId = res.invoiceId");
     expect(main).toContain("invoiceId: invoiceId || undefined");
+  });
+
+  it("permite editar una factura sin CAE conservando sus datos e id", () => {
+    expect(shell).toContain("Editar factura");
+    expect(shell).toContain("api.openInvoiceEdit(id)");
+    expect(shellPreload).toContain('ipcRenderer.invoke("shell:open-invoice-edit", invoiceId)');
+    expect(main).toContain('ipcMain.handle("shell:open-invoice-edit"');
+    expect(main).toContain('return { ok: false, error: "No tenés permisos para editar facturas." }');
+    expect(main).toContain('win.webContents.send("invoice-edit:prefill", prefill)');
+    expect(preload).toContain('ipcRenderer.on("invoice-edit:prefill"');
+    expect(invoiceForm).toContain("function applyEditPrefill(data)");
+    expect(invoiceForm).toContain("currentInvoiceId = invoice.id || null");
+    expect(invoiceForm).toContain("Reintentar autorización en ARCA");
+    expect(invoiceForm).toContain("Number.isFinite(Number(it.iva_pct)) ? Number(it.iva_pct) : 21");
   });
 
   it("reconoce todos los roles administrativos en renderer y proceso principal", () => {

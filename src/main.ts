@@ -336,6 +336,62 @@ function openInvoiceAdjustment(invoiceId: string, kind: "NC" | "ND"):
   return { ok: true };
 }
 
+function openInvoiceForEdit(invoiceId: string): { ok: boolean; error?: string } {
+  const id = String(invoiceId ?? "").trim();
+  if (!id) return { ok: false, error: "La factura solicitada no es válida." };
+  if (String(currentUser?.role ?? "").toLowerCase() === "readonly") {
+    return { ok: false, error: "No tenés permisos para editar facturas." };
+  }
+  if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) {
+    newInvoiceWindow.focus();
+    return { ok: false, error: "Ya hay un formulario de factura abierto. Cerralo antes de editar este comprobante." };
+  }
+
+  const invoice = dbGet<Record<string, unknown>>(
+    `SELECT i.*, c.code AS client_code, c.cuit AS client_cuit,
+            c.fiscal_type AS client_fiscal_type, c.address AS client_address
+       FROM invoices i
+       LEFT JOIN clients c ON c.id = i.client_id
+      WHERE i.id = ?`,
+    [id],
+  );
+  if (!invoice) return { ok: false, error: "No se encontró la factura." };
+  if (String(invoice.cae ?? "").trim()) {
+    return { ok: false, error: "La factura ya tiene CAE y no puede editarse. Corregila mediante una nota fiscal." };
+  }
+  if (/anul|cancel/i.test(String(invoice.status ?? ""))) {
+    return { ok: false, error: "La factura está anulada y no puede editarse." };
+  }
+
+  const items = dbAll<Record<string, unknown>>(
+    `SELECT article_id, code, description, qty, unit_price, iva_pct
+       FROM invoice_items WHERE invoice_id = ? ORDER BY rowid`,
+    [id],
+  );
+  const prefill = {
+    invoice,
+    client: {
+      id: invoice.client_id,
+      codigo: invoice.client_code,
+      razonSocial: invoice.client_name,
+      cuit: invoice.client_cuit,
+      condicionIva: invoice.client_fiscal_type,
+      domicilio: invoice.client_address,
+    },
+    items,
+  };
+
+  createNewInvoiceWindowStandalone(mainWindow && !mainWindow.isDestroyed() ? mainWindow : null);
+  const win = newInvoiceWindow;
+  if (!win || win.isDestroyed()) return { ok: false, error: "No se pudo abrir el editor de la factura." };
+  const sendPrefill = () => {
+    if (!win.isDestroyed()) win.webContents.send("invoice-edit:prefill", prefill);
+  };
+  if (win.webContents.isLoadingMainFrame()) win.webContents.once("did-finish-load", sendPrefill);
+  else sendPrefill();
+  return { ok: true };
+}
+
 // ---------------------------------------------------------------------------
 // Single-instance lock
 // ---------------------------------------------------------------------------
@@ -459,6 +515,8 @@ if (!gotLock) {
         String(input?.invoiceId ?? ""),
         String(input?.kind ?? "").toUpperCase() as "NC" | "ND",
       ));
+    ipcMain.handle("shell:open-invoice-edit", (_event, invoiceId: string) =>
+      openInvoiceForEdit(invoiceId));
 
     // --- Chequeo manual de actualizaciones ---
     ipcMain.handle("app:check-update", () => checkForUpdateManual());

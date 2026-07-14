@@ -2407,6 +2407,9 @@
             <button type="button" class="btn btn-outline btn-sm invoice-save-print">Guardar formato</button>
             <button type="button" class="btn btn-outline btn-sm invoice-print">Imprimir${hasCae ? " con QR" : ""}</button>
             ${!hasCae && !isAnulled
+              ? '<button type="button" class="btn btn-primary btn-sm invoice-edit">Editar factura</button>'
+              : ""}
+            ${!hasCae && !isAnulled
               ? '<button type="button" class="btn btn-outline btn-sm invoice-annul-draft">Anular borrador</button>'
               : ""}
             ${canCreateAdjustment && fiscalKind === "NC"
@@ -2479,6 +2482,13 @@
     });
     const configButton = overlay.querySelector(".invoice-config");
     if (configButton) configButton.addEventListener("click", () => { close(); navigate("config"); });
+    const editButton = overlay.querySelector(".invoice-edit");
+    if (editButton) editButton.addEventListener("click", async () => {
+      const api = await waitForAsimov();
+      const result = await api.openInvoiceEdit(id);
+      if (!result || !result.ok) alert((result && result.error) || "No se pudo abrir la factura para editarla.");
+      else close();
+    });
     const annulDraftButton = overlay.querySelector(".invoice-annul-draft");
     if (annulDraftButton) annulDraftButton.addEventListener("click", () => {
       close();
@@ -2508,7 +2518,7 @@
       });
     }
     setTimeout(() => {
-      const primary = overlay.querySelector(".invoice-authorize") || overlay.querySelector(".invoice-credit-note") || overlay.querySelector(".invoice-print") || overlay.querySelector(".am-close");
+      const primary = overlay.querySelector(".invoice-edit") || overlay.querySelector(".invoice-authorize") || overlay.querySelector(".invoice-credit-note") || overlay.querySelector(".invoice-print") || overlay.querySelector(".am-close");
       if (primary) primary.focus();
     }, 20);
   }

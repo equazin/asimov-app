@@ -279,6 +279,8 @@ const api = {
     ipcRenderer.send("shell:open-form", type),
   openInvoiceAdjustment: (invoiceId: string, kind: "NC" | "ND") =>
     ipcRenderer.invoke("shell:open-invoice-adjustment", { invoiceId, kind }) as Promise<{ ok: boolean; error?: string }>,
+  openInvoiceEdit: (invoiceId: string) =>
+    ipcRenderer.invoke("shell:open-invoice-edit", invoiceId) as Promise<{ ok: boolean; error?: string }>,
 
   // --- AIR S.R.L. Integration ---
   air: {

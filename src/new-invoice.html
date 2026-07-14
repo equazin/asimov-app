@@ -1247,6 +1247,9 @@ td{ border-color:var(--border) !important; }
       if (window.asimovNewInvoice.onAdjustmentPrefill) {
         window.asimovNewInvoice.onAdjustmentPrefill(applyAdjustmentPrefill);
       }
+      if (window.asimovNewInvoice.onEditPrefill) {
+        window.asimovNewInvoice.onEditPrefill(applyEditPrefill);
+      }
     }
 
     function setTipo(t) {
@@ -1277,7 +1280,7 @@ td{ border-color:var(--border) !important; }
           codigo: it.code || "", descripcion: it.description || "", unidad: "UN",
           cantidad: Number(it.qty) || 1, costo: Number(it.unit_price) || 0,
           margen: 0, precio: Number(it.unit_price) || 0, descuento: 0,
-          iva: Number(it.iva_pct) || 21,
+          iva: Number.isFinite(Number(it.iva_pct)) ? Number(it.iva_pct) : 21,
         };
       });
       setOrigen({
@@ -1291,6 +1294,49 @@ td{ border-color:var(--border) !important; }
       updateTotalsTab();
       document.querySelectorAll(".tab").forEach(function(tab) {
         if (tab.dataset.tab === "items") tab.click();
+      });
+    }
+
+    function applyEditPrefill(data) {
+      if (!data || !data.invoice) return;
+      var invoice = data.invoice;
+      var client = data.client || {};
+      currentInvoiceId = invoice.id || null;
+      clienteData = client;
+      setTipo(String(invoice.tipo || "B").toUpperCase());
+      document.querySelector(".header-title").textContent = "Editar comprobante";
+      document.getElementById("txtPtoVta").value = invoice.point_of_sale || "0001";
+      var numberParts = String(invoice.number || "").split("-");
+      document.getElementById("txtNroFact").value = numberParts[numberParts.length - 1] || "";
+      document.getElementById("txtFecha").value = invoice.date || "";
+      document.getElementById("txtClienteCodigo").value = client.codigo || client.id || "";
+      document.getElementById("txtClienteNombre").value = client.razonSocial || invoice.client_name || "";
+      document.getElementById("txtClienteCuit").value = client.cuit || "";
+      document.getElementById("txtClienteIva").value = client.condicionIva || "";
+      document.getElementById("txtClienteDomicilio").value = client.domicilio || "";
+      document.getElementById("txtObsCliente").value = invoice.notes || "";
+      document.getElementById("selMonedaPrecios").value = "ARS";
+      document.getElementById("txtCotizacionUsd").value = Number(invoice.usd_rate || 0) > 0 ? Number(invoice.usd_rate).toFixed(2) : "";
+      document.getElementById("chkMostrarKit").checked = invoice.show_kit_components == null || Number(invoice.show_kit_components) === 1;
+      document.getElementById("chkConsolidar").checked = Number(invoice.consolidated_print || 0) === 1;
+      document.getElementById("txtConsolidarLabel").value = invoice.consolidated_label || "";
+      document.getElementById("txtConsolidarLabel").disabled = !document.getElementById("chkConsolidar").checked;
+      items = (Array.isArray(data.items) ? data.items : []).map(function(it) {
+        return {
+          id: nextRowId++, articleId: it.article_id || "", isKit: false,
+          codigo: it.code || "", descripcion: it.description || "", unidad: "UN",
+          cantidad: Number(it.qty) || 1, costo: Number(it.unit_price) || 0,
+          margen: 0, precio: Number(it.unit_price) || 0, descuento: 0,
+          iva: Number.isFinite(Number(it.iva_pct)) ? Number(it.iva_pct) : 21,
+        };
+      });
+      document.getElementById("btnAutorizarAfip").textContent = "Reintentar autorización en ARCA";
+      updateHeader();
+      updateCurrencyUi();
+      renderItemsTable();
+      recalcTotals();
+      document.querySelectorAll(".tab").forEach(function(tab) {
+        if (tab.dataset.tab === "comprobante") tab.click();
       });
     }
 
