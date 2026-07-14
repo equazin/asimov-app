@@ -241,15 +241,23 @@
     var area = document.getElementById("print-area");
     if (!area) return;
     var mb = MEMBRETE[type] || mbFactura;
-    area.className = "cbt mb-" + type;
+    var documentEnd =
+      '<div class="document-end">' +
+        (type === "factura" ? caeBlock(data) : "") +
+        notesBlock(data) +
+        footBlock() +
+      "</div>";
+    // En una factura de una hoja, el bloque fiscal queda anclado al margen
+    // inferior. A partir de 17 renglones se conserva el flujo multipágina para
+    // no superponer el QR ni recortar contenido cuando una fila ocupa más alto.
+    var pinDocumentEnd = type === "factura" && (data.items || []).length <= 16;
+    area.className = "cbt mb-" + type + (pinDocumentEnd ? " document-end-pinned" : "");
     area.innerHTML =
       mb(data) +
       partyBlock(data) +
       itemsTable(type, data) +
       totalsBlock(type, data) +
-      (type === "factura" ? caeBlock(data) : "") +
-      notesBlock(data) +
-      footBlock();
+      documentEnd;
   };
 
   window.printComprobante = function (type) {

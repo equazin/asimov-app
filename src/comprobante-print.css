@@ -27,6 +27,16 @@
     color: #000 !important;
     background: #fff !important;
   }
+  #print-area.cbt.document-end-pinned {
+    display: flex !important;
+    flex-direction: column;
+    min-height: calc(100vh - 1px);
+  }
+  #print-area.cbt.document-end-pinned .document-end {
+    margin-top: auto;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   /*
    * El shell usa `color-scheme: dark`. Al reimprimir una factura autorizada
    * desde esa ventana, Chromium aplicaba el esquema oscuro a las tablas y
@@ -255,3 +265,4 @@
 /* ---------- Observaciones / pie ---------- */
 .cbt .notes { margin: 6px 20px; font-size: 10px; color: var(--muted); min-height: 18px; }
 .cbt .foot { margin: 14px 20px 0; padding-top: 8px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 9px; color: var(--muted); }
+.cbt .document-end { break-inside: avoid; page-break-inside: avoid; }
