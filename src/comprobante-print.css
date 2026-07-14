@@ -21,7 +21,32 @@
   /* Ocultar todo el chrome de la app… */
   body > *:not(#print-area) { display: none !important; }
   /* …y mostrar sólo el comprobante. */
-  #print-area { display: block !important; }
+  #print-area {
+    display: block !important;
+    color-scheme: light !important;
+    color: #000 !important;
+    background: #fff !important;
+  }
+  /*
+   * El shell usa `color-scheme: dark`. Al reimprimir una factura autorizada
+   * desde esa ventana, Chromium aplicaba el esquema oscuro a las tablas y
+   * dejaba texto oscuro sobre fondos negros. El comprobante impreso es
+   * deliberadamente monocromo: papel blanco, texto negro y separadores finos.
+   */
+  #print-area.cbt,
+  #print-area.cbt * {
+    color-scheme: light !important;
+    color: #000 !important;
+    background-color: #fff !important;
+    background-image: none !important;
+    border-color: #b8b8b8 !important;
+    box-shadow: none !important;
+  }
+  #print-area.cbt .band-right::before { display: none !important; }
+  #print-area.cbt .letter-box { border-color: #000 !important; }
+  #print-area.cbt .items thead th { border-bottom-color: #000 !important; }
+  #print-area.cbt .items tbody td { border-bottom-color: #d7d7d7 !important; }
+  #print-area.cbt .totals tr.grand td { border-top-color: #000 !important; }
 }
 
 /* Contenedor del comprobante (también usable en preview en pantalla). */
