@@ -1775,13 +1775,13 @@
     },
     oportunidades: {
       title: "Oportunidades",
-      load: (s) => asimov().opportunities.list(s),
+      load: (s) => asimov().crm.opportunities.list(s),
       cols: [
         { label: "Título",   key: "title"                      },
-        { label: "Cuenta",   key: "account_name",  w: "180px" },
+        { label: "Cliente",  key: "client_name",   w: "180px" },
         { label: "Etapa",    key: "stage",         w: "110px", fmt: fmtPill },
         { label: "Valor",    key: "amount",        w: "110px", fmt: fmtARS, align: "right" },
-        { label: "Cierre",   key: "close_date",    w: "90px",  fmt: fmtDate },
+        { label: "Cierre",   key: "expected_close",w: "90px",  fmt: fmtDate },
       ],
     },
     "ordenes-compra": {
@@ -1956,14 +1956,13 @@
       ],
     },
     "cuentas-crm": {
-      title: "Cuentas CRM",
-      load: (s) => asimov().crmAccounts.list(s),
+      title: "CRM — Pipeline",
+      load: () => asimov().crm.pipelineSummary(),
       cols: [
-        { label: "Nombre",    key: "name"                       },
-        { label: "Industria", key: "industry",       w: "140px" },
-        { label: "Teléfono",  key: "phone",          w: "130px" },
-        { label: "Email",     key: "email",          w: "180px" },
-        { label: "Ciudad",    key: "address",        w: "140px" },
+        { label: "Etapa",     key: "name",          w: "140px" },
+        { label: "Count",     key: "count",         w: "60px" },
+        { label: "Total",     key: "totalAmount",   w: "110px", fmt: fmtARS, align: "right" },
+        { label: "Ponderado", key: "weightedAmount",w: "110px", fmt: fmtARS, align: "right" },
       ],
     },
     auditoria: {
