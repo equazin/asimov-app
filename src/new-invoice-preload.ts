@@ -32,6 +32,9 @@ const api = {
     ipcRenderer.invoke("db:doc-links:client-invoices", clientId),
   getSourceItems: (type: string, id: string) =>
     ipcRenderer.invoke("db:doc-links:source-items", type, id),
+  onAdjustmentPrefill: (cb: (data: any) => void) => {
+    ipcRenderer.on("invoice-adjustment:prefill", (_event, data) => cb(data));
+  },
   // Cotización del dólar — para el default del input "Cotización USD" al abrir el form.
   dolarLatest: () =>
     ipcRenderer.invoke("dolar:latest") as Promise<{ ok: boolean; data?: Array<{ casa: string; venta: number }>; error?: string }>,

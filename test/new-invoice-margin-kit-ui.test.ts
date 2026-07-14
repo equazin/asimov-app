@@ -28,6 +28,16 @@ describe("margen global de la factura", () => {
   it("expone subtotal e IVA agregados para la impresión", () => {
     expect(invoiceHtml).toMatch(/window\._totals\s*=\s*\{[\s\S]*subtotal:[\s\S]*iva:[\s\S]*total:/);
   });
+
+  it("convierte los precios USD a totales ARS y envía la moneda al proceso principal", () => {
+    expect(invoiceHtml).toContain('id="selMonedaPrecios"');
+    expect(invoiceHtml).toMatch(/<option value="USD" selected>/);
+    expect(invoiceHtml).toContain("function invoiceCurrencyFactor()");
+    expect(invoiceHtml).toContain("var total = roundMoney(sourceTotal * factor);");
+    expect(invoiceHtml).toContain('monedaPrecios: document.getElementById("selMonedaPrecios").value');
+    expect(invoiceHtml).toContain("Ingresá una cotización USD → ARS válida");
+    expect(invoiceHtml).toContain('document.getElementById("txtCotizacionUsd").addEventListener("input"');
+  });
 });
 
 describe("selección comercial de esquemas", () => {

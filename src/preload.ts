@@ -277,6 +277,8 @@ const api = {
   // Abrir formularios nativos desde el shell
   openNativeForm: (type: string) =>
     ipcRenderer.send("shell:open-form", type),
+  openInvoiceAdjustment: (invoiceId: string, kind: "NC" | "ND") =>
+    ipcRenderer.invoke("shell:open-invoice-adjustment", { invoiceId, kind }) as Promise<{ ok: boolean; error?: string }>,
 
   // --- AIR S.R.L. Integration ---
   air: {

@@ -172,6 +172,47 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     expect(h2.show_kit_components).toBe(0);
   });
 
+  it("factura: convierte precios USD a ARS antes de persistir y conserva el total comercial exacto", () => {
+    const res = persistInvoice({
+      tipo: "A", ptoVta: "00001", clienteNombre: "CORMETAL S.A",
+      monedaPrecios: "USD", cotizacionUsd: 1505,
+      items: [
+        { codigo: "CPU", cantidad: 1, precio: 273.131625, iva: 10.5 },
+        { codigo: "MB", cantidad: 1, precio: 113.60414, iva: 10.5 },
+        { codigo: "RAM", cantidad: 2, precio: 195.07241, iva: 10.5 },
+        { codigo: "HDD", cantidad: 1, precio: 126.63534, iva: 10.5 },
+        { codigo: "SSD", cantidad: 1, precio: 186.53232, iva: 10.5 },
+        { codigo: "WC", cantidad: 1, precio: 66.400945, iva: 10.5 },
+        { codigo: "PSU", cantidad: 1, precio: 54.82412, iva: 21 },
+        { codigo: "CASE", cantidad: 1, precio: 45.574295, iva: 10.5 },
+      ],
+    });
+
+    const header = one("SELECT subtotal, iva_amount, total, usd_rate, source_currency FROM invoices WHERE id=?", res.id);
+    expect(header.total).toBe(2_098_797.75);
+    expect(header.subtotal + header.iva_amount).toBeCloseTo(2_098_797.75, 2);
+    expect(header.usd_rate).toBe(1505);
+    expect(header.source_currency).toBe("USD");
+    expect(one("SELECT SUM(subtotal + iva_amount) total FROM invoice_items WHERE invoice_id=?", res.id).total)
+      .toBeCloseTo(2_098_797.75, 2);
+  });
+
+  it("factura: exige cotización para USD y no reconvierte precios ARS", () => {
+    expect(() => persistInvoice({
+      clienteNombre: "USD sin cotización", monedaPrecios: "USD",
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+    })).toThrow(/cotización USD.*válida/i);
+
+    const ars = persistInvoice({
+      clienteNombre: "Pesos", monedaPrecios: "ARS", cotizacionUsd: 1505,
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+    });
+    expect(one("SELECT total, source_currency FROM invoices WHERE id=?", ars.id)).toMatchObject({
+      total: 121,
+      source_currency: "ARS",
+    });
+  });
+
   it("factura: guarda consolidated_print + consolidated_label (con fallback de label)", () => {
     // Default: consolidated_print = 0 y label = null cuando el form no lo pide.
     const off = persistInvoice({

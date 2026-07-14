@@ -97,7 +97,7 @@
   function mbFactura(data) {
     return band({
       letter: d(data.letter, "X"),
-      docName: "FACTURA",
+      docName: d(data.documentName, "FACTURA"),
       numRows: [
         { k: "Nº", v: data.number },
         { k: "Fecha", v: data.date },

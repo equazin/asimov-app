@@ -738,11 +738,22 @@ td{ border-color:var(--border) !important; }
           <input type="text" id="txtVendedor" />
         </div>
         <div class="field">
-          <label title="Cotización USD → ARS que se imprime en el pie del comprobante">Cotización USD ($)</label>
+          <label for="selMonedaPrecios">Moneda de los precios</label>
+          <select id="selMonedaPrecios">
+            <option value="USD" selected>USD — dólares</option>
+            <option value="ARS">ARS — pesos</option>
+          </select>
+        </div>
+        <div class="field">
+          <label title="Tipo de cambio usado para convertir los precios USD antes de facturar">Cotización USD → ARS</label>
           <input type="number" id="txtCotizacionUsd" min="0" step="0.01" placeholder="1510,00"
             style="font-family:Consolas,monospace;text-align:right;" />
         </div>
-        <div class="field span-2" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+        <div class="field">
+          <label>Conversión fiscal</label>
+          <input type="text" id="txtConversionFiscal" readonly value="Esperando cotización…" style="background:#1A212B;" />
+        </div>
+        <div class="field span-3" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
           <input type="checkbox" id="chkMostrarKit" checked style="width:16px;height:16px;cursor:pointer;" />
           <label for="chkMostrarKit" style="cursor:pointer;margin:0;font-size:11px;line-height:1.3;">
             Al imprimir, desplegar los componentes del kit debajo de la línea principal (sin precio individual).
@@ -858,6 +869,10 @@ td{ border-color:var(--border) !important; }
           <div class="totals-row grand">
             <span class="lbl">TOTAL FACTURA</span>
             <span class="val" id="sumTotal">$ 0,00</span>
+          </div>
+          <div class="totals-row" id="rowTotalOrigen">
+            <span class="lbl">Total original USD</span>
+            <span class="val" id="sumTotalOrigen">US$ 0,00</span>
           </div>
         </div>
         <div class="totals-card">
@@ -1122,6 +1137,7 @@ td{ border-color:var(--border) !important; }
           var oficial = res.data.find(function(r) { return String(r.casa || "").toLowerCase() === "oficial"; });
           if (oficial && Number.isFinite(Number(oficial.venta))) {
             document.getElementById("txtCotizacionUsd").value = Number(oficial.venta).toFixed(2);
+            recalcTotals();
           }
         }).catch(function() { /* silent */ });
       }
@@ -1226,6 +1242,10 @@ td{ border-color:var(--border) !important; }
           if (inp) { inp.focus(); inp.select(); }
         }, 50);
       });
+
+      if (window.asimovNewInvoice.onAdjustmentPrefill) {
+        window.asimovNewInvoice.onAdjustmentPrefill(applyAdjustmentPrefill);
+      }
     }
 
     function setTipo(t) {
@@ -1235,6 +1255,42 @@ td{ border-color:var(--border) !important; }
       });
       updateHeader();
       updateTraerFactura();
+    }
+
+    function applyAdjustmentPrefill(data) {
+      if (!data || (data.kind !== "NC" && data.kind !== "ND")) return;
+      var client = data.client || {};
+      clienteData = client;
+      setTipo(data.kind);
+      document.querySelector(".header-title").textContent = data.kind === "NC" ? "Nueva Nota de Crédito" : "Nueva Nota de Débito";
+      document.getElementById("txtClienteCodigo").value = client.codigo || client.id || "";
+      document.getElementById("txtClienteNombre").value = client.razonSocial || "";
+      document.getElementById("txtClienteCuit").value = client.cuit || "";
+      document.getElementById("txtClienteIva").value = client.condicionIva || "";
+      document.getElementById("txtClienteDomicilio").value = client.domicilio || "";
+      document.getElementById("selMonedaPrecios").value = "ARS";
+      document.getElementById("txtCotizacionUsd").value = Number(data.usdRate || 0) > 0 ? Number(data.usdRate).toFixed(2) : "";
+      items = (Array.isArray(data.items) ? data.items : []).map(function(it) {
+        return {
+          id: nextRowId++, articleId: it.article_id || "", isKit: false,
+          codigo: it.code || "", descripcion: it.description || "", unidad: "UN",
+          cantidad: Number(it.qty) || 1, costo: Number(it.unit_price) || 0,
+          margen: 0, precio: Number(it.unit_price) || 0, descuento: 0,
+          iva: Number(it.iva_pct) || 21,
+        };
+      });
+      setOrigen({
+        tipo: "invoice",
+        id: data.original && data.original.id,
+        numero: data.original && data.original.number,
+      });
+      updateCurrencyUi();
+      renderItemsTable();
+      recalcTotals();
+      updateTotalsTab();
+      document.querySelectorAll(".tab").forEach(function(tab) {
+        if (tab.dataset.tab === "items") tab.click();
+      });
     }
 
     /* ─── Items table ─── */
@@ -1291,7 +1347,7 @@ td{ border-color:var(--border) !important; }
           '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="precio" value="' + fmtDec(row.precio) + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" max="100" step="0.1" data-id="' + row.id + '" data-field="descuento" value="' + row.descuento + '" /></td>' +
           '<td><select class="cell-select" data-id="' + row.id + '" data-field="iva">' + ivaOpts + '</select></td>' +
-          '<td class="td-sub">$ ' + fmtNum(sub) + '</td>' +
+          '<td class="td-sub">' + sourceMoneyPrefix() + ' ' + fmtNum(sub) + '</td>' +
           '<td style="text-align:center;"><button class="del-row-btn" data-rowid="' + row.id + '" title="Eliminar">×</button></td>';
         tbody.appendChild(tr);
       });
@@ -1335,7 +1391,7 @@ td{ border-color:var(--border) !important; }
       var sub = row.cantidad * row.precio * (1 - row.descuento / 100);
       var tr = el.closest("tr");
       var cell = tr ? tr.querySelector(".td-sub") : null;
-      if (cell) cell.textContent = "$ " + fmtNum(sub);
+      if (cell) cell.textContent = sourceMoneyPrefix() + " " + fmtNum(sub);
       recalcTotals();
       updateCuotaImporte();
     }
@@ -1350,19 +1406,29 @@ td{ border-color:var(--border) !important; }
     }
 
     function recalcTotals() {
-      var neto21 = items.filter(function(r) { return r.iva === 21; })
-                        .reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100); }, 0);
-      var neto10 = items.filter(function(r) { return r.iva === 10.5; })
-                        .reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100); }, 0);
-      var neto0  = items.filter(function(r) { return r.iva === 0; })
-                        .reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100); }, 0);
-      var iva21 = neto21 * 0.21;
-      var iva10 = neto10 * 0.105;
-      var subtotal = neto21 + neto10 + neto0;
-      var iva = iva21 + iva10;
-      var total = neto21 + neto10 + neto0 + iva21 + iva10;
+      var factor = invoiceCurrencyFactor();
+      var source = { neto21: 0, neto10: 0, neto0: 0, iva21: 0, iva10: 0 };
+      items.forEach(function(r) {
+        var net = roundMoney(Number(r.cantidad) * roundMoney(r.precio) * (1 - Number(r.descuento || 0) / 100));
+        if (r.iva === 21) { source.neto21 += net; source.iva21 += roundMoney(net * 0.21); }
+        else if (r.iva === 10.5) { source.neto10 += net; source.iva10 += roundMoney(net * 0.105); }
+        else source.neto0 += net;
+      });
+      var sourceSubtotal = roundMoney(source.neto21 + source.neto10 + source.neto0);
+      var sourceIva = roundMoney(source.iva21 + source.iva10);
+      var sourceTotal = roundMoney(sourceSubtotal + sourceIva);
+      var neto21 = roundMoney(source.neto21 * factor);
+      var neto10 = roundMoney(source.neto10 * factor);
+      var neto0 = roundMoney(source.neto0 * factor);
+      var iva21 = roundMoney(source.iva21 * factor);
+      var iva10 = roundMoney(source.iva10 * factor);
+      var subtotal = roundMoney(sourceSubtotal * factor);
+      var iva = roundMoney(sourceIva * factor);
+      var total = roundMoney(sourceTotal * factor);
       window._totals = { neto21: neto21, neto10: neto10, neto0: neto0, iva21: iva21, iva10: iva10, subtotal: subtotal, iva: iva, total: total, count: items.length };
       document.getElementById("txtNetoACobrar").value = "$ " + fmtNum(total);
+      document.getElementById("sumTotalOrigen").textContent = "US$ " + fmtNum(sourceTotal);
+      updateCurrencyUi();
     }
 
     function applyGeneralMargin() {
@@ -1423,6 +1489,45 @@ td{ border-color:var(--border) !important; }
     function fmtDec(n) {
       return isNaN(n) ? "0" : parseFloat(Number(n).toFixed(2));
     }
+
+    function roundMoney(n) {
+      return Math.round(Number((Number(n || 0) * 100).toFixed(6))) / 100;
+    }
+
+    function sourceMoneyPrefix() {
+      return document.getElementById("selMonedaPrecios").value === "USD" ? "US$" : "$";
+    }
+
+    function invoiceCurrencyFactor() {
+      if (document.getElementById("selMonedaPrecios").value !== "USD") return 1;
+      var rate = parseFloat(document.getElementById("txtCotizacionUsd").value);
+      return Number.isFinite(rate) && rate > 0 ? rate : 0;
+    }
+
+    function updateCurrencyUi() {
+      var currency = document.getElementById("selMonedaPrecios").value;
+      var rateInput = document.getElementById("txtCotizacionUsd");
+      var conversion = document.getElementById("txtConversionFiscal");
+      var originRow = document.getElementById("rowTotalOrigen");
+      rateInput.disabled = currency !== "USD";
+      originRow.style.display = currency === "USD" ? "flex" : "none";
+      if (currency === "USD") {
+        var rate = invoiceCurrencyFactor();
+        conversion.value = rate > 0 ? "USD × " + fmtNum(rate) + " = ARS" : "Falta la cotización USD → ARS";
+      } else {
+        conversion.value = "Los precios ya están expresados en ARS";
+      }
+    }
+
+    document.getElementById("selMonedaPrecios").addEventListener("change", function() {
+      updateCurrencyUi();
+      renderItemsTable();
+      recalcTotals();
+    });
+    document.getElementById("txtCotizacionUsd").addEventListener("input", function() {
+      updateCurrencyUi();
+      recalcTotals();
+    });
 
     /* ─── Keyboard & toolbar ─── */
     document.getElementById("btnAddRow").addEventListener("click", function() { addRow(); });
@@ -1552,6 +1657,11 @@ td{ border-color:var(--border) !important; }
         return null;
       }
       recalcTotals();
+      if (document.getElementById("selMonedaPrecios").value === "USD" && invoiceCurrencyFactor() <= 0) {
+        alert("Ingresá una cotización USD → ARS válida antes de guardar o autorizar la factura.");
+        document.getElementById("txtCotizacionUsd").focus();
+        return null;
+      }
       return {
         tipo: tipoActual,
         ptoVta: document.getElementById("txtPtoVta").value,
@@ -1565,6 +1675,7 @@ td{ border-color:var(--border) !important; }
         observaciones: document.getElementById("txtObsCliente").value,
         origen: origenDoc,
         cotizacionUsd: parseFloat(document.getElementById("txtCotizacionUsd").value) || null,
+        monedaPrecios: document.getElementById("selMonedaPrecios").value,
         mostrarComponentesKit: document.getElementById("chkMostrarKit").checked,
         consolidarItems: document.getElementById("chkConsolidar").checked,
         descripcionConsolidada: document.getElementById("txtConsolidarLabel").value.trim(),
@@ -1676,8 +1787,15 @@ td{ border-color:var(--border) !important; }
       var t = window._totals || {};
       var cli = clienteData || {};
       var showKits = document.getElementById("chkMostrarKit").checked;
+      var currencyFactor = invoiceCurrencyFactor();
+      var fiscalKind = String(tipoActual || "B").toUpperCase();
+      var clientIva = document.getElementById("txtClienteIva").value.toLowerCase();
+      var printLetter = (fiscalKind === "NC" || fiscalKind === "ND")
+        ? (clientIva.includes("inscripto") ? "A" : "B")
+        : fiscalKind;
       return {
-        letter: tipoActual,
+        letter: printLetter,
+        documentName: fiscalKind === "NC" ? "NOTA DE CRÉDITO" : fiscalKind === "ND" ? "NOTA DE DÉBITO" : "FACTURA",
         number: (document.getElementById("txtPtoVta").value || "0001") + "-" + (document.getElementById("txtNroFact").value || ""),
         date: document.getElementById("txtFecha").value,
         party: {
@@ -1699,8 +1817,8 @@ td{ border-color:var(--border) !important; }
             isKit: Boolean(it.isKit),
             code: it.codigo, description: it.descripcion,
             qty: it.cantidad, unit: it.unidad,
-            unitPrice: it.precio, ivaPct: it.iva,
-            lineTotal: Number(it.cantidad) * Number(it.precio),
+            unitPrice: roundMoney(it.precio) * currencyFactor, ivaPct: it.iva,
+            lineTotal: roundMoney(Number(it.cantidad) * roundMoney(it.precio) * currencyFactor),
           };
         }),
         totals: { subtotal: t.subtotal, iva: t.iva, perc: t.perc || 0, total: t.total },
@@ -1764,6 +1882,7 @@ td{ border-color:var(--border) !important; }
     document.getElementById("btnClose").addEventListener("click", closeHandler);
 
     recalcTotals();
+    updateCurrencyUi();
     renderItemsTable();
   </script>
 </body>

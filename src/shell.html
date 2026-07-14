@@ -536,6 +536,7 @@
     .invoice-print-toggle { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; color: var(--text); }
     .invoice-print-toggle input { margin-top: 2px; }
     .invoice-print-settings .am-field input:disabled { opacity: .55; cursor: not-allowed; }
+    .invoice-fiscal-modal .am-actions { flex-wrap: wrap; }
     @media (max-width: 560px) {
       .invoice-fiscal-grid { grid-template-columns: 1fr; }
       .invoice-fiscal-summary { align-items: flex-start; flex-direction: column; }
@@ -2235,6 +2236,7 @@
       let data;
       if (type === "factura") {
         const inv = await api.invoices.get(id);
+        const fiscalKind = String(inv.tipo || "B").toUpperCase();
         const consolidated = Number(inv.consolidated_print || 0) === 1;
         const showKitComponents = inv.show_kit_components == null || Number(inv.show_kit_components) === 1;
         let printItems = mapPrintItems(inv.items);
@@ -2242,7 +2244,8 @@
         // ya trata a todos los ítems como sub-líneas del renglón único).
         if (!consolidated && showKitComponents) printItems = await hydratePrintKits(printItems);
         data = {
-          letter: inv.tipo || "B", number: inv.number, date: fmtDate(inv.date),
+          letter: fiscalKind, number: inv.number, date: fmtDate(inv.date),
+          documentName: fiscalKind === "NC" ? "NOTA DE CRÉDITO" : fiscalKind === "ND" ? "NOTA DE DÉBITO" : "FACTURA",
           party: { name: inv.client_name || "", cuit: "", iva: "", address: "" },
           notes: inv.notes || "", items: printItems,
           totals: { subtotal: inv.subtotal, iva: inv.iva_amount, total: inv.total },
@@ -2252,7 +2255,7 @@
           consolidatedLabel: inv.consolidated_label || "Equipo armado",
           cae: inv.cae || "", caeExpiration: inv.cae_expiry || "", qrDataUrl: "",
         };
-        if (inv.client_id) { try { const c = await api.clients.get(inv.client_id); if (c) { data.party.cuit = c.cuit || ""; data.party.iva = c.fiscal_type || ""; data.party.address = c.address || ""; } } catch (_) {} }
+        if (inv.client_id) { try { const c = await api.clients.get(inv.client_id); if (c) { data.party.cuit = c.cuit || ""; data.party.iva = c.fiscal_type || ""; data.party.address = c.address || ""; if (fiscalKind === "NC" || fiscalKind === "ND") data.letter = String(c.fiscal_type || "").toLowerCase().includes("inscripto") ? "A" : "B"; } } catch (_) {} }
         if (inv.cae) { try { const qr = await api.afip.invoiceQr(id); if (qr && qr.ok && qr.data) data.qrDataUrl = qr.data.qrDataUrl; } catch (_) {} }
       } else if (type === "pedido") {
         const o = await api.saleOrders.get(id);
@@ -2348,6 +2351,8 @@
     const configIncomplete = afipData && (!afipData.enabled || !afipData.cuit || !afipData.hasCert || !afipData.hasKey);
     const canRequestCae = canAuthorize && !configIncomplete;
     const consolidatedPrint = Number(invoice.consolidated_print || 0) === 1;
+    const fiscalKind = String(invoice.tipo || "").toUpperCase();
+    const canCreateAdjustment = hasCae && !isAnulled;
     const statusPill = fmtInvoiceFiscalPill(invoice);
     const errorBlock = invoice.afip_error
       ? `<div class="invoice-fiscal-error"><strong>Respuesta de ARCA:</strong> ${esc(String(invoice.afip_error))}</div>`
@@ -2401,6 +2406,19 @@
             <button type="button" class="btn btn-outline btn-sm am-cancel">Cerrar</button>
             <button type="button" class="btn btn-outline btn-sm invoice-save-print">Guardar formato</button>
             <button type="button" class="btn btn-outline btn-sm invoice-print">Imprimir${hasCae ? " con QR" : ""}</button>
+            ${!hasCae && !isAnulled
+              ? '<button type="button" class="btn btn-outline btn-sm invoice-annul-draft">Anular borrador</button>'
+              : ""}
+            ${canCreateAdjustment && fiscalKind === "NC"
+              ? '<button type="button" class="btn btn-primary btn-sm invoice-debit-note">Anular nota de crédito con nota de débito</button>'
+              : ""}
+            ${canCreateAdjustment && fiscalKind === "ND"
+              ? '<button type="button" class="btn btn-primary btn-sm invoice-credit-note">Anular nota de débito con nota de crédito</button>'
+              : ""}
+            ${canCreateAdjustment && fiscalKind !== "NC" && fiscalKind !== "ND"
+              ? '<button type="button" class="btn btn-outline btn-sm invoice-debit-note">Crear nota de débito</button>' +
+                '<button type="button" class="btn btn-primary btn-sm invoice-credit-note">Anular con nota de crédito</button>'
+              : ""}
             ${!hasCae && !isAnulled && configIncomplete && canAuthorize
               ? '<button type="button" class="btn btn-outline btn-sm invoice-config">Configurar ARCA</button>'
               : ""}
@@ -2461,6 +2479,21 @@
     });
     const configButton = overlay.querySelector(".invoice-config");
     if (configButton) configButton.addEventListener("click", () => { close(); navigate("config"); });
+    const annulDraftButton = overlay.querySelector(".invoice-annul-draft");
+    if (annulDraftButton) annulDraftButton.addEventListener("click", () => {
+      close();
+      void annulDoc("invoice", id, null);
+    });
+    const openAdjustment = async (kind) => {
+      const api = await waitForAsimov();
+      const result = await api.openInvoiceAdjustment(id, kind);
+      if (!result || !result.ok) alert((result && result.error) || "No se pudo abrir el ajuste fiscal.");
+      else close();
+    };
+    const creditNoteButton = overlay.querySelector(".invoice-credit-note");
+    if (creditNoteButton) creditNoteButton.addEventListener("click", () => void openAdjustment("NC"));
+    const debitNoteButton = overlay.querySelector(".invoice-debit-note");
+    if (debitNoteButton) debitNoteButton.addEventListener("click", () => void openAdjustment("ND"));
     const authorizeButton = overlay.querySelector(".invoice-authorize");
     if (authorizeButton) {
       authorizeButton.addEventListener("click", async () => {
@@ -2475,7 +2508,7 @@
       });
     }
     setTimeout(() => {
-      const primary = overlay.querySelector(".invoice-authorize") || overlay.querySelector(".invoice-print") || overlay.querySelector(".am-close");
+      const primary = overlay.querySelector(".invoice-authorize") || overlay.querySelector(".invoice-credit-note") || overlay.querySelector(".invoice-print") || overlay.querySelector(".am-close");
       if (primary) primary.focus();
     }, 20);
   }

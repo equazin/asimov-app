@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 
 const shell = readFileSync(resolve(process.cwd(), "src/shell.html"), "utf8");
 const main = readFileSync(resolve(process.cwd(), "src/main.ts"), "utf8");
+const preload = readFileSync(resolve(process.cwd(), "src/new-invoice-preload.ts"), "utf8");
+const invoiceForm = readFileSync(resolve(process.cwd(), "src/new-invoice.html"), "utf8");
 
 describe("estado fiscal de facturas en el shell", () => {
   it("abre el detalle fiscal con doble clic y también por teclado", () => {
@@ -27,6 +29,23 @@ describe("estado fiscal de facturas en el shell", () => {
     expect(shell).toContain("api.invoices.setPrintPreferences");
     expect(shell).toContain('await savePrintPreferences(false)) await reprintDoc("factura"');
     expect(shell).toMatch(/authorizeButton\.addEventListener[\s\S]*await savePrintPreferences\(false\)[\s\S]*authorizeStoredInvoice/);
+  });
+
+  it("ofrece anulación local para borradores y NC/ND asociadas para facturas con CAE", () => {
+    expect(shell).toContain("Anular borrador");
+    expect(shell).toContain("Anular con nota de crédito");
+    expect(shell).toContain("Crear nota de débito");
+    expect(shell).toContain("Anular nota de crédito con nota de débito");
+    expect(shell).toContain("Anular nota de débito con nota de crédito");
+    expect(shell).toContain('api.openInvoiceAdjustment(id, kind)');
+    expect(shell).toContain('openAdjustment("NC")');
+    expect(shell).toContain('openAdjustment("ND")');
+    expect(main).toContain('ipcMain.handle("shell:open-invoice-adjustment"');
+    expect(main).toContain('win.webContents.send("invoice-adjustment:prefill", prefill)');
+    expect(preload).toContain('ipcRenderer.on("invoice-adjustment:prefill"');
+    expect(invoiceForm).toContain("onAdjustmentPrefill(applyAdjustmentPrefill)");
+    expect(invoiceForm).toContain('document.getElementById("selMonedaPrecios").value = "ARS"');
+    expect(invoiceForm).toContain('tipo: "invoice"');
   });
 
   it("reconoce todos los roles administrativos en renderer y proceso principal", () => {

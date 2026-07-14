@@ -357,6 +357,72 @@ function lineSubtotal(qty: number, price: number): number {
   return Math.round(qty * price * 100) / 100;
 }
 
+const round2 = (value: number): number => Math.round(Number((value * 100).toFixed(6))) / 100;
+
+function lineGrossFromNet(net: number, ivaPct: number): number {
+  return round2(net + round2(net * ivaPct / 100));
+}
+
+/**
+ * Convierte precios comerciales USD a importes fiscales ARS. La regla parte de
+ * cada renglón tal como lo ve el operador (precio unitario redondeado a 2
+ * decimales), convierte su total con IVA y luego recompone neto + IVA en ARS.
+ * Una conciliación de centavos garantiza que el total sea exactamente
+ * round2(totalUSD × cotización) sin romper la relación de alícuotas que valida
+ * WSFE.
+ */
+function normalizeInvoiceItemsToArs(items: SaleDocItem[], currency: string, usdRate: number): SaleDocItem[] {
+  if (currency !== "USD") return items.map((item) => ({ ...item }));
+  if (!Number.isFinite(usdRate) || usdRate <= 0) {
+    throw new Error("Ingresá una cotización USD → ARS válida antes de guardar o autorizar la factura.");
+  }
+
+  const converted = items.map((item) => {
+    const qty = num(item.cantidad);
+    const ivaPct = num(item.iva) || 21;
+    const sourceUnitPrice = round2(num(item.precio));
+    const sourceNet = lineSubtotal(qty, sourceUnitPrice);
+    const sourceIva = round2(sourceNet * ivaPct / 100);
+    const targetGross = round2((sourceNet + sourceIva) * usdRate);
+    const targetNet = ivaPct > 0 ? round2(targetGross / (1 + ivaPct / 100)) : targetGross;
+    return { item, qty, ivaPct, sourceGross: round2(sourceNet + sourceIva), targetNet };
+  });
+
+  const expectedGrossCents = Math.round(round2(converted.reduce((sum, line) => sum + line.sourceGross, 0) * usdRate) * 100);
+  let actualGrossCents = converted.reduce(
+    (sum, line) => sum + Math.round(lineGrossFromNet(line.targetNet, line.ivaPct) * 100),
+    0,
+  );
+
+  for (let guard = 0; actualGrossCents !== expectedGrossCents && guard < 1000; guard++) {
+    const remaining = expectedGrossCents - actualGrossCents;
+    const direction = remaining > 0 ? 1 : -1;
+    let adjusted = false;
+    for (const line of converted) {
+      if (line.qty <= 0) continue;
+      const previousGross = Math.round(lineGrossFromNet(line.targetNet, line.ivaPct) * 100);
+      const candidateNet = round2(line.targetNet + direction * 0.01);
+      if (candidateNet < 0) continue;
+      const candidateGross = Math.round(lineGrossFromNet(candidateNet, line.ivaPct) * 100);
+      const change = candidateGross - previousGross;
+      if (change === 0 || Math.abs(remaining - change) >= Math.abs(remaining)) continue;
+      line.targetNet = candidateNet;
+      actualGrossCents += change;
+      adjusted = true;
+      break;
+    }
+    if (!adjusted) throw new Error("No se pudieron conciliar los centavos de la conversión USD → ARS.");
+  }
+  if (actualGrossCents !== expectedGrossCents) {
+    throw new Error("La conversión USD → ARS no pudo obtener un total fiscal consistente.");
+  }
+
+  return converted.map((line) => ({
+    ...line.item,
+    precio: line.qty > 0 ? line.targetNet / line.qty : 0,
+  }));
+}
+
 /**
  * Calcula los totales de un documento de venta a partir de sus ítems.
  * El header SIEMPRE se deriva de las líneas persistidas (neto = Σ qty×precio,
@@ -467,6 +533,8 @@ export interface InvoiceForm {
   /** Cotización USD → ARS del día. Se imprime en el pie para que la contra-parte
    *  pueda reconstruir el USD original si el pedido fue tomado en dólares. */
   cotizacionUsd?: number | string | null;
+  /** Moneda de los precios ingresados. Compatibilidad: si se omite, se asume ARS. */
+  monedaPrecios?: "USD" | "ARS" | string;
   /** Preferencia por factura: al imprimir, desplegar (true/undefined) u ocultar
    *  (false) los componentes de cada ítem que sea un kit. Default = true. */
   mostrarComponentesKit?: boolean;
@@ -486,7 +554,10 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
   if (existing?.cae) {
     throw new Error("La factura ya está autorizada por ARCA y no puede editarse.");
   }
-  const items = Array.isArray(form.items) ? form.items : [];
+  const sourceItems = Array.isArray(form.items) ? form.items : [];
+  const sourceCurrency = str(form.monedaPrecios).toUpperCase() === "USD" ? "USD" : "ARS";
+  const requestedUsdRate = num(form.cotizacionUsd);
+  const items = normalizeInvoiceItemsToArs(sourceItems, sourceCurrency, requestedUsdRate);
   const totals = computeSaleTotals(items);
   const date = normalizeDate(form.fecha);
   const tipo = str(form.tipo) || "B";
@@ -495,25 +566,26 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
 
   const tx = db.transaction(() => {
     if (!number) number = `${pos}-${String(nextSequence(`invoice-${tipo}`)).padStart(8, "0")}`;
-    const cotiz = num(form.cotizacionUsd);
+    const cotiz = requestedUsdRate;
     const usdRate = Number.isFinite(cotiz) && cotiz > 0 ? cotiz : null;
     // Default true si no vino explícitamente en el form (compat con formularios previos).
     const showKits = form.mostrarComponentesKit === false ? 0 : 1;
     const consolidated = form.consolidarItems === true ? 1 : 0;
     const consolidatedLabel = consolidated ? (str(form.descripcionConsolidada) || "Equipo armado") : null;
     dbRun(
-      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes,usd_rate,show_kit_components,consolidated_print,consolidated_label)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes,usd_rate,source_currency,show_kit_components,consolidated_print,consolidated_label)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
        ON CONFLICT(id) DO UPDATE SET
          number=excluded.number, client_id=excluded.client_id, client_name=excluded.client_name,
          date=excluded.date, tipo=excluded.tipo, point_of_sale=excluded.point_of_sale,
          status='borrador', subtotal=excluded.subtotal, iva_amount=excluded.iva_amount,
          total=excluded.total, afip_error=NULL, notes=excluded.notes,
-         usd_rate=excluded.usd_rate, show_kit_components=excluded.show_kit_components,
+         usd_rate=excluded.usd_rate, source_currency=excluded.source_currency,
+         show_kit_components=excluded.show_kit_components,
          consolidated_print=excluded.consolidated_print, consolidated_label=excluded.consolidated_label`,
       [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, tipo, pos, "borrador",
        totals.subtotal, totals.ivaAmount, totals.total, null, str(form.observaciones),
-       usdRate, showKits, consolidated, consolidatedLabel],
+       usdRate, sourceCurrency, showKits, consolidated, consolidatedLabel],
     );
     dbRun("DELETE FROM invoice_items WHERE invoice_id = ?", [id]);
     for (const it of items) {

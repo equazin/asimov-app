@@ -166,4 +166,23 @@ describe("impresión monocroma de comprobantes", () => {
     expect(itemsTable).not.toContain("83,45");
     expect(itemsTable).toMatch(/kit-component[\s\S]*colspan="3"/);
   });
+
+  it("titula correctamente las notas de crédito y débito", () => {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, {
+      window,
+      document: { getElementById: () => area },
+      Intl, Number, String, isFinite, setTimeout,
+    });
+    const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
+    renderComprobante("factura", {
+      letter: "A", documentName: "NOTA DE CRÉDITO", number: "00001-00000002",
+      items: [{ code: "AJ", description: "Anulación", qty: 1, unitPrice: 100, ivaPct: 21 }],
+      totals: { subtotal: 100, iva: 21, total: 121 },
+    });
+    expect(area.innerHTML).toContain("NOTA DE CRÉDITO");
+    expect(area.innerHTML).toContain('<span class="l">A</span>');
+    expect(area.innerHTML).not.toContain('<div class="doc-name">FACTURA</div>');
+  });
 });

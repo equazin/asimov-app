@@ -18,7 +18,7 @@ import { registerCloudIpcHandlers } from "./ipc-cloud";
 import { getStoredUser } from "./api-client";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
-import { initDb, dbAll } from "./db";
+import { initDb, dbAll, dbGet } from "./db";
 import { startDolarAutoUpdate } from "./dolar";
 import { authorizeStoredInvoice, retryPendingCae, getAfipConfig } from "./afip-service";
 import { isAfipUnavailable } from "./afip/domain";
@@ -284,6 +284,58 @@ function openNativeForm(type: NativeFormType): void {
   }
 }
 
+function openInvoiceAdjustment(invoiceId: string, kind: "NC" | "ND"):
+  { ok: boolean; error?: string } {
+  const id = String(invoiceId ?? "").trim();
+  if (!id || (kind !== "NC" && kind !== "ND")) return { ok: false, error: "El ajuste fiscal solicitado no es válido." };
+  if (newInvoiceWindow && !newInvoiceWindow.isDestroyed()) {
+    newInvoiceWindow.focus();
+    return { ok: false, error: "Ya hay un formulario de factura abierto. Cerralo antes de crear la nota." };
+  }
+
+  const invoice = dbGet<Record<string, unknown>>(
+    `SELECT i.*, c.code AS client_code, c.cuit AS client_cuit,
+            c.fiscal_type AS client_fiscal_type, c.address AS client_address
+       FROM invoices i
+       LEFT JOIN clients c ON c.id = i.client_id
+      WHERE i.id = ?`,
+    [id],
+  );
+  if (!invoice) return { ok: false, error: "No se encontró la factura original." };
+  if (!String(invoice.cae ?? "").trim()) {
+    return { ok: false, error: "La factura todavía no tiene CAE. Podés anularla localmente sin emitir una nota de crédito." };
+  }
+  const items = dbAll<Record<string, unknown>>(
+    `SELECT article_id, code, description, qty, unit_price, iva_pct
+       FROM invoice_items WHERE invoice_id = ? ORDER BY rowid`,
+    [id],
+  );
+  const prefill = {
+    kind,
+    original: { id, number: invoice.number, date: invoice.date, total: invoice.total },
+    client: {
+      id: invoice.client_id,
+      codigo: invoice.client_code,
+      razonSocial: invoice.client_name,
+      cuit: invoice.client_cuit,
+      condicionIva: invoice.client_fiscal_type,
+      domicilio: invoice.client_address,
+    },
+    items,
+    usdRate: invoice.usd_rate,
+  };
+
+  createNewInvoiceWindowStandalone(mainWindow && !mainWindow.isDestroyed() ? mainWindow : null);
+  const win = newInvoiceWindow;
+  if (!win || win.isDestroyed()) return { ok: false, error: "No se pudo abrir el formulario del ajuste fiscal." };
+  const sendPrefill = () => {
+    if (!win.isDestroyed()) win.webContents.send("invoice-adjustment:prefill", prefill);
+  };
+  if (win.webContents.isLoadingMainFrame()) win.webContents.once("did-finish-load", sendPrefill);
+  else sendPrefill();
+  return { ok: true };
+}
+
 // ---------------------------------------------------------------------------
 // Single-instance lock
 // ---------------------------------------------------------------------------
@@ -402,6 +454,11 @@ if (!gotLock) {
     ipcMain.on("shell:open-form", (_event, type: NativeFormType) => {
       openNativeForm(type);
     });
+    ipcMain.handle("shell:open-invoice-adjustment", (_event, input: { invoiceId?: string; kind?: string }) =>
+      openInvoiceAdjustment(
+        String(input?.invoiceId ?? ""),
+        String(input?.kind ?? "").toUpperCase() as "NC" | "ND",
+      ));
 
     // --- Chequeo manual de actualizaciones ---
     ipcMain.handle("app:check-update", () => checkForUpdateManual());
