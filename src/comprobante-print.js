@@ -59,7 +59,6 @@
    *   badge       — HTML opcional (usado por remito para el "no válido como factura").
    *   numRows     — array de { k, v } → filas "Nº / Fecha / Vendedor / …".
    *   fiscalLine  — HTML con los datos fiscales del emisor (opcional).
-   *   amount      — { label, value } → bloque "Total recibido" para el recibo.
    */
   function bandRight(opts) {
     var letterBox = "";
@@ -75,11 +74,6 @@
       return '<div><span class="k">' + esc(r.k) + "</span> <b>" + esc(r.v) + "</b></div>";
     }).join("");
     var fiscal = opts.fiscalLine ? '<div class="fiscal-line">' + opts.fiscalLine + "</div>" : "";
-    var amount = opts.amount
-      ? '<div class="amount"><div class="k">' + esc(opts.amount.label) + "</div>" +
-          '<div class="v">' + opts.amount.value + "</div></div>"
-      : "";
-
     return (
       '<div class="band-right">' +
         '<div class="top-row">' +
@@ -92,7 +86,6 @@
           "</div>" +
         "</div>" +
         fiscal +
-        amount +
       "</div>"
     );
   }
@@ -156,7 +149,6 @@
         { k: "Fecha", v: data.date },
       ],
       fiscalLine: fullFiscalLine(),
-      amount: { label: "Total recibido", value: money(data.total) },
     });
   }
 
@@ -203,7 +195,12 @@
 
   // ---------- Totales ----------
   function totalsBlock(type, data) {
-    if (type === "remito" || type === "recibo") return "";
+    if (type === "remito") return "";
+    if (type === "recibo") {
+      return '<div class="totals"><table>' +
+        '<tr class="grand"><td class="k">TOTAL RECIBIDO</td><td class="v">' + money(data.total) + "</td></tr>" +
+        "</table></div>";
+    }
     var t = data.totals || {};
     var rows = "";
     if (t.subtotal != null) rows += '<tr><td class="k">Subtotal</td><td class="v">' + money(t.subtotal) + "</td></tr>";
@@ -235,10 +232,13 @@
       "</div></div>";
   }
 
-  function fiscalSummaryBlock(data) {
-    return '<div class="fiscal-summary">' +
-      '<div class="fiscal-authorization">' + caeBlock(data) + "</div>" +
-      totalsBlock("factura", data) +
+  function documentSummaryBlock(type, data) {
+    var authorization = type === "factura" ? caeBlock(data) : "";
+    var totals = totalsBlock(type, data);
+    if (!authorization && !totals) return "";
+    return '<div class="document-summary ' + (authorization ? "with-authorization" : "totals-only") + '">' +
+      (authorization ? '<div class="fiscal-authorization">' + authorization + "</div>" : "") +
+      totals +
       "</div>";
   }
 
@@ -250,20 +250,19 @@
     var mb = MEMBRETE[type] || mbFactura;
     var documentEnd =
       '<div class="document-end">' +
-        (type === "factura" ? fiscalSummaryBlock(data) : "") +
+        documentSummaryBlock(type, data) +
         notesBlock(data) +
         footBlock() +
       "</div>";
-    // En una factura de una hoja, el bloque fiscal queda anclado al margen
+    // En comprobantes de una hoja, el resumen y el pie quedan anclados al margen
     // inferior. A partir de 17 renglones se conserva el flujo multipágina para
-    // no superponer el QR ni recortar contenido cuando una fila ocupa más alto.
-    var pinDocumentEnd = type === "factura" && (data.items || []).length <= 16;
+    // no superponer el cierre ni recortar contenido cuando una fila ocupa más alto.
+    var pinDocumentEnd = (data.items || []).length <= 16;
     area.className = "cbt mb-" + type + (pinDocumentEnd ? " document-end-pinned" : "");
     area.innerHTML =
       mb(data) +
       partyBlock(data) +
       itemsTable(type, data) +
-      (type === "factura" ? "" : totalsBlock(type, data)) +
       documentEnd;
   };
 
