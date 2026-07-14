@@ -38,9 +38,10 @@ jobs:
           cache: npm
 
       # node-gyp necesita Python en el PATH para invocar sus scripts de build.
+      # 3.11 y no 3.12+: node-gyp usa `distutils`, removido de la stdlib en 3.12.
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       # Asegura MSBuild en el PATH (a veces node-gyp no lo detecta solo).
       - uses: microsoft/setup-msbuild@v2
