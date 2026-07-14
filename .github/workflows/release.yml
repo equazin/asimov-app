@@ -24,7 +24,11 @@ permissions:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    # windows-2022 trae VS 2022 Build Tools pre-instalado (necesario para
+    # compilar better-sqlite3 desde fuente por `buildDependenciesFromSource`
+    # en electron-builder.yml). El default `windows-latest` migró a
+    # Windows Server 2025 sin VS, y node-gyp falla al no encontrarlo.
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +36,14 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      # node-gyp necesita Python en el PATH para invocar sus scripts de build.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Asegura MSBuild en el PATH (a veces node-gyp no lo detecta solo).
+      - uses: microsoft/setup-msbuild@v2
 
       - name: Install dependencies
         run: npm ci
