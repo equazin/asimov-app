@@ -46,7 +46,8 @@ describe("impresión monocroma de comprobantes", () => {
   });
 
   it("ancla el resumen y el pie de todos los comprobantes al final de la hoja", () => {
-    expect(css).toContain("min-height: calc(100vh - 1px)");
+    expect(css).toContain("min-height: calc(100vh - 27mm)");
+    expect(css).toContain("html, body { margin: 0 !important; padding: 0 !important;");
     expect(css).toContain("#print-area.cbt.document-end-pinned .document-end");
     expect(css).toContain("margin-top: auto");
     expect(css).toContain("break-inside: avoid");
