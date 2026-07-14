@@ -186,6 +186,9 @@ CREATE TABLE IF NOT EXISTS sale_orders (
   delivery_date TEXT,
   status        TEXT NOT NULL DEFAULT 'borrador',
   currency      TEXT NOT NULL DEFAULT 'ARS',
+  usd_rate      REAL,
+  source_currency TEXT NOT NULL DEFAULT 'ARS',
+  show_kit_components INTEGER NOT NULL DEFAULT 1,
   subtotal      REAL NOT NULL DEFAULT 0,
   iva_amount    REAL NOT NULL DEFAULT 0,
   total         REAL NOT NULL DEFAULT 0,
@@ -218,6 +221,12 @@ CREATE TABLE IF NOT EXISTS quotes (
   date         TEXT NOT NULL DEFAULT (date('now')),
   valid_until  TEXT,
   status       TEXT NOT NULL DEFAULT 'borrador',
+  currency     TEXT NOT NULL DEFAULT 'ARS',
+  usd_rate     REAL,
+  source_currency TEXT NOT NULL DEFAULT 'ARS',
+  show_kit_components INTEGER NOT NULL DEFAULT 1,
+  subtotal     REAL NOT NULL DEFAULT 0,
+  iva_amount   REAL NOT NULL DEFAULT 0,
   total        REAL NOT NULL DEFAULT 0,
   notes        TEXT,
   created_at   TEXT NOT NULL DEFAULT (datetime('now')),
@@ -907,6 +916,17 @@ export function initDb(dbPath?: string): void {
   // armados custom (PC a medida) sin necesidad de definir el kit en el catálogo.
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_print INTEGER NOT NULL DEFAULT 0"); } catch {}
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_label TEXT"); } catch {}
+  // Pedidos y cotizaciones usan la misma regla comercial que las facturas:
+  // los precios pueden cargarse en USD, pero los importes persistidos quedan en
+  // ARS y se conserva la cotización de origen para reimpresiones auditables.
+  for (const table of ["sale_orders", "quotes"]) {
+    try { _db.exec(`ALTER TABLE ${table} ADD COLUMN usd_rate REAL`); } catch {}
+    try { _db.exec(`ALTER TABLE ${table} ADD COLUMN source_currency TEXT NOT NULL DEFAULT 'ARS'`); } catch {}
+    try { _db.exec(`ALTER TABLE ${table} ADD COLUMN show_kit_components INTEGER NOT NULL DEFAULT 1`); } catch {}
+  }
+  try { _db.exec("ALTER TABLE quotes ADD COLUMN currency TEXT NOT NULL DEFAULT 'ARS'"); } catch {}
+  try { _db.exec("ALTER TABLE quotes ADD COLUMN subtotal REAL NOT NULL DEFAULT 0"); } catch {}
+  try { _db.exec("ALTER TABLE quotes ADD COLUMN iva_amount REAL NOT NULL DEFAULT 0"); } catch {}
   migrateCrmSchema();
   migrateInvoiceNumberUniqueness();
   migrateCrmUnification();

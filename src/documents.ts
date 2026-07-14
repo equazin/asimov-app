@@ -371,17 +371,26 @@ function lineGrossFromNet(net: number, ivaPct: number): number {
  * round2(totalUSD × cotización) sin romper la relación de alícuotas que valida
  * WSFE.
  */
-function normalizeInvoiceItemsToArs(items: SaleDocItem[], currency: string, usdRate: number): SaleDocItem[] {
-  if (currency !== "USD") return items.map((item) => ({ ...item }));
+function normalizeSaleItemsToArs(items: SaleDocItem[], currency: string, usdRate: number): SaleDocItem[] {
+  if (currency !== "USD") {
+    return items.map((item) => {
+      const qty = num(item.cantidad);
+      const unitPrice = round2(num(item.precio));
+      const discount = Math.min(100, Math.max(0, num(item.descuento)));
+      const targetNet = round2(qty * unitPrice * (1 - discount / 100));
+      return { ...item, precio: qty > 0 ? targetNet / qty : 0, descuento: 0 };
+    });
+  }
   if (!Number.isFinite(usdRate) || usdRate <= 0) {
-    throw new Error("Ingresá una cotización USD → ARS válida antes de guardar o autorizar la factura.");
+    throw new Error("Ingresá una cotización USD → ARS válida antes de guardar el comprobante.");
   }
 
   const converted = items.map((item) => {
     const qty = num(item.cantidad);
     const ivaPct = num(item.iva) || 21;
     const sourceUnitPrice = round2(num(item.precio));
-    const sourceNet = lineSubtotal(qty, sourceUnitPrice);
+    const discount = Math.min(100, Math.max(0, num(item.descuento)));
+    const sourceNet = round2(qty * sourceUnitPrice * (1 - discount / 100));
     const sourceIva = round2(sourceNet * ivaPct / 100);
     const targetGross = round2((sourceNet + sourceIva) * usdRate);
     const targetNet = ivaPct > 0 ? round2(targetGross / (1 + ivaPct / 100)) : targetGross;
@@ -420,6 +429,7 @@ function normalizeInvoiceItemsToArs(items: SaleDocItem[], currency: string, usdR
   return converted.map((line) => ({
     ...line.item,
     precio: line.qty > 0 ? line.targetNet / line.qty : 0,
+    descuento: 0,
   }));
 }
 
@@ -445,8 +455,23 @@ function computeSaleTotals(items: SaleDocItem[]): { subtotal: number; ivaAmount:
 }
 
 export interface SaleDocItem {
+  articleId?: string;
   codigo?: string; descripcion?: string; unidad?: string;
-  cantidad?: number | string; precio?: number | string; iva?: number | string;
+  cantidad?: number | string; precio?: number | string; descuento?: number | string; iva?: number | string;
+}
+
+function saleSourceCurrency(monedaPrecios?: string, moneda?: string): "USD" | "ARS" {
+  const source = str(monedaPrecios || moneda).toUpperCase();
+  return source.startsWith("USD") ? "USD" : "ARS";
+}
+
+function resolveSaleArticleId(item: SaleDocItem): string | null {
+  const requestedId = str(item.articleId);
+  if (requestedId) {
+    const found = dbGet<{ id: string }>("SELECT id FROM articles WHERE id = ? LIMIT 1", [requestedId]);
+    if (found?.id) return found.id;
+  }
+  return findArticleByCode(str(item.codigo))?.id ?? null;
 }
 
 export interface SaleOrderForm {
@@ -455,12 +480,18 @@ export interface SaleOrderForm {
   estado?: string; observaciones?: string;
   items?: SaleDocItem[];
   totales?: { neto?: number; iva21?: number; iva10?: number; total?: number };
+  cotizacionUsd?: number | string | null;
+  monedaPrecios?: "USD" | "ARS" | string;
+  mostrarComponentesKit?: boolean;
 }
 
 export function persistSaleOrder(form: SaleOrderForm): PersistResult {
   const db = getDb();
   const id = str(form.id) || randomUUID();
-  const items = Array.isArray(form.items) ? form.items : [];
+  const sourceItems = Array.isArray(form.items) ? form.items : [];
+  const sourceCurrency = saleSourceCurrency(form.monedaPrecios, form.moneda);
+  const requestedUsdRate = num(form.cotizacionUsd);
+  const items = normalizeSaleItemsToArs(sourceItems, sourceCurrency, requestedUsdRate);
   const totals = computeSaleTotals(items);
   const date = normalizeDate(form.fecha);
   let number = str(form.nroPedido);
@@ -468,17 +499,19 @@ export function persistSaleOrder(form: SaleOrderForm): PersistResult {
   const tx = db.transaction(() => {
     if (!number) number = formatDocNumber("PED", nextSequence("sale-orders"));
     dbRun(
-      `INSERT OR REPLACE INTO sale_orders (id,number,client_id,client_name,date,delivery_date,status,currency,subtotal,iva_amount,total,notes,created_at,updated_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM sale_orders WHERE id=?),datetime('now')),datetime('now'))`,
+      `INSERT OR REPLACE INTO sale_orders (id,number,client_id,client_name,date,delivery_date,status,currency,usd_rate,source_currency,show_kit_components,subtotal,iva_amount,total,notes,created_at,updated_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM sale_orders WHERE id=?),datetime('now')),datetime('now'))`,
       [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, normalizeDate(form.deliveryDate),
-       str(form.estado) || "borrador", str(form.moneda) || "ARS", totals.subtotal, totals.ivaAmount, totals.total, str(form.observaciones), id],
+       str(form.estado) || "borrador", "ARS", sourceCurrency === "USD" && requestedUsdRate > 0 ? requestedUsdRate : null, sourceCurrency,
+       form.mostrarComponentesKit === false ? 0 : 1,
+       totals.subtotal, totals.ivaAmount, totals.total, str(form.observaciones), id],
     );
     dbRun("DELETE FROM sale_order_items WHERE order_id = ?", [id]);
     for (const it of items) {
       const qty = num(it.cantidad), price = num(it.precio);
       dbRun(
         "INSERT INTO sale_order_items (id,order_id,article_id,code,description,unit,qty,unit_price,iva_pct,subtotal) VALUES (?,?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), str(it.unidad) || "un", qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
+        [randomUUID(), id, resolveSaleArticleId(it), str(it.codigo), str(it.descripcion), str(it.unidad) || "un", qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
       );
     }
   });
@@ -489,15 +522,22 @@ export function persistSaleOrder(form: SaleOrderForm): PersistResult {
 
 export interface QuoteForm {
   id?: string; nroCot?: string; fecha?: string; validoHasta?: string;
-  cliente?: { id?: string } | null; clienteNombre?: string; estado?: string; observaciones?: string;
+  cliente?: { id?: string } | null; clienteNombre?: string; moneda?: string; estado?: string; observaciones?: string;
   items?: SaleDocItem[];
   totales?: { total?: number };
+  cotizacionUsd?: number | string | null;
+  monedaPrecios?: "USD" | "ARS" | string;
+  mostrarComponentesKit?: boolean;
 }
 
 export function persistQuote(form: QuoteForm): PersistResult {
   const db = getDb();
   const id = str(form.id) || randomUUID();
-  const items = Array.isArray(form.items) ? form.items : [];
+  const sourceItems = Array.isArray(form.items) ? form.items : [];
+  const sourceCurrency = saleSourceCurrency(form.monedaPrecios, form.moneda);
+  const requestedUsdRate = num(form.cotizacionUsd);
+  const items = normalizeSaleItemsToArs(sourceItems, sourceCurrency, requestedUsdRate);
+  const totals = computeSaleTotals(items);
   const date = normalizeDate(form.fecha);
   const clientName = str(form.clienteNombre) || "Cliente ocasional";
   let number = str(form.nroCot);
@@ -505,17 +545,19 @@ export function persistQuote(form: QuoteForm): PersistResult {
   const tx = db.transaction(() => {
     if (!number) number = formatDocNumber("COT", nextSequence("quote"));
     dbRun(
-      `INSERT OR REPLACE INTO quotes (id,number,client_id,client_name,date,valid_until,status,total,notes,created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM quotes WHERE id=?),datetime('now')))`,
+      `INSERT OR REPLACE INTO quotes (id,number,client_id,client_name,date,valid_until,status,currency,usd_rate,source_currency,show_kit_components,subtotal,iva_amount,total,notes,created_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM quotes WHERE id=?),datetime('now')))`,
       [id, number, str(form.cliente?.id) || null, clientName, date, normalizeDate(form.validoHasta),
-       str(form.estado) || "borrador", computeSaleTotals(items).total, str(form.observaciones), id],
+       str(form.estado) || "borrador", "ARS", sourceCurrency === "USD" && requestedUsdRate > 0 ? requestedUsdRate : null, sourceCurrency,
+       form.mostrarComponentesKit === false ? 0 : 1,
+       totals.subtotal, totals.ivaAmount, totals.total, str(form.observaciones), id],
     );
     dbRun("DELETE FROM quote_items WHERE quote_id = ?", [id]);
     for (const it of items) {
       const qty = num(it.cantidad), price = num(it.precio);
       dbRun(
         "INSERT INTO quote_items (id,quote_id,article_id,code,description,qty,unit_price,iva_pct,subtotal) VALUES (?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
+        [randomUUID(), id, resolveSaleArticleId(it), str(it.codigo), str(it.descripcion), qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
       );
     }
   });
@@ -558,7 +600,7 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
   const sourceItems = Array.isArray(form.items) ? form.items : [];
   const sourceCurrency = str(form.monedaPrecios).toUpperCase() === "USD" ? "USD" : "ARS";
   const requestedUsdRate = num(form.cotizacionUsd);
-  const items = normalizeInvoiceItemsToArs(sourceItems, sourceCurrency, requestedUsdRate);
+  const items = normalizeSaleItemsToArs(sourceItems, sourceCurrency, requestedUsdRate);
   const totals = computeSaleTotals(items);
   const date = normalizeDate(form.fecha);
   const tipo = str(form.tipo) || "B";

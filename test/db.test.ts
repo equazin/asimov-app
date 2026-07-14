@@ -18,6 +18,13 @@ describe("db — inicialización y semillas", () => {
     expect(columns.map((column) => column.name)).toContain("afip_error");
   });
 
+  it("incluye moneda de origen, cotización y preferencia de kits en pedidos y cotizaciones", () => {
+    for (const table of ["sale_orders", "quotes"]) {
+      const columns = dbAll<{ name: string }>(`PRAGMA table_info(${table})`).map((column) => column.name);
+      expect(columns).toEqual(expect.arrayContaining(["usd_rate", "source_currency", "show_kit_components"]));
+    }
+  });
+
   it("permite el mismo número fiscal en tipos de comprobante distintos", () => {
     dbRun("INSERT INTO invoices (id,number,tipo) VALUES (?,?,?)", ["f-a", "00001-00000001", "A"]);
     expect(() => dbRun("INSERT INTO invoices (id,number,tipo) VALUES (?,?,?)", ["nc-a", "00001-00000001", "NC"]))

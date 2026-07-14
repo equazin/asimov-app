@@ -13,6 +13,8 @@ const api = {
   onProductSelected: (cb: (data: { product: any; rowId: string }) => void) => {
     ipcRenderer.on("shell:product-selected", (_evt, data) => cb(data));
   },
+  dolarLatest: () => ipcRenderer.invoke("dolar:latest"),
+  getKitInfo: (articleId: string) => ipcRenderer.invoke("db:kits:get", articleId),
   saveQuote: (quote: any) => {
     ipcRenderer.send("shell:quote-saved", { quote });
   },

@@ -124,6 +124,29 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     expect(one("SELECT COALESCE(SUM(subtotal),0) s FROM sale_order_items WHERE order_id=?", res.id).s).toBe(200);
   });
 
+  it("pedido: convierte precios USD a ARS, conserva metadatos y vincula el kit", () => {
+    seedArticle("KIT-PC", 0);
+    const res = persistSaleOrder({
+      clienteNombre: "Cli", monedaPrecios: "USD", cotizacionUsd: 1500,
+      mostrarComponentesKit: false,
+      items: [{ articleId: "art-KIT-PC", codigo: "KIT-PC", descripcion: "PC armada", cantidad: 1, precio: 1000, iva: 21 }],
+    });
+
+    expect(one("SELECT currency, source_currency, usd_rate, show_kit_components, total FROM sale_orders WHERE id=?", res.id))
+      .toMatchObject({ currency: "ARS", source_currency: "USD", usd_rate: 1500, show_kit_components: 0, total: 1_815_000 });
+    expect(one("SELECT article_id, unit_price, subtotal FROM sale_order_items WHERE order_id=?", res.id))
+      .toMatchObject({ article_id: "art-KIT-PC", unit_price: 1_500_000, subtotal: 1_500_000 });
+  });
+
+  it("pedido: aplica el descuento antes de calcular y convertir el total", () => {
+    const res = persistSaleOrder({
+      clienteNombre: "Cli", monedaPrecios: "USD", cotizacionUsd: 1500,
+      items: [{ codigo: "X", cantidad: 2, precio: 100, descuento: 10, iva: 21 }],
+    });
+    expect(one("SELECT subtotal, iva_amount, total FROM sale_orders WHERE id=?", res.id))
+      .toMatchObject({ subtotal: 270_000, iva_amount: 56_700, total: 326_700 });
+  });
+
   it("cotización: admite un cliente manual sin vínculo al maestro", () => {
     const res = persistQuote({
       clienteNombre: "Cliente nuevo", fecha: "06/07/2026", validoHasta: "20/07/2026",
@@ -135,6 +158,26 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     expect(h.client_name).toBe("Cliente nuevo");
     expect(h.total).toBe(605);
     expect(h.valid_until).toBe("2026-07-20");
+  });
+
+  it("cotización: convierte precios USD a ARS y guarda la configuración de impresión", () => {
+    seedArticle("KIT-COT", 0);
+    const res = persistQuote({
+      clienteNombre: "Cliente nuevo", monedaPrecios: "USD", cotizacionUsd: 1500,
+      mostrarComponentesKit: true,
+      items: [{ articleId: "art-KIT-COT", codigo: "KIT-COT", descripcion: "Equipo", cantidad: 1, precio: 100, iva: 10.5 }],
+    });
+
+    expect(one("SELECT source_currency, usd_rate, show_kit_components, total FROM quotes WHERE id=?", res.id))
+      .toMatchObject({ source_currency: "USD", usd_rate: 1500, show_kit_components: 1, total: 165_750 });
+    expect(one("SELECT article_id, unit_price, subtotal FROM quote_items WHERE quote_id=?", res.id))
+      .toMatchObject({ article_id: "art-KIT-COT", unit_price: 150_000, subtotal: 150_000 });
+  });
+
+  it("pedido y cotización exigen cotización oficial cuando los precios están en USD", () => {
+    const item = { codigo: "X", descripcion: "Producto", cantidad: 1, precio: 100, iva: 21 };
+    expect(() => persistSaleOrder({ monedaPrecios: "USD", items: [item] })).toThrow(/cotización USD.*válida/i);
+    expect(() => persistQuote({ monedaPrecios: "USD", items: [item] })).toThrow(/cotización USD.*válida/i);
   });
 
   it("cotización: usa un nombre ocasional cuando no se informa cliente", () => {

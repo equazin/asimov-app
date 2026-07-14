@@ -2259,10 +2259,26 @@
         if (inv.cae) { try { const qr = await api.afip.invoiceQr(id); if (qr && qr.ok && qr.data) data.qrDataUrl = qr.data.qrDataUrl; } catch (_) {} }
       } else if (type === "pedido") {
         const o = await api.saleOrders.get(id);
-        data = { number: o.number, date: fmtDate(o.date), party: { name: o.client_name || "" }, vendedor: "", notes: o.notes || "", items: mapPrintItems(o.items), totals: { subtotal: o.subtotal, iva: o.iva_amount, total: o.total } };
+        const showKitComponents = o.show_kit_components == null || Number(o.show_kit_components) === 1;
+        let printItems = mapPrintItems(o.items);
+        if (showKitComponents) printItems = await hydratePrintKits(printItems);
+        data = {
+          number: o.number, date: fmtDate(o.date), party: { name: o.client_name || "" }, vendedor: "", notes: o.notes || "",
+          items: printItems, totals: { subtotal: o.subtotal, iva: o.iva_amount, total: o.total },
+          usdRate: o.usd_rate != null ? Number(o.usd_rate) : 0,
+          showKitComponents: showKitComponents,
+        };
       } else if (type === "presupuesto") {
         const q = await api.quotes.get(id);
-        data = { number: q.number, date: fmtDate(q.date), validez: q.valid_until || "", party: { name: q.client_name || "" }, notes: q.notes || "", items: mapPrintItems(q.items), totals: { total: q.total } };
+        const showKitComponents = q.show_kit_components == null || Number(q.show_kit_components) === 1;
+        let printItems = mapPrintItems(q.items);
+        if (showKitComponents) printItems = await hydratePrintKits(printItems);
+        data = {
+          number: q.number, date: fmtDate(q.date), validez: q.valid_until || "", party: { name: q.client_name || "" }, notes: q.notes || "",
+          items: printItems, totals: { subtotal: q.subtotal, iva: q.iva_amount, total: q.total },
+          usdRate: q.usd_rate != null ? Number(q.usd_rate) : 0,
+          showKitComponents: showKitComponents,
+        };
       } else if (type === "remito") {
         const r = await api.deliveryNotes.get(id);
         data = { number: r.number, date: fmtDate(r.date), party: { name: r.client_name || "" }, transporte: "", notes: r.notes || "", items: mapPrintItems(r.items) };
