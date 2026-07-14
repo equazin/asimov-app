@@ -10,6 +10,8 @@
  */
 import { randomUUID } from "node:crypto";
 import { dbAll, dbGet, dbRun } from "./db";
+import { enqueueChange } from "./sync";
+import { isCloudConnected } from "./api-client";
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -87,10 +89,24 @@ export function applySourceLink(targetType: LinkableDocType, targetId: string, s
   const exists = dbGet(`SELECT id FROM ${def.table} WHERE id = ?`, [sourceId]);
   if (!exists) return false;
 
-  dbRun(
+  const linkId = randomUUID();
+  const inserted = dbRun(
     `INSERT OR IGNORE INTO document_links (id, source_type, source_id, target_type, target_id) VALUES (?,?,?,?,?)`,
-    [randomUUID(), sourceType, sourceId, targetType, targetId],
+    [linkId, sourceType, sourceId, targetType, targetId],
   );
+  // Solo encolar cuando realmente se creó una fila (INSERT OR IGNORE no cuenta
+  // los duplicados) y la nube está conectada. Best-effort: si la cola no está
+  // lista (tests), no rompemos el flujo del documento.
+  if (inserted?.changes && isCloudConnected()) {
+    try {
+      enqueueChange('document_link', linkId, 'create', {
+        sourceType,
+        sourceId,
+        targetType,
+        targetId,
+      });
+    } catch { /* best-effort */ }
+  }
   const newStatus = statusForLink(sourceType, targetType);
   if (newStatus) {
     dbRun(`UPDATE ${def.table} SET status = ? WHERE id = ?`, [newStatus, sourceId]);

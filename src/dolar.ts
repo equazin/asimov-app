@@ -7,6 +7,8 @@
  */
 import * as crypto from "node:crypto";
 import { dbAll, dbGet, dbRun } from "./db";
+import { enqueueChange } from "./sync";
+import { isCloudConnected } from "./api-client";
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -109,10 +111,25 @@ export function storeRates(rates: DolarRate[]): number {
       [rate.casa],
     );
     if (last && last.compra === rate.compra && last.venta === rate.venta) continue;
+    const id = crypto.randomUUID();
     dbRun(
       "INSERT INTO exchange_rates (id, casa, nombre, compra, venta, source_date) VALUES (?, ?, ?, ?, ?, ?)",
-      [crypto.randomUUID(), rate.casa, rate.nombre, rate.compra, rate.venta, rate.fechaActualizacion || null],
+      [id, rate.casa, rate.nombre, rate.compra, rate.venta, rate.fechaActualizacion || null],
     );
+    // Sync multi-PC: la cotización viaja como fila nueva; el resto de las PCs
+    // la deduplican por id sin volver a pegarle a DolarAPI. Offline-first: si
+    // la nube no está o la cola aún no existe (tests), no se encola.
+    if (isCloudConnected()) {
+      try {
+        enqueueChange('exchange_rate', id, 'create', {
+          casa: rate.casa,
+          nombre: rate.nombre,
+          compra: rate.compra,
+          venta: rate.venta,
+          sourceDate: rate.fechaActualizacion || null,
+        });
+      } catch { /* best-effort */ }
+    }
     inserted++;
   }
   return inserted;

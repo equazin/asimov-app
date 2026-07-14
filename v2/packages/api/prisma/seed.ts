@@ -84,9 +84,15 @@ async function main() {
   ]);
 
   // --- Cuenta principal de plataforma (superadmin del panel maestro) ---
-  // Credenciales configurables por entorno; el default DEBE cambiarse en producción.
-  const superEmail = process.env.SUPERADMIN_EMAIL ?? 'superadmin@asimov.app';
-  const superPassword = process.env.SUPERADMIN_PASSWORD ?? 'ChangeMe2026!';
+  // Fail-fast: en producción NO puede quedar el fallback anterior sembrado sin querer.
+  const superEmail = process.env.SUPERADMIN_EMAIL;
+  const superPassword = process.env.SUPERADMIN_PASSWORD;
+  if (!superEmail || !superPassword) {
+    throw new Error(
+      'SUPERADMIN_EMAIL y SUPERADMIN_PASSWORD son obligatorios para el seed. ' +
+        'Definilos en el entorno (ver .env.example) antes de correr `prisma db seed`.',
+    );
+  }
 
   const masterTenant = await prisma.tenant.upsert({
     where: { slug: 'asimov-master' },

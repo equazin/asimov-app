@@ -9,6 +9,8 @@
  */
 import { randomUUID } from "node:crypto";
 import { getDb, dbAll, dbGet, dbRun } from "./db";
+import { enqueueChange } from "./sync";
+import { isCloudConnected } from "./api-client";
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -57,6 +59,7 @@ export function setKitComponents(kitArticleId: string, components: KitComponentI
     .map((c) => ({ articleId: String(c?.articleId ?? "").trim(), qty: Number(c?.qty) }))
     .filter((c) => c.articleId && c.articleId !== kitArticleId && Number.isFinite(c.qty) && c.qty > 0);
 
+  const insertedComponents: Array<{ id: string; componentArticleId: string; qty: number }> = [];
   const tx = getDb().transaction(() => {
     dbRun("DELETE FROM kit_components WHERE kit_article_id = ?", [kitArticleId]);
     for (const c of valid) {
@@ -65,15 +68,29 @@ export function setKitComponents(kitArticleId: string, components: KitComponentI
       // Un kit no puede contener otro kit (evita explosiones recursivas).
       const isKit = dbGet<{ is_kit: number }>("SELECT is_kit FROM articles WHERE id = ?", [c.articleId]);
       if (isKit?.is_kit) continue;
+      const id = randomUUID();
       dbRun(
         "INSERT INTO kit_components (id, kit_article_id, component_article_id, qty) VALUES (?,?,?,?)",
-        [randomUUID(), kitArticleId, c.articleId, c.qty],
+        [id, kitArticleId, c.articleId, c.qty],
       );
+      insertedComponents.push({ id, componentArticleId: c.articleId, qty: c.qty });
     }
     const count = dbGet<{ n: number }>("SELECT COUNT(*) AS n FROM kit_components WHERE kit_article_id = ?", [kitArticleId])?.n ?? 0;
     dbRun("UPDATE articles SET is_kit = ?, manages_stock = ? WHERE id = ?", [count > 0 ? 1 : 0, count > 0 ? 0 : 1, kitArticleId]);
   });
   tx();
+
+  // Sync multi-PC: la operación viaja como "set del kit" — el server reemplaza
+  // el set entero de componentes en una sola transacción (misma semántica que acá).
+  // Offline-first: si la nube no está o la cola aún no existe (tests), no encolamos.
+  if (isCloudConnected()) {
+    try {
+      enqueueChange('kit_set', kitArticleId, 'update', {
+        kitArticleId,
+        components: insertedComponents,
+      });
+    } catch { /* best-effort */ }
+  }
 
   const count = dbGet<{ n: number }>("SELECT COUNT(*) AS n FROM kit_components WHERE kit_article_id = ?", [kitArticleId])?.n ?? 0;
   return { count };

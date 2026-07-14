@@ -31,6 +31,9 @@ export class SyncService {
       integrationConfigs,
       externalCatalogProducts,
       syncedDocuments,
+      exchangeRates,
+      documentLinks,
+      kitComponents,
     ] = await Promise.all([
       this.prisma.client.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
@@ -52,6 +55,15 @@ export class SyncService {
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
       this.prisma.syncedDocument.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.exchangeRate.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.documentLink.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.kitComponent.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
     ]);
@@ -126,6 +138,59 @@ export class SyncService {
         updatedAt: d.updatedAt.toISOString(),
       });
     }
+
+    for (const r of exchangeRates) {
+      changes.push({
+        entity: 'exchange_rate',
+        action: 'update',
+        id: r.id,
+        data: r as unknown as Record<string, unknown>,
+        updatedAt: r.updatedAt.toISOString(),
+      });
+    }
+
+    for (const l of documentLinks) {
+      changes.push({
+        entity: 'document_link',
+        action: 'update',
+        id: l.id,
+        data: l as unknown as Record<string, unknown>,
+        updatedAt: l.updatedAt.toISOString(),
+      });
+    }
+
+    // Los componentes de kit viajan agrupados por `kitArticleId` para que la
+    // receptora reemplace el set completo en una única transacción (misma
+    // semántica que `setKitComponents` en el desktop).
+    const kitGroups = new Map<string, typeof kitComponents>();
+    let kitMaxUpdatedAt = new Date(0);
+    for (const kc of kitComponents) {
+      const arr = kitGroups.get(kc.kitArticleId) ?? [];
+      arr.push(kc);
+      kitGroups.set(kc.kitArticleId, arr);
+      if (kc.updatedAt > kitMaxUpdatedAt) kitMaxUpdatedAt = kc.updatedAt;
+    }
+    for (const [kitArticleId, rows] of kitGroups) {
+      const groupUpdatedAt = rows.reduce(
+        (acc, r) => (r.updatedAt > acc ? r.updatedAt : acc),
+        new Date(0),
+      );
+      changes.push({
+        entity: 'kit_set',
+        action: 'update',
+        id: kitArticleId,
+        data: {
+          kitArticleId,
+          components: rows.map((r) => ({
+            id: r.id,
+            componentArticleId: r.componentArticleId,
+            qty: r.qty,
+          })),
+        },
+        updatedAt: groupUpdatedAt.toISOString(),
+      });
+    }
+    void kitMaxUpdatedAt;
 
     changes.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
 
@@ -254,6 +319,66 @@ export class SyncService {
         break;
       }
 
+      case 'exchange_rate': {
+        const sanitized = this.sanitizeExchangeRateData(data);
+        // Insert-only por diseño: la misma cotización no debe reescribirse desde
+        // otra PC. Usamos upsert por id para ser idempotentes ante reintentos.
+        await this.prisma.exchangeRate.upsert({
+          where: { id },
+          create: { id, tenantId, ...sanitized },
+          update: sanitized,
+        });
+        break;
+      }
+
+      case 'document_link': {
+        const sanitized = this.sanitizeDocumentLinkData(data);
+        if (action === 'delete') {
+          await this.prisma.documentLink.deleteMany({ where: { id, tenantId } });
+        } else {
+          // El unique compuesto (tenant + source + target) evita duplicados aun
+          // si dos PCs generaron ids distintos para el mismo vínculo.
+          await this.prisma.documentLink.upsert({
+            where: {
+              tenantId_sourceType_sourceId_targetType_targetId: {
+                tenantId,
+                sourceType: sanitized.sourceType,
+                sourceId: sanitized.sourceId,
+                targetType: sanitized.targetType,
+                targetId: sanitized.targetId,
+              },
+            },
+            create: { id, tenantId, ...sanitized },
+            update: sanitized,
+          });
+        }
+        break;
+      }
+
+      case 'kit_set': {
+        const { kitArticleId, components } = this.sanitizeKitSetData(data);
+        // Reemplazo atómico: borrar componentes previos del kit y volver a
+        // insertar el set actual. Misma semántica que setKitComponents().
+        await this.prisma.$transaction([
+          this.prisma.kitComponent.deleteMany({
+            where: { tenantId, kitArticleId },
+          }),
+          ...components.map((c) =>
+            this.prisma.kitComponent.create({
+              data: {
+                id: c.id,
+                tenantId,
+                kitArticleId,
+                componentArticleId: c.componentArticleId,
+                qty: c.qty,
+              },
+            }),
+          ),
+        ]);
+        void id;
+        break;
+      }
+
       case 'document_snapshot': {
         // El desktop manda el documento como envelope opaco; el server solo lo
         // almacena y lo reparte. `id` es el id local del documento (docId).
@@ -355,6 +480,50 @@ export class SyncService {
       config: rawConfig as Prisma.InputJsonObject,
       active: data.active === false ? false : true,
       deletedAt: data.deletedAt ? new Date(String(data.deletedAt)) : null,
+    };
+  }
+
+  private sanitizeExchangeRateData(data: Record<string, unknown>) {
+    return {
+      casa: String(data.casa ?? ''),
+      nombre: String(data.nombre ?? data.name ?? ''),
+      compra: Number(data.compra ?? 0),
+      venta: Number(data.venta ?? 0),
+      sourceDate: data.sourceDate ?? data.source_date
+        ? String(data.sourceDate ?? data.source_date)
+        : null,
+      fetchedAt: data.fetchedAt ?? data.fetched_at
+        ? new Date(String(data.fetchedAt ?? data.fetched_at))
+        : new Date(),
+    };
+  }
+
+  private sanitizeDocumentLinkData(data: Record<string, unknown>) {
+    return {
+      sourceType: String(data.sourceType ?? data.source_type ?? ''),
+      sourceId: String(data.sourceId ?? data.source_id ?? ''),
+      targetType: String(data.targetType ?? data.target_type ?? ''),
+      targetId: String(data.targetId ?? data.target_id ?? ''),
+    };
+  }
+
+  private sanitizeKitSetData(data: Record<string, unknown>) {
+    const rawComponents = Array.isArray(data.components) ? data.components : [];
+    const components = rawComponents
+      .map((c) => {
+        const item = (c ?? {}) as Record<string, unknown>;
+        return {
+          id: String(item.id ?? ''),
+          componentArticleId: String(
+            item.componentArticleId ?? item.component_article_id ?? '',
+          ),
+          qty: Number(item.qty ?? 0),
+        };
+      })
+      .filter((c) => c.id && c.componentArticleId && c.qty > 0);
+    return {
+      kitArticleId: String(data.kitArticleId ?? data.kit_article_id ?? ''),
+      components,
     };
   }
 
