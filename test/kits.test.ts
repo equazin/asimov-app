@@ -114,6 +114,16 @@ describe("getKitInfo / computeBuildableStock", () => {
     expect(Number(kit?.costo)).toBe(385000);
     expect(Number(kit?.importe)).toBe(900000);
   });
+
+  it("ofrece unidad y stock total del artículo local", () => {
+    seedArticle("mouse", "MOUSE-USB", 12, 20, 7);
+    dbRun("UPDATE articles SET unit = ? WHERE id = ?", ["U", "mouse"]);
+
+    const product = loadLocalProductsForPicker().find((item) => item.codigo === "MOUSE-USB");
+
+    expect(product?.unidad).toBe("U");
+    expect(Number(product?.st)).toBe(7);
+  });
 });
 
 describe("remito con kit: explosión de stock por componentes", () => {

@@ -694,6 +694,7 @@ td{ border-color:var(--border) !important; }
 (function(){
   var proveedorId = null;
   var rowCounter = 0;
+  var activeRowId = null;
 
   function esc(s){
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -735,6 +736,8 @@ td{ border-color:var(--border) !important; }
     var tbody = document.getElementById('itemsBody');
     var tr = document.createElement('tr');
     tr.dataset.id = rowCounter;
+    tr.dataset.articleId = data.articleId || '';
+    tr.dataset.ivaPct = data.ivaPct == null ? '21' : String(data.ivaPct);
     tr.innerHTML =
       '<td style="text-align:center;color:#999;font-size:11px">'+rowCounter+'</td>'+
       '<td><input class="cell-input" data-col="codigo" value="'+esc(data.codigo||'')+'"></td>'+
@@ -746,12 +749,14 @@ td{ border-color:var(--border) !important; }
       '<td><input class="cell-input right" data-col="sub" readonly value="0,00"></td>'+
       '<td><button class="del-row" title="Eliminar fila">✕</button></td>';
     tbody.appendChild(tr);
+    tr.addEventListener('focusin',function(){activeRowId = tr.dataset.id});
     tr.querySelector('.del-row').addEventListener('click',function(){tr.remove();recalcTotals()});
     tr.querySelectorAll('input[data-col=cant],input[data-col=precio],input[data-col=desc_pct]').forEach(function(inp){
       inp.addEventListener('input',function(){recalcFila(tr);recalcTotals()});
     });
     recalcFila(tr);
     recalcTotals();
+    return tr;
   }
 
   function recalcFila(tr){
@@ -800,7 +805,16 @@ td{ border-color:var(--border) !important; }
   }
 
   function abrirProductoPicker(){
-    if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.openProductSelection();
+    if(!window.asimovNewPurchaseOrder) return;
+    var focusedRow = document.activeElement && document.activeElement.closest ? document.activeElement.closest('#itemsBody tr') : null;
+    var target = focusedRow || (activeRowId ? document.querySelector('#itemsBody tr[data-id="'+activeRowId+'"]') : null);
+    if(!target){
+      target = Array.from(document.querySelectorAll('#itemsBody tr')).find(function(tr){
+        return !tr.querySelector('[data-col=codigo]').value.trim() && !tr.querySelector('[data-col=desc]').value.trim();
+      }) || agregarFila();
+    }
+    activeRowId = target.dataset.id;
+    window.asimovNewPurchaseOrder.openProductSelection(String(activeRowId));
   }
 
   function onSupplierSelected(data){
@@ -812,8 +826,21 @@ td{ border-color:var(--border) !important; }
   }
 
   function onProductSelected(data){
-    if(!data) return;
-    agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,precio:data.precioCompra||0});
+    if(!data || !data.product) return;
+    var product = data.product;
+    var tr = document.querySelector('#itemsBody tr[data-id="'+String(data.rowId||activeRowId||'')+'"]');
+    if(!tr) tr = agregarFila();
+    tr.dataset.articleId = product.articleId || product.id || '';
+    tr.dataset.ivaPct = product.iva == null ? '21' : String(product.iva);
+    tr.querySelector('[data-col=codigo]').value = product.codigo || product.code || '';
+    tr.querySelector('[data-col=desc]').value = product.descripcion || product.description || product.name || '';
+    tr.querySelector('[data-col=unidad]').value = product.unidad || 'UN';
+    tr.querySelector('[data-col=precio]').value = parseFloat(product.costo || product.cost_price || '0') || 0;
+    tr.querySelector('[data-col=cant]').value = 1;
+    recalcFila(tr);
+    recalcTotals();
+    tr.querySelector('[data-col=cant]').focus();
+    tr.querySelector('[data-col=cant]').select();
   }
 
   if(window.asimovNewPurchaseOrder){
@@ -840,12 +867,14 @@ td{ border-color:var(--border) !important; }
     var items = [];
     document.querySelectorAll('#itemsBody tr').forEach(function(tr){
       items.push({
+        articleId: tr.dataset.articleId || null,
         codigo: tr.querySelector('[data-col=codigo]').value,
         descripcion: tr.querySelector('[data-col=desc]').value,
         unidad: tr.querySelector('[data-col=unidad]').value,
         cantidad: parseFloat(tr.querySelector('[data-col=cant]').value)||0,
         precio: parseFloat(tr.querySelector('[data-col=precio]').value)||0,
         descPct: parseFloat(tr.querySelector('[data-col=desc_pct]').value)||0,
+        ivaPct: Number.isFinite(parseFloat(tr.dataset.ivaPct)) ? parseFloat(tr.dataset.ivaPct) : 21,
         subtotal: parseFloat(tr.dataset.sub)||0
       });
     });

@@ -630,7 +630,7 @@ export function setInvoicePrintPreferences(
 }
 
 export interface PurchaseDocItem {
-  codigo?: string; descripcion?: string; unidad?: string;
+  articleId?: string; codigo?: string; descripcion?: string; unidad?: string;
   cantidad?: number | string; precio?: number | string; ivaPct?: number | string; subtotal?: number | string;
 }
 
@@ -659,9 +659,15 @@ export function persistPurchaseOrder(form: PurchaseOrderForm): PersistResult {
     dbRun("DELETE FROM purchase_order_items WHERE order_id = ?", [id]);
     for (const it of items) {
       const qty = num(it.cantidad), price = num(it.precio);
+      const rawIvaPct = Number(it.ivaPct);
+      const ivaPct = Number.isFinite(rawIvaPct) ? rawIvaPct : 21;
+      const requestedArticleId = str(it.articleId);
+      const articleId = requestedArticleId
+        ? dbGet<{ id: string }>("SELECT id FROM articles WHERE id = ? LIMIT 1", [requestedArticleId])?.id
+        : undefined;
       dbRun(
         "INSERT INTO purchase_order_items (id,order_id,article_id,code,description,qty,unit_price,iva_pct,subtotal) VALUES (?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, num(it.ivaPct) || 21, num(it.subtotal) || lineSubtotal(qty, price)],
+        [randomUUID(), id, articleId ?? findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, ivaPct, num(it.subtotal) || lineSubtotal(qty, price)],
       );
     }
   });

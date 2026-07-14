@@ -287,12 +287,17 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
   });
 
   it("orden de compra: total calculado server-side desde los ítems", () => {
+    seedArticle("COD1", 1);
     const res = persistPurchaseOrder({
       proveedorNombre: "Prov", fecha: "06/07/2026",
-      items: [{ codigo: "COD1", descripcion: "X", cantidad: 4, precio: 50, ivaPct: 21, subtotal: 200 }],
+      items: [{ articleId: "art-COD1", codigo: "COD1", descripcion: "X", cantidad: 4, precio: 50, ivaPct: 0, subtotal: 200 }],
     });
     expect(res.number).toMatch(/^OC-/);
     expect(one("SELECT total FROM purchase_orders WHERE id=?", res.id).total).toBe(200);
+    expect(one("SELECT article_id, iva_pct FROM purchase_order_items WHERE order_id=?", res.id)).toMatchObject({
+      article_id: "art-COD1",
+      iva_pct: 0,
+    });
   });
 
   it("factura de compra: subtotal + IVA + percepciones = total, número del proveedor", () => {

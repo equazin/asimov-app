@@ -862,6 +862,7 @@ function loadProductsForPicker(): void {
         mapped.push({
           codigo: String(a.air_code ?? ""),
           descripcion: String(a.description ?? ""),
+          unidad: "UN",
           costo: String(a.price_usd ?? "0.00"),
           importe: String(a.price_usd ?? "0.00"),
           iva: String(a.iva_pct ?? "21"),

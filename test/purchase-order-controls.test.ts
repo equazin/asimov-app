@@ -23,4 +23,13 @@ describe("controles de la orden de compra", () => {
     expect(html).toContain("value = String(data.nombre||'')");
     expect(html).not.toContain("value = esc(data.nombre||'')");
   });
+
+  it("vincula el selector de artículos con la fila activa y usa el costo de stock", () => {
+    expect(html).toContain("openProductSelection(String(activeRowId))");
+    expect(html).toContain("if(!data || !data.product) return");
+    expect(html).toContain("var product = data.product");
+    expect(html).toContain("tr.dataset.articleId = product.articleId || product.id || ''");
+    expect(html).toContain("parseFloat(product.costo || product.cost_price || '0')");
+    expect(html).toContain("articleId: tr.dataset.articleId || null");
+  });
 });
