@@ -616,9 +616,11 @@ if (!gotLock) {
       const invoice = data?.invoice;
       if (!invoice) return { ok: false, error: "Sin datos de factura." };
       let invoiceId = "";
+      let invoiceNumber = "";
       try {
-        const { id } = persistInvoice(invoice as Record<string, unknown>);
+        const { id, number } = persistInvoice(invoice as Record<string, unknown>);
         invoiceId = id;
+        invoiceNumber = number;
         const result = await authorizeStoredInvoice(id);
         enqueueDocSnapshot("invoice", id);
         notifyShell("shell:invoice-saved");
@@ -632,11 +634,18 @@ if (!gotLock) {
           return {
             ok: false,
             pending: true,
+            invoiceId,
+            number: invoiceNumber,
             error: "No hay conexión con AFIP. La factura quedó guardada como \"pendiente de CAE\" y se autorizará automáticamente cuando vuelva la conexión.",
           };
         }
         if (invoiceId) enqueueDocSnapshot("invoice", invoiceId);
-        return { ok: false, error: err instanceof Error ? err.message : String(err) };
+        return {
+          ok: false,
+          invoiceId: invoiceId || undefined,
+          number: invoiceNumber || undefined,
+          error: err instanceof Error ? err.message : String(err),
+        };
       }
     });
     ipcMain.on("shell:delivery-note-saved", (_event, data: { delivery?: unknown }) => {

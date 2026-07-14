@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS quote_items (
 
 CREATE TABLE IF NOT EXISTS invoices (
   id            TEXT PRIMARY KEY,
-  number        TEXT UNIQUE NOT NULL,
+  number        TEXT NOT NULL,
   client_id     TEXT,
   client_name   TEXT,
   date          TEXT NOT NULL DEFAULT (date('now')),
@@ -832,6 +832,7 @@ export function initDb(dbPath?: string): void {
   // armados custom (PC a medida) sin necesidad de definir el kit en el catálogo.
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_print INTEGER NOT NULL DEFAULT 0"); } catch {}
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_label TEXT"); } catch {}
+  migrateInvoiceNumberUniqueness();
   _db.exec(`
     UPDATE invoices
        SET status = 'autorizada', afip_error = NULL
@@ -849,6 +850,71 @@ export function initDb(dbPath?: string): void {
   const cashExists = (_db.prepare("SELECT id FROM cash_accounts LIMIT 1").get() as any);
   if (!cashExists) {
     _db.prepare("INSERT INTO cash_accounts (id, name) VALUES (?, ?)").run("ca-default", "Caja Principal");
+  }
+}
+
+/**
+ * Las numeraciones fiscales se repiten legalmente entre Factura A/B, NC y ND.
+ * Versiones anteriores declaraban invoices.number como UNIQUE global, lo que
+ * impedía emitir, por ejemplo, una NC 00001-00000001 si ya existía una factura
+ * con ese número. Rehacemos sólo esa tabla, conservando ids y relaciones.
+ */
+function migrateInvoiceNumberUniqueness(): void {
+  const db = getDb();
+  const row = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='invoices'").get() as { sql?: string } | undefined;
+  if (!row?.sql || !/number\s+TEXT\s+UNIQUE\s+NOT\s+NULL/i.test(row.sql)) return;
+
+  db.pragma("foreign_keys = OFF");
+  try {
+    db.exec(`
+      BEGIN IMMEDIATE;
+      CREATE TABLE invoices_without_global_number_unique (
+        id TEXT PRIMARY KEY,
+        number TEXT NOT NULL,
+        client_id TEXT,
+        client_name TEXT,
+        date TEXT NOT NULL DEFAULT (date('now')),
+        due_date TEXT,
+        tipo TEXT NOT NULL DEFAULT 'B',
+        point_of_sale TEXT NOT NULL DEFAULT '0001',
+        status TEXT NOT NULL DEFAULT 'borrador',
+        subtotal REAL NOT NULL DEFAULT 0,
+        iva_amount REAL NOT NULL DEFAULT 0,
+        total REAL NOT NULL DEFAULT 0,
+        cae TEXT,
+        cae_expiry TEXT,
+        afip_error TEXT,
+        notes TEXT,
+        usd_rate REAL,
+        source_currency TEXT NOT NULL DEFAULT 'ARS',
+        show_kit_components INTEGER NOT NULL DEFAULT 1,
+        consolidated_print INTEGER NOT NULL DEFAULT 0,
+        consolidated_label TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (client_id) REFERENCES clients(id)
+      );
+      INSERT INTO invoices_without_global_number_unique (
+        id, number, client_id, client_name, date, due_date, tipo, point_of_sale,
+        status, subtotal, iva_amount, total, cae, cae_expiry, afip_error, notes,
+        usd_rate, source_currency, show_kit_components, consolidated_print,
+        consolidated_label, created_at
+      )
+      SELECT id, number, client_id, client_name, date, due_date, tipo, point_of_sale,
+        status, subtotal, iva_amount, total, cae, cae_expiry, afip_error, notes,
+        usd_rate, source_currency, show_kit_components, consolidated_print,
+        consolidated_label, created_at
+      FROM invoices;
+      DROP TABLE invoices;
+      ALTER TABLE invoices_without_global_number_unique RENAME TO invoices;
+      CREATE INDEX IF NOT EXISTS idx_invoices_client ON invoices(client_id);
+      CREATE INDEX IF NOT EXISTS idx_invoices_date ON invoices(date);
+      COMMIT;
+    `);
+  } catch (error) {
+    try { db.exec("ROLLBACK"); } catch {}
+    throw error;
+  } finally {
+    db.pragma("foreign_keys = ON");
   }
 }
 

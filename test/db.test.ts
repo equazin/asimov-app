@@ -17,6 +17,12 @@ describe("db — inicialización y semillas", () => {
     const columns = dbAll<{ name: string }>("PRAGMA table_info(invoices)");
     expect(columns.map((column) => column.name)).toContain("afip_error");
   });
+
+  it("permite el mismo número fiscal en tipos de comprobante distintos", () => {
+    dbRun("INSERT INTO invoices (id,number,tipo) VALUES (?,?,?)", ["f-a", "00001-00000001", "A"]);
+    expect(() => dbRun("INSERT INTO invoices (id,number,tipo) VALUES (?,?,?)", ["nc-a", "00001-00000001", "NC"]))
+      .not.toThrow();
+  });
 });
 
 describe("db — secuencias y numeración", () => {

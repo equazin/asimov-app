@@ -148,6 +148,21 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     expect(one("SELECT COALESCE(SUM(iva_amount),0) i FROM invoice_items WHERE invoice_id=?", res.id).i).toBeCloseTo(63);
   });
 
+  it("factura: al reintentar con el mismo id actualiza el borrador sin duplicarlo", () => {
+    const first = persistInvoice({
+      tipo: "NC", ptoVta: "0001", nroFact: "15947634", clienteNombre: "Cli",
+      items: [{ codigo: "X", descripcion: "Ajuste", cantidad: 1, precio: 100, iva: 21 }],
+    });
+    const retry = persistInvoice({
+      id: first.id, tipo: "NC", ptoVta: "0001", nroFact: "15947634", clienteNombre: "Cli",
+      items: [{ codigo: "X", descripcion: "Ajuste", cantidad: 1, precio: 120, iva: 21 }],
+    });
+
+    expect(retry.id).toBe(first.id);
+    expect(one("SELECT COUNT(*) count FROM invoices WHERE number = ?", ["15947634"]).count).toBe(1);
+    expect(one("SELECT total FROM invoices WHERE id = ?", [first.id]).total).toBe(145.2);
+  });
+
   it("factura: guarda usd_rate y show_kit_components (default = 1 si no se pasa)", () => {
     // Default: show_kit_components debe ser 1 cuando el form no lo manda.
     const def = persistInvoice({

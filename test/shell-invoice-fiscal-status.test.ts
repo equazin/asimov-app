@@ -46,6 +46,9 @@ describe("estado fiscal de facturas en el shell", () => {
     expect(invoiceForm).toContain("onAdjustmentPrefill(applyAdjustmentPrefill)");
     expect(invoiceForm).toContain('document.getElementById("selMonedaPrecios").value = "ARS"');
     expect(invoiceForm).toContain('tipo: "invoice"');
+    expect(invoiceForm).toContain("id: currentInvoiceId");
+    expect(invoiceForm).toContain("if (res && res.invoiceId) currentInvoiceId = res.invoiceId");
+    expect(main).toContain("invoiceId: invoiceId || undefined");
   });
 
   it("reconoce todos los roles administrativos en renderer y proceso principal", () => {

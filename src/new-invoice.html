@@ -1106,6 +1106,7 @@ td{ border-color:var(--border) !important; }
     let nextRowId = 1;
     let clienteData = null;
     let tipoActual = "B";
+    let currentInvoiceId = null;
     let origenDoc = null; // documento traído: { tipo: "sale-order"|"delivery-note", id, numero }
 
     /* ─── Init ─── */
@@ -1663,6 +1664,7 @@ td{ border-color:var(--border) !important; }
         return null;
       }
       return {
+        id: currentInvoiceId,
         tipo: tipoActual,
         ptoVta: document.getElementById("txtPtoVta").value,
         nroFact: document.getElementById("txtNroFact").value,
@@ -1745,6 +1747,12 @@ td{ border-color:var(--border) !important; }
       btn.innerHTML = "⏳ Autorizando…";
       try {
         var res = await window.asimovNewInvoice.authorizeInvoice(invoice);
+        if (res && res.invoiceId) currentInvoiceId = res.invoiceId;
+        if (res && res.number) {
+          var persistedParts = String(res.number).split("-");
+          document.getElementById("txtNroFact").value = persistedParts[persistedParts.length - 1];
+          updateHeader();
+        }
         if (res && !res.ok && res.pending) {
           // Sin conexión: la factura quedó guardada "pendiente de CAE".
           var banner = document.getElementById("afipEstadoBanner");
