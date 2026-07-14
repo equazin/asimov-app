@@ -499,6 +499,7 @@ export function persistQuote(form: QuoteForm): PersistResult {
   const id = str(form.id) || randomUUID();
   const items = Array.isArray(form.items) ? form.items : [];
   const date = normalizeDate(form.fecha);
+  const clientName = str(form.clienteNombre) || "Cliente ocasional";
   let number = str(form.nroCot);
 
   const tx = db.transaction(() => {
@@ -506,7 +507,7 @@ export function persistQuote(form: QuoteForm): PersistResult {
     dbRun(
       `INSERT OR REPLACE INTO quotes (id,number,client_id,client_name,date,valid_until,status,total,notes,created_at)
        VALUES (?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM quotes WHERE id=?),datetime('now')))`,
-      [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, normalizeDate(form.validoHasta),
+      [id, number, str(form.cliente?.id) || null, clientName, date, normalizeDate(form.validoHasta),
        str(form.estado) || "borrador", computeSaleTotals(items).total, str(form.observaciones), id],
     );
     dbRun("DELETE FROM quote_items WHERE quote_id = ?", [id]);

@@ -558,9 +558,9 @@ td{ border-color:var(--border) !important; }
           <input type="text" id="txtClienteCodigo" />
         </div>
         <div class="field span-2 with-btn">
-          <label class="required-star">Razón Social</label>
-          <input type="text" id="txtClienteNombre" placeholder="Nombre o busque con ..." />
-          <button class="field-btn" id="btnBuscarCliente" title="Buscar cliente (F4)">...</button>
+          <label>Cliente / Razón social</label>
+          <input type="text" id="txtClienteNombre" placeholder="Escriba un nombre o busque con F4…" />
+          <button class="field-btn" id="btnBuscarCliente" title="Buscar cliente (F4)">…</button>
         </div>
         <div class="field">
           <label>CUIT</label>
@@ -897,6 +897,18 @@ td{ border-color:var(--border) !important; }
     document.getElementById("txtClienteNombre").addEventListener("keydown", function(e) {
       if (e.key === "F4") { e.preventDefault(); openClientPicker(); }
     });
+    document.getElementById("txtClienteNombre").addEventListener("input", function() {
+      if (!clienteData) return;
+      clienteData = null;
+      document.getElementById("txtClienteCodigo").value = "";
+      document.getElementById("txtClienteCuit").value = "";
+      document.getElementById("txtClienteIva").value = "";
+      document.getElementById("txtEmail").value = "";
+    });
+
+    function quoteClientName() {
+      return document.getElementById("txtClienteNombre").value.trim() || "Cliente ocasional";
+    }
 
     function openClientPicker() {
       if (window.asimovNewQuote) window.asimovNewQuote.openClientSelection();
@@ -1067,12 +1079,6 @@ td{ border-color:var(--border) !important; }
     /* btnNew removed */
 
     document.getElementById("btnSave").addEventListener("click", function() {
-      if (!document.getElementById("txtClienteNombre").value.trim()) {
-        alert("Seleccione un cliente antes de guardar.");
-        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "encabezado") t.click(); });
-        document.getElementById("txtClienteNombre").focus();
-        return;
-      }
       if (items.length === 0) {
         alert("Agregue al menos un ítem a la cotización.");
         document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "items") t.click(); });
@@ -1085,7 +1091,7 @@ td{ border-color:var(--border) !important; }
         validoHasta: document.getElementById("txtValidoHasta").value,
         tipo: document.getElementById("selTipo").value,
         cliente: clienteData,
-        clienteNombre: document.getElementById("txtClienteNombre").value,
+        clienteNombre: quoteClientName(),
         contacto: document.getElementById("txtContacto").value,
         email: document.getElementById("txtEmail").value,
         condPago: document.getElementById("selCondPago").value,
@@ -1110,7 +1116,6 @@ td{ border-color:var(--border) !important; }
 
     /* ─── Impresión de comprobante ─── */
     window.getPrintData = function () {
-      if (!document.getElementById("txtClienteNombre").value.trim()) { alert("Seleccione un cliente antes de imprimir."); return null; }
       if (items.length === 0) { alert("Agregue al menos un ítem."); return null; }
       recalcTotals();
       var t = window._totals || {}; var cli = clienteData || {};
@@ -1118,7 +1123,7 @@ td{ border-color:var(--border) !important; }
         number: document.getElementById("txtNroCot").value,
         date: document.getElementById("txtFecha").value,
         validez: (document.getElementById("txtValidoHasta") || {}).value || "",
-        party: { name: document.getElementById("txtClienteNombre").value, cuit: cli.cuit || "", iva: cli.condicionIva || cli.iva || "", address: cli.domicilio || cli.address || "" },
+        party: { name: quoteClientName(), cuit: cli.cuit || "", iva: cli.condicionIva || cli.iva || "", address: cli.domicilio || cli.address || "" },
         notes: (document.getElementById("txtObsCliente") || {}).value || "",
         items: items.map(function (it) { return { code: it.codigo, description: it.descripcion, qty: it.cantidad, unit: it.unidad, unitPrice: it.precio, ivaPct: it.iva, lineTotal: Number(it.cantidad) * Number(it.precio) }; }),
         totals: { subtotal: t.subtotal, iva: t.iva, perc: t.perc || 0, total: t.total },

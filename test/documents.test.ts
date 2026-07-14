@@ -124,15 +124,28 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     expect(one("SELECT COALESCE(SUM(subtotal),0) s FROM sale_order_items WHERE order_id=?", res.id).s).toBe(200);
   });
 
-  it("cotización: total y valid_until", () => {
+  it("cotización: admite un cliente manual sin vínculo al maestro", () => {
     const res = persistQuote({
-      clienteNombre: "Cli", fecha: "06/07/2026", validoHasta: "20/07/2026",
+      clienteNombre: "Cliente nuevo", fecha: "06/07/2026", validoHasta: "20/07/2026",
       items: [{ codigo: "COD1", descripcion: "X", cantidad: 1, precio: 500, iva: 21 }],
       totales: { total: 605 },
     });
-    const h = one("SELECT total, valid_until FROM quotes WHERE id=?", res.id);
+    const h = one("SELECT client_id, client_name, total, valid_until FROM quotes WHERE id=?", res.id);
+    expect(h.client_id).toBeNull();
+    expect(h.client_name).toBe("Cliente nuevo");
     expect(h.total).toBe(605);
     expect(h.valid_until).toBe("2026-07-20");
+  });
+
+  it("cotización: usa un nombre ocasional cuando no se informa cliente", () => {
+    const res = persistQuote({
+      items: [{ codigo: "COD1", descripcion: "X", cantidad: 1, precio: 100, iva: 21 }],
+    });
+
+    expect(one("SELECT client_id, client_name FROM quotes WHERE id=?", res.id)).toMatchObject({
+      client_id: null,
+      client_name: "Cliente ocasional",
+    });
   });
 
   it("factura de venta: número con punto de venta e IVA por línea", () => {
