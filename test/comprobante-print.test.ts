@@ -51,7 +51,7 @@ describe("impresión monocroma de comprobantes", () => {
     expect(css).toContain("break-inside: avoid");
     expect(js).toContain('<div class="document-end">');
     expect(js).toContain('(data.items || []).length <= 16');
-    expect(js).toMatch(/var documentEnd =[\s\S]*caeBlock\(data\)[\s\S]*footBlock\(\)/);
+    expect(js).toMatch(/var documentEnd =[\s\S]*fiscalSummaryBlock\(data\)[\s\S]*footBlock\(\)/);
 
     const singlePage = renderInvoice(1);
     expect(singlePage.className).toContain("document-end-pinned");
@@ -59,5 +59,15 @@ describe("impresión monocroma de comprobantes", () => {
 
     const multiplePages = renderInvoice(17);
     expect(multiplePages.className).not.toContain("document-end-pinned");
+  });
+
+  it("ubica los totales a la derecha del QR dentro del resumen fiscal", () => {
+    const invoice = renderInvoice(1);
+    expect(invoice.innerHTML).toMatch(
+      /class="fiscal-summary"[\s\S]*class="fiscal-authorization"[\s\S]*class="afip-cae"[\s\S]*class="totals"/,
+    );
+    expect(invoice.innerHTML.indexOf('class="totals"')).toBeGreaterThan(invoice.innerHTML.indexOf('class="afip-cae"'));
+    expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr)");
+    expect(css).toContain(".cbt .fiscal-summary .totals");
   });
 });

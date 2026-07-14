@@ -224,15 +224,22 @@
   function caeBlock(data) {
     if (!data || !data.cae) return "";
     var qr = data.qrDataUrl
-      ? '<img class="afip-qr" src="' + esc(data.qrDataUrl) + '" alt="QR AFIP" style="width:110px;height:110px;" />'
+      ? '<img class="afip-qr" src="' + esc(data.qrDataUrl) + '" alt="QR AFIP" />'
       : "";
-    return '<div class="afip-cae" style="display:flex;gap:14px;align-items:center;margin-top:10px;padding-top:8px;border-top:1px solid #ccc;">' +
+    return '<div class="afip-cae">' +
       qr +
-      '<div style="font-size:11px;line-height:1.5;">' +
+      '<div class="afip-data">' +
       '<div><strong>CAE N°:</strong> ' + esc(data.cae) + "</div>" +
       '<div><strong>Vencimiento CAE:</strong> ' + esc(data.caeExpiration || "") + "</div>" +
-      '<div style="opacity:0.7;margin-top:2px;">Comprobante autorizado por AFIP/ARCA</div>' +
+      '<div class="afip-status">Comprobante autorizado por AFIP/ARCA</div>' +
       "</div></div>";
+  }
+
+  function fiscalSummaryBlock(data) {
+    return '<div class="fiscal-summary">' +
+      '<div class="fiscal-authorization">' + caeBlock(data) + "</div>" +
+      totalsBlock("factura", data) +
+      "</div>";
   }
 
   var MEMBRETE = { factura: mbFactura, pedido: mbPedido, presupuesto: mbPresupuesto, remito: mbRemito, recibo: mbRecibo };
@@ -243,7 +250,7 @@
     var mb = MEMBRETE[type] || mbFactura;
     var documentEnd =
       '<div class="document-end">' +
-        (type === "factura" ? caeBlock(data) : "") +
+        (type === "factura" ? fiscalSummaryBlock(data) : "") +
         notesBlock(data) +
         footBlock() +
       "</div>";
@@ -256,7 +263,7 @@
       mb(data) +
       partyBlock(data) +
       itemsTable(type, data) +
-      totalsBlock(type, data) +
+      (type === "factura" ? "" : totalsBlock(type, data)) +
       documentEnd;
   };
 

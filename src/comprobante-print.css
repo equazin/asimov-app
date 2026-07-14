@@ -262,6 +262,23 @@
 .cbt .totals tr.grand td { border-top: 2px solid var(--ink); font-size: 14px; padding-top: 6px; }
 .cbt .totals tr.grand td.v { font-weight: 800; }
 
+/* ---------- Resumen fiscal inferior de factura ---------- */
+.cbt .fiscal-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr);
+  gap: 24px;
+  align-items: end;
+  margin: 10px 20px 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.cbt .fiscal-summary .afip-cae { display: flex; gap: 14px; align-items: center; }
+.cbt .fiscal-summary .afip-qr { width: 110px; height: 110px; flex: 0 0 110px; }
+.cbt .fiscal-summary .afip-data { font-size: 11px; line-height: 1.5; }
+.cbt .fiscal-summary .afip-status { opacity: .7; margin-top: 2px; }
+.cbt .fiscal-summary .totals { margin: 0; width: 100%; }
+.cbt .fiscal-summary .totals table { width: 100%; min-width: 0; }
+
 /* ---------- Observaciones / pie ---------- */
 .cbt .notes { margin: 6px 20px; font-size: 10px; color: var(--muted); min-height: 18px; }
 .cbt .foot { margin: 14px 20px 0; padding-top: 8px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 9px; color: var(--muted); }
