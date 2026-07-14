@@ -307,7 +307,10 @@ function isCloudNativeEntity(entity: string): boolean {
     entity === 'document_snapshot' ||
     entity === 'exchange_rate' ||
     entity === 'document_link' ||
-    entity === 'kit_set'
+    entity === 'kit_set' ||
+    entity === 'crm_opportunity' ||
+    entity === 'crm_activity' ||
+    entity === 'crm_task'
   );
 }
 
@@ -765,9 +768,22 @@ function applyRemoteChange(change: {
       break;
     }
     case 'kit_set': {
-      // Reemplazo atómico del set de componentes del kit (misma semántica que
-      // setKitComponents en el desktop origen).
       applyKitSet(change.id, change.data);
+      break;
+    }
+    case 'crm_opportunity': {
+      if (change.action === 'delete') softDeleteRow('opportunities', change.id);
+      else upsertRow('opportunities', change.id, change.data);
+      break;
+    }
+    case 'crm_activity': {
+      if (change.action === 'delete') softDeleteRow('crm_activities', change.id);
+      else upsertRow('crm_activities', change.id, change.data);
+      break;
+    }
+    case 'crm_task': {
+      if (change.action === 'delete') softDeleteRow('crm_tasks', change.id);
+      else upsertRow('crm_tasks', change.id, change.data);
       break;
     }
     case 'document':

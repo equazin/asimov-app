@@ -43,6 +43,7 @@ import { registerDolarIpc } from "./ipc/dolar";
 import { registerAirIpc } from "./ipc/air";
 import { registerWhatsappIpc } from "./ipc/wa";
 import { registerAfipIpc } from "./ipc/afip";
+import { registerCrmIpc } from "./ipc/crm";
 import { setInvoicePrintPreferences } from "./documents";
 
 export function registerIpcHandlers(deps: IpcDeps): void {
@@ -52,6 +53,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   registerAirIpc(deps);
   registerWhatsappIpc(deps);
   registerAfipIpc(deps);
+  registerCrmIpc(deps);
 
   // Enforcement de rol en el proceso main (fuente de verdad; el gating del shell
   // es solo UX). Sin sesión se niega por defecto para las acciones sensibles.
@@ -394,15 +396,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     return dbAll("SELECT * FROM warranties WHERE (client_name LIKE ? OR article_name LIKE ? OR serial_number LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q, q]);
   });
 
-  // --- DB: CRM -------------------------------------------------------------
-  ipcMain.handle("db:crm-accounts:list", (_event, search: unknown) => {
-    const q = `%${safeStr(search)}%`;
-    return dbAll("SELECT * FROM crm_accounts WHERE name LIKE ? ORDER BY name LIMIT 500", [q]);
-  });
-  ipcMain.handle("db:opportunities:list", (_event, search: unknown) => {
-    const q = `%${safeStr(search)}%`;
-    return dbAll("SELECT o.*, a.name as account_name FROM opportunities o LEFT JOIN crm_accounts a ON a.id = o.account_id WHERE o.title LIKE ? ORDER BY o.created_at DESC LIMIT 500", [q]);
-  });
+  // --- DB: CRM → ahora en src/ipc/crm.ts (crm:opportunities:*, crm:activities:*, etc.) ---
 
   // --- DB: Autonúmeros -----------------------------------------------------
   ipcMain.handle("db:next-number", (_event, type: unknown) => {

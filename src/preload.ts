@@ -190,12 +190,36 @@ const api = {
     movements: (accountId: string) => ipcRenderer.invoke("db:cash-movements:list", accountId),
   },
 
-  // DB — CRM
-  crmAccounts: {
-    list: (search = "") => ipcRenderer.invoke("db:crm-accounts:list", search),
-  },
-  opportunities: {
-    list: (search = "") => ipcRenderer.invoke("db:opportunities:list", search),
+  // DB — CRM (unificado con clients)
+  crm: {
+    pipeline: {
+      list: () => ipcRenderer.invoke("crm:pipeline:list"),
+      save: (row: unknown) => ipcRenderer.invoke("crm:pipeline:save", row),
+      delete: (id: string) => ipcRenderer.invoke("crm:pipeline:delete", id),
+    },
+    opportunities: {
+      list: (search = "", status = "open") => ipcRenderer.invoke("crm:opportunities:list", search, status),
+      get: (id: string) => ipcRenderer.invoke("crm:opportunities:get", id),
+      save: (row: unknown) => ipcRenderer.invoke("crm:opportunities:save", row),
+      delete: (id: string) => ipcRenderer.invoke("crm:opportunities:delete", id),
+      history: (id: string) => ipcRenderer.invoke("crm:opportunities:history", id),
+    },
+    activities: {
+      list: (clientId: string) => ipcRenderer.invoke("crm:activities:list", clientId),
+      recent: (limit = 50) => ipcRenderer.invoke("crm:activities:recent", limit),
+      save: (row: unknown) => ipcRenderer.invoke("crm:activities:save", row),
+      delete: (id: string) => ipcRenderer.invoke("crm:activities:delete", id),
+    },
+    tasks: {
+      list: (status = "pending", assignedTo?: string) => ipcRenderer.invoke("crm:tasks:list", status, assignedTo),
+      client: (clientId: string) => ipcRenderer.invoke("crm:tasks:client", clientId),
+      get: (id: string) => ipcRenderer.invoke("crm:tasks:get", id),
+      save: (row: unknown) => ipcRenderer.invoke("crm:tasks:save", row),
+      complete: (id: string) => ipcRenderer.invoke("crm:tasks:complete", id),
+      delete: (id: string) => ipcRenderer.invoke("crm:tasks:delete", id),
+    },
+    clientSummary: (clientId: string) => ipcRenderer.invoke("crm:client-summary", clientId),
+    pipelineSummary: () => ipcRenderer.invoke("crm:pipeline-summary"),
   },
 
   // DB — Cta Cte

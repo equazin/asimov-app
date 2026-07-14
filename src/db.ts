@@ -78,6 +78,13 @@ CREATE TABLE IF NOT EXISTS clients (
   city          TEXT,
   province      TEXT,
   credit_limit  REAL NOT NULL DEFAULT 0,
+  industry      TEXT,
+  website       TEXT,
+  lead_source   TEXT,
+  account_status TEXT NOT NULL DEFAULT 'active',
+  crm_notes     TEXT,
+  assigned_to   TEXT,
+  last_contact_at TEXT,
   active        INTEGER NOT NULL DEFAULT 1,
   notes         TEXT,
   created_at    TEXT NOT NULL DEFAULT (datetime('now')),
@@ -478,32 +485,92 @@ CREATE TABLE IF NOT EXISTS cash_movements (
 );
 
 -- ============================================================
--- CRM
+-- CRM (unificado con clients)
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS crm_accounts (
-  id         TEXT PRIMARY KEY,
-  name       TEXT NOT NULL,
-  industry   TEXT,
-  website    TEXT,
-  phone      TEXT,
-  email      TEXT,
-  address    TEXT,
-  notes      TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+-- Pipeline stages configurables (etapas del embudo de ventas)
+CREATE TABLE IF NOT EXISTS crm_pipeline_stages (
+  id          TEXT PRIMARY KEY,
+  name        TEXT NOT NULL,
+  sort_order  INTEGER NOT NULL DEFAULT 0,
+  probability INTEGER NOT NULL DEFAULT 0,
+  color       TEXT DEFAULT '#6b7280',
+  is_won      INTEGER NOT NULL DEFAULT 0,
+  is_lost     INTEGER NOT NULL DEFAULT 0,
+  active      INTEGER NOT NULL DEFAULT 1,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Oportunidades / deals (vinculadas a clients, no a crm_accounts)
 CREATE TABLE IF NOT EXISTS opportunities (
   id             TEXT PRIMARY KEY,
-  account_id     TEXT,
+  client_id      TEXT,
   title          TEXT NOT NULL,
   amount         REAL NOT NULL DEFAULT 0,
+  stage_id       TEXT,
   stage          TEXT NOT NULL DEFAULT 'prospecto',
   probability    INTEGER NOT NULL DEFAULT 0,
   expected_close TEXT,
+  assigned_to    TEXT,
+  source         TEXT,
   notes          TEXT,
+  status         TEXT NOT NULL DEFAULT 'open',
+  won_at         TEXT,
+  lost_at        TEXT,
+  lost_reason    TEXT,
   created_at     TEXT NOT NULL DEFAULT (datetime('now')),
-  FOREIGN KEY (account_id) REFERENCES crm_accounts(id)
+  updated_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (client_id) REFERENCES clients(id),
+  FOREIGN KEY (stage_id) REFERENCES crm_pipeline_stages(id)
+);
+
+-- Historial de cambios de etapa (para reporting y forecasting)
+CREATE TABLE IF NOT EXISTS crm_deal_stage_history (
+  id            TEXT PRIMARY KEY,
+  opportunity_id TEXT NOT NULL,
+  from_stage    TEXT,
+  to_stage      TEXT NOT NULL,
+  changed_by    TEXT,
+  changed_at    TEXT NOT NULL DEFAULT (datetime('now')),
+  notes         TEXT,
+  FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE CASCADE
+);
+
+-- Actividades / interacciones con clientes
+CREATE TABLE IF NOT EXISTS crm_activities (
+  id          TEXT PRIMARY KEY,
+  client_id   TEXT NOT NULL,
+  type        TEXT NOT NULL DEFAULT 'note',
+  subject     TEXT,
+  body        TEXT,
+  due_date    TEXT,
+  completed_at TEXT,
+  assigned_to TEXT,
+  opportunity_id TEXT,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+  FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE SET NULL
+);
+
+-- Tareas / recordatorios
+CREATE TABLE IF NOT EXISTS crm_tasks (
+  id          TEXT PRIMARY KEY,
+  client_id   TEXT,
+  opportunity_id TEXT,
+  title       TEXT NOT NULL,
+  description TEXT,
+  due_date    TEXT NOT NULL,
+  due_time    TEXT,
+  priority    TEXT NOT NULL DEFAULT 'normal',
+  status      TEXT NOT NULL DEFAULT 'pending',
+  assigned_to TEXT,
+  completed_at TEXT,
+  reminder_at TEXT,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+  FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE SET NULL
 );
 
 -- ============================================================
@@ -729,6 +796,16 @@ CREATE INDEX IF NOT EXISTS idx_exchange_rates_casa    ON exchange_rates(casa, fe
 CREATE INDEX IF NOT EXISTS idx_wa_chats_phone         ON wa_chats(phone);
 CREATE INDEX IF NOT EXISTS idx_wa_chats_last          ON wa_chats(last_message_at DESC);
 CREATE INDEX IF NOT EXISTS idx_wa_messages_chat       ON wa_messages(chat_id, sent_at);
+CREATE INDEX IF NOT EXISTS idx_opportunities_client   ON opportunities(client_id);
+CREATE INDEX IF NOT EXISTS idx_opportunities_stage    ON opportunities(stage);
+CREATE INDEX IF NOT EXISTS idx_opportunities_status   ON opportunities(status);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_client  ON crm_activities(client_id);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_type    ON crm_activities(type);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_date    ON crm_activities(created_at);
+CREATE INDEX IF NOT EXISTS idx_crm_tasks_client       ON crm_tasks(client_id);
+CREATE INDEX IF NOT EXISTS idx_crm_tasks_due          ON crm_tasks(due_date);
+CREATE INDEX IF NOT EXISTS idx_crm_tasks_status       ON crm_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_deal_history_opp       ON crm_deal_stage_history(opportunity_id);
 `;
 // ---------------------------------------------------------------------------
 // Secuencias (autonumeración)
@@ -832,7 +909,26 @@ export function initDb(dbPath?: string): void {
   // armados custom (PC a medida) sin necesidad de definir el kit en el catálogo.
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_print INTEGER NOT NULL DEFAULT 0"); } catch {}
   try { _db.exec("ALTER TABLE invoices ADD COLUMN consolidated_label TEXT"); } catch {}
+  // CRM unification: columnas CRM en clients
+  try { _db.exec("ALTER TABLE clients ADD COLUMN industry TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE clients ADD COLUMN website TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE clients ADD COLUMN lead_source TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE clients ADD COLUMN account_status TEXT NOT NULL DEFAULT 'active'"); } catch {}
+  try { _db.exec("ALTER TABLE clients ADD COLUMN crm_notes TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE clients ADD COLUMN assigned_to TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE clients ADD COLUMN last_contact_at TEXT"); } catch {}
+  // CRM: columnas nuevas en opportunities
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN client_id TEXT REFERENCES clients(id)"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN stage_id TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN assigned_to TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN source TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN status TEXT NOT NULL DEFAULT 'open'"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN won_at TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN lost_at TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN lost_reason TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE opportunities ADD COLUMN updated_at TEXT NOT NULL DEFAULT (datetime('now'))"); } catch {}
   migrateInvoiceNumberUniqueness();
+  migrateCrmUnification();
   _db.exec(`
     UPDATE invoices
        SET status = 'autorizada', afip_error = NULL
@@ -918,6 +1014,78 @@ function migrateInvoiceNumberUniqueness(): void {
   }
 }
 
+/**
+ * Migración CRM: unifica crm_accounts con clients y re-linkea opportunities.
+ * Solo se ejecuta si existe la tabla crm_accounts con datos y clients aún no
+ * tiene las columnas CRM pobladas desde esta migración.
+ */
+function migrateCrmUnification(): void {
+  const db = getDb();
+
+  // Seed default pipeline stages si no existen
+  const stageCount = (db.prepare("SELECT COUNT(*) as c FROM crm_pipeline_stages").get() as { c: number })?.c ?? 0;
+  if (stageCount === 0) {
+    const defaultStages = [
+      { id: "stage-lead", name: "Lead", order: 1, prob: 10, color: "#6b7280" },
+      { id: "stage-qualified", name: "Calificado", order: 2, prob: 25, color: "#3b82f6" },
+      { id: "stage-proposal", name: "Propuesta", order: 3, prob: 50, color: "#8b5cf6" },
+      { id: "stage-negotiation", name: "Negociación", order: 4, prob: 75, color: "#f59e0b" },
+      { id: "stage-won", name: "Ganado", order: 5, prob: 100, color: "#10b981", won: 1 },
+      { id: "stage-lost", name: "Perdido", order: 6, prob: 0, color: "#ef4444", lost: 1 },
+    ];
+    for (const s of defaultStages) {
+      db.prepare(
+        "INSERT OR IGNORE INTO crm_pipeline_stages (id, name, sort_order, probability, color, is_won, is_lost) VALUES (?,?,?,?,?,?,?)"
+      ).run(s.id, s.name, s.order, s.prob, s.color, (s as any).won ?? 0, (s as any).lost ?? 0);
+    }
+  }
+
+  // Migrar crm_accounts → clients (solo si crm_accounts existe y tiene datos)
+  const tableExists = db.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='crm_accounts'"
+  ).get();
+  if (!tableExists) return;
+
+  const accounts = db.prepare("SELECT * FROM crm_accounts").all() as Array<Record<string, unknown>>;
+  if (accounts.length === 0) return;
+
+  const tx = db.transaction(() => {
+    for (const acc of accounts) {
+      const id = String(acc.id);
+      // Verificar si ya existe un client con el mismo nombre o email
+      const existing = db.prepare(
+        "SELECT id FROM clients WHERE lower(business_name) = lower(?) OR (email IS NOT NULL AND lower(email) = lower(?))"
+      ).get(String(acc.name ?? ""), String(acc.email ?? "")) as { id: string } | undefined;
+
+      if (existing) {
+        // Actualizar el client existente con datos CRM
+        db.prepare(
+          `UPDATE clients SET industry = COALESCE(industry, ?), website = COALESCE(website, ?),
+           crm_notes = COALESCE(crm_notes, ?) WHERE id = ?`
+        ).run(acc.industry, acc.website, acc.notes, existing.id);
+        // Re-linkear opportunities
+        db.prepare(
+          "UPDATE opportunities SET client_id = ? WHERE account_id = ?"
+        ).run(existing.id, id);
+      } else {
+        // Crear nuevo client desde crm_account
+        db.prepare(
+          `INSERT INTO clients (id, business_name, phone, email, address, industry, website, crm_notes, account_status, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, datetime('now'))`
+        ).run(
+          id, acc.name, acc.phone, acc.email, acc.address,
+          acc.industry, acc.website, acc.notes, acc.created_at
+        );
+        // Re-linkear opportunities
+        db.prepare(
+          "UPDATE opportunities SET client_id = ? WHERE account_id = ?"
+        ).run(id, id);
+      }
+    }
+  });
+  tx();
+}
+
 /** Cierra la conexión y resetea el estado. Usado principalmente en tests. */
 export function closeDb(): void {
   if (_db) {
@@ -950,9 +1118,9 @@ export function dbRun(sql: string, params: unknown[] = []): Database.RunResult {
 export function upsertClient(row: Record<string, unknown>): { id: string } {
   const id = String(row.id ?? "").trim() || randomUUID();
   dbRun(
-    `INSERT OR REPLACE INTO clients (id,code,business_name,cuit,fiscal_type,email,phone,address,city,province,credit_limit,active,notes,created_at,updated_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM clients WHERE id=?),datetime('now')),datetime('now'))`,
-    [id, row.code, row.business_name, row.cuit, row.fiscal_type, row.email, row.phone, row.address, row.city, row.province, row.credit_limit ?? 0, row.active ?? 1, row.notes, id],
+    `INSERT OR REPLACE INTO clients (id,code,business_name,cuit,fiscal_type,email,phone,address,city,province,credit_limit,industry,website,lead_source,account_status,crm_notes,assigned_to,active,notes,created_at,updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM clients WHERE id=?),datetime('now')),datetime('now'))`,
+    [id, row.code, row.business_name, row.cuit, row.fiscal_type, row.email, row.phone, row.address, row.city, row.province, row.credit_limit ?? 0, row.industry, row.website, row.lead_source, row.account_status ?? "active", row.crm_notes, row.assigned_to, row.active ?? 1, row.notes, id],
   );
   return { id };
 }
@@ -991,6 +1159,10 @@ export interface DashboardKpis {
   purchaseOrdersPending: number;
   ticketsOpen: number;
   cashBalance: number;
+  opportunitiesOpen: number;
+  opportunitiesValue: number;
+  tasksPending: number;
+  tasksOverdue: number;
 }
 
 export function getDashboardKpis(): DashboardKpis {
@@ -1027,5 +1199,21 @@ export function getDashboardKpis(): DashboardKpis {
     "SELECT COALESCE(SUM(balance),0) as v FROM cash_accounts WHERE active = 1"
   ).get() as any)?.v ?? 0;
 
-  return { salesToday, invoicesPending, clientsTotal, articlesLowStock, purchaseOrdersPending, ticketsOpen, cashBalance };
+  const opportunitiesOpen = (db.prepare(
+    "SELECT COUNT(*) as v FROM opportunities WHERE status = 'open'"
+  ).get() as any)?.v ?? 0;
+
+  const opportunitiesValue = (db.prepare(
+    "SELECT COALESCE(SUM(amount),0) as v FROM opportunities WHERE status = 'open'"
+  ).get() as any)?.v ?? 0;
+
+  const tasksPending = (db.prepare(
+    "SELECT COUNT(*) as v FROM crm_tasks WHERE status = 'pending'"
+  ).get() as any)?.v ?? 0;
+
+  const tasksOverdue = (db.prepare(
+    "SELECT COUNT(*) as v FROM crm_tasks WHERE status = 'pending' AND due_date < ?"
+  ).get(today) as any)?.v ?? 0;
+
+  return { salesToday, invoicesPending, clientsTotal, articlesLowStock, purchaseOrdersPending, ticketsOpen, cashBalance, opportunitiesOpen, opportunitiesValue, tasksPending, tasksOverdue };
 }
