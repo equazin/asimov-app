@@ -19,7 +19,7 @@ import {
   startSyncTimer,
   stopSyncTimer,
   retryParkedChanges,
-  recoverAuthParkedChanges,
+  recoverRetryableParkedChanges,
   compactPendingChanges,
 } from './sync';
 import { enqueueLocalBootstrap, inspectBootstrapState, inspectDeviceIntegrationStatus } from './sync-bootstrap';
@@ -41,7 +41,7 @@ export function registerCloudIpcHandlers(): void {
     }
     try {
       const result = await apiLogin(data.email, data.password);
-      recoverAuthParkedChanges();
+      recoverRetryableParkedChanges();
       compactPendingChanges();
       startSyncTimer();
       let sync: { pushed: number; pulled: number; errors: number } | undefined;
@@ -120,6 +120,9 @@ export function registerCloudIpcHandlers(): void {
 
   // Auto-start sync if user was previously logged in
   if (isCloudConnected()) {
+    recoverRetryableParkedChanges();
+    compactPendingChanges();
     startSyncTimer();
+    void runSync().catch(() => {});
   }
 }

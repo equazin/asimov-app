@@ -3,9 +3,16 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
+
+  // Los lotes de catálogo AIR superan con facilidad el límite de 100 KiB de
+  // Express. El desktop los acota a 250 filas; 5 MiB deja margen sin aceptar
+  // cargas arbitrariamente grandes.
+  app.useBodyParser('json', { limit: '5mb' });
+  app.useBodyParser('urlencoded', { limit: '5mb', extended: true });
 
   app.use(helmet());
   app.enableCors({

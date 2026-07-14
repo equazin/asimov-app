@@ -184,10 +184,11 @@ export function retryParkedChanges(): number {
   return parked;
 }
 
-/** Reactiva solamente filas aparcadas por una sesión expirada. */
-export function recoverAuthParkedChanges(): number {
+/** Reactiva filas aparcadas por sesión expirada o por el antiguo límite HTTP. */
+export function recoverRetryableParkedChanges(): number {
   const where = `synced_at IS NULL AND attempts >= ? AND
-    (error LIKE '%HTTP 401%' OR error LIKE '%Token inválido%' OR error LIKE '%Unauthorized%')`;
+    (error LIKE '%HTTP 401%' OR error LIKE '%Token inválido%' OR error LIKE '%Unauthorized%'
+      OR error LIKE '%HTTP 413%' OR error LIKE '%request entity too large%')`;
   const row = dbGet(`SELECT COUNT(*) AS count FROM sync_queue WHERE ${where}`, [MAX_ATTEMPTS]) as { count: number };
   dbRun(
     `UPDATE sync_queue SET attempts = 0, next_attempt_at = NULL, error = NULL WHERE ${where}`,
@@ -450,40 +451,37 @@ function mapClient(d: RemoteRow): RemoteRow {
   return {
     id: d.id,
     code: d.code ?? null,
-    name: d.name ?? d.razonSocial ?? '',
-    tax_id: d.taxId ?? d.cuit ?? null,
+    business_name: d.businessName ?? d.business_name ?? d.name ?? d.razonSocial ?? '',
+    cuit: d.cuit ?? d.taxId ?? d.tax_id ?? null,
     email: d.email ?? null,
     phone: d.phone ?? null,
     address: d.address ?? null,
     city: d.city ?? null,
     province: d.province ?? null,
-    postal_code: d.postalCode ?? null,
-    country: d.country ?? null,
-    iva_condition: d.ivaCondition ?? d.condicionIva ?? null,
-    price_list: d.priceList ?? null,
+    fiscal_type: d.fiscalType ?? d.fiscal_type ?? d.ivaCondition ?? d.condicionIva ?? 'final',
+    credit_limit: d.creditLimit ?? d.credit_limit ?? 0,
     notes: d.notes ?? null,
     active: d.active === false || d.deletedAt ? 0 : 1,
-    created_at: d.createdAt ?? null,
-    updated_at: d.updatedAt ?? null,
+    created_at: d.createdAt ?? d.created_at ?? undefined,
+    updated_at: d.updatedAt ?? d.updated_at ?? undefined,
   };
 }
 function mapSupplier(d: RemoteRow): RemoteRow {
   return {
     id: d.id,
     code: d.code ?? null,
-    name: d.name ?? '',
-    tax_id: d.taxId ?? d.cuit ?? null,
+    business_name: d.businessName ?? d.business_name ?? d.name ?? '',
+    cuit: d.cuit ?? d.taxId ?? d.tax_id ?? null,
     email: d.email ?? null,
     phone: d.phone ?? null,
     address: d.address ?? null,
     city: d.city ?? null,
     province: d.province ?? null,
-    country: d.country ?? null,
-    iva_condition: d.ivaCondition ?? null,
+    payment_term: d.paymentTerm ?? d.payment_term ?? 0,
     notes: d.notes ?? null,
     active: d.active === false || d.deletedAt ? 0 : 1,
-    created_at: d.createdAt ?? null,
-    updated_at: d.updatedAt ?? null,
+    created_at: d.createdAt ?? d.created_at ?? undefined,
+    updated_at: d.updatedAt ?? d.updated_at ?? undefined,
   };
 }
 function mapArticle(d: RemoteRow): RemoteRow {
@@ -494,16 +492,15 @@ function mapArticle(d: RemoteRow): RemoteRow {
     name: d.name ?? d.description ?? '',
     description: d.description ?? null,
     category: d.category ?? null,
-    brand: d.brand ?? null,
-    unit: d.unit ?? null,
-    cost: d.cost ?? 0,
-    price: d.price ?? 0,
-    iva_rate: d.ivaRate ?? d.ivaPct ?? 21,
-    stock: d.stock ?? 0,
-    stock_min: d.stockMin ?? 0,
+    unit: d.unit ?? 'un',
+    cost_price: d.costPrice ?? d.cost_price ?? d.cost ?? 0,
+    sale_price: d.salePrice ?? d.sale_price ?? d.price ?? 0,
+    iva_pct: d.ivaRate ?? d.ivaPct ?? d.iva_pct ?? 21,
+    manages_stock: d.managesStock === false || d.manages_stock === 0 ? 0 : 1,
+    manages_serial: d.managesSerial === true || d.manages_serial === 1 ? 1 : 0,
     active: d.active === false || d.deletedAt ? 0 : 1,
-    created_at: d.createdAt ?? null,
-    updated_at: d.updatedAt ?? null,
+    created_at: d.createdAt ?? d.created_at ?? undefined,
+    updated_at: d.updatedAt ?? d.updated_at ?? undefined,
   };
 }
 

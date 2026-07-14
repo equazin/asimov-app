@@ -41,7 +41,7 @@ import {
   getPendingCount,
   getParkedCount,
   retryParkedChanges,
-  recoverAuthParkedChanges,
+  recoverRetryableParkedChanges,
   compactPendingChanges,
   getLastSyncTimestamp,
   runSync,
@@ -128,16 +128,19 @@ describe("sync queue — retry con backoff", () => {
     expect(getPendingChanges()).toHaveLength(1);
   });
 
-  it("reactiva automáticamente sólo los bloqueados por 401", () => {
+  it("reactiva automáticamente los bloqueados recuperables por 401 y 413", () => {
     getDb().prepare(
       "INSERT INTO sync_queue (entity, entity_id, action, attempts, error) VALUES (?,?,?,?,?)",
     ).run("external_catalog_product", "air:A1", "update", 8, "HTTP 401: Token inválido o expirado");
     getDb().prepare(
       "INSERT INTO sync_queue (entity, entity_id, action, attempts, error) VALUES (?,?,?,?,?)",
     ).run("external_catalog_product", "air:A2", "update", 8, "HTTP 422: dato inválido");
+    getDb().prepare(
+      "INSERT INTO sync_queue (entity, entity_id, action, attempts, error) VALUES (?,?,?,?,?)",
+    ).run("external_catalog_product", "air:A3", "update", 8, "HTTP 413: request entity too large");
 
-    expect(recoverAuthParkedChanges()).toBe(1);
-    expect(getPendingCount()).toBe(1);
+    expect(recoverRetryableParkedChanges()).toBe(2);
+    expect(getPendingCount()).toBe(2);
     expect(getParkedCount()).toBe(1);
   });
 
@@ -278,5 +281,35 @@ describe("sync queue — retry con backoff", () => {
       wa_poll_interval: "2",
       wa_token: "token-local-cifrado",
     });
+  });
+
+  it("mapea businessName y precios del servidor a las columnas SQLite", async () => {
+    getDb().exec("DELETE FROM sync_queue; DELETE FROM sync_state;");
+    const changes = [
+      {
+        entity: "client", action: "update", id: "cloud-client", updatedAt: "2026-07-14T10:00:00.000Z",
+        data: { id: "cloud-client", code: "CLOUD-C", businessName: "Cliente nube", cuit: "20111111112", fiscalType: "ri" },
+      },
+      {
+        entity: "supplier", action: "update", id: "cloud-supplier", updatedAt: "2026-07-14T10:00:01.000Z",
+        data: { id: "cloud-supplier", code: "CLOUD-P", businessName: "Proveedor nube", cuit: "30222222223" },
+      },
+      {
+        entity: "product", action: "update", id: "cloud-product", updatedAt: "2026-07-14T10:00:02.000Z",
+        data: { id: "cloud-product", code: "CLOUD-A", name: "Artículo nube", costPrice: 80, salePrice: 120, ivaRate: 10.5 },
+      },
+    ];
+    authorizedFetchMock.mockImplementation(() => Promise.resolve({
+      ok: true, status: 200, text: async () => "",
+      json: async () => ({ success: true, data: { changes, serverTimestamp: "2026-07-14T10:01:00.000Z" } }),
+    }));
+
+    expect((await runSync()).errors).toBe(0);
+    expect(getDb().prepare("SELECT business_name, cuit, fiscal_type FROM clients WHERE id=?").get("cloud-client"))
+      .toMatchObject({ business_name: "Cliente nube", cuit: "20111111112", fiscal_type: "ri" });
+    expect(getDb().prepare("SELECT business_name, cuit FROM suppliers WHERE id=?").get("cloud-supplier"))
+      .toMatchObject({ business_name: "Proveedor nube", cuit: "30222222223" });
+    expect(getDb().prepare("SELECT name, cost_price, sale_price, iva_pct FROM articles WHERE id=?").get("cloud-product"))
+      .toMatchObject({ name: "Artículo nube", cost_price: 80, sale_price: 120, iva_pct: 10.5 });
   });
 });
