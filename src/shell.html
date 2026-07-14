@@ -507,6 +507,33 @@
     .asimov-modal .am-field input:focus { border-color: var(--accent-hi); box-shadow: 0 0 0 2px rgba(76,158,227,0.25); }
     .asimov-modal .am-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 
+    .invoice-row { cursor: pointer; }
+    .invoice-row:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: -2px; }
+    .invoice-fiscal-modal { width: min(520px, calc(100vw - 32px)); max-width: 520px; min-width: 0; }
+    .invoice-fiscal-summary {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    .invoice-fiscal-number { font-size: 14px; font-weight: 700; color: var(--text); }
+    .invoice-fiscal-client { margin-top: 2px; color: var(--muted); }
+    .invoice-fiscal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+    .invoice-fiscal-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .invoice-fiscal-field .label {
+      color: var(--muted); font-size: 10.5px; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .invoice-fiscal-field .value { color: var(--text); overflow-wrap: anywhere; }
+    .invoice-fiscal-error, .invoice-fiscal-notice {
+      padding: 9px 10px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--input-bg); line-height: 1.4;
+    }
+    .invoice-fiscal-error { border-color: rgba(229,84,75,0.55); color: #F0B9B5; }
+    .invoice-fiscal-notice { color: var(--muted); }
+    @media (max-width: 560px) {
+      .invoice-fiscal-grid { grid-template-columns: 1fr; }
+      .invoice-fiscal-summary { align-items: flex-start; flex-direction: column; }
+    }
+
     /* ── Knowledge / Conversaciones ──────────────────────── */
     .kb-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg); }
     .kb-item {
@@ -2018,7 +2045,7 @@
   function applyRolePolicy(role) {
     currentRole = String(role || "user").toLowerCase();
     CAN_WRITE = currentRole !== "readonly";
-    CAN_AUTHORIZE_ARCA = currentRole === "admin";
+    CAN_AUTHORIZE_ARCA = ["admin", "owner", "superadmin"].includes(currentRole);
 
     // Ocultar módulos sensibles a los no-admin.
     ADMIN_ONLY_VIEWS.forEach((v) => {
@@ -2150,6 +2177,7 @@
     annulDoc: (type, id, btn) => annulDoc(type, id, btn),
     reprintDoc: (type, id, btn) => reprintDoc(type, id, btn),
     authorizeStoredInvoice: (id, btn) => authorizeStoredInvoice(id, btn),
+    openInvoiceFiscalStatus: (id) => openInvoiceFiscalStatus(id),
   };
 
   // Normaliza los ítems de la DB al shape que espera el motor de impresión.
@@ -2240,6 +2268,125 @@
     }
   }
 
+  function invoiceFiscalState(invoice) {
+    if (invoice && String(invoice.cae || "").trim()) return "autorizada";
+    const status = String(invoice && invoice.status || "borrador").toLowerCase();
+    return status === "emitida" ? "borrador" : status;
+  }
+
+  function invoiceFiscalLabel(status) {
+    if (status === "borrador") return "Sin CAE";
+    if (status === "pendiente_cae") return "Pendiente de CAE";
+    if (status === "autorizada") return "Autorizada";
+    if (status === "rechazada") return "Rechazada";
+    if (status === "anulado") return "Anulada";
+    return status || "Sin estado";
+  }
+
+  async function openInvoiceFiscalStatus(id) {
+    if (!id) return;
+    const previousFocus = document.activeElement;
+    let invoice;
+    let afipData = null;
+    try {
+      const api = await waitForAsimov();
+      invoice = await api.invoices.get(id);
+      const afipResult = await api.afip.status().catch(() => null);
+      if (afipResult && afipResult.ok) afipData = afipResult.data;
+    } catch (error) {
+      alert((error && error.message) || "No se pudo abrir el estado fiscal de la factura.");
+      return;
+    }
+    if (!invoice || !invoice.id) {
+      alert("No se encontró la factura seleccionada.");
+      return;
+    }
+
+    const status = invoiceFiscalState(invoice);
+    const hasCae = status === "autorizada";
+    const isAnulled = status === "anulado";
+    const isRetry = status === "pendiente_cae" || status === "rechazada";
+    const canAuthorize = CAN_AUTHORIZE_ARCA && (!afipData || afipData.canAuthorize !== false);
+    const configIncomplete = afipData && (!afipData.enabled || !afipData.cuit || !afipData.hasCert || !afipData.hasKey);
+    const canRequestCae = canAuthorize && !configIncomplete;
+    const statusPill = fmtInvoiceFiscalPill(invoice);
+    const errorBlock = invoice.afip_error
+      ? `<div class="invoice-fiscal-error"><strong>Respuesta de ARCA:</strong> ${esc(String(invoice.afip_error))}</div>`
+      : "";
+    let notice = "";
+    if (!hasCae && !isAnulled && !canAuthorize) {
+      notice = '<div class="invoice-fiscal-notice">Tu usuario no tiene permiso para autorizar comprobantes en ARCA.</div>';
+    } else if (!hasCae && !isAnulled && configIncomplete) {
+      notice = '<div class="invoice-fiscal-notice">La configuración de ARCA está incompleta. Revisá CUIT, punto de venta, certificado, clave privada y que la facturación electrónica esté habilitada.</div>';
+    } else if (hasCae) {
+      notice = '<div class="invoice-fiscal-notice">El estado autorizado y el CAE fueron emitidos por ARCA y no se pueden modificar manualmente.</div>';
+    }
+
+    const overlay = document.createElement("div");
+    overlay.className = "asimov-modal-overlay";
+    overlay.innerHTML = `
+      <div class="asimov-modal invoice-fiscal-modal" role="dialog" aria-modal="true" aria-labelledby="invoice-fiscal-title">
+        <div class="am-header">
+          <span id="invoice-fiscal-title">Estado fiscal de la factura</span>
+          <button type="button" class="am-close" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="am-body">
+          <div class="invoice-fiscal-summary">
+            <div>
+              <div class="invoice-fiscal-number">Factura ${esc(String(invoice.tipo || "B"))} ${esc(String(invoice.number || "—"))}</div>
+              <div class="invoice-fiscal-client">${esc(String(invoice.client_name || "Consumidor final"))}</div>
+            </div>
+            <div aria-label="Estado fiscal: ${esc(invoiceFiscalLabel(status))}">${statusPill}</div>
+          </div>
+          <div class="invoice-fiscal-grid">
+            <div class="invoice-fiscal-field"><span class="label">Fecha</span><span class="value">${fmtDate(invoice.date)}</span></div>
+            <div class="invoice-fiscal-field"><span class="label">Total</span><span class="value">${fmtARS(invoice.total)}</span></div>
+            <div class="invoice-fiscal-field"><span class="label">CAE</span><span class="value">${esc(String(invoice.cae || "Sin CAE"))}</span></div>
+            <div class="invoice-fiscal-field"><span class="label">Vencimiento del CAE</span><span class="value">${invoice.cae_expiry ? fmtDate(invoice.cae_expiry) : "—"}</span></div>
+          </div>
+          ${errorBlock}
+          ${notice}
+          <div class="am-actions">
+            <button type="button" class="btn btn-outline btn-sm am-cancel">Cerrar</button>
+            <button type="button" class="btn btn-outline btn-sm invoice-print">Imprimir${hasCae ? " con QR" : ""}</button>
+            ${!hasCae && !isAnulled && configIncomplete && canAuthorize
+              ? '<button type="button" class="btn btn-outline btn-sm invoice-config">Configurar ARCA</button>'
+              : ""}
+            ${!hasCae && !isAnulled && canRequestCae
+              ? `<button type="button" class="btn btn-primary btn-sm invoice-authorize">${isRetry ? "Reintentar en ARCA" : "Autorizar en ARCA"}</button>`
+              : ""}
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const close = () => {
+      overlay.remove();
+      document.removeEventListener("keydown", onKey);
+      if (previousFocus && previousFocus.isConnected && previousFocus.focus) previousFocus.focus();
+    };
+    const onKey = (event) => { if (event.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    overlay.querySelector(".am-close").addEventListener("click", close);
+    overlay.querySelector(".am-cancel").addEventListener("click", close);
+    overlay.addEventListener("click", (event) => { if (event.target === overlay) close(); });
+    overlay.querySelector(".invoice-print").addEventListener("click", (event) => reprintDoc("factura", id, event.currentTarget));
+    const configButton = overlay.querySelector(".invoice-config");
+    if (configButton) configButton.addEventListener("click", () => { close(); navigate("config"); });
+    const authorizeButton = overlay.querySelector(".invoice-authorize");
+    if (authorizeButton) {
+      authorizeButton.addEventListener("click", () => {
+        const actionButton = authorizeButton;
+        close();
+        void authorizeStoredInvoice(id, actionButton);
+      });
+    }
+    setTimeout(() => {
+      const primary = overlay.querySelector(".invoice-authorize") || overlay.querySelector(".invoice-print") || overlay.querySelector(".am-close");
+      if (primary) primary.focus();
+    }, 20);
+  }
+
   // Anula un documento confirmado desde su lista: revierte efectos (stock/caja)
   // en el main y marca el estado como "anulado". Refresca la vista al terminar.
   async function annulDoc(type, id, btn) {
@@ -2286,18 +2433,18 @@
         const style = c.align ? ` style="text-align:${c.align}"` : "";
         return `<td${style}>${val}</td>`;
       }).join("");
+      const rid = esc(String(row.id ?? ""));
+      const isInvoice = printType === "factura";
       let actionTd = "";
       if (hasAction) {
-        const rid = esc(String(row.id ?? ""));
         const anulado = /anul|cancel/i.test(String(row.status ?? ""));
-        const isInvoice = printType === "factura";
         const hasCae = !!String(row.cae ?? "").trim();
         let btns = "";
         if (printType) {
           btns += `<button class="btn btn-outline btn-sm" title="Ver / reimprimir" onclick="A.reprintDoc('${printType}','${rid}',this)">🖨 Imprimir</button>`;
         }
         if (isInvoice && CAN_AUTHORIZE_ARCA && !hasCae && !anulado) {
-          const label = String(row.status) === "pendiente_cae" ? "Reintentar ARCA" : "Autorizar ARCA";
+          const label = ["pendiente_cae", "rechazada"].includes(String(row.status)) ? "Reintentar ARCA" : "Autorizar ARCA";
           btns += `<button class="btn btn-primary btn-sm" onclick="A.authorizeStoredInvoice('${rid}',this)">${label}</button>`;
         }
         if (annul && CAN_WRITE && !anulado && !(isInvoice && hasCae)) {
@@ -2305,10 +2452,24 @@
         }
         actionTd = `<td style="text-align:center;white-space:nowrap;display:flex;gap:6px;justify-content:center;">${btns || "—"}</td>`;
       }
-      return `<tr>${tds}${actionTd}</tr>`;
+      const rowAttrs = isInvoice
+        ? ` class="invoice-row" tabindex="0" data-invoice-id="${escAttr(String(row.id ?? ""))}" title="Doble clic para abrir el estado fiscal" aria-label="Abrir estado fiscal de la factura ${escAttr(String(row.number || ""))}"`
+        : "";
+      return `<tr${rowAttrs}>${tds}${actionTd}</tr>`;
     }).join("");
 
     container.innerHTML = `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    container.querySelectorAll("tr.invoice-row").forEach((row) => {
+      const openStatus = () => openInvoiceFiscalStatus(row.dataset.invoiceId || "");
+      row.addEventListener("dblclick", (event) => {
+        if (!event.target.closest("button")) openStatus();
+      });
+      row.addEventListener("keydown", (event) => {
+        if (event.target !== row || (event.key !== "Enter" && event.key !== " ")) return;
+        event.preventDefault();
+        openStatus();
+      });
+    });
     const badge = document.getElementById(badgeId);
     if (badge) badge.textContent = rows.length;
     document.getElementById("status-count").textContent = rows.length + " registros";
@@ -2316,6 +2477,10 @@
 
   function esc(s) {
     return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function escAttr(s) {
+    return esc(String(s)).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
   // ── load view data ────────────────────────────────────────────────────

@@ -552,7 +552,7 @@ if (!gotLock) {
     // Autorizar en AFIP desde el formulario: persiste la factura y pide el CAE en
     // un solo paso, sin cerrar la ventana (para que el operador imprima con CAE).
     ipcMain.handle("shell:invoice-authorize", async (_event, data: { invoice?: Record<string, unknown> }) => {
-      if (currentUser?.role !== "admin") {
+      if (!["admin", "owner", "superadmin"].includes(String(currentUser?.role ?? "").toLowerCase())) {
         return { ok: false, error: "Solo un administrador puede autorizar comprobantes en ARCA." };
       }
       const invoice = data?.invoice;
