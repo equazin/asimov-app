@@ -74,8 +74,8 @@ describe("applySourceLink", () => {
 
 describe("listClientInvoicesForNote / getSourceItems(invoice)", () => {
   it("lista facturas del cliente excluyendo NC/ND y anuladas, y trae sus ítems", () => {
-    dbRun("INSERT INTO invoices (id, number, client_id, tipo, status) VALUES (?,?,?,?,?)",
-      ["inv-a", "00001-00000001", CLIENT_ID, "A", "autorizada"]);
+    dbRun("INSERT INTO invoices (id, number, client_id, tipo, status, cae) VALUES (?,?,?,?,?,?)",
+      ["inv-a", "00001-00000001", CLIENT_ID, "A", "autorizada", "75000000000001"]);
     dbRun("INSERT INTO invoices (id, number, client_id, tipo, status) VALUES (?,?,?,?,?)",
       ["inv-nc", "00001-00000002", CLIENT_ID, "NC", "emitida"]);
     dbRun("INSERT INTO invoices (id, number, client_id, tipo, status) VALUES (?,?,?,?,?)",

@@ -1849,7 +1849,7 @@
         { label: "Cliente",   key: "client_name"                },
         { label: "Fecha",     key: "date",           w: "90px",  fmt: fmtDate },
         { label: "Tipo",      key: "tipo",           w: "60px" },
-        { label: "Estado",    key: "status",         w: "100px", fmt: fmtPill },
+        { label: "Estado fiscal", key: "status",     w: "120px", fmt: (_value, row) => fmtInvoiceFiscalPill(row) },
         { label: "Total",     key: "total",          w: "110px", fmt: fmtARS, align: "right" },
       ],
     },
@@ -1972,14 +1972,25 @@
     abierto:"pill-abierto", cerrado:"pill-cerrado", bajo:"pill-bajo",
     alta:"pill-aprobado", baja:"pill-cancelado", activo:"pill-aprobado",
     alta_prioridad:"pill-cancelado", media:"pill-pendiente", baja_prioridad:"pill-borrador",
-    pendiente_cae:"pill-pendiente", autorizada:"pill-aprobado",
+    pendiente_cae:"pill-pendiente", autorizada:"pill-aprobado", rechazada:"pill-cancelado", anulado:"pill-cancelado",
   };
-  const STATUS_LABELS = { pendiente_cae: "pendiente CAE" };
+  const STATUS_LABELS = { pendiente_cae: "pendiente CAE", rechazada: "rechazada" };
   function fmtPill(v) {
     if (!v) return "—";
     const key = v.toLowerCase().replace(/\s+/g,"_");
     const cls = STATUS_MAP[key] || "pill-borrador";
     return `<span class="pill ${cls}">${STATUS_LABELS[key] || v}</span>`;
+  }
+  function fmtInvoiceFiscalPill(invoice) {
+    const status = invoice && invoice.cae ? "autorizada" : String(invoice && invoice.status || "borrador").toLowerCase();
+    const label = status === "borrador" || status === "emitida" ? "sin CAE"
+      : status === "pendiente_cae" ? "pendiente CAE"
+      : status === "autorizada" ? "autorizada"
+      : status === "rechazada" ? "rechazada"
+      : status;
+    const cls = STATUS_MAP[status] || "pill-borrador";
+    const detail = invoice && invoice.afip_error ? ` title="${esc(invoice.afip_error).replace(/"/g, "&quot;")}"` : "";
+    return `<span class="pill ${cls}"${detail}>${label}</span>`;
   }
   function fmtSource(v) {
     if (v === "air") return '<span style="display:inline-block;background:rgba(34,197,94,0.15);color:#4ade80;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;border:1px solid rgba(34,197,94,0.3);letter-spacing:0.5px">AIR</span>';
@@ -1997,6 +2008,7 @@
   const ADMIN_ONLY_VIEWS = ["usuarios", "auditoria", "config"];
   let currentRole = "admin";
   let CAN_WRITE = true;
+  let CAN_AUTHORIZE_ARCA = true;
 
   function canSeeView(viewId) {
     if (["admin", "owner", "superadmin"].includes(currentRole)) return true;
@@ -2006,6 +2018,7 @@
   function applyRolePolicy(role) {
     currentRole = String(role || "user").toLowerCase();
     CAN_WRITE = currentRole !== "readonly";
+    CAN_AUTHORIZE_ARCA = currentRole === "admin";
 
     // Ocultar módulos sensibles a los no-admin.
     ADMIN_ONLY_VIEWS.forEach((v) => {
@@ -2136,6 +2149,7 @@
     },
     annulDoc: (type, id, btn) => annulDoc(type, id, btn),
     reprintDoc: (type, id, btn) => reprintDoc(type, id, btn),
+    authorizeStoredInvoice: (id, btn) => authorizeStoredInvoice(id, btn),
   };
 
   // Normaliza los ítems de la DB al shape que espera el motor de impresión.
@@ -2196,6 +2210,36 @@
     }
   }
 
+  // Solicita el CAE de una factura ya guardada. El renderer sólo envía el id:
+  // importes, cliente e ítems se reconstruyen en el proceso principal.
+  async function authorizeStoredInvoice(id, btn) {
+    if (!id) return;
+    const original = btn ? btn.textContent : "Autorizar ARCA";
+    const isRetry = /reintentar/i.test(original);
+    const question = isRetry
+      ? "Se volverá a enviar esta factura a ARCA para obtener el CAE. ¿Querés continuar?"
+      : "Esta factura se enviará a ARCA para obtener el CAE. Después de autorizarla no podrá editarse ni anularse localmente. ¿Querés continuar?";
+    if (!confirm(question)) return;
+    if (btn) { btn.disabled = true; btn.textContent = "Autorizando…"; }
+    try {
+      const result = await asimov().afip.authorizeStoredInvoice(id);
+      if (!result || !result.ok) {
+        alert((result && result.error) || "ARCA no autorizó el comprobante.");
+        await loadViewData("facturas");
+        return;
+      }
+      await loadViewData("facturas");
+      const data = result.data || {};
+      const printNow = confirm(`Factura autorizada por ARCA.\n\nCAE: ${data.cae || "—"}\nNúmero: ${data.number || "—"}\n\n¿Querés imprimirla ahora con el QR?`);
+      if (printNow) await reprintDoc("factura", id, null);
+    } catch (error) {
+      alert((error && error.message) || "No se pudo autorizar la factura en ARCA.");
+      await loadViewData("facturas");
+    } finally {
+      if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = original; }
+    }
+  }
+
   // Anula un documento confirmado desde su lista: revierte efectos (stock/caja)
   // en el main y marca el estado como "anulado". Refresca la vista al terminar.
   async function annulDoc(type, id, btn) {
@@ -2230,14 +2274,15 @@
       return;
     }
 
+    const actionWidth = printType === "factura" ? "270px" : "150px";
     const ths = cols.map(c =>
       `<th style="${c.w ? `width:${c.w};` : ""}${c.align ? `text-align:${c.align};` : ""}">${c.label}</th>`
-    ).join("") + (hasAction ? `<th style="width:150px;text-align:center;">Acción</th>` : "");
+    ).join("") + (hasAction ? `<th style="width:${actionWidth};text-align:center;">Acción</th>` : "");
 
     const trs = rows.map(row => {
       const tds = cols.map(c => {
         const raw = row[c.key] ?? "";
-        const val = c.fmt ? c.fmt(raw) : esc(String(raw));
+        const val = c.fmt ? c.fmt(raw, row) : esc(String(raw));
         const style = c.align ? ` style="text-align:${c.align}"` : "";
         return `<td${style}>${val}</td>`;
       }).join("");
@@ -2245,11 +2290,17 @@
       if (hasAction) {
         const rid = esc(String(row.id ?? ""));
         const anulado = /anul|cancel/i.test(String(row.status ?? ""));
+        const isInvoice = printType === "factura";
+        const hasCae = !!String(row.cae ?? "").trim();
         let btns = "";
         if (printType) {
           btns += `<button class="btn btn-outline btn-sm" title="Ver / reimprimir" onclick="A.reprintDoc('${printType}','${rid}',this)">🖨 Imprimir</button>`;
         }
-        if (annul && CAN_WRITE && !anulado) {
+        if (isInvoice && CAN_AUTHORIZE_ARCA && !hasCae && !anulado) {
+          const label = String(row.status) === "pendiente_cae" ? "Reintentar ARCA" : "Autorizar ARCA";
+          btns += `<button class="btn btn-primary btn-sm" onclick="A.authorizeStoredInvoice('${rid}',this)">${label}</button>`;
+        }
+        if (annul && CAN_WRITE && !anulado && !(isInvoice && hasCae)) {
           btns += `<button class="btn btn-outline btn-sm" onclick="A.annulDoc('${annul}','${rid}',this)">Anular</button>`;
         }
         actionTd = `<td style="text-align:center;white-space:nowrap;display:flex;gap:6px;justify-content:center;">${btns || "—"}</td>`;

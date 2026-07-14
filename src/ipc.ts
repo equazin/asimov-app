@@ -195,15 +195,17 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("db:invoices:save", (_event, row: unknown) => {
     const r = row as Record<string, unknown>;
     const id = safeStr(r.id) || crypto.randomUUID();
+    const existing = dbGet<{ cae: string | null }>("SELECT cae FROM invoices WHERE id = ?", [id]);
+    if (existing?.cae) return { ok: false, error: "La factura ya está autorizada por ARCA y no puede editarse." };
     const items = (r.items as unknown[]) ?? [];
     const tx = getDb().transaction(() => {
       if (!safeStr(r.number)) {
         const seq = nextSequence(`invoice-${r.tipo ?? "B"}`);
         r.number = `${r.point_of_sale ?? "0001"}-${String(seq).padStart(8, "0")}`;
       }
-      dbRun(`INSERT OR REPLACE INTO invoices (id,number,client_id,client_name,date,due_date,tipo,point_of_sale,status,subtotal,iva_amount,total,cae,cae_expiry,notes,created_at)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM invoices WHERE id=?),datetime('now')))`,
-        [id, r.number, r.client_id, r.client_name, r.date, r.due_date, r.tipo ?? "B", r.point_of_sale ?? "0001", r.status ?? "borrador", r.subtotal ?? 0, r.iva_amount ?? 0, r.total ?? 0, r.cae, r.cae_expiry, r.notes, id]);
+      dbRun(`INSERT OR REPLACE INTO invoices (id,number,client_id,client_name,date,due_date,tipo,point_of_sale,status,subtotal,iva_amount,total,cae,cae_expiry,afip_error,notes,created_at)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM invoices WHERE id=?),datetime('now')))`,
+        [id, r.number, r.client_id, r.client_name, r.date, r.due_date, r.tipo ?? "B", r.point_of_sale ?? "0001", "borrador", r.subtotal ?? 0, r.iva_amount ?? 0, r.total ?? 0, null, null, null, r.notes, id]);
       dbRun("DELETE FROM invoice_items WHERE invoice_id = ?", [id]);
       for (const item of items) {
         const it = item as Record<string, unknown>;
@@ -396,7 +398,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const q = `%${safeStr(search)}%`;
     return dbAll(`
       SELECT c.id, c.business_name, c.cuit,
-        COALESCE((SELECT SUM(total) FROM invoices WHERE client_id = c.id AND status NOT IN ('cancelado','borrador')),0) AS total_facturado,
+        COALESCE((SELECT SUM(total) FROM invoices WHERE client_id = c.id AND status = 'autorizada'),0) AS total_facturado,
         COALESCE((SELECT SUM(total) FROM receipts  WHERE client_id = c.id),0) AS total_cobrado
       FROM clients c
       WHERE c.active = 1 AND (c.business_name LIKE ? OR c.cuit LIKE ?)
@@ -407,7 +409,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const id = safeStr(clientId);
     return dbAll(`
       SELECT date, 'Factura' AS tipo, number AS referencia, total AS debe, 0 AS haber, status
-        FROM invoices WHERE client_id = ? AND status NOT IN ('cancelado','borrador')
+        FROM invoices WHERE client_id = ? AND status = 'autorizada'
       UNION ALL
       SELECT date, 'Recibo'  AS tipo, number AS referencia, 0 AS debe, total AS haber, status
         FROM receipts WHERE client_id = ?
@@ -445,7 +447,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const from = safeStr(p.from) || new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10);
     const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
     return dbAll(`SELECT date, number, client_name, tipo, status, subtotal, iva_amount, total
-                  FROM invoices WHERE date BETWEEN ? AND ? AND status NOT IN ('cancelado','borrador')
+                  FROM invoices WHERE date BETWEEN ? AND ? AND status = 'autorizada'
                   ORDER BY date DESC LIMIT 1000`, [from, to]);
   });
   ipcMain.handle("db:reports:purchases", (_event, params: unknown) => {
@@ -462,7 +464,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const to   = safeStr(p.to)   || new Date().toISOString().slice(0, 10);
     return dbAll(`SELECT ii.code, ii.description, SUM(ii.qty) AS qty_total, SUM(ii.subtotal) AS total_neto
                   FROM invoice_items ii JOIN invoices i ON i.id = ii.invoice_id
-                  WHERE i.date BETWEEN ? AND ? AND i.status NOT IN ('cancelado','borrador')
+                  WHERE i.date BETWEEN ? AND ? AND i.status = 'autorizada'
                   GROUP BY ii.code, ii.description ORDER BY total_neto DESC LIMIT 100`, [from, to]);
   });
 

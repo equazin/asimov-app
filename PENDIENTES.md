@@ -85,7 +85,7 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
 
 ## 6. Higiene / técnico 🟢
 
-- [ ] AFIP/ARCA: integración real de facturación electrónica (hoy stub WSAA/WSFE).
+- [x] AFIP/ARCA: integración real de facturación electrónica (WSAA/WSFE, estados fiscales, CAE y QR).
       **Plan de fases detallado en [AFIP-ARCA.md](AFIP-ARCA.md).**
 - [ ] Investigar el origen de los archivos basura (`{,`, `{`, `,-`, etc.) que
       aparecen en el working tree (parecen errores de shell); ya están

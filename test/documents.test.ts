@@ -141,8 +141,9 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
       items: [{ codigo: "COD1", descripcion: "X", cantidad: 3, precio: 100, iva: 21 }],
       totales: { neto21: 300, neto10: 0, neto0: 0, iva21: 63, iva10: 0, total: 363 },
     });
-    const h = one("SELECT number, subtotal, iva_amount, total FROM invoices WHERE id=?", res.id);
+    const h = one("SELECT number, status, subtotal, iva_amount, total FROM invoices WHERE id=?", res.id);
     expect(h.number).toMatch(/^0001-\d{8}$/);
+    expect(h.status).toBe("borrador");
     expect([h.subtotal, h.iva_amount, h.total]).toEqual([300, 63, 363]);
     expect(one("SELECT COALESCE(SUM(iva_amount),0) i FROM invoice_items WHERE invoice_id=?", res.id).i).toBeCloseTo(63);
   });
@@ -213,6 +214,26 @@ describe("documents — anulación (reversa de efectos)", () => {
     const inv = persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "X", cantidad: 1, precio: 100 }], totales: { total: 121 } });
     expect(annulDocument("invoice", inv.id).ok).toBe(true);
     expect(one("SELECT status FROM invoices WHERE id=?", inv.id).status).toBe("anulado");
+  });
+
+  it("impide anular localmente una factura autorizada con CAE", () => {
+    const inv = persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "X", cantidad: 1, precio: 100 }] });
+    getDb().prepare("UPDATE invoices SET status='autorizada', cae='75123456789012' WHERE id=?").run(inv.id);
+
+    const result = annulDocument("invoice", inv.id);
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toMatch(/nota de crédito/i);
+    expect(one("SELECT status FROM invoices WHERE id=?", inv.id).status).toBe("autorizada");
+  });
+
+  it("impide editar una factura que ya tiene CAE", () => {
+    const inv = persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "X", cantidad: 1, precio: 100 }] });
+    getDb().prepare("UPDATE invoices SET status='autorizada', cae='75123456789012' WHERE id=?").run(inv.id);
+
+    expect(() => persistInvoice({ id: inv.id, tipo: "B", clienteNombre: "C editado", items: [{ codigo: "X", cantidad: 2, precio: 100 }] }))
+      .toThrow(/autorizada/i);
+    expect(one("SELECT cae FROM invoices WHERE id=?", inv.id).cae).toBe("75123456789012");
   });
 
   it("rechaza doble anulación, tipo inválido e id inexistente", () => {

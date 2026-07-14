@@ -44,6 +44,33 @@ export interface DocEnvelope {
   cashMovements: Row[];
 }
 
+/** Normaliza estados fiscales y evita que un snapshot viejo quite un CAE local. */
+function mergeInvoiceFiscalState(header: Row): Row {
+  const id = String(header.id ?? '');
+  const local = id
+    ? dbGet<{ cae: string | null; cae_expiry: string | null; number: string; point_of_sale: string }>(
+        'SELECT cae, cae_expiry, number, point_of_sale FROM invoices WHERE id = ?', [id],
+      )
+    : undefined;
+  const remoteCae = String(header.cae ?? '').trim();
+  if (local?.cae && !remoteCae) {
+    return {
+      ...header,
+      cae: local.cae,
+      cae_expiry: local.cae_expiry,
+      number: local.number,
+      point_of_sale: local.point_of_sale,
+      status: 'autorizada',
+      afip_error: null,
+    };
+  }
+  if (remoteCae) return { ...header, status: 'autorizada', afip_error: null };
+  if (String(header.status ?? '').toLowerCase() === 'emitida') {
+    return { ...header, status: 'borrador' };
+  }
+  return header;
+}
+
 /**
  * Arma el envelope de un documento ya persistido: su cabecera, sus ítems y los
  * movimientos de stock/caja etiquetados con (reference_type=type, reference_id=id).
@@ -129,7 +156,8 @@ export function applyDocEnvelope(env: DocEnvelope): void {
     reverseStock(env.type, id);
     reverseCash(env.type, id);
 
-    replaceRow(t.header, env.header);
+    const header = env.type === 'invoice' ? mergeInvoiceFiscalState(env.header) : env.header;
+    replaceRow(t.header, header);
 
     dbRun(`DELETE FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]);
     for (const item of env.items ?? []) {

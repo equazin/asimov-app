@@ -368,7 +368,7 @@ export async function requestCae(input: CaeRequestInput): Promise<CaeSuccessDto>
 
   const number = `${String(creds.pointOfSale).padStart(5, "0")}-${String(result.invoiceNumber).padStart(8, "0")}`;
   dbRun(
-    "UPDATE invoices SET cae = ?, cae_expiry = ?, number = ?, status = 'autorizada', point_of_sale = ? WHERE id = ?",
+    "UPDATE invoices SET cae = ?, cae_expiry = ?, number = ?, status = 'autorizada', point_of_sale = ?, afip_error = NULL WHERE id = ?",
     [result.cae, result.caeExpiration, number, String(creds.pointOfSale).padStart(5, "0"), input.invoiceId],
   );
 
@@ -429,6 +429,50 @@ export async function buildStoredInvoiceQr(invoiceId: string): Promise<{ qrUrl: 
   let qrDataUrl = "";
   try { qrDataUrl = await QRCode.toDataURL(qrUrl, { margin: 1, width: 180 }); } catch { /* sin QR si falla */ }
   return { qrUrl, qrDataUrl };
+}
+
+/**
+ * Autoriza una factura ya persistida sin volver a insertarla. Es idempotente:
+ * si el comprobante ya tiene CAE devuelve sus datos y reconstruye el QR.
+ */
+export async function authorizeStoredInvoice(invoiceId: string): Promise<CaeSuccessDto> {
+  const id = String(invoiceId ?? "").trim();
+  if (!id) throw new Error("Falta identificar la factura que se quiere autorizar.");
+
+  const invoice = dbGet<{
+    status: string; cae: string | null; cae_expiry: string | null; number: string;
+  }>("SELECT status, cae, cae_expiry, number FROM invoices WHERE id = ?", [id]);
+  if (!invoice) throw new Error("La factura no existe.");
+  if (/anul|cancel/i.test(String(invoice.status ?? ""))) {
+    throw new Error("No se puede autorizar una factura anulada.");
+  }
+
+  if (invoice.cae) {
+    dbRun("UPDATE invoices SET status = 'autorizada', afip_error = NULL WHERE id = ?", [id]);
+    const qr = await buildStoredInvoiceQr(id);
+    return {
+      ok: true,
+      cae: invoice.cae,
+      caeExpiration: invoice.cae_expiry ?? "",
+      number: invoice.number,
+      invoiceNumber: parseInt(String(invoice.number).split("-").pop() ?? "0", 10) || 0,
+      observations: [],
+      ...qr,
+    };
+  }
+
+  if (!getAfipConfig().enabled) {
+    throw new Error("La facturación electrónica está deshabilitada. Activala en Configuración → AFIP / ARCA.");
+  }
+
+  try {
+    return await requestCae(buildCaeInputFromInvoice(id));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (isAfipUnavailable(error)) markInvoicePendingCae(id, message);
+    else markInvoiceRejected(id, message);
+    throw error;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -505,10 +549,18 @@ function buildAssociatedVoucher(invoiceId: string, clientFiscalType: string | un
 }
 
 /** Deja la factura en "pendiente de CAE" (sólo si aún no tiene CAE). */
-export function markInvoicePendingCae(invoiceId: string): void {
+export function markInvoicePendingCae(invoiceId: string, error = ""): void {
   dbRun(
-    "UPDATE invoices SET status = 'pendiente_cae' WHERE id = ? AND (cae IS NULL OR cae = '')",
-    [invoiceId],
+    "UPDATE invoices SET status = 'pendiente_cae', afip_error = ? WHERE id = ? AND (cae IS NULL OR cae = '')",
+    [String(error).slice(0, 2000) || null, invoiceId],
+  );
+}
+
+/** Registra un rechazo o error permanente para que pueda corregirse y reintentarse. */
+export function markInvoiceRejected(invoiceId: string, error: string): void {
+  dbRun(
+    "UPDATE invoices SET status = 'rechazada', afip_error = ? WHERE id = ? AND (cae IS NULL OR cae = '')",
+    [String(error).slice(0, 2000) || "ARCA rechazó el comprobante sin informar el motivo.", invoiceId],
   );
 }
 
@@ -535,7 +587,7 @@ export async function retryPendingCae(): Promise<RetryPendingResult> {
   const pending = getPendingCaeInvoices();
   for (let i = 0; i < pending.length; i++) {
     try {
-      await requestCae(buildCaeInputFromInvoice(pending[i].id));
+      await authorizeStoredInvoice(pending[i].id);
       result.authorized++;
     } catch (err) {
       if (isAfipUnavailable(err)) {

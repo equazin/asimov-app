@@ -6,7 +6,7 @@
  * de stock/caja deben reconstruirse sin re-ejecutar efectos ni contar doble.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { persistGoodsReceipt, persistReceipt } from "../src/documents";
+import { persistGoodsReceipt, persistInvoice, persistReceipt } from "../src/documents";
 import { buildDocEnvelope, applyDocEnvelope, deleteDocLocal } from "../src/document-sync";
 import { getDb } from "../src/db";
 import { initTestDb, resetLedger, seedArticle } from "./helpers";
@@ -103,5 +103,42 @@ describe("document-sync — propagación de baja", () => {
     expect(one("SELECT id FROM goods_receipts WHERE id = ?", id)).toBeUndefined();
     expect(count("SELECT COUNT(*) c FROM goods_receipt_items WHERE receipt_id = ?", id)).toBe(0);
     expect(stockQty("art-A1")).toBe(0);
+  });
+});
+
+describe("document-sync — estados fiscales", () => {
+  it("un snapshot sin CAE no puede quitar una autorización local", () => {
+    const { id } = persistInvoice({
+      tipo: "B", clienteNombre: "Cliente",
+      items: [{ codigo: "A1", descripcion: "Artículo", cantidad: 1, precio: 100, iva: 21 }],
+    });
+    const stale = buildDocEnvelope("invoice", id)!;
+    stale.header.status = "emitida";
+    stale.header.cae = null;
+
+    getDb().prepare(
+      "UPDATE invoices SET status='autorizada',cae='75123456789012',cae_expiry='2026-07-24',number='00001-00000004' WHERE id=?",
+    ).run(id);
+
+    applyDocEnvelope(stale);
+
+    expect(one("SELECT status,cae,number FROM invoices WHERE id=?", id)).toMatchObject({
+      status: "autorizada", cae: "75123456789012", number: "00001-00000004",
+    });
+  });
+
+  it("normaliza snapshots históricos emitidos sin CAE como borradores", () => {
+    const { id } = persistInvoice({
+      tipo: "B", clienteNombre: "Cliente",
+      items: [{ codigo: "A1", descripcion: "Artículo", cantidad: 1, precio: 100, iva: 21 }],
+    });
+    const legacy = buildDocEnvelope("invoice", id)!;
+    legacy.header.status = "emitida";
+    getDb().prepare("DELETE FROM invoice_items WHERE invoice_id=?").run(id);
+    getDb().prepare("DELETE FROM invoices WHERE id=?").run(id);
+
+    applyDocEnvelope(legacy);
+
+    expect(one("SELECT status FROM invoices WHERE id=?", id).status).toBe("borrador");
   });
 });

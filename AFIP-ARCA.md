@@ -38,6 +38,17 @@
   QR + CAE en el comprobante impreso (`comprobante-print.js`).
 - **Tests**: `test/afip.test.ts` (11 casos) — suite desktop completa en verde.
 
+### Estados fiscales y operación desde la lista (2026-07-14)
+
+- Las facturas nuevas se guardan como `borrador` hasta obtener CAE.
+- `pendiente_cae` identifica una caída transitoria de conectividad y habilita el reintento.
+- `rechazada` conserva `afip_error` para corregir el comprobante y volver a autorizarlo.
+- `autorizada` exige CAE; el número definitivo y el QR se reconstruyen desde los datos fiscales.
+- `anulado` sólo aplica a documentos sin CAE. Una factura autorizada se revierte mediante una
+  nota de crédito asociada, no cambiando su estado local.
+- La lista de Facturas permite **Autorizar ARCA** y **Reintentar ARCA** sin volver a insertar el
+  documento. Los snapshots multi-PC preservan el CAE frente a versiones antiguas sin autorización.
+
 ### ❌ Lo que falta
 
 - **Percepciones/tributos** (`Tributos` de WSFE), sólo si aplica al rubro

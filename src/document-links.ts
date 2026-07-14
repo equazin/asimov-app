@@ -197,7 +197,8 @@ export function listPendingSaleOrders(clientId: string, target: "invoice" | "del
 
 /**
  * Facturas de un cliente que pueden asociarse a una nota de crédito/débito:
- * autorizadas por AFIP (con CAE) o al menos emitidas, nunca anuladas.
+ * autorizadas por ARCA con CAE. Los borradores y rechazos no son comprobantes
+ * válidos para informar como asociados en una NC/ND.
  */
 export function listClientInvoicesForNote(clientId: string): PendingDoc[] {
   if (!clientId) return [];
@@ -205,7 +206,8 @@ export function listClientInvoicesForNote(clientId: string): PendingDoc[] {
     `SELECT f.id, f.number, f.date, f.status, f.total, f.client_name,
             (SELECT COUNT(*) FROM invoice_items i WHERE i.invoice_id = f.id) AS items_count
      FROM invoices f
-     WHERE f.client_id = ? AND LOWER(f.status) NOT IN ('anulado','anulada','cancelado')
+     WHERE f.client_id = ? AND LOWER(f.status) = 'autorizada'
+       AND f.cae IS NOT NULL AND trim(f.cae) <> ''
        AND UPPER(f.tipo) NOT IN ('NC','ND')
      ORDER BY f.date DESC, f.created_at DESC LIMIT 50`,
     [clientId],

@@ -18,7 +18,9 @@ import {
   testAfipConnection,
   runAfipDiagnostics,
   requestCae as afipRequestCae,
+  authorizeStoredInvoice,
   markInvoicePendingCae,
+  markInvoiceRejected,
   retryPendingCae,
   getPendingCaeInvoices,
   consultarPadron,
@@ -34,7 +36,7 @@ export function registerAfipIpc(deps: IpcDeps): void {
 
   ipcMain.handle("afip:status", () => {
     try {
-      return { ok: true, data: getAfipConfig() };
+      return { ok: true, data: { ...getAfipConfig(), canAuthorize: isAdmin() } };
     } catch (err: unknown) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
@@ -116,14 +118,16 @@ export function registerAfipIpc(deps: IpcDeps): void {
         data = await afipRequestCae(input);
       } catch (err) {
         // Sin conexión: queda "pendiente de CAE" y el reintento automático la levanta.
+        const message = err instanceof Error ? err.message : String(err);
         if (isAfipUnavailable(err)) {
-          markInvoicePendingCae(input.invoiceId);
+          markInvoicePendingCae(input.invoiceId, message);
           return {
             ok: false,
             pending: true,
             error: "No hay conexión con AFIP. La factura quedó \"pendiente de CAE\" y se reintentará automáticamente.",
           };
         }
+        markInvoiceRejected(input.invoiceId, message);
         throw err;
       }
       // El CAE cambió la factura local (número/estado): propagar a la nube y refrescar el shell.
@@ -138,6 +142,32 @@ export function registerAfipIpc(deps: IpcDeps): void {
       return { ok: true, data };
     } catch (err: unknown) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  // Autoriza una factura ya guardada usando exclusivamente su snapshot local.
+  // No vuelve a insertarla ni acepta importes construidos por el renderer.
+  ipcMain.handle("afip:authorize-stored-invoice", async (_event, invoiceId: unknown) => {
+    if (!isAdmin()) return DENY_ADMIN;
+    const id = safeStr(invoiceId);
+    if (!id) return { ok: false, error: "Falta el identificador de la factura." };
+    try {
+      const data = await authorizeStoredInvoice(id);
+      if (isCloudConnected()) {
+        try {
+          const envelope = buildDocEnvelope("invoice", id);
+          if (envelope) enqueueChange("document_snapshot", id, "update", envelope as unknown as Record<string, unknown>);
+        } catch { /* best-effort */ }
+      }
+      const win = deps.getMainWindow();
+      if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
+      return { ok: true, data };
+    } catch (err: unknown) {
+      return {
+        ok: false,
+        pending: isAfipUnavailable(err),
+        error: err instanceof Error ? err.message : String(err),
+      };
     }
   });
 

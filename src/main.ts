@@ -20,7 +20,7 @@ import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll } from "./db";
 import { startDolarAutoUpdate } from "./dolar";
-import { requestCae, buildCaeInputFromInvoice, markInvoicePendingCae, retryPendingCae, getAfipConfig } from "./afip-service";
+import { authorizeStoredInvoice, retryPendingCae, getAfipConfig } from "./afip-service";
 import { isAfipUnavailable } from "./afip/domain";
 import { isAirEnabled } from "./air";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
@@ -28,7 +28,7 @@ import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from 
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
-  annulDocument,
+  annulDocument, enqueueDocSnapshot,
 } from "./documents";
 
 // ---------------------------------------------------------------------------
@@ -552,20 +552,24 @@ if (!gotLock) {
     // Autorizar en AFIP desde el formulario: persiste la factura y pide el CAE en
     // un solo paso, sin cerrar la ventana (para que el operador imprima con CAE).
     ipcMain.handle("shell:invoice-authorize", async (_event, data: { invoice?: Record<string, unknown> }) => {
+      if (currentUser?.role !== "admin") {
+        return { ok: false, error: "Solo un administrador puede autorizar comprobantes en ARCA." };
+      }
       const invoice = data?.invoice;
       if (!invoice) return { ok: false, error: "Sin datos de factura." };
       let invoiceId = "";
       try {
         const { id } = persistInvoice(invoice as Record<string, unknown>);
         invoiceId = id;
-        const result = await requestCae(buildCaeInputFromInvoice(id));
+        const result = await authorizeStoredInvoice(id);
+        enqueueDocSnapshot("invoice", id);
         notifyShell("shell:invoice-saved");
         return { ok: true, data: result };
       } catch (err) {
         // Sin conexión con AFIP: la factura ya quedó guardada; se marca
         // "pendiente de CAE" y se reintenta automáticamente al recuperar red.
         if (invoiceId && isAfipUnavailable(err)) {
-          markInvoicePendingCae(invoiceId);
+          enqueueDocSnapshot("invoice", invoiceId);
           notifyShell("shell:invoice-saved");
           return {
             ok: false,
@@ -573,6 +577,7 @@ if (!gotLock) {
             error: "No hay conexión con AFIP. La factura quedó guardada como \"pendiente de CAE\" y se autorizará automáticamente cuando vuelva la conexión.",
           };
         }
+        if (invoiceId) enqueueDocSnapshot("invoice", invoiceId);
         return { ok: false, error: err instanceof Error ? err.message : String(err) };
       }
     });

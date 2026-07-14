@@ -245,6 +245,7 @@ CREATE TABLE IF NOT EXISTS invoices (
   total         REAL NOT NULL DEFAULT 0,
   cae           TEXT,
   cae_expiry    TEXT,
+  afip_error    TEXT,
   notes         TEXT,
   created_at    TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (client_id) REFERENCES clients(id)
@@ -811,6 +812,17 @@ export function initDb(dbPath?: string): void {
   try { _db.exec("ALTER TABLE articles ADD COLUMN price_usd REAL NOT NULL DEFAULT 0"); } catch {}
   // Esquemas/kits: el artículo compuesto se marca y sus componentes viven en kit_components
   try { _db.exec("ALTER TABLE articles ADD COLUMN is_kit INTEGER NOT NULL DEFAULT 0"); } catch {}
+  // Estado fiscal de facturas: conserva el último error de ARCA para que el
+  // operador pueda corregir y reintentar desde la lista.
+  try { _db.exec("ALTER TABLE invoices ADD COLUMN afip_error TEXT"); } catch {}
+  _db.exec(`
+    UPDATE invoices
+       SET status = 'autorizada', afip_error = NULL
+     WHERE cae IS NOT NULL AND trim(cae) <> '';
+    UPDATE invoices
+       SET status = 'borrador'
+     WHERE (cae IS NULL OR trim(cae) = '') AND lower(status) = 'emitida';
+  `);
 
   // Datos iniciales: depósito y caja por defecto
   const warehouseExists = (_db.prepare("SELECT id FROM warehouses LIMIT 1").get() as any);
@@ -907,7 +919,7 @@ export function getDashboardKpis(): DashboardKpis {
   ).get(today) as any)?.v ?? 0;
 
   const invoicesPending = (db.prepare(
-    "SELECT COUNT(*) as v FROM invoices WHERE status = 'borrador'"
+    "SELECT COUNT(*) as v FROM invoices WHERE status IN ('borrador','pendiente_cae','rechazada')"
   ).get() as any)?.v ?? 0;
 
   const clientsTotal = (db.prepare(

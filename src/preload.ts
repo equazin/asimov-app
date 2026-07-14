@@ -321,12 +321,13 @@ const api = {
 
   // --- AFIP / ARCA (facturación electrónica, desktop directo) ---
   afip: {
-    status: () => ipcRenderer.invoke("afip:status") as Promise<{ ok: boolean; data?: { enabled: boolean; cuit: string; pointOfSale: number; env: string; hasCert: boolean; hasKey: boolean; certExpires: string | null }; error?: string }>,
+    status: () => ipcRenderer.invoke("afip:status") as Promise<{ ok: boolean; data?: { enabled: boolean; canAuthorize: boolean; cuit: string; pointOfSale: number; env: string; hasCert: boolean; hasKey: boolean; certExpires: string | null }; error?: string }>,
     saveCredentials: (input: { cuit: string; pointOfSale: number; env: string; certPem?: string; keyPem?: string; enabled?: boolean }) =>
       ipcRenderer.invoke("afip:save-credentials", input) as Promise<{ ok: boolean; data?: { certExpires: string | null }; error?: string }>,
     testConnection: () => ipcRenderer.invoke("afip:test-connection") as Promise<{ ok: boolean; message: string; expiration?: string }>,
     diagnostics: () => ipcRenderer.invoke("afip:diagnostics") as Promise<{ ok: boolean; data?: { env: string; ok: boolean; steps: Array<{ id: string; label: string; status: "ok" | "warn" | "error" | "skip"; detail: string }> }; error?: string }>,
     invoiceQr: (invoiceId: string) => ipcRenderer.invoke("afip:invoice-qr", invoiceId) as Promise<{ ok: boolean; data?: { qrUrl: string; qrDataUrl: string }; error?: string }>,
+    authorizeStoredInvoice: (invoiceId: string) => ipcRenderer.invoke("afip:authorize-stored-invoice", invoiceId) as Promise<{ ok: boolean; pending?: boolean; data?: { cae: string; caeExpiration: string; number: string; qrDataUrl: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
     requestCae: (input: unknown) => ipcRenderer.invoke("afip:request-cae", input) as Promise<{ ok: boolean; pending?: boolean; data?: { cae: string; caeExpiration: string; number: string; observations: Array<{ code: string; msg: string }> }; error?: string }>,
     retryPending: () => ipcRenderer.invoke("afip:retry-pending") as Promise<{ ok: boolean; data?: { authorized: number; stillPending: number; rejected: Array<{ invoiceId: string; error: string }>; pendingLeft: number }; error?: string }>,
     padron: (cuit: string) => ipcRenderer.invoke("afip:padron", cuit) as Promise<{ ok: boolean; data?: { cuit: string; razonSocial: string; condicionIva: string; domicilio: string; localidad: string; provincia: string; codPostal: string }; error?: string }>,

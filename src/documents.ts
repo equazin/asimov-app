@@ -23,7 +23,7 @@ import { explodeKitComponents } from "./kits";
  * Encola el documento (cabecera + ítems + movimientos) para push a la nube.
  * Best-effort y solo con sesión cloud: nunca rompe el guardado local.
  */
-function enqueueDocSnapshot(type: string, id: string): void {
+export function enqueueDocSnapshot(type: string, id: string): void {
   if (!isCloudConnected()) return;
   try {
     const envelope = buildDocEnvelope(type, id);
@@ -469,6 +469,10 @@ export interface InvoiceForm {
 export function persistInvoice(form: InvoiceForm): PersistResult {
   const db = getDb();
   const id = str(form.id) || randomUUID();
+  const existing = dbGet<{ cae: string | null }>("SELECT cae FROM invoices WHERE id = ?", [id]);
+  if (existing?.cae) {
+    throw new Error("La factura ya está autorizada por ARCA y no puede editarse.");
+  }
   const items = Array.isArray(form.items) ? form.items : [];
   const totals = computeSaleTotals(items);
   const date = normalizeDate(form.fecha);
@@ -479,10 +483,15 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
   const tx = db.transaction(() => {
     if (!number) number = `${pos}-${String(nextSequence(`invoice-${tipo}`)).padStart(8, "0")}`;
     dbRun(
-      `INSERT OR REPLACE INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,notes,created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM invoices WHERE id=?),datetime('now')))`,
-      [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, tipo, pos, "emitida",
-       totals.subtotal, totals.ivaAmount, totals.total, str(form.observaciones), id],
+      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+       ON CONFLICT(id) DO UPDATE SET
+         number=excluded.number, client_id=excluded.client_id, client_name=excluded.client_name,
+         date=excluded.date, tipo=excluded.tipo, point_of_sale=excluded.point_of_sale,
+         status='borrador', subtotal=excluded.subtotal, iva_amount=excluded.iva_amount,
+         total=excluded.total, afip_error=NULL, notes=excluded.notes`,
+      [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, tipo, pos, "borrador",
+       totals.subtotal, totals.ivaAmount, totals.total, null, str(form.observaciones)],
     );
     dbRun("DELETE FROM invoice_items WHERE invoice_id = ?", [id]);
     for (const it of items) {
@@ -647,9 +656,20 @@ export function annulDocument(type: string, id: string): AnnulResult {
   if (!docId) return { ok: false, error: "Falta el identificador del documento." };
 
   const db = getDb();
-  const row = dbGet<{ status: string }>(`SELECT status FROM ${cfg.table} WHERE id = ?`, [docId]);
+  const row = dbGet<{ status: string; cae?: string | null }>(
+    type === "invoice"
+      ? "SELECT status, cae FROM invoices WHERE id = ?"
+      : `SELECT status FROM ${cfg.table} WHERE id = ?`,
+    [docId],
+  );
   if (!row) return { ok: false, error: "Documento no encontrado." };
   if (/anul|cancel/i.test(str(row.status))) return { ok: false, error: "El documento ya está anulado." };
+  if (type === "invoice" && row.cae) {
+    return {
+      ok: false,
+      error: "Una factura autorizada por ARCA no puede anularse localmente. Emití una nota de crédito asociada.",
+    };
+  }
 
   const tx = db.transaction(() => {
     if (cfg.effect === "stock") reverseStockFor(cfg.refType, docId);

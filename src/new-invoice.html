@@ -931,7 +931,7 @@ td{ border-color:var(--border) !important; }
           <select id="selEstadoAFIP">
             <option>Pendiente de envío</option>
             <option>Autorizada</option>
-            <option>Rechazada por AFIP</option>
+            <option>Rechazada por ARCA</option>
             <option>Exenta de CAE</option>
           </select>
         </div>
@@ -1021,9 +1021,9 @@ td{ border-color:var(--border) !important; }
     <button class="footer-btn btn-exit" id="btnExit">🚪 Salir <span class="kbd">ESC</span></button>
     <div class="footer-spacer"></div>
     <button class="footer-btn btn-print" id="btnPrint">🖨️ Imprimir <span class="kbd">F9</span></button>
-    <button class="footer-btn btn-print" id="btnAutorizarAfip" title="Guardar y enviar a AFIP/ARCA para obtener el CAE (requiere certificado configurado)">📋 Autorizar AFIP/ARCA</button>
+    <button class="footer-btn btn-print" id="btnAutorizarAfip" title="Guardar y enviar a ARCA para obtener el CAE (requiere certificado configurado)">📋 Autorizar ARCA y guardar</button>
     <button class="footer-btn btn-cancel" disabled>🗑️ Anular</button>
-    <button class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
+    <button class="footer-btn btn-save" id="btnSave">💾 Guardar sin CAE <span class="kbd">F8</span></button>
   </div>
 
   <!-- Comprobante para impresión (oculto en pantalla; visible sólo al imprimir). -->
@@ -1461,6 +1461,7 @@ td{ border-color:var(--border) !important; }
     document.getElementById("btnSave").addEventListener("click", function() {
       var invoice = buildInvoicePayload();
       if (!invoice) return;
+      if (!confirm("La factura se guardará como borrador, sin autorización fiscal, CAE ni QR. Podrás autorizarla más tarde desde Facturas. ¿Querés continuar?")) return;
       if (window.asimovNewInvoice) window.asimovNewInvoice.saveInvoice(invoice);
     });
 
@@ -1509,6 +1510,10 @@ td{ border-color:var(--border) !important; }
           alert("La facturación electrónica no está configurada.\n\nAndá a Configuración → AFIP, cargá el certificado y la clave, y habilitala.");
           return;
         }
+        if (!st.data.canAuthorize) {
+          alert("Solo un administrador puede autorizar comprobantes en ARCA.");
+          return;
+        }
       } catch (_) { /* seguimos; el main revalida */ }
 
       btn.disabled = true;
@@ -1526,6 +1531,7 @@ td{ border-color:var(--border) !important; }
               '<span>La factura quedó guardada y se autorizará automáticamente cuando vuelva la conexión con AFIP.</span></div>';
           }
           alert("📡 " + res.error);
+          document.getElementById("txtMensajeAFIP").value = res.error || "ARCA no está disponible.";
           document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "afip") t.click(); });
           return;
         }
@@ -1536,7 +1542,10 @@ td{ border-color:var(--border) !important; }
               "\nN°: " + res.data.number + (obs ? "\n\nObservaciones:\n" + obs : ""));
         document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "afip") t.click(); });
       } catch (e) {
-        alert("❌ " + (e.message || "No se pudo autorizar en AFIP"));
+        var message = e.message || "No se pudo autorizar en ARCA";
+        document.getElementById("selEstadoAFIP").value = "Rechazada por ARCA";
+        document.getElementById("txtMensajeAFIP").value = message;
+        alert("❌ " + message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = original;

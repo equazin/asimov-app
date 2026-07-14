@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect } from "vitest";
 import * as forge from "node-forge";
 import { signTRA, certNotAfter, isValidCertPem, isValidKeyPem } from "../src/afip/crypto";
 import {
@@ -19,6 +19,12 @@ import {
 } from "../src/afip/domain";
 import { buildAfipQrUrl } from "../src/afip/qr";
 import { buildGetPersonaEnvelope, parsePersonaResponse } from "../src/afip/padron";
+import {
+  authorizeStoredInvoice, markInvoicePendingCae, markInvoiceRejected,
+} from "../src/afip-service";
+import { dbGet, dbRun } from "../src/db";
+import { persistInvoice } from "../src/documents";
+import { initTestDb } from "./helpers";
 
 function makeSelfSigned(): { certPem: string; keyPem: string } {
   const keys = forge.pki.rsa.generateKeyPair(2048);
@@ -76,6 +82,43 @@ describe("afip/qr — QR de AFIP (RG 4892)", () => {
       ver: 1, cuit: 30712345678, ptoVta: 3, tipoCmp: 6, nroCmp: 43,
       importe: 121, moneda: "PES", ctz: 1, tipoCodAut: "E", codAut: 75123456789012,
     });
+  });
+});
+
+describe("afip/estados fiscales", () => {
+  beforeEach(() => initTestDb());
+
+  it("marca pendiente y rechazado persistiendo un mensaje operativo", () => {
+    const invoice = persistInvoice({
+      tipo: "B", clienteNombre: "Cliente", items: [{ codigo: "A", descripcion: "Artículo", cantidad: 1, precio: 100, iva: 21 }],
+    });
+
+    markInvoicePendingCae(invoice.id, "ARCA no está disponible");
+    expect(dbGet("SELECT status,afip_error FROM invoices WHERE id=?", [invoice.id])).toMatchObject({
+      status: "pendiente_cae", afip_error: "ARCA no está disponible",
+    });
+
+    markInvoiceRejected(invoice.id, "[10015] Fecha fuera de rango");
+    expect(dbGet("SELECT status,afip_error FROM invoices WHERE id=?", [invoice.id])).toMatchObject({
+      status: "rechazada", afip_error: "[10015] Fecha fuera de rango",
+    });
+  });
+
+  it("autorizar una factura que ya tiene CAE es idempotente", async () => {
+    const invoice = persistInvoice({
+      tipo: "B", clienteNombre: "Cliente", fecha: "2026-07-14",
+      items: [{ codigo: "A", descripcion: "Artículo", cantidad: 1, precio: 100, iva: 21 }],
+    });
+    dbRun(
+      "UPDATE invoices SET status='autorizada',cae='75123456789012',cae_expiry='2026-07-24',number='00001-00000004' WHERE id=?",
+      [invoice.id],
+    );
+
+    const result = await authorizeStoredInvoice(invoice.id);
+
+    expect(result.cae).toBe("75123456789012");
+    expect(result.number).toBe("00001-00000004");
+    expect(result.qrDataUrl).toMatch(/^data:image\/png;base64,/);
   });
 });
 

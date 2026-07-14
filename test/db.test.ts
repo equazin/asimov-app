@@ -12,6 +12,11 @@ describe("db — inicialización y semillas", () => {
     expect(dbGet("SELECT id FROM warehouses WHERE id='wh-default'")).toBeTruthy();
     expect(dbGet("SELECT id FROM cash_accounts WHERE id='ca-default'")).toBeTruthy();
   });
+
+  it("incluye el error fiscal persistido en las facturas", () => {
+    const columns = dbAll<{ name: string }>("PRAGMA table_info(invoices)");
+    expect(columns.map((column) => column.name)).toContain("afip_error");
+  });
 });
 
 describe("db — secuencias y numeración", () => {
