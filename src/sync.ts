@@ -272,7 +272,10 @@ function isCloudNativeEntity(entity: string): boolean {
   return (
     entity === 'integration_config' ||
     entity === 'external_catalog_product' ||
-    entity === 'document_snapshot'
+    entity === 'document_snapshot' ||
+    entity === 'exchange_rate' ||
+    entity === 'document_link' ||
+    entity === 'kit_set'
   );
 }
 
@@ -584,6 +587,64 @@ function upsertAirProduct(data: RemoteRow): void {
   );
 }
 
+function mapExchangeRate(d: RemoteRow): RemoteRow {
+  return {
+    casa: d.casa ?? '',
+    nombre: d.nombre ?? d.name ?? '',
+    compra: d.compra ?? 0,
+    venta: d.venta ?? 0,
+    source_date: d.sourceDate ?? d.source_date ?? null,
+    fetched_at: d.fetchedAt ?? d.fetched_at ?? null,
+  };
+}
+
+function mapDocumentLink(d: RemoteRow): RemoteRow {
+  return {
+    source_type: d.sourceType ?? d.source_type ?? '',
+    source_id: d.sourceId ?? d.source_id ?? '',
+    target_type: d.targetType ?? d.target_type ?? '',
+    target_id: d.targetId ?? d.target_id ?? '',
+    created_at: d.createdAt ?? d.created_at ?? null,
+  };
+}
+
+interface KitSetComponent {
+  id?: string;
+  componentArticleId?: string;
+  component_article_id?: string;
+  qty?: number;
+}
+
+function applyKitSet(kitArticleId: string, data: RemoteRow): void {
+  if (!kitArticleId) return;
+  const rawComponents = Array.isArray(data.components) ? data.components : [];
+  const components = (rawComponents as KitSetComponent[])
+    .map((c) => ({
+      id: String(c?.id ?? ''),
+      componentArticleId: String(c?.componentArticleId ?? c?.component_article_id ?? ''),
+      qty: Number(c?.qty ?? 0),
+    }))
+    .filter((c) => c.id && c.componentArticleId && c.qty > 0);
+
+  const db = getDb();
+  const tx = db.transaction(() => {
+    dbRun('DELETE FROM kit_components WHERE kit_article_id = ?', [kitArticleId]);
+    for (const c of components) {
+      dbRun(
+        'INSERT OR REPLACE INTO kit_components (id, kit_article_id, component_article_id, qty) VALUES (?,?,?,?)',
+        [c.id, kitArticleId, c.componentArticleId, c.qty],
+      );
+    }
+    // Mismo efecto que setKitComponents(): sincronizar el flag is_kit.
+    dbRun('UPDATE articles SET is_kit = ?, manages_stock = ? WHERE id = ?', [
+      components.length > 0 ? 1 : 0,
+      components.length > 0 ? 0 : 1,
+      kitArticleId,
+    ]);
+  });
+  tx();
+}
+
 function softDeleteAirProduct(data: RemoteRow): void {
   const code = String(data.externalCode ?? data.external_code ?? data.air_code ?? '');
   if (!code) return;
@@ -646,6 +707,30 @@ function applyRemoteChange(change: {
       } else {
         applyDocEnvelope(change.data as unknown as DocEnvelope);
       }
+      break;
+    }
+    case 'exchange_rate': {
+      // Cotización de dólar: insert-only, se dedupe por id.
+      const row = mapExchangeRate(change.data);
+      row.id = change.id;
+      upsertRow('exchange_rates', change.id, row);
+      break;
+    }
+    case 'document_link': {
+      // Vínculo entre documentos: inmutable, dedupe por (source, target).
+      if (change.action === 'delete') {
+        dbRun('DELETE FROM document_links WHERE id = ?', [change.id]);
+      } else {
+        const row = mapDocumentLink(change.data);
+        row.id = change.id;
+        upsertRow('document_links', change.id, row);
+      }
+      break;
+    }
+    case 'kit_set': {
+      // Reemplazo atómico del set de componentes del kit (misma semántica que
+      // setKitComponents en el desktop origen).
+      applyKitSet(change.id, change.data);
       break;
     }
     case 'document':

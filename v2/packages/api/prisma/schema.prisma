@@ -83,6 +83,9 @@ model Tenant {
   integrationConfigs IntegrationConfig[]
   externalCatalogProducts ExternalCatalogProduct[]
   syncedDocuments SyncedDocument[]
+  exchangeRates   ExchangeRate[]
+  documentLinks   DocumentLink[]
+  kitComponents   KitComponent[]
 
   @@index([status])
   @@index([planId])
@@ -674,6 +677,73 @@ model ExternalCatalogProduct {
   @@index([tenantId, provider, active])
   @@index([tenantId, provider, externalCode])
   @@map("external_catalog_products")
+}
+
+// ============================================================
+// SYNC — Datos locales del desktop replicados entre PCs
+// (v4.18.0 — Fase F: cotizaciones, vínculos y kits)
+// ============================================================
+
+// Cotizaciones de dólar (dolarapi). El desktop las cachea localmente cada
+// 30 min; sincronizarlas evita que cada PC pida a la API por su cuenta y
+// mantiene el historial coherente para el repreciado.
+model ExchangeRate {
+  id         String   @id                       // uuid local del desktop
+  tenantId   String
+  casa       String                             // oficial, blue, bolsa, ccl, cripto, mep
+  nombre     String
+  compra     Decimal  @db.Decimal(14, 4)
+  venta      Decimal  @db.Decimal(14, 4)
+  sourceDate String?                            // fechaActualizacion de dolarapi
+  fetchedAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, casa, fetchedAt])
+  @@index([tenantId, updatedAt])
+  @@map("exchange_rates")
+}
+
+// Vínculos entre documentos (pedido → remito → factura). Inmutables una vez
+// creados; sincronizarlos permite ver la trazabilidad en cualquier PC del tenant.
+model DocumentLink {
+  id         String   @id                       // uuid local del desktop
+  tenantId   String
+  sourceType String
+  sourceId   String
+  targetType String
+  targetId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, sourceType, sourceId, targetType, targetId])
+  @@index([tenantId, sourceType, sourceId])
+  @@index([tenantId, targetType, targetId])
+  @@index([tenantId, updatedAt])
+  @@map("document_links")
+}
+
+// Componentes de un esquema/kit (artículo compuesto por otros artículos).
+// Modelo por-fila: la operación "set kit" del desktop se traduce a delete+insert
+// atómico del lado del server para el mismo (tenantId, kitArticleId).
+model KitComponent {
+  id                 String   @id               // uuid local del desktop
+  tenantId           String
+  kitArticleId       String
+  componentArticleId String
+  qty                Decimal  @db.Decimal(14, 3)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, kitArticleId, componentArticleId])
+  @@index([tenantId, kitArticleId])
+  @@index([tenantId, updatedAt])
+  @@map("kit_components")
 }
 
 // ============================================================
