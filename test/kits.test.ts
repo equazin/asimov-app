@@ -6,8 +6,9 @@ import {
   computeBuildableStock,
   explodeKitComponents,
 } from "../src/kits";
-import { persistDeliveryNote, annulDocument } from "../src/documents";
-import { dbGet, dbRun, initDb } from "../src/db";
+import { persistDeliveryNote, persistInvoice, annulDocument } from "../src/documents";
+import { dbAll, dbGet, dbRun, initDb } from "../src/db";
+import { loadLocalProductsForPicker } from "../src/product-picker";
 
 const WH = "wh-default";
 
@@ -105,6 +106,14 @@ describe("getKitInfo / computeBuildableStock", () => {
   it("sin componentes con stock gestionado devuelve 0", () => {
     expect(computeBuildableStock([])).toBe(0);
   });
+
+  it("ofrece el kit al selector con costo de componentes y precio propio", () => {
+    seedPcArmada();
+    const kit = loadLocalProductsForPicker().find((item) => item.codigo === "PC-R5");
+    expect(kit?.esquema).toBe(true);
+    expect(Number(kit?.costo)).toBe(385000);
+    expect(Number(kit?.importe)).toBe(900000);
+  });
 });
 
 describe("remito con kit: explosión de stock por componentes", () => {
@@ -139,5 +148,24 @@ describe("remito con kit: explosión de stock por componentes", () => {
     const parts = explodeKitComponents("kit-pc");
     expect(parts).toHaveLength(5);
     expect(parts.every((p) => p.qty === 1)).toBe(true);
+  });
+});
+
+describe("factura con kit: una sola línea comercial", () => {
+  it("persiste la PC y no expone sus componentes como ítems", () => {
+    seedPcArmada();
+    const invoice = persistInvoice({
+      clienteNombre: "CONSUMIDOR FINAL",
+      items: [{ codigo: "PC-R5", descripcion: "PC ARMADA RYZEN 5", cantidad: 1, precio: 1500, iva: 21 }],
+    });
+
+    expect(dbAll<{ code: string; unit_price: number }>(
+      "SELECT code, unit_price FROM invoice_items WHERE invoice_id = ?",
+      [invoice.id],
+    )).toEqual([{ code: "PC-R5", unit_price: 1500 }]);
+    expect(dbGet<{ subtotal: number; total: number }>(
+      "SELECT subtotal, total FROM invoices WHERE id = ?",
+      [invoice.id],
+    )).toEqual({ subtotal: 1500, total: 1815 });
   });
 });

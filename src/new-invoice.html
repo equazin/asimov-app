@@ -326,6 +326,37 @@
     .totals-row.grand .lbl { color: rgba(255,255,255,0.85); font-weight: 700; }
     .totals-row.grand .val { color: #fff; font-size: 16px; font-weight: 700; }
     .totals-row.subtotal { background: #2A2312; border-radius: 4px; padding: 4px 6px; }
+    .margin-editor {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--input-bg);
+    }
+    .margin-editor label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .margin-input-wrap { position: relative; }
+    .margin-input-wrap input {
+      width: 100%;
+      height: 32px;
+      padding: 0 30px 0 10px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .margin-input-wrap span {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      color: var(--text-muted);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .margin-editor p { margin: 6px 0 0; color: var(--text-muted); font-size: 10px; line-height: 1.35; }
 
     /* AFIP badge */
     .afip-estado {
@@ -703,13 +734,10 @@ td{ border-color:var(--border) !important; }
 
         <div class="section-title">Comercial</div>
         <div class="field">
-          <label>% Margen ganancia</label>
-          <input type="number" id="txtMargenGral" value="0" min="0" max="999" step="0.1" title="Se aplica como margen por defecto al agregar artículos" />
-        </div>
-        <div class="field">
           <label>Vendedor</label>
           <input type="text" id="txtVendedor" />
         </div>
+        <div class="field"></div>
         <div class="field"></div>
         <div class="field"></div>
 
@@ -788,6 +816,14 @@ td{ border-color:var(--border) !important; }
       <div class="totals-panel">
         <div class="totals-card">
           <h3>Base imponible (neto)</h3>
+          <div class="margin-editor">
+            <label for="txtMargenGral">Margen de ganancia</label>
+            <div class="margin-input-wrap">
+              <input type="number" id="txtMargenGral" min="0" max="999" step="0.1" placeholder="Ej. 30" title="Recalcula los precios de todos los artículos usando su costo" />
+              <span aria-hidden="true">%</span>
+            </div>
+            <p>Recalcula todos los precios sobre el costo. En un kit usa el costo total de sus componentes.</p>
+          </div>
           <div class="totals-row"><span class="lbl">Gravado IVA 21%</span><span class="val" id="sumNeto21">$ 0,00</span></div>
           <div class="totals-row"><span class="lbl">Gravado IVA 10,5%</span><span class="val" id="sumNeto10">$ 0,00</span></div>
           <div class="totals-row"><span class="lbl">No gravado / Exento</span><span class="val" id="sumNeto0">$ 0,00</span></div>
@@ -1127,11 +1163,17 @@ td{ border-color:var(--border) !important; }
         row.codigo = data.product.codigo || data.product.code || "";
         row.descripcion = data.product.descripcion || data.product.description || data.product.name || "";
         row.unidad = data.product.unidad || "UN";
-        var costo = parseFloat(data.product.importe || data.product.price || "0") || 0;
+        var costo = parseFloat(data.product.costo || data.product.cost_price || "0") || 0;
+        var precioVenta = parseFloat(data.product.importe || data.product.price || "0") || 0;
+        var margenGral = parseFloat(document.getElementById("txtMargenGral").value);
         row.costo = costo;
-        var margenGral = parseFloat(document.getElementById("txtMargenGral").value) || 0;
-        row.margen = margenGral;
-        row.precio = costo * (1 + margenGral / 100);
+        if (costo > 0 && Number.isFinite(margenGral) && margenGral >= 0 && margenGral <= 999) {
+          row.margen = margenGral;
+          row.precio = costo * (1 + margenGral / 100);
+        } else {
+          row.precio = precioVenta;
+          row.margen = costo > 0 ? ((precioVenta / costo) - 1) * 100 : 0;
+        }
         row.cantidad = 1;
         row.iva = parseFloat(data.product.iva || "21") || 21;
         renderItemsTable();
@@ -1273,10 +1315,28 @@ td{ border-color:var(--border) !important; }
                         .reduce(function(s, r) { return s + r.cantidad * r.precio * (1 - r.descuento / 100); }, 0);
       var iva21 = neto21 * 0.21;
       var iva10 = neto10 * 0.105;
+      var subtotal = neto21 + neto10 + neto0;
+      var iva = iva21 + iva10;
       var total = neto21 + neto10 + neto0 + iva21 + iva10;
-      window._totals = { neto21: neto21, neto10: neto10, neto0: neto0, iva21: iva21, iva10: iva10, total: total, count: items.length };
+      window._totals = { neto21: neto21, neto10: neto10, neto0: neto0, iva21: iva21, iva10: iva10, subtotal: subtotal, iva: iva, total: total, count: items.length };
       document.getElementById("txtNetoACobrar").value = "$ " + fmtNum(total);
     }
+
+    function applyGeneralMargin() {
+      var margin = parseFloat(document.getElementById("txtMargenGral").value);
+      if (!Number.isFinite(margin) || margin < 0 || margin > 999) return;
+      items.forEach(function(row) {
+        if (!(row.costo > 0)) return;
+        row.margen = margin;
+        row.precio = row.costo * (1 + margin / 100);
+      });
+      renderItemsTable();
+      recalcTotals();
+      updateTotalsTab();
+      updateCuotaImporte();
+    }
+
+    document.getElementById("txtMargenGral").addEventListener("input", applyGeneralMargin);
 
     function updateCuotaImporte() {
       var t = window._totals || {};

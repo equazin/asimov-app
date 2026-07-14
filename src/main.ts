@@ -23,6 +23,7 @@ import { startDolarAutoUpdate } from "./dolar";
 import { authorizeStoredInvoice, retryPendingCae, getAfipConfig } from "./afip-service";
 import { isAfipUnavailable } from "./afip/domain";
 import { isAirEnabled } from "./air";
+import { loadLocalProductsForPicker, type ProductPickerItem } from "./product-picker";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
 import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
 import {
@@ -720,22 +721,7 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
 function loadProductsForPicker(): void {
   if (!productSelectionWindow || productSelectionWindow.isDestroyed()) return;
   try {
-    const rows = dbAll(
-      "SELECT id, code, name, unit, sale_price, iva_pct, category FROM articles WHERE active = 1 ORDER BY name LIMIT 1000",
-      [],
-    ) as Array<Record<string, unknown>>;
-    const mapped = rows.map((a) => ({
-      codigo: a.code,
-      descripcion: a.name,
-      importe: String(a.sale_price ?? "0.00"),
-      iva: String(a.iva_pct ?? "21"),
-      st: "0",
-      compro: "0",
-      entr: "0",
-      linea: "",
-      categoria: a.category ?? "",
-      source: "local",
-    }));
+    const mapped: ProductPickerItem[] = loadLocalProductsForPicker();
 
     if (isAirEnabled()) {
       // Sin tope real: el catálogo completo de AIR ronda 7500+ productos y un
@@ -752,8 +738,10 @@ function loadProductsForPicker(): void {
         mapped.push({
           codigo: String(a.air_code ?? ""),
           descripcion: String(a.description ?? ""),
+          costo: String(a.price_usd ?? "0.00"),
           importe: String(a.price_usd ?? "0.00"),
           iva: String(a.iva_pct ?? "21"),
+          esquema: false,
           st: String(a.stock ?? "0"),
           compro: "0",
           entr: "0",
