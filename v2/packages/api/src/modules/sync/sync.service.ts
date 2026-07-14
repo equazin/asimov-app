@@ -113,7 +113,10 @@ export class SyncService {
         entity: 'integration_config',
         action: cfg.deletedAt ? 'delete' : 'update',
         id: cfg.provider,
-        data: cfg as unknown as Record<string, unknown>,
+        data: {
+          ...cfg,
+          config: this.sanitizePublicIntegrationConfig(cfg.config),
+        } as unknown as Record<string, unknown>,
         updatedAt: cfg.updatedAt.toISOString(),
       });
     }
@@ -433,9 +436,9 @@ export class SyncService {
   private sanitizeClientData(data: Record<string, unknown>) {
     return {
       code: String(data.code ?? ''),
-      businessName: String(data.businessName ?? data.business_name ?? ''),
-      cuit: String(data.cuit ?? ''),
-      fiscalType: String(data.fiscalType ?? data.fiscal_type ?? 'consumidor_final'),
+      businessName: String(data.businessName ?? data.business_name ?? data.name ?? ''),
+      cuit: String(data.cuit ?? data.taxId ?? data.tax_id ?? ''),
+      fiscalType: String(data.fiscalType ?? data.fiscal_type ?? data.ivaCondition ?? 'consumidor_final'),
       email: String(data.email ?? ''),
       phone: String(data.phone ?? ''),
       address: String(data.address ?? ''),
@@ -447,8 +450,8 @@ export class SyncService {
   private sanitizeSupplierData(data: Record<string, unknown>) {
     return {
       code: String(data.code ?? ''),
-      businessName: String(data.businessName ?? data.business_name ?? ''),
-      cuit: String(data.cuit ?? ''),
+      businessName: String(data.businessName ?? data.business_name ?? data.name ?? ''),
+      cuit: String(data.cuit ?? data.taxId ?? data.tax_id ?? ''),
       email: String(data.email ?? ''),
       phone: String(data.phone ?? ''),
       address: String(data.address ?? ''),
@@ -464,15 +467,15 @@ export class SyncService {
       name: String(data.name ?? ''),
       unit: String(data.unit ?? 'un'),
       category: data.category ? String(data.category) : null,
-      salePrice: Number(data.salePrice ?? data.sale_price ?? 0),
-      costPrice: Number(data.costPrice ?? data.cost_price ?? 0),
-      ivaRate: Number(data.ivaRate ?? data.iva_rate ?? 21),
+      salePrice: Number(data.salePrice ?? data.sale_price ?? data.price ?? 0),
+      costPrice: Number(data.costPrice ?? data.cost_price ?? data.cost ?? 0),
+      ivaRate: Number(data.ivaRate ?? data.iva_rate ?? data.ivaPct ?? 21),
     };
   }
 
   private sanitizeIntegrationConfigData(data: Record<string, unknown>) {
     const rawConfig = data.config && typeof data.config === 'object'
-      ? data.config
+      ? this.sanitizePublicIntegrationConfig(data.config)
       : {};
 
     return {
@@ -481,6 +484,19 @@ export class SyncService {
       active: data.active === false ? false : true,
       deletedAt: data.deletedAt ? new Date(String(data.deletedAt)) : null,
     };
+  }
+
+  /** La nube comparte parámetros operativos, nunca credenciales del dispositivo. */
+  private sanitizePublicIntegrationConfig(config: unknown) {
+    if (!config || typeof config !== 'object' || Array.isArray(config)) return {};
+    const forbidden = new Set([
+      'password', 'token', 'accesstoken', 'refreshtoken', 'certificate', 'cert',
+      'key', 'privatekey', 'afipcert', 'afipkey',
+    ]);
+    return Object.fromEntries(
+      Object.entries(config as Record<string, unknown>)
+        .filter(([key]) => !forbidden.has(key.replace(/[_-]/g, '').toLowerCase())),
+    ) as Prisma.InputJsonObject;
   }
 
   private sanitizeExchangeRateData(data: Record<string, unknown>) {

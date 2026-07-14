@@ -96,6 +96,7 @@ function setConfigValue(key: string, value: string, secret = false): void {
 export function getAfipConfig(): AfipConfig {
   const cfg = readConfigMap();
   const certPem = cfg.afip_cert ? decryptSecret(cfg.afip_cert) : "";
+  const keyPem = cfg.afip_key ? decryptSecret(cfg.afip_key) : "";
   let certExpires: string | null = null;
   if (certPem) {
     try { certExpires = certNotAfter(certPem).toISOString(); } catch { certExpires = null; }
@@ -105,8 +106,8 @@ export function getAfipConfig(): AfipConfig {
     cuit: cfg.afip_cuit ?? "",
     pointOfSale: parseInt(cfg.afip_point_of_sale ?? "1", 10) || 1,
     env: cfg.afip_env === "produccion" ? "produccion" : "homologacion",
-    hasCert: !!cfg.afip_cert,
-    hasKey: !!cfg.afip_key,
+    hasCert: !!certPem,
+    hasKey: !!keyPem,
     certExpires,
   };
 }

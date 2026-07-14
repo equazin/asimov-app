@@ -1,0 +1,60 @@
+import { describe, expect, it, vi } from 'vitest';
+import { SyncService } from './sync.service';
+
+function serviceWithPrisma() {
+  const prisma = {
+    client: { upsert: vi.fn(), updateMany: vi.fn() },
+    supplier: { upsert: vi.fn(), updateMany: vi.fn() },
+    product: { upsert: vi.fn(), updateMany: vi.fn() },
+    integrationConfig: { upsert: vi.fn(), updateMany: vi.fn() },
+    auditLog: { create: vi.fn() },
+  };
+  return { prisma, service: new SyncService(prisma as never) };
+}
+
+describe('SyncService — contratos del desktop', () => {
+  it('acepta el shape histórico name/taxId/ivaCondition de clientes', async () => {
+    const { prisma, service } = serviceWithPrisma();
+
+    const result = await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'client', action: 'update', id: 'client-1',
+      data: { code: 'C1', name: 'Cliente local', taxId: '20123456789', ivaCondition: 'responsable_inscripto' },
+    }]);
+
+    expect(result).toEqual({ processed: 1, conflicts: [] });
+    expect(prisma.client.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({
+        id: 'client-1', tenantId: 'tenant-1', businessName: 'Cliente local', cuit: '20123456789',
+        fiscalType: 'responsable_inscripto',
+      }),
+    }));
+  });
+
+  it('acepta price, cost e ivaPct de productos del desktop', async () => {
+    const { prisma, service } = serviceWithPrisma();
+
+    const result = await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'product', action: 'update', id: 'product-1',
+      data: { code: 'P1', name: 'Producto', price: 150, cost: 100, ivaPct: 10.5 },
+    }]);
+
+    expect(result.processed).toBe(1);
+    expect(prisma.product.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({ salePrice: 150, costPrice: 100, ivaRate: 10.5 }),
+    }));
+  });
+
+  it('elimina credenciales de la configuración antes de guardarla', async () => {
+    const { prisma, service } = serviceWithPrisma();
+
+    await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'integration_config', action: 'update', id: 'air',
+      data: { provider: 'air', config: { enabled: true, username: 'usuario', password: 'no-subir', access_token: 'no-subir' } },
+    }]);
+
+    expect(prisma.integrationConfig.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({ config: { enabled: true, username: 'usuario' } }),
+      update: expect.objectContaining({ config: { enabled: true, username: 'usuario' } }),
+    }));
+  });
+});

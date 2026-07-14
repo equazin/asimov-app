@@ -71,6 +71,13 @@ function clearAuthData(): void {
   store.delete(TENANT_ID_KEY);
 }
 
+export class CloudSessionExpiredError extends Error {
+  constructor(message = 'La sesión de la nube venció. Iniciá sesión nuevamente.') {
+    super(message);
+    this.name = 'CloudSessionExpiredError';
+  }
+}
+
 export function isCloudConnected(): boolean {
   return !!getAccessToken();
 }
@@ -83,31 +90,14 @@ async function apiFetch<T>(
   const url = `${baseUrl}${path}`;
   const method = options.method ?? 'GET';
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-
-  if (!options.skipAuth) {
-    const token = getAccessToken();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-  }
-
-  const response = await net.fetch(url, {
+  const request: RequestInit = {
     method,
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-
-  if (response.status === 401 && !options.skipAuth) {
-    const refreshed = await tryRefreshToken();
-    if (refreshed) {
-      return apiFetch(path, options);
-    }
-    clearAuthData();
-    throw new Error('Sesión expirada. Inicie sesión nuevamente.');
-  }
+  };
+  const response = options.skipAuth
+    ? await net.fetch(url, request)
+    : await apiAuthorizedFetch(path, request);
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ error: response.statusText }));
@@ -119,25 +109,66 @@ async function apiFetch<T>(
   return response.json() as Promise<T>;
 }
 
-async function tryRefreshToken(): Promise<boolean> {
+let refreshInFlight: Promise<boolean> | null = null;
+
+async function refreshAccessToken(): Promise<boolean> {
   const refresh = getRefreshToken();
   if (!refresh) return false;
 
   try {
-    const res = await apiFetch<{
-      success: boolean;
-      data: { accessToken: string; refreshToken: string; user: ApiUser };
-    }>('/auth/refresh', {
+    const response = await net.fetch(`${getApiBaseUrl()}/auth/refresh`, {
       method: 'POST',
-      body: { refreshToken: refresh },
-      skipAuth: true,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: refresh }),
     });
-
-    setAuthData(res.data.accessToken, res.data.refreshToken, res.data.user);
+    if (!response.ok) return false;
+    const res = await response.json() as {
+      success: boolean;
+      data: { accessToken: string; refreshToken: string };
+    };
+    const user = getStoredUser();
+    if (!user || !res.data.accessToken || !res.data.refreshToken) return false;
+    setAuthData(res.data.accessToken, res.data.refreshToken, user);
     return true;
   } catch {
     return false;
   }
+}
+
+async function tryRefreshToken(): Promise<boolean> {
+  if (!refreshInFlight) {
+    refreshInFlight = refreshAccessToken().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  return refreshInFlight;
+}
+
+/**
+ * Único transporte autenticado del desktop. Ante un 401 renueva el access token
+ * una sola vez y repite el request; si el refresh también falla, elimina la
+ * sesión inválida para que la UI deje de informar una conexión inexistente.
+ */
+export async function apiAuthorizedFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const url = path.startsWith('http') ? path : `${getApiBaseUrl()}${path}`;
+  const send = async (): Promise<Response> => {
+    const headers = new Headers(init.headers);
+    if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+    const token = getAccessToken();
+    if (token) headers.set('Authorization', `Bearer ${token}`);
+    return net.fetch(url, { ...init, headers });
+  };
+
+  let response = await send();
+  if (response.status !== 401) return response;
+
+  if (await tryRefreshToken()) {
+    response = await send();
+    if (response.status !== 401) return response;
+  }
+
+  clearAuthData();
+  throw new CloudSessionExpiredError();
 }
 
 // --- Public API Methods ---
@@ -161,7 +192,11 @@ export async function apiLogin(
 
 export async function apiLogout(): Promise<void> {
   try {
-    await apiFetch('/auth/logout', { method: 'POST' });
+    const user = getStoredUser();
+    await apiFetch('/auth/logout', {
+      method: 'POST',
+      body: { userId: user?.userId ?? '', refreshToken: getRefreshToken() ?? undefined },
+    });
   } catch {
     // best-effort
   }

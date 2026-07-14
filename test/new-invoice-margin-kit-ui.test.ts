@@ -13,9 +13,16 @@ describe("margen global de la factura", () => {
     expect(totalsPanel).toBeGreaterThan(-1);
     expect(marginControl).toBeGreaterThan(totalsPanel);
     expect(invoiceHtml).toContain('addEventListener("input", applyGeneralMargin)');
-    expect(invoiceHtml).toContain("row.precio = row.costo * (1 + margin / 100)");
+    expect(invoiceHtml).toContain("row.precio = base * (1 + margin / 100)");
     expect(invoiceHtml).toContain("row.precio = costo * (1 + margenGral / 100)");
     expect(invoiceHtml).toContain("updateTotalsTab();");
+  });
+
+  it("cuando el ítem no trae costo, usa el precio como base y lo persiste como costo", () => {
+    // Bug reportado: aplicar margen no cambiaba el total cuando el producto
+    // no tenía cost_price o cuando la fila se había cargado a mano.
+    expect(invoiceHtml).toContain("var base = row.costo > 0 ? row.costo : row.precio;");
+    expect(invoiceHtml).toContain("if (!(row.costo > 0)) row.costo = base;");
   });
 
   it("expone subtotal e IVA agregados para la impresión", () => {

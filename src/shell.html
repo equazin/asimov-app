@@ -1693,7 +1693,7 @@
   <span class="sep"></span>
   <span id="status-count"></span>
   <span class="grow"></span>
-  <span id="status-sync" class="off" onclick="runCloudSync()" title="Sincronización con la nube">
+  <span id="status-sync" class="off" onclick="openCloudRecovery()" title="Sincronización con la nube">
     <span class="sdot"></span><span id="sync-label">Sin conexión</span>
   </span>
   <span class="sep"></span>
@@ -2811,8 +2811,20 @@
           const s = await api.cloudSync.status();
           if (!s.connected) {
             syncBadge.className = "off";
-            syncLabel.textContent = "Sólo local";
-            syncBadge.title = "Trabajando en modo local. Ingresá con una cuenta de la nube para sincronizar.";
+            syncLabel.textContent = s.lastError ? "Sesión vencida" : "Sólo local";
+            syncBadge.title = s.lastError || "Trabajando en modo local. Ingresá con una cuenta de la nube para sincronizar.";
+            return;
+          }
+          if (s.parkedChanges > 0) {
+            syncBadge.className = "warn";
+            syncLabel.textContent = `${s.parkedChanges} bloqueado${s.parkedChanges === 1 ? "" : "s"}`;
+            syncBadge.title = s.lastError || "Hay cambios bloqueados. Hacé clic para recuperarlos.";
+            return;
+          }
+          if (s.lastError) {
+            syncBadge.className = "warn";
+            syncLabel.textContent = "Error de sincronización";
+            syncBadge.title = s.lastError;
             return;
           }
           if (s.syncing) {
@@ -2841,6 +2853,79 @@
           await api.cloudSync.run();
         } catch { /* silencio */ }
         refreshSyncBadge();
+      };
+      window.openCloudRecovery = async function () {
+        if (!api.cloudSync) return;
+        const [status, bootstrap, cloud, integrations] = await Promise.all([
+          api.cloudSync.status(),
+          api.cloudSync.bootstrapStatus(),
+          api.cloudSync.cloudStatus(),
+          api.cloudSync.deviceIntegrations(),
+        ]);
+        const overlay = document.createElement("div");
+        overlay.className = "asimov-modal-overlay";
+        const tenantText = cloud.user ? `${cloud.user.name} · ${cloud.user.email}` : "Sin sesión de nube";
+        const errorHtml = status.lastError
+          ? `<div style="color:var(--danger);line-height:1.4;max-width:65ch">${esc(status.lastError)}</div>`
+          : "";
+        const credentialIssues = [
+          !integrations.airPassword ? "AIR necesita su contraseña en esta PC." : "",
+          !integrations.whatsappToken ? "WhatsApp necesita su token en esta PC." : "",
+          !integrations.arcaCertificate || !integrations.arcaPrivateKey ? "ARCA necesita certificado y clave privada en esta PC." : "",
+        ].filter(Boolean);
+        const credentialHtml = credentialIssues.length
+          ? `<div style="color:var(--warning);line-height:1.45;max-width:65ch">${credentialIssues.map(esc).join("<br>")}</div>`
+          : '<div style="color:var(--success);line-height:1.45">Las credenciales locales están configuradas.</div>';
+        overlay.innerHTML = `
+          <div class="asimov-modal" role="dialog" aria-modal="true" aria-labelledby="cloud-recovery-title">
+            <div class="am-header">
+              <span id="cloud-recovery-title">Estado de la nube</span>
+              <button class="am-close" type="button" aria-label="Cerrar">×</button>
+            </div>
+            <div class="am-body">
+              <div style="line-height:1.45;max-width:65ch">
+                <strong>${esc(tenantText)}</strong><br>
+                Pendientes: ${status.pendingChanges.toLocaleString("es-AR")} · Bloqueados: ${status.parkedChanges.toLocaleString("es-AR")}<br>
+                Datos locales: ${bootstrap.documents.toLocaleString("es-AR")} documentos, ${bootstrap.products.toLocaleString("es-AR")} artículos y ${bootstrap.airProducts.toLocaleString("es-AR")} productos AIR.
+              </div>
+              ${errorHtml}
+              ${credentialHtml}
+              <div class="am-actions" style="flex-wrap:wrap">
+                ${!status.connected ? '<button class="sc-btn primary" type="button" data-action="login">Volver a iniciar sesión</button>' : ""}
+                ${credentialIssues.length ? '<button class="sc-btn" type="button" data-action="integrations">Configurar integraciones</button>' : ""}
+                ${status.parkedChanges > 0 ? '<button class="sc-btn" type="button" data-action="retry">Reintentar bloqueados</button>' : ""}
+                ${bootstrap.hasLocalBusinessData && status.connected ? '<button class="sc-btn" type="button" data-action="upload">Subir datos locales</button>' : ""}
+                <button class="sc-btn primary" type="button" data-action="sync">Sincronizar ahora</button>
+              </div>
+            </div>
+          </div>`;
+        const close = () => overlay.remove();
+        overlay.querySelector(".am-close").addEventListener("click", close);
+        overlay.addEventListener("click", (event) => { if (event.target === overlay) close(); });
+        overlay.querySelector('[data-action="sync"]')?.addEventListener("click", async () => {
+          await window.runCloudSync(); close();
+        });
+        overlay.querySelector('[data-action="retry"]')?.addEventListener("click", async () => {
+          syncLabel.textContent = "Recuperando…";
+          await api.cloudSync.retryParked();
+          close(); refreshSyncBadge();
+        });
+        overlay.querySelector('[data-action="upload"]')?.addEventListener("click", async () => {
+          const accepted = window.confirm("Se combinarán los datos de esta PC con los del tenant actual. ¿Querés continuar?");
+          if (!accepted) return;
+          syncLabel.textContent = "Preparando datos…";
+          const result = await api.cloudSync.bootstrapUpload();
+          if (!result.ok) window.alert(result.error || "No se pudo preparar la carga inicial.");
+          close(); refreshSyncBadge();
+        });
+        overlay.querySelector('[data-action="integrations"]')?.addEventListener("click", () => {
+          close();
+          navigate(!integrations.arcaCertificate || !integrations.arcaPrivateKey ? "config" : "integraciones");
+        });
+        overlay.querySelector('[data-action="login"]')?.addEventListener("click", () => {
+          close(); api.auth.logout();
+        });
+        document.body.appendChild(overlay);
       };
       refreshSyncBadge();
       setInterval(refreshSyncBadge, 5000);

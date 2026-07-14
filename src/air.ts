@@ -82,9 +82,9 @@ export function enqueueAirConfigCloudSync(): void {
     config: {
       enabled: cfg.enabled,
       username: cfg.username,
-      password: cfg.password,
       baseUrl: cfg.baseUrl,
       syncIntervalMinutes: cfg.syncIntervalMinutes,
+      requiresPasswordOnDevice: true,
     },
   });
 }

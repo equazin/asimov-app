@@ -12,11 +12,9 @@ import { dbAll, dbRun, dbGet, getDb } from './db';
 import {
   isCloudConnected,
   apiTestConnection,
-  getAccessToken,
-  getApiBaseUrl,
+  apiAuthorizedFetch,
+  CloudSessionExpiredError,
 } from './api-client';
-import { net } from 'electron';
-import { encryptSecret } from './secrets';
 import { ensureSequenceBlocks } from './sequences';
 import { applyDocEnvelope, deleteDocLocal, type DocEnvelope } from './document-sync';
 
@@ -27,6 +25,7 @@ let syncTimer: ReturnType<typeof setInterval> | null = null;
 let isSyncing = false;
 /** Recuerda si el último ciclo encontró la nube caída, para forzar reintento al volver. */
 let wasOffline = false;
+let lastCycleError: string | null = null;
 
 export function initSyncTables(): void {
   const db = getDb();
@@ -139,7 +138,8 @@ export function getPendingChanges(): QueueEntry[] {
      WHERE synced_at IS NULL
        AND attempts < ?
        AND (next_attempt_at IS NULL OR next_attempt_at <= datetime('now'))
-     ORDER BY id ASC LIMIT 100`,
+     ORDER BY CASE WHEN entity = 'external_catalog_product' THEN 1 ELSE 0 END, id ASC
+     LIMIT 250`,
     [MAX_ATTEMPTS],
   ) as QueueEntry[];
 }
@@ -184,6 +184,37 @@ export function retryParkedChanges(): number {
   return parked;
 }
 
+/** Reactiva solamente filas aparcadas por una sesión expirada. */
+export function recoverAuthParkedChanges(): number {
+  const where = `synced_at IS NULL AND attempts >= ? AND
+    (error LIKE '%HTTP 401%' OR error LIKE '%Token inválido%' OR error LIKE '%Unauthorized%')`;
+  const row = dbGet(`SELECT COUNT(*) AS count FROM sync_queue WHERE ${where}`, [MAX_ATTEMPTS]) as { count: number };
+  dbRun(
+    `UPDATE sync_queue SET attempts = 0, next_attempt_at = NULL, error = NULL WHERE ${where}`,
+    [MAX_ATTEMPTS],
+  );
+  return row.count;
+}
+
+/** Conserva sólo el estado más nuevo de cada entidad cloud con semántica upsert. */
+export function compactPendingChanges(): number {
+  const entities = "'integration_config','external_catalog_product','document_snapshot','kit_set'";
+  const before = dbGet(
+    `SELECT COUNT(*) AS count FROM sync_queue WHERE synced_at IS NULL AND entity IN (${entities})`,
+  ) as { count: number };
+  dbRun(
+    `UPDATE sync_queue SET synced_at = datetime('now'), error = 'superseded_by_newer_change'
+     WHERE synced_at IS NULL AND entity IN (${entities}) AND id NOT IN (
+       SELECT MAX(id) FROM sync_queue WHERE synced_at IS NULL AND entity IN (${entities})
+       GROUP BY entity, entity_id
+     )`,
+  );
+  const after = dbGet(
+    `SELECT COUNT(*) AS count FROM sync_queue WHERE synced_at IS NULL AND entity IN (${entities})`,
+  ) as { count: number };
+  return before.count - after.count;
+}
+
 async function pushChanges(): Promise<{ pushed: number; errors: number }> {
   const pending = getPendingChanges();
   if (pending.length === 0) return { pushed: 0, errors: 0 };
@@ -191,13 +222,9 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
   let pushed = 0;
   let errors = 0;
 
-  const baseUrl = getApiBaseUrl();
-  const token = getAccessToken();
-  if (!token) return { pushed: 0, errors: pending.length };
-
   const cloudNative = pending.filter((entry) => isCloudNativeEntity(entry.entity));
   if (cloudNative.length > 0) {
-    const result = await pushCloudNativeChanges(cloudNative, baseUrl, token);
+    const result = await pushCloudNativeChanges(cloudNative);
     pushed += result.pushed;
     errors += result.errors;
   }
@@ -211,30 +238,25 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
       switch (entry.action) {
         case 'create':
           method = 'POST';
-          url = `${baseUrl}/${entityPath}`;
+          url = `/${entityPath}`;
           break;
         case 'update':
           method = 'PATCH';
-          url = `${baseUrl}/${entityPath}/${entry.entity_id}`;
+          url = `/${entityPath}/${entry.entity_id}`;
           break;
         case 'delete':
           method = 'DELETE';
-          url = `${baseUrl}/${entityPath}/${entry.entity_id}`;
+          url = `/${entityPath}/${entry.entity_id}`;
           break;
         default:
           continue;
       }
 
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      };
-
       const body = entry.action !== 'delete' && entry.payload
         ? entry.payload
         : undefined;
 
-      const response = await net.fetch(url, { method, headers, body });
+      const response = await apiAuthorizedFetch(url, { method, body });
 
       if (response.ok) {
         dbRun(
@@ -259,6 +281,11 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
         errors++;
       }
     } catch (err) {
+      if (err instanceof CloudSessionExpiredError) {
+        lastCycleError = err.message;
+        errors++;
+        break;
+      }
       // Excepción de red (fetch falló): siempre transitorio → reintentar con backoff.
       markTransientFailure(entry.id, entry.attempts, String(err));
       errors++;
@@ -270,6 +297,10 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
 
 function isCloudNativeEntity(entity: string): boolean {
   return (
+    entity === 'client' ||
+    entity === 'supplier' ||
+    entity === 'product' ||
+    entity === 'article' ||
     entity === 'integration_config' ||
     entity === 'external_catalog_product' ||
     entity === 'document_snapshot' ||
@@ -281,8 +312,6 @@ function isCloudNativeEntity(entity: string): boolean {
 
 async function pushCloudNativeChanges(
   entries: QueueEntry[],
-  baseUrl: string,
-  token: string,
 ): Promise<{ pushed: number; errors: number }> {
   const changes = entries.map((entry) => ({
     entity: entry.entity,
@@ -292,11 +321,10 @@ async function pushCloudNativeChanges(
   }));
 
   try {
-    const response = await net.fetch(`${baseUrl}/sync/push`, {
+    const response = await apiAuthorizedFetch('/sync/push', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ changes }),
     });
@@ -336,6 +364,10 @@ async function pushCloudNativeChanges(
 
     return { pushed, errors };
   } catch (err) {
+    if (err instanceof CloudSessionExpiredError) {
+      lastCycleError = err.message;
+      return { pushed: 0, errors: entries.length };
+    }
     // Excepción de red en el batch: transitorio para todos.
     for (const entry of entries) {
       markTransientFailure(entry.id, entry.attempts, String(err));
@@ -356,24 +388,18 @@ function entityToApiPath(entity: string): string {
   return map[entity] ?? entity;
 }
 
-async function pullChanges(): Promise<number> {
+async function pullChanges(): Promise<{ pulled: number; failed: number }> {
   const lastSync = getLastSyncTimestamp();
-  const baseUrl = getApiBaseUrl();
-  const token = getAccessToken();
-  if (!token) return 0;
-
   const since = lastSync ?? '2020-01-01T00:00:00.000Z';
-  const url = `${baseUrl}/sync/pull?since=${encodeURIComponent(since)}`;
+  const url = `/sync/pull?since=${encodeURIComponent(since)}`;
 
   try {
-    const response = await net.fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await apiAuthorizedFetch(url);
 
-    if (!response.ok) return 0;
+    if (!response.ok) {
+      lastCycleError = `Error al descargar cambios: HTTP ${response.status}`;
+      return { pulled: 0, failed: 1 };
+    }
 
     const result = await response.json() as {
       success: boolean;
@@ -389,24 +415,29 @@ async function pullChanges(): Promise<number> {
       };
     };
 
-    if (!result.success) return 0;
+    if (!result.success) return { pulled: 0, failed: 1 };
 
     const { changes, serverTimestamp } = result.data;
 
+    let applied = 0;
+    let failed = 0;
     for (const change of changes) {
       // Un cambio que falle (p.ej. FK de un maestro aún no aplicado) no debe
       // abortar el resto del pull; se reintentará en el próximo ciclo.
       try {
         applyRemoteChange(change);
-      } catch {
-        // best-effort por cambio
+        applied++;
+      } catch (err) {
+        failed++;
+        lastCycleError = `No se pudo aplicar ${change.entity}:${change.id}: ${String(err)}`.slice(0, 500);
       }
     }
 
-    setLastSyncTimestamp(serverTimestamp);
-    return changes.length;
-  } catch {
-    return 0;
+    if (failed === 0) setLastSyncTimestamp(serverTimestamp);
+    return { pulled: applied, failed };
+  } catch (err) {
+    lastCycleError = err instanceof Error ? err.message : String(err);
+    return { pulled: 0, failed: 1 };
   }
 }
 
@@ -497,20 +528,29 @@ function mapAirProduct(d: RemoteRow): RemoteRow {
   };
 }
 
-function applyAirConfig(data: RemoteRow): void {
+function applyIntegrationConfig(data: RemoteRow): void {
   const provider = String(data.provider ?? '');
-  if (provider !== 'air') return;
   const rawConfig = data.config;
   if (!rawConfig || typeof rawConfig !== 'object') return;
   const cfg = rawConfig as Record<string, unknown>;
-  const entries: Array<[string, string]> = [
-    ['air_enabled', cfg.enabled === true ? 'true' : 'false'],
-    ['air_username', String(cfg.username ?? '')],
-    ['air_base_url', String(cfg.baseUrl ?? cfg.base_url ?? '')],
-    ['air_sync_interval', String(cfg.syncIntervalMinutes ?? cfg.sync_interval ?? '15')],
-  ];
-  const password = String(cfg.password ?? '');
-  if (password) entries.push(['air_password', encryptSecret(password)]);
+  let entries: Array<[string, string]>;
+  if (provider === 'air') {
+    entries = [
+      ['air_enabled', cfg.enabled === true ? 'true' : 'false'],
+      ['air_username', String(cfg.username ?? '')],
+      ['air_base_url', String(cfg.baseUrl ?? cfg.base_url ?? '')],
+      ['air_sync_interval', String(cfg.syncIntervalMinutes ?? cfg.sync_interval ?? '15')],
+    ];
+  } else if (provider === 'whatsapp') {
+    entries = [
+      ['wa_enabled', cfg.enabled === true ? 'true' : 'false'],
+      ['wa_base_url', String(cfg.baseUrl ?? cfg.base_url ?? '')],
+      ['wa_bot_phone', String(cfg.botPhone ?? cfg.bot_phone ?? '')],
+      ['wa_poll_interval', String(cfg.pollIntervalMinutes ?? cfg.poll_interval ?? '1')],
+    ];
+  } else {
+    return;
+  }
 
   for (const [key, value] of entries) {
     dbRun('INSERT OR REPLACE INTO system_config (key, value) VALUES (?, ?)', [key, value]);
@@ -689,7 +729,7 @@ function applyRemoteChange(change: {
       break;
     }
     case 'integration_config':
-      if (change.action !== 'delete') applyAirConfig(change.data);
+      if (change.action !== 'delete') applyIntegrationConfig(change.data);
       break;
     case 'external_catalog_product': {
       const provider = String(change.data.provider ?? '');
@@ -753,6 +793,7 @@ export async function runSync(): Promise<{
   const isOnline = await apiTestConnection();
   if (!isOnline) {
     wasOffline = true;
+    if (!isCloudConnected()) lastCycleError = 'La sesión de la nube venció. Iniciá sesión nuevamente.';
     return { pushed: 0, pulled: 0, errors: 0 };
   }
 
@@ -764,17 +805,19 @@ export async function runSync(): Promise<{
 
   isSyncing = true;
   try {
+    lastCycleError = null;
+    compactPendingChanges();
     // Reservar bloques de numeración pendientes antes de push (para que los
     // documentos que se creen a continuación ya tengan números autoritativos).
     await ensureSequenceBlocks();
 
     const pushResult = await pushChanges();
-    const pulled = await pullChanges();
+    const pullResult = await pullChanges();
 
     return {
       pushed: pushResult.pushed,
-      pulled,
-      errors: pushResult.errors,
+      pulled: pullResult.pulled,
+      errors: pushResult.errors + pullResult.failed,
     };
   } finally {
     isSyncing = false;
@@ -801,6 +844,7 @@ export function getSyncStatus(): {
   parkedChanges: number;
   lastSync: string | null;
   syncing: boolean;
+  lastError: string | null;
 } {
   return {
     connected: isCloudConnected(),
@@ -808,5 +852,9 @@ export function getSyncStatus(): {
     parkedChanges: getParkedCount(),
     lastSync: getLastSyncTimestamp(),
     syncing: isSyncing,
+    lastError: lastCycleError ?? (dbGet(
+      `SELECT error FROM sync_queue WHERE synced_at IS NULL AND error IS NOT NULL
+       ORDER BY id DESC LIMIT 1`,
+    ) as { error?: string } | undefined)?.error ?? null,
   };
 }

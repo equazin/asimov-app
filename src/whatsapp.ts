@@ -67,6 +67,7 @@ export function enqueueWhatsappConfigCloudSync(): void {
       baseUrl: cfg.baseUrl,
       botPhone: cfg.botPhone,
       pollIntervalMinutes: cfg.pollIntervalMinutes,
+      requiresTokenOnDevice: true,
       // NUNCA el token — se sincroniza cifrado por su ruta habitual si existe.
     },
   });

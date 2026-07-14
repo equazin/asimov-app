@@ -822,7 +822,7 @@ td{ border-color:var(--border) !important; }
               <input type="number" id="txtMargenGral" min="0" max="999" step="0.1" placeholder="Ej. 30" title="Recalcula los precios de todos los artículos usando su costo" />
               <span aria-hidden="true">%</span>
             </div>
-            <p>Recalcula todos los precios sobre el costo. En un kit usa el costo total de sus componentes.</p>
+            <p>Recalcula todos los precios sobre el costo. Si el ítem no tiene costo cargado, toma el precio actual como base. En un kit usa el costo total de sus componentes.</p>
           </div>
           <div class="totals-row"><span class="lbl">Gravado IVA 21%</span><span class="val" id="sumNeto21">$ 0,00</span></div>
           <div class="totals-row"><span class="lbl">Gravado IVA 10,5%</span><span class="val" id="sumNeto10">$ 0,00</span></div>
@@ -1326,9 +1326,15 @@ td{ border-color:var(--border) !important; }
       var margin = parseFloat(document.getElementById("txtMargenGral").value);
       if (!Number.isFinite(margin) || margin < 0 || margin > 999) return;
       items.forEach(function(row) {
-        if (!(row.costo > 0)) return;
+        // Si el ítem no tiene costo cargado (producto sin cost_price o fila
+        // manual) usar el precio actual como base y persistirlo como costo,
+        // así el margen se aplica igual y sucesivos cambios de margen quedan
+        // anclados a la misma base en vez de acumularse sobre el precio ya marcado.
+        var base = row.costo > 0 ? row.costo : row.precio;
+        if (!(base > 0)) return;
+        if (!(row.costo > 0)) row.costo = base;
         row.margen = margin;
-        row.precio = row.costo * (1 + margin / 100);
+        row.precio = base * (1 + margin / 100);
       });
       renderItemsTable();
       recalcTotals();

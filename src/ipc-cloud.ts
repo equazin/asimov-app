@@ -19,7 +19,10 @@ import {
   startSyncTimer,
   stopSyncTimer,
   retryParkedChanges,
+  recoverAuthParkedChanges,
+  compactPendingChanges,
 } from './sync';
+import { enqueueLocalBootstrap, inspectBootstrapState, inspectDeviceIntegrationStatus } from './sync-bootstrap';
 
 export function registerCloudIpcHandlers(): void {
   initSyncTables();
@@ -38,8 +41,12 @@ export function registerCloudIpcHandlers(): void {
     }
     try {
       const result = await apiLogin(data.email, data.password);
+      recoverAuthParkedChanges();
+      compactPendingChanges();
       startSyncTimer();
-      return { ok: true, user: result.user, tenantId: result.tenantId };
+      let sync: { pushed: number; pulled: number; errors: number } | undefined;
+      try { sync = await runSync(); } catch { /* el login no depende del primer ciclo de sync */ }
+      return { ok: true, user: result.user, tenantId: result.tenantId, sync };
     } catch (e) {
       return { ok: false, error: String(e instanceof Error ? e.message : e) };
     }
@@ -95,6 +102,20 @@ export function registerCloudIpcHandlers(): void {
     const reactivated = retryParkedChanges();
     const result = await runSync();
     return { ok: true, reactivated, ...result };
+  });
+
+  ipcMain.handle('sync:bootstrap-status', () => inspectBootstrapState());
+  ipcMain.handle('sync:device-integrations', () => inspectDeviceIntegrationStatus());
+
+  ipcMain.handle('sync:bootstrap-upload', async () => {
+    if (!isCloudConnected()) return { ok: false, error: 'Iniciá sesión en la nube antes de subir datos.' };
+    try {
+      const bootstrap = enqueueLocalBootstrap();
+      const sync = await runSync();
+      return { ok: true, ...bootstrap, sync };
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    }
   });
 
   // Auto-start sync if user was previously logged in
