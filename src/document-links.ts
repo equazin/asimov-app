@@ -17,7 +17,14 @@ import { isCloudConnected } from "./api-client";
 // Tipos
 // ---------------------------------------------------------------------------
 
-export type LinkableDocType = "quote" | "sale-order" | "delivery-note" | "invoice";
+export type LinkableDocType =
+  | "quote"
+  | "sale-order"
+  | "delivery-note"
+  | "invoice"
+  | "purchase-order"
+  | "purchase-invoice"
+  | "goods-receipt";
 
 export interface DocumentSource {
   tipo?: string;
@@ -44,6 +51,18 @@ export interface PendingDoc {
   items_count: number;
 }
 
+export interface PendingPurchaseDoc {
+  id: string;
+  number: string;
+  date: string;
+  status: string;
+  total: number;
+  supplier_id: string | null;
+  supplier_name: string;
+  supplier_cuit: string;
+  items_count: number;
+}
+
 export interface SourceItem {
   code: string;
   description: string;
@@ -54,11 +73,14 @@ export interface SourceItem {
 }
 
 /** Tabla y estado que corresponde a cada tipo de documento vinculable. */
-const DOC_TABLES: Record<string, { table: string; itemsTable: string; itemsFk: string }> = {
+const DOC_TABLES: Record<string, { table: string; itemsTable: string; itemsFk: string; hasTotal?: boolean }> = {
   "sale-order": { table: "sale_orders", itemsTable: "sale_order_items", itemsFk: "order_id" },
   "delivery-note": { table: "delivery_notes", itemsTable: "delivery_note_items", itemsFk: "note_id" },
   "invoice": { table: "invoices", itemsTable: "invoice_items", itemsFk: "invoice_id" },
   "quote": { table: "quotes", itemsTable: "quote_items", itemsFk: "quote_id" },
+  "purchase-order": { table: "purchase_orders", itemsTable: "purchase_order_items", itemsFk: "order_id" },
+  "purchase-invoice": { table: "purchase_invoices", itemsTable: "purchase_invoice_items", itemsFk: "invoice_id" },
+  "goods-receipt": { table: "goods_receipts", itemsTable: "goods_receipt_items", itemsFk: "receipt_id", hasTotal: false },
 };
 
 /** Estado al que pasa el documento de origen cuando se vincula a un destino. */
@@ -66,7 +88,19 @@ function statusForLink(sourceType: string, targetType: string): string | null {
   if (targetType === "invoice" && (sourceType === "sale-order" || sourceType === "delivery-note")) return "facturado";
   if (targetType === "delivery-note" && sourceType === "sale-order") return "remitido";
   if (targetType === "sale-order" && sourceType === "quote") return "aceptada";
+  if (targetType === "purchase-invoice" && sourceType === "purchase-order") return "facturado";
   return null;
+}
+
+function isAllowedLink(sourceType: string, targetType: string): boolean {
+  return (
+    (sourceType === "quote" && targetType === "sale-order") ||
+    (sourceType === "sale-order" && (targetType === "delivery-note" || targetType === "invoice")) ||
+    (sourceType === "delivery-note" && targetType === "invoice") ||
+    (sourceType === "invoice" && targetType === "invoice") ||
+    (sourceType === "purchase-order" && targetType === "purchase-invoice") ||
+    (sourceType === "purchase-invoice" && targetType === "goods-receipt")
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -81,11 +115,8 @@ export function applySourceLink(targetType: LinkableDocType, targetId: string, s
   const sourceType = String(source?.tipo ?? "").trim();
   const sourceId = String(source?.id ?? "").trim();
   const def = DOC_TABLES[sourceType];
-  // invoice → invoice es válido (factura original → nota de crédito/débito);
-  // para el resto, mismo tipo = error de datos. Nunca un documento consigo mismo.
-  const sameTypeAllowed = sourceType === "invoice" && targetType === "invoice";
   if (!def || !sourceId || !targetId || sourceId === targetId) return false;
-  if (sourceType === targetType && !sameTypeAllowed) return false;
+  if (!isAllowedLink(sourceType, targetType)) return false;
   const exists = dbGet(`SELECT id FROM ${def.table} WHERE id = ?`, [sourceId]);
   if (!exists) return false;
 
@@ -141,7 +172,7 @@ function resolveDoc(docType: string, docId: string, linkId: string): ResolvedLin
   const def = DOC_TABLES[docType];
   const row = def
     ? dbGet<{ number: string; date: string; status: string; total: number }>(
-        `SELECT number, date, status, total FROM ${def.table} WHERE id = ?`, [docId])
+        `SELECT number, date, status, ${def.hasTotal === false ? "0" : "total"} AS total FROM ${def.table} WHERE id = ?`, [docId])
     : undefined;
   return {
     link_id: linkId,
@@ -227,6 +258,53 @@ export function listPendingDeliveryNotes(clientId: string): PendingDoc[] {
   );
 }
 
+/** Órdenes de compra disponibles para generar una factura de compra. */
+export function listPendingPurchaseOrders(supplierId = ""): PendingPurchaseDoc[] {
+  const params: string[] = [];
+  const supplierFilter = supplierId ? "AND o.supplier_id = ?" : "";
+  if (supplierId) params.push(supplierId);
+  return dbAll<PendingPurchaseDoc>(
+    `SELECT o.id, o.number, o.date, o.status, o.total, o.supplier_id,
+            COALESCE(s.business_name, o.supplier_name, '') AS supplier_name,
+            COALESCE(s.cuit, '') AS supplier_cuit,
+            (SELECT COUNT(*) FROM purchase_order_items i WHERE i.order_id = o.id) AS items_count
+     FROM purchase_orders o
+     LEFT JOIN suppliers s ON s.id = o.supplier_id
+     WHERE LOWER(o.status) NOT IN ('facturado','anulado','cancelado')
+       ${supplierFilter}
+     ORDER BY o.date DESC, o.created_at DESC LIMIT 50`,
+    params,
+  );
+}
+
+/** Facturas de compra aún no usadas por un remito de compra vigente. */
+export function listPendingPurchaseInvoices(supplierId = ""): PendingPurchaseDoc[] {
+  const params: string[] = [];
+  const supplierFilter = supplierId ? "AND f.supplier_id = ?" : "";
+  if (supplierId) params.push(supplierId);
+  return dbAll<PendingPurchaseDoc>(
+    `SELECT f.id, f.number, f.date, f.status, f.total, f.supplier_id,
+            COALESCE(s.business_name, f.supplier_name, '') AS supplier_name,
+            COALESCE(s.cuit, '') AS supplier_cuit,
+            (SELECT COUNT(*) FROM purchase_invoice_items i WHERE i.invoice_id = f.id) AS items_count
+     FROM purchase_invoices f
+     LEFT JOIN suppliers s ON s.id = f.supplier_id
+     WHERE LOWER(f.status) NOT IN ('anulado','cancelado')
+       ${supplierFilter}
+       AND NOT EXISTS (
+         SELECT 1
+         FROM document_links l
+         JOIN goods_receipts r ON r.id = l.target_id
+         WHERE l.source_type = 'purchase-invoice'
+           AND l.source_id = f.id
+           AND l.target_type = 'goods-receipt'
+           AND LOWER(r.status) NOT IN ('anulado','cancelado','rechazado','rechazada')
+       )
+     ORDER BY f.date DESC, f.created_at DESC LIMIT 50`,
+    params,
+  );
+}
+
 /**
  * Ítems de un documento origen, normalizados para precargar la grilla del
  * destino. Para remitos (sin precio propio) el precio va en 0 y el usuario
@@ -262,6 +340,20 @@ export function getSourceItems(docType: string, docId: string): SourceItem[] {
     return dbAll<SourceItem>(
       `SELECT code, description, 'un' AS unit, qty, unit_price, iva_pct
        FROM invoice_items WHERE invoice_id = ? ORDER BY rowid`,
+      [docId],
+    );
+  }
+  if (docType === "purchase-order") {
+    return dbAll<SourceItem>(
+      `SELECT code, description, 'UN' AS unit, qty, unit_price, iva_pct
+       FROM purchase_order_items WHERE order_id = ? ORDER BY rowid`,
+      [docId],
+    );
+  }
+  if (docType === "purchase-invoice") {
+    return dbAll<SourceItem>(
+      `SELECT code, description, 'UN' AS unit, qty, unit_price, iva_pct
+       FROM purchase_invoice_items WHERE invoice_id = ? ORDER BY rowid`,
       [docId],
     );
   }

@@ -127,6 +127,8 @@ export interface GoodsReceiptForm {
   estado?: string;
   notasInternas?: string;
   items?: Array<{ codigo?: string; descripcion?: string; cantPedida?: number | string; cantRecibida?: number | string }>;
+  /** Factura de compra de origen. */
+  origen?: DocumentSource | null;
 }
 
 export function persistGoodsReceipt(form: GoodsReceiptForm): PersistResult {
@@ -141,7 +143,7 @@ export function persistGoodsReceipt(form: GoodsReceiptForm): PersistResult {
   let stockMoved = 0;
 
   const tx = db.transaction(() => {
-    if (!number) number = formatDocNumber("RMC", nextSequence("goods-receipt"));
+    if (!number) number = formatDocNumber("RC", nextSequence("goods-receipt"));
     dbRun(
       `INSERT OR REPLACE INTO goods_receipts (id,number,supplier_id,supplier_name,purchase_order_id,date,status,warehouse_id,notes,created_at)
        VALUES (?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM goods_receipts WHERE id=?),datetime('now')))`,
@@ -160,10 +162,11 @@ export function persistGoodsReceipt(form: GoodsReceiptForm): PersistResult {
         [randomUUID(), id, article?.id ?? null, code, str(item.descripcion), num(item.cantPedida), qtyReceived, 0],
       );
       if (!rejected && article && article.manages_stock && qtyReceived > 0) {
-        applyStockDelta(article.id, warehouseId, qtyReceived, "entrada", "goods_receipt", id, `Recepción ${number}`);
+        applyStockDelta(article.id, warehouseId, qtyReceived, "entrada", "goods_receipt", id, `Remito de compra ${number}`);
         stockMoved++;
       }
     }
+    if (form.origen) applySourceLink("goods-receipt", id, form.origen);
   });
 
   tx();
@@ -724,6 +727,8 @@ export interface PurchaseInvoiceForm {
   cae?: string; proveedorId?: string; proveedorNombre?: string; estadoCont?: string;
   percepciones?: number | string; notas?: string;
   items?: PurchaseDocItem[];
+  /** Orden de compra de origen. */
+  origen?: DocumentSource | null;
 }
 
 export function persistPurchaseInvoice(form: PurchaseInvoiceForm): PersistResult {
@@ -758,6 +763,7 @@ export function persistPurchaseInvoice(form: PurchaseInvoiceForm): PersistResult
         [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, num(it.ivaPct) || 21, num(it.subtotal) || lineSubtotal(qty, price)],
       );
     }
+    if (form.origen) applySourceLink("purchase-invoice", id, form.origen);
   });
   tx();
   enqueueDocSnapshot("purchase_invoice", id);

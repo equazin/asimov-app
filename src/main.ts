@@ -462,18 +462,20 @@ if (!gotLock) {
           "utf8",
         );
       } catch { /* best-effort */ }
-      try {
-        dialog.showMessageBoxSync({
-          type: "info",
-          title: "Asimov — Primer acceso",
-          message: "Se creó el usuario administrador.",
-          detail:
-            `Usuario: admin  (${DEFAULT_ADMIN.email})\n` +
-            `Contraseña: ${initialAdminPassword}\n\n` +
-            `Guardala y cambiala desde Usuarios apenas ingreses.` +
-            (credPath ? `\nTambién quedó en:\n${credPath}` : ""),
-        });
-      } catch { /* best-effort */ }
+      if (process.env.ASIMOV_SMOKE_TEST !== "1") {
+        try {
+          dialog.showMessageBoxSync({
+            type: "info",
+            title: "Asimov — Primer acceso",
+            message: "Se creó el usuario administrador.",
+            detail:
+              `Usuario: admin  (${DEFAULT_ADMIN.email})\n` +
+              `Contraseña: ${initialAdminPassword}\n\n` +
+              `Guardala y cambiala desde Usuarios apenas ingreses.` +
+              (credPath ? `\nTambién quedó en:\n${credPath}` : ""),
+          });
+        } catch { /* best-effort */ }
+      }
     }
 
     // --- Autenticación (gate de acceso) ---
@@ -1126,11 +1128,11 @@ function createNewPurchaseOrderWindowStandalone(parent: BrowserWindow | null): v
 }
 
 function createNewGoodsReceiptWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newGoodsReceiptWindow, (w) => { newGoodsReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#14171D", title: "Compras — RECEPCIÓN", preload: "new-goods-receipt-preload.js", file: NEW_GOODS_RECEIPT_FILE }, parent);
+  makeStandaloneForm(newGoodsReceiptWindow, (w) => { newGoodsReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#14171D", title: "Compras — REMITO DE COMPRA", preload: "new-goods-receipt-preload.js", file: NEW_GOODS_RECEIPT_FILE }, parent);
 }
 
 function createNewPurchaseInvoiceWindowStandalone(parent: BrowserWindow | null): void {
-  makeStandaloneForm(newPurchaseInvoiceWindow, (w) => { newPurchaseInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 900, minHeight: 580, bg: "#14171D", title: "Compras — FACTURA PROVEEDOR", preload: "new-purchase-invoice-preload.js", file: NEW_PURCHASE_INVOICE_FILE }, parent);
+  makeStandaloneForm(newPurchaseInvoiceWindow, (w) => { newPurchaseInvoiceWindow = w; }, { width: 1160, height: 780, minWidth: 900, minHeight: 580, bg: "#14171D", title: "Compras — FACTURA DE COMPRA", preload: "new-purchase-invoice-preload.js", file: NEW_PURCHASE_INVOICE_FILE }, parent);
 }
 
 function createNewPaymentOrderWindowStandalone(parent: BrowserWindow | null): void {

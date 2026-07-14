@@ -147,8 +147,8 @@ const MODULES: { label: string; navPath?: string; navAccel?: string; forms: Nati
     navPath: "/compras",
     forms: [
       { label: "Nueva Orden de Compra", type: "purchase-order", accel: "CmdOrCtrl+Shift+O" },
-      { label: "Nueva Recepción", type: "goods-receipt", accel: "CmdOrCtrl+Shift+G" },
-      { label: "Nueva Fact. de Compra", type: "purchase-invoice", accel: "CmdOrCtrl+Shift+I" },
+      { label: "Nuevo Remito de Compra", type: "goods-receipt", accel: "CmdOrCtrl+Shift+G" },
+      { label: "Nueva Factura de Compra", type: "purchase-invoice", accel: "CmdOrCtrl+Shift+I" },
       { label: "Nueva Orden de Pago", type: "payment-order", accel: "CmdOrCtrl+Shift+K" },
       { label: "Nuevo Proveedor", type: "supplier", accel: "CmdOrCtrl+Shift+P" },
     ],

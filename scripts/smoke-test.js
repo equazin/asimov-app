@@ -11,6 +11,8 @@
  * Pensado para correr en CI o en una VM limpia antes de publicar.
  */
 const { spawn } = require("node:child_process");
+const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 
 const TIMEOUT_MS = 15000;
@@ -18,13 +20,16 @@ const SETTLE_MS = 5000;
 
 const electronPath = require("electron");
 const appPath = path.join(__dirname, "..");
+// Aísla el lock de instancia y la base de prueba de cualquier Asimov instalado
+// que el operador tenga abierto mientras se valida una versión nueva.
+const smokeUserData = fs.mkdtempSync(path.join(os.tmpdir(), "asimov-smoke-"));
 
 console.log("[smoke-test] Lanzando Electron...");
 console.log(`  electron: ${electronPath}`);
 console.log(`  app: ${appPath}`);
 
-const child = spawn(String(electronPath), [appPath], {
-  env: { ...process.env, BARTEZ_DEV: "1", ELECTRON_NO_ATTACH_CONSOLE: "1" },
+const child = spawn(String(electronPath), [`--user-data-dir=${smokeUserData}`, appPath], {
+  env: { ...process.env, BARTEZ_DEV: "1", ASIMOV_SMOKE_TEST: "1", ELECTRON_NO_ATTACH_CONSOLE: "1" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 
@@ -91,6 +96,7 @@ setTimeout(() => {
 }, TIMEOUT_MS);
 
 child.on("close", () => {
+  try { fs.rmSync(smokeUserData, { recursive: true, force: true }); } catch { /* best-effort */ }
   if (!exited) exited = true;
   if (failure) {
     console.error(`[smoke-test] FALLO: ${failure}`);

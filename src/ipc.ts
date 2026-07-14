@@ -17,7 +17,15 @@ import {
   startWhatsappPoll,
   stopWhatsappPoll,
 } from "./whatsapp";
-import { listPendingSaleOrders, listPendingDeliveryNotes, listClientInvoicesForNote, getSourceItems, getLinksFor } from "./document-links";
+import {
+  listPendingSaleOrders,
+  listPendingDeliveryNotes,
+  listClientInvoicesForNote,
+  listPendingPurchaseOrders,
+  listPendingPurchaseInvoices,
+  getSourceItems,
+  getLinksFor,
+} from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
 import {
   dbAll,
@@ -704,6 +712,10 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     listPendingDeliveryNotes(safeStr(clientId)));
   ipcMain.handle("db:doc-links:client-invoices", (_event, clientId: unknown) =>
     listClientInvoicesForNote(safeStr(clientId)));
+  ipcMain.handle("db:doc-links:pending-purchase-orders", (_event, supplierId: unknown) =>
+    listPendingPurchaseOrders(safeStr(supplierId)));
+  ipcMain.handle("db:doc-links:pending-purchase-invoices", (_event, supplierId: unknown) =>
+    listPendingPurchaseInvoices(safeStr(supplierId)));
   ipcMain.handle("db:doc-links:source-items", (_event, type: unknown, id: unknown) =>
     getSourceItems(safeStr(type), safeStr(id)));
   ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>

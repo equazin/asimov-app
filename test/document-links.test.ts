@@ -6,12 +6,23 @@ import {
   listPendingSaleOrders,
   listPendingDeliveryNotes,
   listClientInvoicesForNote,
+  listPendingPurchaseOrders,
+  listPendingPurchaseInvoices,
   getSourceItems,
 } from "../src/document-links";
-import { persistSaleOrder, persistDeliveryNote, persistInvoice, annulDocument } from "../src/documents";
+import {
+  persistSaleOrder,
+  persistDeliveryNote,
+  persistInvoice,
+  persistPurchaseOrder,
+  persistPurchaseInvoice,
+  persistGoodsReceipt,
+  annulDocument,
+} from "../src/documents";
 import { closeDb, dbAll, dbGet, dbRun, initDb } from "../src/db";
 
 const CLIENT_ID = "cli-1";
+const SUPPLIER_ID = "sup-1";
 
 function seedBase(): void {
   initDb(":memory:");
@@ -30,6 +41,13 @@ function seedOrder(id = "so-1", status = "pendiente"): void {
   dbRun(
     "INSERT INTO sale_order_items (id, order_id, article_id, code, description, unit, qty, unit_price, iva_pct, subtotal) VALUES (?,?,?,?,?,?,?,?,?,?)",
     [`soi-${id}`, id, "art-1", "R5-5600G", "RYZEN 5 5600G", "un", 2, 250000, 21, 500000],
+  );
+}
+
+function seedSupplier(): void {
+  dbRun(
+    "INSERT INTO suppliers (id, code, business_name, cuit) VALUES (?,?,?,?)",
+    [SUPPLIER_ID, "PROV-1", "Proveedor Uno SA", "30-12345678-9"],
   );
 }
 
@@ -56,6 +74,7 @@ describe("applySourceLink", () => {
 
     expect(applySourceLink("invoice", "inv-1", { tipo: "sale-order", id: "no-existe" })).toBe(false);
     expect(applySourceLink("invoice", "inv-1", { tipo: "tabla-mala", id: "so-1" })).toBe(false);
+    expect(applySourceLink("purchase-invoice", "inv-1", { tipo: "sale-order", id: "so-1" })).toBe(false);
     expect(dbAll("SELECT * FROM document_links")).toHaveLength(1);
   });
 
@@ -188,5 +207,96 @@ describe("getSourceItems", () => {
 
   it("tipo desconocido devuelve []", () => {
     expect(getSourceItems("otro", "x")).toEqual([]);
+  });
+});
+
+describe("flujo de compras orden -> factura -> remito", () => {
+  it("la factura de compra trae una orden, la vincula y marca la orden como facturada", () => {
+    seedSupplier();
+    const order = persistPurchaseOrder({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      estado: "pendiente",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantidad: 2, precio: 100, ivaPct: 10.5 }],
+    });
+
+    expect(listPendingPurchaseOrders(SUPPLIER_ID).map((doc) => doc.id)).toContain(order.id);
+    expect(getSourceItems("purchase-order", order.id)[0]).toMatchObject({
+      code: "R5-5600G",
+      qty: 2,
+      unit_price: 100,
+      iva_pct: 10.5,
+    });
+
+    const invoice = persistPurchaseInvoice({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantidad: 2, precio: 100, ivaPct: 10.5 }],
+      origen: { tipo: "purchase-order", id: order.id },
+    });
+
+    expect(dbGet<{ status: string }>("SELECT status FROM purchase_orders WHERE id = ?", [order.id])?.status).toBe("facturado");
+    expect(listPendingPurchaseOrders(SUPPLIER_ID).map((doc) => doc.id)).not.toContain(order.id);
+    expect(getLinksFor("purchase-invoice", invoice.id).origins[0]).toMatchObject({
+      doc_type: "purchase-order",
+      doc_id: order.id,
+    });
+  });
+
+  it("el remito de compra trae una factura y conserva la trazabilidad completa", () => {
+    seedSupplier();
+    const order = persistPurchaseOrder({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      estado: "pendiente",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantidad: 3, precio: 125, ivaPct: 21 }],
+    });
+    const invoice = persistPurchaseInvoice({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantidad: 3, precio: 125, ivaPct: 21 }],
+      origen: { tipo: "purchase-order", id: order.id },
+    });
+
+    expect(listPendingPurchaseInvoices(SUPPLIER_ID).map((doc) => doc.id)).toContain(invoice.id);
+    expect(getSourceItems("purchase-invoice", invoice.id)[0]).toMatchObject({
+      code: "R5-5600G",
+      qty: 3,
+      unit_price: 125,
+      iva_pct: 21,
+    });
+
+    const receipt = persistGoodsReceipt({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantPedida: 3, cantRecibida: 3 }],
+      origen: { tipo: "purchase-invoice", id: invoice.id },
+    });
+
+    expect(listPendingPurchaseInvoices(SUPPLIER_ID).map((doc) => doc.id)).not.toContain(invoice.id);
+    expect(getLinksFor("goods-receipt", receipt.id).origins[0]).toMatchObject({
+      doc_type: "purchase-invoice",
+      doc_id: invoice.id,
+    });
+    expect(getLinksFor("purchase-order", order.id).derived[0].doc_id).toBe(invoice.id);
+  });
+
+  it("al anular la factura la orden vuelve a pendiente", () => {
+    seedSupplier();
+    const order = persistPurchaseOrder({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      estado: "pendiente",
+      items: [{ codigo: "R5-5600G", descripcion: "X", cantidad: 1, precio: 100, ivaPct: 21 }],
+    });
+    const invoice = persistPurchaseInvoice({
+      proveedorId: SUPPLIER_ID,
+      proveedorNombre: "Proveedor Uno SA",
+      items: [{ codigo: "R5-5600G", descripcion: "X", cantidad: 1, precio: 100, ivaPct: 21 }],
+      origen: { tipo: "purchase-order", id: order.id },
+    });
+
+    expect(annulDocument("purchase-invoice", invoice.id).ok).toBe(true);
+    expect(dbGet<{ status: string }>("SELECT status FROM purchase_orders WHERE id = ?", [order.id])?.status).toBe("pendiente");
   });
 });

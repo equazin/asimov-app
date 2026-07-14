@@ -772,7 +772,8 @@
     <div class="nav-section">
       <div class="nav-label">Compras</div>
       <div class="nav-item" data-view="ordenes-compra"><span class="icon"><svg><use href="#i-cart"/></svg></span> Órd. de Compra</div>
-      <div class="nav-item" data-view="recepciones"><span class="icon"><svg><use href="#i-inbox"/></svg></span> Recepciones</div>
+      <div class="nav-item" data-view="recepciones"><span class="icon"><svg><use href="#i-inbox"/></svg></span> Remitos de compra</div>
+      <div class="nav-item" data-view="facturas-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas de compra</div>
       <div class="nav-item" data-view="proveedores"><span class="icon"><svg><use href="#i-factory"/></svg></span> Proveedores</div>
     </div>
 
@@ -947,18 +948,34 @@
       </div>
     </div>
 
-    <!-- ── Recepciones ──────────────────────────────────────── -->
+    <!-- ── Remitos de compra ───────────────────────────────── -->
     <div class="view" id="view-recepciones">
       <div class="view-header">
-        <h1><svg class="ic"><use href="#i-inbox"/></svg> Recepciones de Mercadería</h1>
+        <h1><svg class="ic"><use href="#i-inbox"/></svg> Remitos de compra</h1>
         <span class="badge" id="badge-recepciones">—</span>
-        <button class="btn btn-primary" onclick="A.openNativeForm('goods-receipt')">+ Nueva Recepción</button>
+        <button class="btn btn-primary" onclick="A.openNativeForm('goods-receipt')">+ Nuevo remito de compra</button>
       </div>
       <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar recepción, proveedor..." oninput="A.loadView('recepciones',this.value)" /></div>
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar remito, proveedor..." oninput="A.loadView('recepciones',this.value)" /></div>
         <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recepciones')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-recepciones">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Facturas de compra ──────────────────────────────── -->
+    <div class="view" id="view-facturas-compra">
+      <div class="view-header">
+        <h1><svg class="ic"><use href="#i-file"/></svg> Facturas de compra</h1>
+        <span class="badge" id="badge-facturas-compra">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('purchase-invoice')">+ Nueva factura de compra</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar factura, proveedor..." oninput="A.loadView('facturas-compra',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('facturas-compra')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-facturas-compra">
         <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
@@ -1797,7 +1814,7 @@
       ],
     },
     recepciones: {
-      title: "Recepciones",
+      title: "Remitos de compra",
       annul: "goods-receipt",
       load: (s) => asimov().goodsReceipts.list(s),
       cols: [
@@ -1805,6 +1822,19 @@
         { label: "Proveedor", key: "supplier_name"              },
         { label: "Fecha",     key: "date",          w: "90px",  fmt: fmtDate },
         { label: "Estado",    key: "status",        w: "100px", fmt: fmtPill },
+      ],
+    },
+    "facturas-compra": {
+      title: "Facturas de compra",
+      annul: "purchase-invoice",
+      load: (s) => asimov().purchaseInvoices.list(s),
+      cols: [
+        { label: "Número",    key: "number",        w: "130px" },
+        { label: "Proveedor", key: "supplier_name"              },
+        { label: "Fecha",     key: "date",          w: "90px",  fmt: fmtDate },
+        { label: "Tipo",      key: "tipo",          w: "70px" },
+        { label: "Estado",    key: "status",        w: "100px", fmt: fmtPill },
+        { label: "Total",     key: "total",         w: "110px", fmt: fmtARS, align: "right" },
       ],
     },
     proveedores: {
@@ -2132,7 +2162,8 @@
       "/ventas/clientes": "clientes",
       "/ventas/oportunidades": "oportunidades",
       "/compras": "ordenes-compra", "/compras/ordenes": "ordenes-compra",
-      "/compras/recepciones": "recepciones",
+      "/compras/recepciones": "recepciones", "/compras/remitos": "recepciones",
+      "/compras/facturas": "facturas-compra",
       "/compras/proveedores": "proveedores",
       "/stock": "stock", "/stock/articulos": "stock",
       "/stock/movimientos": "movimientos",

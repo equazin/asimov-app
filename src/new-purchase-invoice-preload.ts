@@ -13,6 +13,10 @@ const api = {
   onProductSelected: (cb: (data: { product: any; rowId: string }) => void) => {
     ipcRenderer.on("shell:product-selected", (_evt, data) => cb(data));
   },
+  pendingPurchaseOrders: (supplierId = "") =>
+    ipcRenderer.invoke("db:doc-links:pending-purchase-orders", supplierId),
+  getSourceItems: (type: string, id: string) =>
+    ipcRenderer.invoke("db:doc-links:source-items", type, id),
   savePurchaseInvoice: (invoice: any) => {
     ipcRenderer.send("shell:purchase-invoice-saved", { invoice });
   },

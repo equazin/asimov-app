@@ -573,13 +573,9 @@ td{ border-color:var(--border) !important; }
         <label>Condición IVA</label>
         <input type="text" id="proveedorIva" readonly placeholder="—">
       </div>
-      <div class="form-group span-2">
+      <div class="form-group span-4">
         <label>OC vinculada</label>
-        <input type="text" id="ocVinculada" placeholder="OC-YYMM-XXXXX">
-      </div>
-      <div class="form-group span-2">
-        <label>Recepción vinculada</label>
-        <input type="text" id="rmcVinculada" placeholder="RMC-YYMM-XXXXX">
+        <input type="text" id="ocVinculada" placeholder="Traer una orden de compra" readonly>
       </div>
     </div>
   </div>
@@ -588,6 +584,8 @@ td{ border-color:var(--border) !important; }
     <div class="items-toolbar">
       <button class="btn-sm" onclick="agregarFila()">+ Agregar ítem</button>
       <button class="btn-sm secondary" onclick="abrirProductoPicker()">🔍 Buscar producto (F4)</button>
+      <button class="btn-sm secondary" id="btnTraerOrden" onclick="abrirOrdenPicker()">Traer orden de compra</button>
+      <span class="hint" id="origenBadge"></span>
       <span class="hint">Insert = nueva fila · F4 = buscar producto</span>
     </div>
     <div class="table-wrap">
@@ -716,6 +714,16 @@ td{ border-color:var(--border) !important; }
 
 </div>
 
+<div id="origenModal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.62);align-items:center;justify-content:center">
+  <div style="width:min(760px,92vw);max-height:76vh;overflow:auto;background:#151c25;border:1px solid #344155;border-radius:10px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <strong>Órdenes de compra disponibles</strong>
+      <button class="btn-sm secondary" type="button" onclick="cerrarOrdenPicker()">Cerrar</button>
+    </div>
+    <div id="origenLista" style="display:grid;gap:8px"></div>
+  </div>
+</div>
+
 <div class="footer">
   <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
   <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
@@ -727,6 +735,7 @@ td{ border-color:var(--border) !important; }
 <script>
 (function(){
   var proveedorId = null;
+  var origenDoc = null;
   var tipoActual = 'FC-A';
   var rowCounter = 0;
   var cuotaCounter = 0;
@@ -786,6 +795,8 @@ td{ border-color:var(--border) !important; }
       '<td><input class="cell-input right" data-col="sub" readonly value="0,00"></td>'+
       '<td><button class="del-row" title="Eliminar fila">✕</button></td>';
     tbody.appendChild(tr);
+    tr.querySelector('[data-col=desc_pct]').value = String(data.descPct||0);
+    tr.querySelector('[data-col=iva_pct]').value = String(data.ivaPct === undefined ? 21 : data.ivaPct);
     tr.querySelector('.del-row').addEventListener('click',function(){tr.remove();recalcTotals()});
     tr.querySelectorAll('input[data-col=cant],input[data-col=precio],input[data-col=desc_pct]').forEach(function(inp){
       inp.addEventListener('input',function(){recalcFila(tr);recalcTotals()});
@@ -872,18 +883,88 @@ td{ border-color:var(--border) !important; }
     if(window.asimovNewPurchaseInvoice) window.asimovNewPurchaseInvoice.openProductSelection();
   }
 
+  function setOrigen(doc){
+    origenDoc = doc ? {tipo:'purchase-order',id:doc.id,numero:doc.number} : null;
+    document.getElementById('ocVinculada').value = doc ? doc.number : '';
+    document.getElementById('origenBadge').textContent = doc ? 'Origen: '+doc.number : '';
+  }
+
+  function tieneItemsCargados(){
+    return Array.from(document.querySelectorAll('#itemsBody tr')).some(function(tr){
+      return tr.querySelector('[data-col=codigo]').value.trim() || tr.querySelector('[data-col=desc]').value.trim();
+    });
+  }
+
+  async function abrirOrdenPicker(){
+    if(!window.asimovNewPurchaseInvoice || !window.asimovNewPurchaseInvoice.pendingPurchaseOrders) return;
+    var modal = document.getElementById('origenModal');
+    var lista = document.getElementById('origenLista');
+    modal.style.display = 'flex';
+    lista.textContent = 'Buscando órdenes de compra...';
+    try{
+      var docs = await window.asimovNewPurchaseInvoice.pendingPurchaseOrders(proveedorId||'');
+      lista.innerHTML = '';
+      if(!docs.length){ lista.textContent = 'No hay órdenes de compra pendientes.'; return; }
+      docs.forEach(function(doc){
+        var row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'btn-sm secondary';
+        row.style.cssText = 'display:flex;justify-content:space-between;text-align:left;padding:10px 12px';
+        var total = Number(doc.total||0).toLocaleString('es-AR',{style:'currency',currency:'ARS'});
+        row.textContent = doc.number+' · '+(doc.supplier_name||'Sin proveedor')+' · '+doc.items_count+' ítems · '+total;
+        row.addEventListener('click',function(){ traerOrden(doc); });
+        lista.appendChild(row);
+      });
+    }catch(err){
+      lista.textContent = 'No se pudieron cargar las órdenes: '+(err && err.message ? err.message : err);
+    }
+  }
+
+  function cerrarOrdenPicker(){
+    document.getElementById('origenModal').style.display = 'none';
+  }
+
+  async function traerOrden(doc){
+    if(tieneItemsCargados() && !confirm('Se reemplazarán los ítems actuales por los de la orden de compra. ¿Continuar?')) return;
+    try{
+      var items = await window.asimovNewPurchaseInvoice.getSourceItems('purchase-order',doc.id);
+      proveedorId = doc.supplier_id||null;
+      document.getElementById('proveedorNombre').value = doc.supplier_name||'';
+      document.getElementById('proveedorCuit').value = doc.supplier_cuit||'';
+      document.getElementById('provBadge').textContent = 'Proveedor: '+(doc.supplier_name||'—');
+      document.getElementById('itemsBody').innerHTML = '';
+      items.forEach(function(item){
+        agregarFila({codigo:item.code,descripcion:item.description,unidad:item.unit,cantidad:item.qty,precio:item.unit_price,ivaPct:item.iva_pct});
+      });
+      if(!items.length) agregarFila();
+      setOrigen(doc);
+      cerrarOrdenPicker();
+      activarTab('items');
+    }catch(err){
+      alert('No se pudo traer la orden de compra: '+(err && err.message ? err.message : err));
+    }
+  }
+
   function onClientSelected(data){
     if(!data || data.contextId !== 'fc-proveedor') return;
+    if(origenDoc && proveedorId && proveedorId !== data.id) setOrigen(null);
     proveedorId = data.id;
-    document.getElementById('proveedorNombre').value = esc(data.nombre||'');
-    document.getElementById('proveedorCuit').value = esc(data.cuit||'');
-    document.getElementById('proveedorIva').value = esc(data.condIva||'');
+    document.getElementById('proveedorNombre').value = data.nombre||'';
+    document.getElementById('proveedorCuit').value = data.cuit||'';
+    document.getElementById('proveedorIva').value = data.condIva||'';
     document.getElementById('provBadge').textContent = 'Proveedor: '+(data.nombre||'—');
   }
 
   function onProductSelected(data){
-    if(!data) return;
-    agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,precio:data.precioCompra||0});
+    if(!data || !data.product) return;
+    var product = data.product;
+    agregarFila({
+      codigo:product.codigo||product.code||'',
+      descripcion:product.descripcion||product.description||product.name||'',
+      unidad:product.unidad||product.unit||'UN',
+      precio:product.costo||product.cost_price||0,
+      ivaPct:product.iva == null ? 21 : product.iva
+    });
   }
 
   if(window.asimovNewPurchaseInvoice){
@@ -942,7 +1023,7 @@ td{ border-color:var(--border) !important; }
       proveedorNombre: document.getElementById('proveedorNombre').value,
       proveedorCuit: document.getElementById('proveedorCuit').value,
       ocVinculada: document.getElementById('ocVinculada').value,
-      rmcVinculada: document.getElementById('rmcVinculada').value,
+      origen: origenDoc,
       percepciones: parseFloat(document.getElementById('percepciones').value)||0,
       bancoPago: document.getElementById('bancoPago').value,
       cbuProveedor: document.getElementById('cbuProveedor').value,
@@ -975,6 +1056,19 @@ td{ border-color:var(--border) !important; }
       if(panel && panel.id === 'panel-items'){e.preventDefault();agregarFila()}
       if(panel && panel.id === 'panel-vencimientos'){e.preventDefault();agregarCuota()}
     }
+  });
+
+  Object.assign(window, {
+    abrirProveedorPicker: abrirProveedorPicker,
+    abrirProductoPicker: abrirProductoPicker,
+    abrirOrdenPicker: abrirOrdenPicker,
+    cerrarOrdenPicker: cerrarOrdenPicker,
+    agregarFila: agregarFila,
+    agregarCuota: agregarCuota,
+    recalcTotals: recalcTotals,
+    guardar: guardar,
+    imprimir: imprimir,
+    anular: anular
   });
 
   initDate();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nueva Recepción de Mercadería</title>
+<title>Nuevo Remito de Compra</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -455,8 +455,8 @@ td{ border-color:var(--border) !important; }
 
 <div class="header">
   <span class="header-icon">📥</span>
-  <span class="header-title">Nueva Recepción de Mercadería</span>
-  <span class="header-badge" id="rmcBadge">RMC-2506-00001</span>
+  <span class="header-title">Nuevo Remito de Compra</span>
+  <span class="header-badge" id="rmcBadge">NUEVO</span>
   <button class="close-btn" onclick="window.close()">✕</button>
 </div>
 
@@ -473,8 +473,8 @@ td{ border-color:var(--border) !important; }
     <div class="section-title">Identificación</div>
     <div class="form-grid">
       <div class="form-group">
-        <label>Nro. recepción</label>
-        <input type="text" id="nroRmc" readonly value="RMC-2506-00001">
+        <label>Nro. remito de compra</label>
+        <input type="text" id="nroRmc" readonly placeholder="Se asigna al guardar">
       </div>
       <div class="form-group">
         <label>Fecha</label>
@@ -505,11 +505,11 @@ td{ border-color:var(--border) !important; }
         </div>
       </div>
       <div class="form-group">
-        <label>OC de origen</label>
-        <input type="text" id="ocOrigen" placeholder="OC-YYMM-XXXXX">
+        <label>Factura de compra de origen</label>
+        <input type="text" id="facturaOrigen" placeholder="Traer una factura de compra" readonly>
       </div>
       <div class="form-group">
-        <label>Remito / Remisión proveedor</label>
+        <label>Nro. remito del proveedor</label>
         <input type="text" id="remito" placeholder="Nro. del remito del proveedor">
       </div>
     </div>
@@ -535,6 +535,8 @@ td{ border-color:var(--border) !important; }
     <div class="items-toolbar">
       <button class="btn-sm" onclick="agregarFila()">+ Agregar ítem</button>
       <button class="btn-sm secondary" onclick="abrirProductoPicker()">🔍 Buscar producto (F4)</button>
+      <button class="btn-sm secondary" id="btnTraerFactura" onclick="abrirFacturaPicker()">Traer factura</button>
+      <span class="hint" id="origenBadge"></span>
       <span class="hint">Insert = nueva fila · F4 = buscar producto</span>
     </div>
     <div class="table-wrap">
@@ -636,6 +638,16 @@ td{ border-color:var(--border) !important; }
 
 </div>
 
+<div id="origenModal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.62);align-items:center;justify-content:center">
+  <div style="width:min(760px,92vw);max-height:76vh;overflow:auto;background:#151c25;border:1px solid #344155;border-radius:10px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <strong>Facturas de compra disponibles</strong>
+      <button class="btn-sm secondary" type="button" onclick="cerrarFacturaPicker()">Cerrar</button>
+    </div>
+    <div id="origenLista" style="display:grid;gap:8px"></div>
+  </div>
+</div>
+
 <div class="footer">
   <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
   <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
@@ -647,6 +659,7 @@ td{ border-color:var(--border) !important; }
 <script>
 (function(){
   var proveedorId = null;
+  var origenDoc = null;
   var rowCounter = 0;
 
   function esc(s){
@@ -656,13 +669,6 @@ td{ border-color:var(--border) !important; }
   function fmtNum(n,dec){
     dec = dec === undefined ? 2 : dec;
     return Number(n).toLocaleString('es-AR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
-  }
-
-  function genBadge(){
-    var d = new Date();
-    var yy = String(d.getFullYear()).slice(2);
-    var mm = String(d.getMonth()+1).padStart(2,'0');
-    return 'RMC-'+yy+mm+'-'+'00001';
   }
 
   function initDateTime(){
@@ -729,15 +735,82 @@ td{ border-color:var(--border) !important; }
     if(window.asimovNewGoodsReceipt) window.asimovNewGoodsReceipt.openProductSelection();
   }
 
+  function setOrigen(doc){
+    origenDoc = doc ? {tipo:'purchase-invoice',id:doc.id,numero:doc.number} : null;
+    document.getElementById('facturaOrigen').value = doc ? doc.number : '';
+    document.getElementById('origenBadge').textContent = doc ? 'Origen: '+doc.number : '';
+  }
+
+  function tieneItemsCargados(){
+    return Array.from(document.querySelectorAll('#itemsBody tr')).some(function(tr){
+      return tr.querySelector('[data-col=codigo]').value.trim() || tr.querySelector('[data-col=desc]').value.trim();
+    });
+  }
+
+  async function abrirFacturaPicker(){
+    if(!window.asimovNewGoodsReceipt || !window.asimovNewGoodsReceipt.pendingPurchaseInvoices) return;
+    var modal = document.getElementById('origenModal');
+    var lista = document.getElementById('origenLista');
+    modal.style.display = 'flex';
+    lista.textContent = 'Buscando facturas de compra...';
+    try{
+      var docs = await window.asimovNewGoodsReceipt.pendingPurchaseInvoices(proveedorId||'');
+      lista.innerHTML = '';
+      if(!docs.length){ lista.textContent = 'No hay facturas de compra pendientes de remito.'; return; }
+      docs.forEach(function(doc){
+        var row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'btn-sm secondary';
+        row.style.cssText = 'display:flex;justify-content:space-between;text-align:left;padding:10px 12px';
+        var total = Number(doc.total||0).toLocaleString('es-AR',{style:'currency',currency:'ARS'});
+        row.textContent = doc.number+' · '+(doc.supplier_name||'Sin proveedor')+' · '+doc.items_count+' ítems · '+total;
+        row.addEventListener('click',function(){ traerFactura(doc); });
+        lista.appendChild(row);
+      });
+    }catch(err){
+      lista.textContent = 'No se pudieron cargar las facturas: '+(err && err.message ? err.message : err);
+    }
+  }
+
+  function cerrarFacturaPicker(){
+    document.getElementById('origenModal').style.display = 'none';
+  }
+
+  async function traerFactura(doc){
+    if(tieneItemsCargados() && !confirm('Se reemplazarán los ítems actuales por los de la factura de compra. ¿Continuar?')) return;
+    try{
+      var items = await window.asimovNewGoodsReceipt.getSourceItems('purchase-invoice',doc.id);
+      proveedorId = doc.supplier_id||null;
+      document.getElementById('proveedorNombre').value = doc.supplier_name||'';
+      document.getElementById('itemsBody').innerHTML = '';
+      items.forEach(function(item){
+        agregarFila({codigo:item.code,descripcion:item.description,unidad:item.unit,pedida:item.qty});
+      });
+      if(!items.length) agregarFila();
+      setOrigen(doc);
+      cerrarFacturaPicker();
+      activarTab('items');
+    }catch(err){
+      alert('No se pudo traer la factura de compra: '+(err && err.message ? err.message : err));
+    }
+  }
+
   function onClientSelected(data){
     if(!data || data.contextId !== 'rmc-proveedor') return;
+    if(origenDoc && proveedorId && proveedorId !== data.id) setOrigen(null);
     proveedorId = data.id;
-    document.getElementById('proveedorNombre').value = esc(data.nombre||'');
+    document.getElementById('proveedorNombre').value = data.nombre||'';
   }
 
   function onProductSelected(data){
-    if(!data) return;
-    agregarFila({codigo:data.codigo,descripcion:data.descripcion,unidad:data.unidad,pedida:1});
+    if(!data || !data.product) return;
+    var product = data.product;
+    agregarFila({
+      codigo:product.codigo||product.code||'',
+      descripcion:product.descripcion||product.description||product.name||'',
+      unidad:product.unidad||product.unit||'UN',
+      pedida:1
+    });
   }
 
   if(window.asimovNewGoodsReceipt){
@@ -782,7 +855,7 @@ td{ border-color:var(--border) !important; }
       hora: document.getElementById('hora').value,
       proveedorId: proveedorId,
       proveedorNombre: document.getElementById('proveedorNombre').value,
-      ocOrigen: document.getElementById('ocOrigen').value,
+      origen: origenDoc,
       remito: document.getElementById('remito').value,
       estado: document.getElementById('estado').value,
       deposito: document.getElementById('deposito').value,
@@ -808,7 +881,7 @@ td{ border-color:var(--border) !important; }
   }
 
   function anular(){
-    if(!confirm('¿Desea marcar esta recepción como Rechazada?')) return;
+    if(!confirm('¿Desea marcar este remito de compra como rechazado?')) return;
     document.getElementById('estado').value = 'Rechazada';
     guardar();
   }
@@ -822,9 +895,17 @@ td{ border-color:var(--border) !important; }
     }
   });
 
-  var badge = genBadge();
-  document.getElementById('rmcBadge').textContent = badge;
-  document.getElementById('nroRmc').value = badge;
+  Object.assign(window, {
+    abrirProveedorPicker: abrirProveedorPicker,
+    abrirProductoPicker: abrirProductoPicker,
+    abrirFacturaPicker: abrirFacturaPicker,
+    cerrarFacturaPicker: cerrarFacturaPicker,
+    agregarFila: agregarFila,
+    guardar: guardar,
+    imprimir: imprimir,
+    anular: anular
+  });
+
   initDateTime();
   agregarFila();
 })();

@@ -26,7 +26,7 @@ describe("documents — recepción de mercadería (stock IN)", () => {
         { codigo: "NOEXISTE", descripcion: "Libre", cantPedida: 3, cantRecibida: 3 },
       ],
     });
-    expect(res.number).toMatch(/^RMC-/);
+    expect(res.number).toMatch(/^RC-/);
     expect(res.stockMoved).toBe(1);
     expect(stockOf("art-COD1")).toBe(7);
     expect(stockOf("art-COD2")).toBe(0);
