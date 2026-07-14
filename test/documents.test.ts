@@ -148,6 +148,30 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     expect(one("SELECT COALESCE(SUM(iva_amount),0) i FROM invoice_items WHERE invoice_id=?", res.id).i).toBeCloseTo(63);
   });
 
+  it("factura: guarda usd_rate y show_kit_components (default = 1 si no se pasa)", () => {
+    // Default: show_kit_components debe ser 1 cuando el form no lo manda.
+    const def = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+      totales: { total: 121 },
+    });
+    const h1 = one("SELECT usd_rate, show_kit_components FROM invoices WHERE id=?", def.id);
+    expect(h1.usd_rate).toBeNull();
+    expect(h1.show_kit_components).toBe(1);
+
+    // Con valores explícitos.
+    const res = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "X", cantidad: 1, precio: 100, iva: 21 }],
+      totales: { total: 121 },
+      cotizacionUsd: 1510.5,
+      mostrarComponentesKit: false,
+    });
+    const h2 = one("SELECT usd_rate, show_kit_components FROM invoices WHERE id=?", res.id);
+    expect(h2.usd_rate).toBeCloseTo(1510.5);
+    expect(h2.show_kit_components).toBe(0);
+  });
+
   it("orden de compra: total calculado server-side desde los ítems", () => {
     const res = persistPurchaseOrder({
       proveedorNombre: "Prov", fecha: "06/07/2026",

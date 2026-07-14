@@ -334,6 +334,13 @@ const api = {
     libroIvaExport: (desde: string, hasta: string) => ipcRenderer.invoke("afip:libro-iva-export", desde, hasta) as Promise<{ ok: boolean; data?: { count: number; files: string[] }; error?: string }>,
   },
 
+  // Esquemas / kits — necesario en el shell para expandir componentes al reimprimir
+  // una factura vieja con show_kit_components = 1.
+  kits: {
+    get: (articleId: string) => ipcRenderer.invoke("db:kits:get", articleId) as Promise<{ ok: boolean; data?: { components: Array<{ component_article_id: string; code: string; name: string; qty: number; cost_price: number; sale_price: number }>; componentsCost: number; componentsSalePrice: number; buildableStock: number }; error?: string }>,
+    set: (articleId: string, components: Array<{ articleId: string; qty: number }>) => ipcRenderer.invoke("db:kits:set", articleId, components) as Promise<{ ok: boolean; data?: { count: number }; error?: string }>,
+  },
+
   // Sincronización con la API v2 (Render). Sirve para el badge de estado
   // en el status bar y para forzar un push/pull manual desde la UI.
   cloudSync: {

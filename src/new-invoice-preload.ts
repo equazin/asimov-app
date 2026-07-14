@@ -32,6 +32,12 @@ const api = {
     ipcRenderer.invoke("db:doc-links:client-invoices", clientId),
   getSourceItems: (type: string, id: string) =>
     ipcRenderer.invoke("db:doc-links:source-items", type, id),
+  // Cotización del dólar — para el default del input "Cotización USD" al abrir el form.
+  dolarLatest: () =>
+    ipcRenderer.invoke("dolar:latest") as Promise<{ ok: boolean; data?: Array<{ casa: string; venta: number }>; error?: string }>,
+  // Componentes de un kit — para el modo "consolidado" al imprimir.
+  getKitInfo: (articleId: string) =>
+    ipcRenderer.invoke("db:kits:get", articleId) as Promise<{ ok: boolean; data?: { components: Array<{ component_article_id: string; code: string; name: string; qty: number }> }; error?: string }>,
   cancel: () => {
     ipcRenderer.send("shell:invoice-saved", { invoice: null });
   },

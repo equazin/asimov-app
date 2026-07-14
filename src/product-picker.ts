@@ -1,6 +1,8 @@
 import { dbAll } from "./db";
 
 export interface ProductPickerItem {
+  /** Id del artículo local — necesario para expandir componentes de un kit al imprimir. */
+  articleId?: string;
   codigo: string;
   descripcion: string;
   costo: string;
@@ -35,6 +37,7 @@ export function loadLocalProductsForPicker(): ProductPickerItem[] {
   );
 
   return rows.map((article) => ({
+    articleId: String(article.id ?? ""),
     codigo: String(article.code ?? ""),
     descripcion: String(article.name ?? ""),
     costo: String(article.effective_cost ?? "0.00"),

@@ -90,4 +90,49 @@ describe("impresión monocroma de comprobantes", () => {
     expect(css).toContain("grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr)");
     expect(css).toContain(".cbt .document-summary.totals-only");
   });
+
+  it("imprime la cotización USD → ARS y los componentes de kit como sub-líneas sin precio", () => {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, {
+      window,
+      document: { getElementById: () => area },
+      Intl, Number, String, isFinite, setTimeout,
+    });
+    const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
+
+    renderComprobante("factura", {
+      letter: "B", number: "0001-00058140", date: "2026-07-14",
+      party: { name: "Cliente Demo" },
+      notes: "",
+      usdRate: 1510,
+      items: [
+        {
+          code: "40174", description: "PC BARTHO SERIES RYZEN 5",
+          qty: 1, unit: "UN", unitPrice: 497741.30, ivaPct: 10.5, lineTotal: 497741.30,
+          components: [
+            { code: "YD3400", description: "CPU AMD RYZEN 5 3400G", qty: 1 },
+            { code: "A520M-A", description: "MB MSI AM4 A520M-A", qty: 1 },
+          ],
+        },
+      ],
+      totals: { subtotal: 497741.30, iva: 52262.84, total: 550004.14 },
+    });
+
+    // Cotización aparece en el bloque de notas del pie.
+    expect(area.innerHTML).toContain('class="cotizacion"');
+    expect(area.innerHTML).toContain("Cotización:");
+    expect(area.innerHTML).toContain("1.510,00");
+
+    // Cada componente sale como sub-línea con clase distintiva y sin celdas de precio.
+    expect(area.innerHTML).toContain('class="kit-component"');
+    expect(area.innerHTML).toContain("CPU AMD RYZEN 5 3400G");
+    expect(area.innerHTML).toContain("MB MSI AM4 A520M-A");
+    // El colspan agrupa las 3 columnas de precio (P.Unit, %IVA, Importe) para
+    // que la sub-línea no muestre importe individual.
+    expect(area.innerHTML).toMatch(/kit-component[\s\S]*colspan="3"/);
+    // La línea principal del kit conserva su precio total (Intl.NumberFormat
+    // usa NBSP U+00A0 entre el símbolo y el número).
+    expect(area.innerHTML).toContain("$ 497.741,30");
+  });
 });

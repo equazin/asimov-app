@@ -179,7 +179,7 @@
       "</tr></thead>";
     var body = items.map(function (it) {
       var line = withPrices ? (Number(it.qty) * Number(it.unitPrice)) : 0;
-      return (
+      var mainRow =
         "<tr>" +
         "<td>" + esc(it.code) + "</td>" +
         "<td>" + esc(it.description) + "</td>" +
@@ -187,8 +187,24 @@
         (withPrices
           ? '<td class="r">' + money(it.unitPrice) + '</td><td class="c">' + esc(it.ivaPct) + '</td><td class="r">' + money(it.lineTotal != null ? it.lineTotal : line) + "</td>"
           : '<td class="c">' + esc(d(it.unit, "UN")) + "</td>") +
-        "</tr>"
-      );
+        "</tr>";
+      // Sub-líneas informativas de un kit: cantidad + descripción del componente
+      // con el resto de las columnas vacías (sin precio unitario, sin importe).
+      var subRows = "";
+      if (Array.isArray(it.components) && it.components.length > 0) {
+        var extraCols = withPrices ? 3 : 1;
+        subRows = it.components.map(function (c) {
+          return (
+            '<tr class="kit-component">' +
+            '<td class="kit-comp-code">' + esc(c.code || "") + "</td>" +
+            '<td class="kit-comp-desc">' + esc(c.description || "") + "</td>" +
+            '<td class="c">' + num3(c.qty) + "</td>" +
+            '<td colspan="' + extraCols + '"></td>' +
+            "</tr>"
+          );
+        }).join("");
+      }
+      return mainRow + subRows;
     }).join("");
     return '<table class="items">' + head + "<tbody>" + body + "</tbody></table>";
   }
@@ -211,7 +227,12 @@
   }
 
   function notesBlock(data) {
-    return '<div class="notes">' + (data.notes ? "Observaciones: " + esc(data.notes) : "") + "</div>";
+    var cotiz = Number(data.usdRate);
+    var cotizHtml = isFinite(cotiz) && cotiz > 0
+      ? '<div class="cotizacion"><b>Cotización:</b> ' + cotiz.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</div>"
+      : "";
+    var obs = data.notes ? "Observaciones: " + esc(data.notes) : "";
+    return '<div class="notes">' + cotizHtml + obs + "</div>";
   }
   function footBlock() {
     return '<div class="foot"><span>' + EMISOR.nombre + " — " + EMISOR.sub + "</span><span>Impreso por Asimov ERP</span></div>";

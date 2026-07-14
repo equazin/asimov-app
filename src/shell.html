@@ -2185,6 +2185,7 @@
     return (items || []).map(function (it) {
       var qty = it.qty != null ? it.qty : (it.qty_delivered != null ? it.qty_delivered : 1);
       return {
+        articleId: it.article_id || "",
         code: it.code || "",
         description: it.description || "",
         qty: qty,
@@ -2194,6 +2195,26 @@
         lineTotal: it.subtotal != null ? it.subtotal : (Number(qty) * Number(it.unit_price || 0)),
       };
     });
+  }
+
+  // Hidrata componentes de kit para el modo "consolidado" al reimprimir. Se
+  // llama desde reprintDoc cuando la factura tiene show_kit_components = 1.
+  async function hydratePrintKits(items) {
+    var api = asimov();
+    if (!api || !api.kits || !api.kits.get) return items;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      if (!it.articleId) continue;
+      try {
+        var res = await api.kits.get(it.articleId);
+        if (res && res.ok && res.data && Array.isArray(res.data.components) && res.data.components.length > 0) {
+          it.components = res.data.components.map(function (c) {
+            return { code: c.code || "", description: c.name || "", qty: Number(c.qty) * Number(it.qty || 1) };
+          });
+        }
+      } catch (_) { /* silent */ }
+    }
+    return items;
   }
 
   // Reimprime un documento ya guardado: lo trae de la DB, lo mapea al formato del
@@ -2207,11 +2228,16 @@
       let data;
       if (type === "factura") {
         const inv = await api.invoices.get(id);
+        const showKitComponents = inv.show_kit_components == null || Number(inv.show_kit_components) === 1;
+        let printItems = mapPrintItems(inv.items);
+        if (showKitComponents) printItems = await hydratePrintKits(printItems);
         data = {
           letter: inv.tipo || "B", number: inv.number, date: fmtDate(inv.date),
           party: { name: inv.client_name || "", cuit: "", iva: "", address: "" },
-          notes: inv.notes || "", items: mapPrintItems(inv.items),
+          notes: inv.notes || "", items: printItems,
           totals: { subtotal: inv.subtotal, iva: inv.iva_amount, total: inv.total },
+          usdRate: inv.usd_rate != null ? Number(inv.usd_rate) : 0,
+          showKitComponents: showKitComponents,
           cae: inv.cae || "", caeExpiration: inv.cae_expiry || "", qrDataUrl: "",
         };
         if (inv.client_id) { try { const c = await api.clients.get(inv.client_id); if (c) { data.party.cuit = c.cuit || ""; data.party.iva = c.fiscal_type || ""; data.party.address = c.address || ""; } } catch (_) {} }

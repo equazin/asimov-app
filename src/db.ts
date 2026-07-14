@@ -247,6 +247,8 @@ CREATE TABLE IF NOT EXISTS invoices (
   cae_expiry    TEXT,
   afip_error    TEXT,
   notes         TEXT,
+  usd_rate      REAL,                              -- Cotización USD → ARS usada al emitir (para el pie de la factura impresa)
+  show_kit_components INTEGER NOT NULL DEFAULT 1,  -- Al imprimir: 1 = desplegar componentes del kit como sub-líneas; 0 = una sola línea por kit
   created_at    TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (client_id) REFERENCES clients(id)
 );
@@ -815,6 +817,12 @@ export function initDb(dbPath?: string): void {
   // Estado fiscal de facturas: conserva el último error de ARCA para que el
   // operador pueda corregir y reintentar desde la lista.
   try { _db.exec("ALTER TABLE invoices ADD COLUMN afip_error TEXT"); } catch {}
+  // Cotización USD → ARS que rigió la venta (para reimprimir con el mismo pie
+  // que la factura original, aún si la cotización de hoy cambió).
+  try { _db.exec("ALTER TABLE invoices ADD COLUMN usd_rate REAL"); } catch {}
+  // Preferencia por factura: desplegar (1) u ocultar (0) los componentes del
+  // kit en la impresión. Default = 1 (como en el sistema anterior).
+  try { _db.exec("ALTER TABLE invoices ADD COLUMN show_kit_components INTEGER NOT NULL DEFAULT 1"); } catch {}
   _db.exec(`
     UPDATE invoices
        SET status = 'autorizada', afip_error = NULL

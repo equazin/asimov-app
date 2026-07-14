@@ -737,9 +737,17 @@ td{ border-color:var(--border) !important; }
           <label>Vendedor</label>
           <input type="text" id="txtVendedor" />
         </div>
-        <div class="field"></div>
-        <div class="field"></div>
-        <div class="field"></div>
+        <div class="field">
+          <label title="Cotización USD → ARS que se imprime en el pie del comprobante">Cotización USD ($)</label>
+          <input type="number" id="txtCotizacionUsd" min="0" step="0.01" placeholder="1510,00"
+            style="font-family:Consolas,monospace;text-align:right;" />
+        </div>
+        <div class="field span-2" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+          <input type="checkbox" id="chkMostrarKit" checked style="width:16px;height:16px;cursor:pointer;" />
+          <label for="chkMostrarKit" style="cursor:pointer;margin:0;font-size:11px;line-height:1.3;">
+            Al imprimir, desplegar los componentes del kit debajo de la línea principal (sin precio individual).
+          </label>
+        </div>
 
         <div class="section-title">Referencias</div>
         <div class="field">
@@ -1085,6 +1093,17 @@ td{ border-color:var(--border) !important; }
       document.getElementById("txtFechaVenc").value = venc.toISOString().slice(0, 10);
       document.getElementById("txtPrimerVenc").value = venc.toISOString().slice(0, 10);
       updateHeader();
+      // Cotización USD → ARS: default con el último "oficial.venta" del sync
+      // de DolarAPI. Si falla o no hay dato, queda vacío y el usuario tipea.
+      if (window.asimovNewInvoice && window.asimovNewInvoice.dolarLatest) {
+        window.asimovNewInvoice.dolarLatest().then(function(res) {
+          if (!res || !res.ok || !Array.isArray(res.data)) return;
+          var oficial = res.data.find(function(r) { return String(r.casa || "").toLowerCase() === "oficial"; });
+          if (oficial && Number.isFinite(Number(oficial.venta))) {
+            document.getElementById("txtCotizacionUsd").value = Number(oficial.venta).toFixed(2);
+          }
+        }).catch(function() { /* silent */ });
+      }
     })();
 
     function updateHeader() {
@@ -1160,6 +1179,9 @@ td{ border-color:var(--border) !important; }
         if (!data.product) return;
         var row = items.find(function(r) { return String(r.id) === String(data.rowId); });
         if (!row) return;
+        // Guardar id/esKit para poder expandir componentes al imprimir un kit.
+        row.articleId = data.product.articleId || data.product.id || "";
+        row.isKit = Boolean(data.product.esquema);
         row.codigo = data.product.codigo || data.product.code || "";
         row.descripcion = data.product.descripcion || data.product.description || data.product.name || "";
         row.unidad = data.product.unidad || "UN";
@@ -1199,7 +1221,7 @@ td{ border-color:var(--border) !important; }
       prefill = prefill || {};
       var rowId = nextRowId++;
       var margenGral = parseFloat(document.getElementById("txtMargenGral").value) || 0;
-      items.push({ id: rowId, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, costo: 0, margen: margenGral, precio: 0, descuento: 0, iva: 21 });
+      items.push({ id: rowId, articleId: "", isKit: false, codigo: "", descripcion: "", unidad: "UN", cantidad: 1, costo: 0, margen: margenGral, precio: 0, descuento: 0, iva: 21 });
       Object.assign(items[items.length - 1], prefill);
       renderItemsTable(); recalcTotals();
       setTimeout(function() {
@@ -1521,6 +1543,8 @@ td{ border-color:var(--border) !important; }
         totales: window._totals || {},
         observaciones: document.getElementById("txtObsCliente").value,
         origen: origenDoc,
+        cotizacionUsd: parseFloat(document.getElementById("txtCotizacionUsd").value) || null,
+        mostrarComponentesKit: document.getElementById("chkMostrarKit").checked,
       };
     }
 
@@ -1628,6 +1652,7 @@ td{ border-color:var(--border) !important; }
       recalcTotals();
       var t = window._totals || {};
       var cli = clienteData || {};
+      var showKits = document.getElementById("chkMostrarKit").checked;
       return {
         letter: tipoActual,
         number: (document.getElementById("txtPtoVta").value || "0001") + "-" + (document.getElementById("txtNroFact").value || ""),
@@ -1641,8 +1666,17 @@ td{ border-color:var(--border) !important; }
         condVenta: document.getElementById("selCondVenta").value,
         vendedor: document.getElementById("txtVendedor") ? document.getElementById("txtVendedor").value : "",
         notes: document.getElementById("txtObsCliente").value,
+        usdRate: parseFloat(document.getElementById("txtCotizacionUsd").value) || 0,
+        showKitComponents: showKits,
         items: items.map(function (it) {
-          return { code: it.codigo, description: it.descripcion, qty: it.cantidad, unit: it.unidad, unitPrice: it.precio, ivaPct: it.iva, lineTotal: Number(it.cantidad) * Number(it.precio) };
+          return {
+            articleId: it.articleId || "",
+            isKit: Boolean(it.isKit),
+            code: it.codigo, description: it.descripcion,
+            qty: it.cantidad, unit: it.unidad,
+            unitPrice: it.precio, ivaPct: it.iva,
+            lineTotal: Number(it.cantidad) * Number(it.precio),
+          };
         }),
         totals: { subtotal: t.subtotal, iva: t.iva, perc: t.perc || 0, total: t.total },
         // Datos de AFIP cuando la factura ya fue autorizada (CAE + QR).
@@ -1651,8 +1685,42 @@ td{ border-color:var(--border) !important; }
         qrDataUrl: window._caeData ? window._caeData.qrDataUrl : "",
       };
     };
-    document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("factura"); });
-    document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); window.printComprobante("factura"); } });
+
+    // Expande cada ítem que sea kit trayendo sus componentes desde SQLite, para
+    // renderizarlos como sub-líneas informativas debajo del kit. Solo se llama
+    // cuando el flag está prendido y el ítem tiene articleId conocido.
+    async function hydrateKitComponents(printItems) {
+      if (!printItems) return printItems;
+      var api = window.asimovNewInvoice;
+      if (!api || !api.getKitInfo) return printItems;
+      for (var i = 0; i < printItems.length; i++) {
+        var it = printItems[i];
+        if (!it.isKit || !it.articleId) continue;
+        try {
+          var res = await api.getKitInfo(it.articleId);
+          if (res && res.ok && res.data && Array.isArray(res.data.components)) {
+            it.components = res.data.components.map(function(c) {
+              return {
+                code: c.code || "",
+                description: c.name || "",
+                qty: Number(c.qty) * Number(it.qty || 1),
+              };
+            });
+          }
+        } catch (_) { /* silencioso: si no hay componentes, se imprime solo la línea del kit */ }
+      }
+      return printItems;
+    }
+
+    async function printFactura() {
+      var data = window.getPrintData();
+      if (!data) return;
+      if (data.showKitComponents) data.items = await hydrateKitComponents(data.items);
+      window.renderComprobante("factura", data);
+      setTimeout(function() { window.print(); }, 40);
+    }
+    document.getElementById("btnPrint").addEventListener("click", function () { printFactura(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); printFactura(); } });
 
     var closeHandler = function() {
       if (window.asimovNewInvoice) window.asimovNewInvoice.cancel();

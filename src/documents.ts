@@ -464,6 +464,12 @@ export interface InvoiceForm {
   totales?: { neto21?: number; neto10?: number; neto0?: number; iva21?: number; iva10?: number; total?: number };
   /** Documento de origen (pedido/remito traído al form): crea vínculo y propaga estado. */
   origen?: DocumentSource | null;
+  /** Cotización USD → ARS del día. Se imprime en el pie para que la contra-parte
+   *  pueda reconstruir el USD original si el pedido fue tomado en dólares. */
+  cotizacionUsd?: number | string | null;
+  /** Preferencia por factura: al imprimir, desplegar (true/undefined) u ocultar
+   *  (false) los componentes de cada ítem que sea un kit. Default = true. */
+  mostrarComponentesKit?: boolean;
 }
 
 export function persistInvoice(form: InvoiceForm): PersistResult {
@@ -482,16 +488,22 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
 
   const tx = db.transaction(() => {
     if (!number) number = `${pos}-${String(nextSequence(`invoice-${tipo}`)).padStart(8, "0")}`;
+    const cotiz = num(form.cotizacionUsd);
+    const usdRate = Number.isFinite(cotiz) && cotiz > 0 ? cotiz : null;
+    // Default true si no vino explícitamente en el form (compat con formularios previos).
+    const showKits = form.mostrarComponentesKit === false ? 0 : 1;
     dbRun(
-      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+      `INSERT INTO invoices (id,number,client_id,client_name,date,tipo,point_of_sale,status,subtotal,iva_amount,total,afip_error,notes,usd_rate,show_kit_components)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
        ON CONFLICT(id) DO UPDATE SET
          number=excluded.number, client_id=excluded.client_id, client_name=excluded.client_name,
          date=excluded.date, tipo=excluded.tipo, point_of_sale=excluded.point_of_sale,
          status='borrador', subtotal=excluded.subtotal, iva_amount=excluded.iva_amount,
-         total=excluded.total, afip_error=NULL, notes=excluded.notes`,
+         total=excluded.total, afip_error=NULL, notes=excluded.notes,
+         usd_rate=excluded.usd_rate, show_kit_components=excluded.show_kit_components`,
       [id, number, str(form.cliente?.id) || null, str(form.clienteNombre), date, tipo, pos, "borrador",
-       totals.subtotal, totals.ivaAmount, totals.total, null, str(form.observaciones)],
+       totals.subtotal, totals.ivaAmount, totals.total, null, str(form.observaciones),
+       usdRate, showKits],
     );
     dbRun("DELETE FROM invoice_items WHERE invoice_id = ?", [id]);
     for (const it of items) {
