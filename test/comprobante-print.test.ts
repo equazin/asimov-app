@@ -34,7 +34,7 @@ function renderDocument(type: string, itemCount: number) {
 
 describe("impresión monocroma de comprobantes", () => {
   it("aísla el comprobante del esquema oscuro del shell", () => {
-    expect(css).toContain("#print-area.cbt,\n  #print-area.cbt *");
+    expect(css).toMatch(/#print-area\.cbt,\r?\n\s+#print-area\.cbt \*/);
     expect(css).toContain("color-scheme: light !important");
   });
 
