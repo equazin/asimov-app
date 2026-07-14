@@ -518,7 +518,7 @@ td{ border-color:var(--border) !important; }
         <label>Proveedor</label>
         <div class="picker-row">
           <input type="text" id="proveedorNombre" placeholder="Seleccionar proveedor..." readonly>
-          <button class="picker-btn" onclick="abrirProveedorPicker()">...</button>
+          <button type="button" class="picker-btn" id="btnPickSupplier">...</button>
         </div>
       </div>
       <div class="form-group">
@@ -569,8 +569,8 @@ td{ border-color:var(--border) !important; }
 
   <div class="tab-panel" id="panel-items">
     <div class="items-toolbar">
-      <button class="btn-sm" onclick="agregarFila()">+ Agregar ítem</button>
-      <button class="btn-sm secondary" onclick="abrirProductoPicker()">🔍 Buscar producto (F4)</button>
+      <button type="button" class="btn-sm" id="btnAddItem">+ Agregar ítem</button>
+      <button type="button" class="btn-sm secondary" id="btnPickProduct">🔍 Buscar producto (F4)</button>
       <span class="hint">Insert = nueva fila · Del = eliminar fila · F4 = buscar producto</span>
     </div>
     <div class="table-wrap">
@@ -683,9 +683,9 @@ td{ border-color:var(--border) !important; }
 </div>
 
 <div class="footer">
-  <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
-  <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
-  <button class="footer-btn btn-cancel" onclick="anular()">🚫 Anular</button>
+  <button type="button" class="footer-btn btn-save" id="btnSave">💾 Guardar <span class="kbd">F8</span></button>
+  <button type="button" class="footer-btn btn-print" id="btnPrint">🖨 Imprimir</button>
+  <button type="button" class="footer-btn btn-cancel" id="btnAnnul">🚫 Anular</button>
   <div class="footer-spacer"></div>
   <button class="footer-btn btn-exit" onclick="window.close()">Salir</button>
 </div>
@@ -803,12 +803,12 @@ td{ border-color:var(--border) !important; }
     if(window.asimovNewPurchaseOrder) window.asimovNewPurchaseOrder.openProductSelection();
   }
 
-  function onClientSelected(data){
+  function onSupplierSelected(data){
     if(!data || data.contextId !== 'oc-proveedor') return;
     proveedorId = data.id;
-    document.getElementById('proveedorNombre').value = esc(data.nombre||'');
-    document.getElementById('proveedorCuit').value = esc(data.cuit||'');
-    document.getElementById('proveedorIva').value = esc(data.condIva||'');
+    document.getElementById('proveedorNombre').value = String(data.nombre||'');
+    document.getElementById('proveedorCuit').value = String(data.cuit||'');
+    document.getElementById('proveedorIva').value = String(data.condIva||'');
   }
 
   function onProductSelected(data){
@@ -817,7 +817,7 @@ td{ border-color:var(--border) !important; }
   }
 
   if(window.asimovNewPurchaseOrder){
-    if(window.asimovNewPurchaseOrder.onSupplierSelected) window.asimovNewPurchaseOrder.onSupplierSelected(onClientSelected);
+    if(window.asimovNewPurchaseOrder.onSupplierSelected) window.asimovNewPurchaseOrder.onSupplierSelected(onSupplierSelected);
     if(window.asimovNewPurchaseOrder.onProductSelected) window.asimovNewPurchaseOrder.onProductSelected(onProductSelected);
   }
 
@@ -883,6 +883,13 @@ td{ border-color:var(--border) !important; }
     document.getElementById('estado').value = 'Cancelada';
     guardar();
   }
+
+  document.getElementById('btnPickSupplier').addEventListener('click',abrirProveedorPicker);
+  document.getElementById('btnAddItem').addEventListener('click',function(){agregarFila()});
+  document.getElementById('btnPickProduct').addEventListener('click',abrirProductoPicker);
+  document.getElementById('btnSave').addEventListener('click',guardar);
+  document.getElementById('btnPrint').addEventListener('click',imprimir);
+  document.getElementById('btnAnnul').addEventListener('click',anular);
 
   document.addEventListener('keydown',function(e){
     if(e.key === 'F8'){e.preventDefault();guardar()}
