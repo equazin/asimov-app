@@ -1,66 +1,22 @@
 /**
- * Handlers IPC del proceso principal.
- * Toda comunicación renderer → main pasa por aquí con validación de entrada.
+ * Handlers IPC del proceso principal — orquestador.
+ *
+ * Los grupos autocontenidos (app/shell/print/notify, afip, air, wa, dolar)
+ * viven en `src/ipc/*.ts`; acá quedan los handlers `db:*` (dominio ERP).
+ * Toda comunicación renderer → main pasa por acá con validación de entrada.
  */
-import { app, BrowserWindow, dialog, ipcMain, Notification } from "electron";
+import { app, dialog, ipcMain } from "electron";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import {
-  getLaunchAtStartup,
-  getShellPreferences,
-  setShellBackground,
-  getBookmarks,
-  addBookmark,
-  removeBookmark,
-  getPrintPreferences,
-  setPreferredPrinter,
-  setSilentPrint,
-  type ShellBackground,
-} from "./config";
-import { setLaunchAtStartupEnabled } from "./tray";
-import { hashPassword, type SessionUser } from "./auth";
+import { hashPassword } from "./auth";
 import { encryptSecret } from "./secrets";
-import { enqueueChange } from "./sync";
-import { isCloudConnected } from "./api-client";
-import { buildDocEnvelope } from "./document-sync";
-
-/** Encola un cambio (create/update/delete) sólo si hay sesión cloud activa. */
-function enqueueIfCloud(entity: string, id: string, action: "create" | "update" | "delete", payload?: Record<string, unknown>) {
-  if (!isCloudConnected() || !id) return;
-  try { enqueueChange(entity, id, action, payload); } catch { /* best-effort */ }
-}
+import { enqueueAirConfigCloudSync, isAirEnabled, resetAirAuthCache } from "./air";
 import {
-  getAirLocalConfig,
-  isAirEnabled,
-  runAirSync,
-  testAirConnection,
-  startAirSyncTimer,
-  stopAirSyncTimer,
-  enqueueAirConfigCloudSync,
-  resetAirAuthCache,
-} from "./air";
-import {
-  getWhatsappConfig,
+  enqueueWhatsappConfigCloudSync,
   isWhatsappEnabled,
-  listLocalChats,
-  listLocalMessages,
-  runWhatsappSync,
-  sendMessage as sendWhatsappMessage,
-  sendTemplate as sendWhatsappTemplate,
-  testWhatsappConnection,
   startWhatsappPoll,
   stopWhatsappPoll,
-  enqueueWhatsappConfigCloudSync,
 } from "./whatsapp";
-import { getLatestRates, getRateHistory, refreshDolarNow, repriceArticlesFromUsd } from "./dolar";
-import {
-  getAfipConfig, saveAfipCredentials, testAfipConnection, runAfipDiagnostics, requestCae as afipRequestCae,
-  markInvoicePendingCae, retryPendingCae, getPendingCaeInvoices, consultarPadron,
-  buildStoredInvoiceQr,
-  type SaveCredentialsInput, type CaeRequestInput,
-} from "./afip-service";
-import { buildLibroIvaVentas } from "./libro-iva";
-import { isAfipUnavailable } from "./afip/domain";
 import { listPendingSaleOrders, listPendingDeliveryNotes, listClientInvoicesForNote, getSourceItems, getLinksFor } from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
 import {
@@ -75,98 +31,30 @@ import {
   upsertSupplier,
   upsertArticle,
 } from "./db";
-
-interface IpcDeps {
-  getMainWindow: () => BrowserWindow | null;
-  getCurrentUser?: () => SessionUser | null;
-}
-
-function normalizeShellBackground(raw: unknown): ShellBackground {
-  const data = (raw ?? {}) as { type?: unknown; value?: unknown };
-  const type = String(data.type ?? "default");
-  const value = String(data.value ?? "").trim();
-  if (type === "color" && /^#[0-9a-f]{6}$/i.test(value)) return { type: "color", value };
-  if (type === "image" && value) return { type: "image", value };
-  return { type: "default", value: "" };
-}
-
-function safeStr(v: unknown, max = 500): string {
-  return String(v ?? "").slice(0, max).trim();
-}
+import {
+  safeStr,
+  enqueueIfCloud,
+  makeIsAdmin,
+  DENY_ADMIN,
+  type IpcDeps,
+} from "./ipc/shared";
+import { registerAppIpc } from "./ipc/app";
+import { registerDolarIpc } from "./ipc/dolar";
+import { registerAirIpc } from "./ipc/air";
+import { registerWhatsappIpc } from "./ipc/wa";
+import { registerAfipIpc } from "./ipc/afip";
 
 export function registerIpcHandlers(deps: IpcDeps): void {
+  // Grupos autocontenidos extraídos a src/ipc/*.
+  registerAppIpc(deps);
+  registerDolarIpc(deps);
+  registerAirIpc(deps);
+  registerWhatsappIpc(deps);
+  registerAfipIpc(deps);
 
   // Enforcement de rol en el proceso main (fuente de verdad; el gating del shell
   // es solo UX). Sin sesión se niega por defecto para las acciones sensibles.
-  const isAdmin = (): boolean => ["admin", "owner", "superadmin"].includes(
-    String(deps.getCurrentUser?.()?.role ?? "").toLowerCase(),
-  );
-  const DENY_ADMIN = { ok: false, error: "Solo un administrador puede realizar esta acción." } as const;
-
-  // --- App info ------------------------------------------------------------
-  ipcMain.handle("app:version", () => app.getVersion());
-  ipcMain.handle("app:launch-at-startup:get", () => getLaunchAtStartup());
-  ipcMain.handle("app:launch-at-startup:set", (_event, value: unknown) => {
-    setLaunchAtStartupEnabled(Boolean(value));
-    return { ok: true, enabled: getLaunchAtStartup() };
-  });
-
-  // --- Shell preferences ---------------------------------------------------
-  ipcMain.handle("shell:prefs:get", () => getShellPreferences());
-
-  ipcMain.handle("shell:background:set", (_event, raw: unknown) => {
-    return setShellBackground(normalizeShellBackground(raw));
-  });
-
-  ipcMain.handle("shell:bookmark:list", () => getBookmarks());
-
-  ipcMain.handle("shell:bookmark:add", (_event, raw: unknown) => {
-    const data = (raw ?? {}) as { title?: unknown; path?: unknown };
-    return addBookmark({ title: safeStr(data.title), path: safeStr(data.path) });
-  });
-
-  ipcMain.handle("shell:bookmark:remove", (_event, id: unknown) => {
-    return removeBookmark(safeStr(id));
-  });
-
-  // --- Impresión -----------------------------------------------------------
-  ipcMain.handle("print:current", async (event, opts: unknown) => {
-    const window = BrowserWindow.fromWebContents(event.sender) ?? deps.getMainWindow();
-    if (!window) return { ok: false, error: "No hay ventana activa." };
-    const options = (opts ?? {}) as { silent?: boolean; deviceName?: string; usePreferred?: boolean };
-    const prefs = getPrintPreferences();
-    const useSilent = options.silent ?? (options.usePreferred && prefs.silentPrint && !!prefs.preferredPrinter);
-    const deviceName = options.deviceName ?? (options.usePreferred && prefs.preferredPrinter ? prefs.preferredPrinter : undefined);
-    return new Promise((resolve) => {
-      window.webContents.print(
-        { silent: Boolean(useSilent), deviceName, printBackground: true },
-        (success, failureReason) => resolve(success ? { ok: true } : { ok: false, error: failureReason }),
-      );
-    });
-  });
-
-  ipcMain.handle("print:list", async (event) => {
-    const window = BrowserWindow.fromWebContents(event.sender) ?? deps.getMainWindow();
-    if (!window) return [];
-    try { return await window.webContents.getPrintersAsync(); } catch { return []; }
-  });
-
-  ipcMain.handle("print:preferred:get", () => getPrintPreferences());
-  ipcMain.handle("print:preferred:set", (_event, deviceName: unknown) => setPreferredPrinter(safeStr(deviceName)));
-  ipcMain.handle("print:silent:set", (_event, silent: unknown) => setSilentPrint(Boolean(silent)));
-
-  // --- Notificaciones ------------------------------------------------------
-  ipcMain.handle("notify:show", (_event, payload: unknown) => {
-    if (!Notification.isSupported()) return { ok: false };
-    const data = (payload ?? {}) as { title?: string; body?: string };
-    const n = new Notification({ title: data.title ?? "Asimov", body: data.body ?? "" });
-    n.on("click", () => {
-      const w = deps.getMainWindow();
-      if (w) { if (w.isMinimized()) w.restore(); w.focus(); }
-    });
-    n.show();
-    return { ok: true };
-  });
+  const isAdmin = makeIsAdmin(deps);
 
   // --- Dashboard KPIs ------------------------------------------------------
   ipcMain.handle("db:kpis", () => {
@@ -775,314 +663,6 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     return { ok: true, filePath };
   });
 
-  // --- AIR S.R.L. Integration -----------------------------------------------
-
-  ipcMain.handle("air:config:get", () => getAirLocalConfig());
-
-  ipcMain.handle("air:enabled", () => isAirEnabled());
-
-  ipcMain.handle("air:products:list", (_event, search: unknown) => {
-    // Igual que en Stock: "NB+LENOVO" busca filas que contengan TODOS los términos.
-    const terms = safeStr(search).split("+").map(t => t.trim()).filter(Boolean);
-    const conditions = terms.map(() => "(air_code LIKE ? OR description LIKE ? OR brand LIKE ? OR category LIKE ?)");
-    const params = terms.flatMap(t => { const q = `%${t}%`; return [q, q, q, q]; });
-    const where = conditions.length ? " AND " + conditions.join(" AND ") : "";
-    return dbAll(
-      `SELECT id, air_code, description, brand, category, price_usd, price_ars, iva_pct, stock, active, synced_at
-       FROM air_products
-       WHERE active = 1${where}
-       ORDER BY description LIMIT 500`,
-      params,
-    );
-  });
-
-  ipcMain.handle("air:products:count", () => {
-    const row = dbGet<{ total: number; active: number }>(
-      `SELECT
-         COUNT(*) as total,
-         SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END) as active
-       FROM air_products`,
-    );
-    return row ?? { total: 0, active: 0 };
-  });
-
-  ipcMain.handle("air:sync:history", () =>
-    dbAll(
-      `SELECT id, started_at, finished_at, status, products_synced, error_message
-       FROM air_sync_runs ORDER BY started_at DESC LIMIT 20`,
-    )
-  );
-
-  ipcMain.handle("air:sync:run", async () => {
-    try {
-      return await runAirSync();
-    } catch (err: unknown) {
-      return { status: "error", error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("air:test-connection", async () => {
-    try {
-      return await testAirConnection();
-    } catch (err: unknown) {
-      return { ok: false, message: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("air:sync-timer:start", () => {
-    startAirSyncTimer();
-    return { ok: true };
-  });
-
-  ipcMain.handle("air:sync-timer:stop", () => {
-    stopAirSyncTimer();
-    return { ok: true };
-  });
-
-  // --- WhatsApp Bot Integration ---------------------------------------------
-
-  ipcMain.handle("wa:config:get", () => {
-    // Nunca devolvemos el token: la UI sólo confirma si está seteado.
-    const cfg = getWhatsappConfig();
-    return {
-      enabled: cfg.enabled,
-      baseUrl: cfg.baseUrl,
-      botPhone: cfg.botPhone,
-      pollIntervalMinutes: cfg.pollIntervalMinutes,
-      hasToken: cfg.token.length > 0,
-    };
-  });
-
-  ipcMain.handle("wa:enabled", () => isWhatsappEnabled());
-
-  ipcMain.handle("wa:chats:list", (_event, search: unknown) => listLocalChats(safeStr(search)));
-
-  ipcMain.handle("wa:messages:list", (_event, chatId: unknown) => {
-    const id = safeStr(chatId);
-    if (!id) return [];
-    return listLocalMessages(id);
-  });
-
-  ipcMain.handle("wa:messages:send", async (_event, raw: unknown) => {
-    const r = (raw ?? {}) as { chatId?: unknown; body?: unknown };
-    try {
-      const msg = await sendWhatsappMessage(safeStr(r.chatId), safeStr(r.body, 4096));
-      return { ok: true, message: msg };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("wa:messages:send-template", async (_event, raw: unknown) => {
-    const r = (raw ?? {}) as {
-      chatId?: unknown; template?: unknown; languageCode?: unknown;
-      bodyParams?: unknown; preview?: unknown;
-    };
-    try {
-      const params = Array.isArray(r.bodyParams)
-        ? r.bodyParams.map((p) => safeStr(p, 1024))
-        : [];
-      const msg = await sendWhatsappTemplate(
-        safeStr(r.chatId),
-        safeStr(r.template, 512),
-        safeStr(r.languageCode, 16) || "es_AR",
-        params,
-        safeStr(r.preview, 4096),
-      );
-      return { ok: true, message: msg };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("wa:sync:run", async () => {
-    try {
-      return await runWhatsappSync();
-    } catch (err: unknown) {
-      return { status: "error", error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("wa:sync:history", () =>
-    dbAll(
-      `SELECT id, started_at, finished_at, status, chats_synced, messages_synced, error_message
-       FROM wa_sync_runs ORDER BY started_at DESC LIMIT 20`,
-    )
-  );
-
-  ipcMain.handle("wa:test-connection", async () => {
-    try {
-      return await testWhatsappConnection();
-    } catch (err: unknown) {
-      return { ok: false, message: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("wa:poll:start", () => { startWhatsappPoll(); return { ok: true }; });
-  ipcMain.handle("wa:poll:stop", () => { stopWhatsappPoll(); return { ok: true }; });
-
-  // ── AFIP / ARCA — facturación electrónica (desktop directo) ──────────
-  ipcMain.handle("afip:status", () => {
-    try {
-      return { ok: true, data: getAfipConfig() };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("afip:save-credentials", (_event, raw: unknown) => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      const r = (raw ?? {}) as Record<string, unknown>;
-      const input: SaveCredentialsInput = {
-        cuit: safeStr(r.cuit),
-        pointOfSale: Number(r.pointOfSale) || 1,
-        env: safeStr(r.env) === "produccion" ? "produccion" : "homologacion",
-        certPem: r.certPem !== undefined ? safeStr(r.certPem, 100000) : undefined,
-        keyPem: r.keyPem !== undefined ? safeStr(r.keyPem, 100000) : undefined,
-        enabled: r.enabled === undefined ? undefined : Boolean(r.enabled),
-      };
-      return { ok: true, data: saveAfipCredentials(input) };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("afip:test-connection", async () => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      return await testAfipConnection();
-    } catch (err: unknown) {
-      return { ok: false, message: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  // QR de una factura ya autorizada, para reimprimirla (no se persiste).
-  ipcMain.handle("afip:invoice-qr", async (_event, invoiceId: unknown) => {
-    try {
-      return { ok: true, data: await buildStoredInvoiceQr(safeStr(invoiceId)) };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  // Diagnóstico del circuito completo (Fase 6: homologación → producción).
-  ipcMain.handle("afip:diagnostics", async () => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      return { ok: true, data: await runAfipDiagnostics() };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("afip:request-cae", async (_event, raw: unknown) => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      const r = (raw ?? {}) as Record<string, unknown>;
-      const input: CaeRequestInput = {
-        invoiceId: safeStr(r.invoiceId),
-        invoiceType: Number(r.invoiceType) || 6,
-        clientCuit: safeStr(r.clientCuit),
-        concepto: r.concepto !== undefined ? Number(r.concepto) : undefined,
-        date: r.date ? safeStr(r.date, 40) : undefined,
-        net: Number(r.net) || 0,
-        iva: Number(r.iva) || 0,
-        total: Number(r.total) || 0,
-        items: Array.isArray(r.items)
-          ? (r.items as Array<Record<string, unknown>>).map((it) => ({ ivaRate: Number(it.ivaRate) || 0, subtotal: Number(it.subtotal) || 0 }))
-          : [],
-        cbtesAsoc: Array.isArray(r.cbtesAsoc)
-          ? (r.cbtesAsoc as Array<Record<string, unknown>>).map((c) => ({
-              tipo: Number(c.tipo) || 0, ptoVta: Number(c.ptoVta) || 0, nro: Number(c.nro) || 0,
-              cuit: c.cuit ? safeStr(c.cuit, 20) : undefined,
-            }))
-          : undefined,
-        condicionIvaReceptor: r.condicionIvaReceptor !== undefined ? Number(r.condicionIvaReceptor) : undefined,
-      };
-      if (!input.invoiceId) return { ok: false, error: "Falta el identificador de la factura." };
-      let data;
-      try {
-        data = await afipRequestCae(input);
-      } catch (err) {
-        // Sin conexión: queda "pendiente de CAE" y el reintento automático la levanta.
-        if (isAfipUnavailable(err)) {
-          markInvoicePendingCae(input.invoiceId);
-          return {
-            ok: false,
-            pending: true,
-            error: "No hay conexión con AFIP. La factura quedó \"pendiente de CAE\" y se reintentará automáticamente.",
-          };
-        }
-        throw err;
-      }
-      // El CAE cambió la factura local (número/estado): propagar a la nube y refrescar el shell.
-      if (isCloudConnected()) {
-        try {
-          const envelope = buildDocEnvelope("invoice", input.invoiceId);
-          if (envelope) enqueueChange("document_snapshot", input.invoiceId, "update", envelope as unknown as Record<string, unknown>);
-        } catch { /* best-effort */ }
-      }
-      const win = deps.getMainWindow();
-      if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
-      return { ok: true, data };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  // Reintento manual de facturas "pendiente de CAE" (también corre solo al
-  // arrancar y cada 10 min desde main.ts).
-  ipcMain.handle("afip:retry-pending", async () => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      const data = await retryPendingCae();
-      if (data.authorized > 0) {
-        const win = deps.getMainWindow();
-        if (win && !win.isDestroyed()) win.webContents.send("shell:invoice-saved");
-      }
-      return { ok: true, data: { ...data, pendingLeft: getPendingCaeInvoices().length } };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  // Padrón: CUIT → razón social + condición de IVA + domicilio.
-  ipcMain.handle("afip:padron", async (_event, cuit: unknown) => {
-    try {
-      return { ok: true, data: await consultarPadron(safeStr(cuit, 20)) };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  // Libro IVA Ventas (RG 4597): genera los dos TXT y los guarda donde elija el usuario.
-  ipcMain.handle("afip:libro-iva-export", async (_event, desde: unknown, hasta: unknown) => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      const result = buildLibroIvaVentas(safeStr(desde, 10), safeStr(hasta, 10));
-      if (result.count === 0) {
-        return { ok: false, error: "No hay comprobantes autorizados (con CAE) en ese rango de fechas." };
-      }
-      const win = deps.getMainWindow();
-      const dialogOpts = {
-        title: "Elegí la carpeta donde guardar el Libro IVA Ventas",
-        properties: ["openDirectory", "createDirectory"] as Array<"openDirectory" | "createDirectory">,
-      };
-      const picked = win && !win.isDestroyed()
-        ? await dialog.showOpenDialog(win, dialogOpts)
-        : await dialog.showOpenDialog(dialogOpts);
-      if (picked.canceled || picked.filePaths.length === 0) return { ok: false, error: "Export cancelado." };
-      const dir = picked.filePaths[0];
-      const cbtePath = path.join(dir, "REGINFO_CV_VENTAS_CBTE.txt");
-      const alicPath = path.join(dir, "REGINFO_CV_VENTAS_ALICUOTAS.txt");
-      fs.writeFileSync(cbtePath, result.cbte, "latin1");
-      fs.writeFileSync(alicPath, result.alicuotas, "latin1");
-      return { ok: true, data: { count: result.count, files: [cbtePath, alicPath] } };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
 
   // ── Esquemas / Kits ──────────────────────────────────────────────────
   ipcMain.handle("db:kits:get", (_event, articleId: unknown) => {
@@ -1115,56 +695,5 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     getSourceItems(safeStr(type), safeStr(id)));
   ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>
     getLinksFor(safeStr(type), safeStr(id)));
-
-  // ── Cotización del dólar ──────────────────────────────────────────────
-  ipcMain.handle("dolar:latest", () => {
-    try {
-      return { ok: true, data: getLatestRates() };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("dolar:history", (_event, casa: unknown, limit: unknown) => {
-    try {
-      const n = Number(limit);
-      return { ok: true, data: getRateHistory(safeStr(casa) || "blue", Number.isFinite(n) && n > 0 ? n : 100) };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  ipcMain.handle("dolar:refresh", async () => {
-    try {
-      return { ok: true, data: await refreshDolarNow() };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
-
-  // Repreciado manual: recalcula precios ARS de artículos con price_usd (solo admin).
-  ipcMain.handle("dolar:reprice", (_event, casa: unknown) => {
-    if (!isAdmin()) return DENY_ADMIN;
-    try {
-      const result = repriceArticlesFromUsd(safeStr(casa) || "blue");
-      // Los artículos repreciados deben llegar a las otras PCs vía sync cloud.
-      const updatedArticles = dbAll<Record<string, unknown>>(
-        "SELECT id, code, name, category, unit, sale_price, iva_pct FROM articles WHERE price_usd > 0 AND active = 1",
-      );
-      for (const art of updatedArticles) {
-        enqueueIfCloud("product", String(art.id), "update", {
-          code: safeStr(art.code),
-          name: safeStr(art.name),
-          category: safeStr(art.category) || null,
-          unit: safeStr(art.unit) || "un",
-          price: Number(art.sale_price) || 0,
-          ivaRate: Number(art.iva_pct) || 21,
-        });
-      }
-      return { ok: true, data: result };
-    } catch (err: unknown) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) };
-    }
-  });
 
 }
