@@ -20,6 +20,7 @@
 import { dbAll, dbRun } from "./db";
 import { decryptSecret } from "./secrets";
 import { enqueueChange } from "./sync";
+import { refreshAllAirKitProxies } from "./air-kit-proxy";
 import * as crypto from "node:crypto";
 
 // ─── Configuración ──────────────────────────────────────────────────────────
@@ -526,6 +527,7 @@ export async function runAirSync(): Promise<AirSyncResult> {
       [now],
     );
     const deactivated = deactivateResult.changes;
+    refreshAllAirKitProxies();
 
     dbRun(
       "UPDATE air_sync_runs SET status = 'ok', finished_at = ?, products_synced = ? WHERE id = ?",

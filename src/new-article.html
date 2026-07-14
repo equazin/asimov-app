@@ -846,7 +846,11 @@ td{ border-color:var(--border) !important; }
       const q = txtBuscarComp.value.trim();
       if (q.length < 2) { compResults.style.display = "none"; return; }
       searchTimer = setTimeout(async () => {
-        if (!window.asimovNewArticle || !window.asimovNewArticle.searchArticles) return;
+        if (!window.asimovNewArticle || !window.asimovNewArticle.searchArticles) {
+          compResults.innerHTML = '<div style="padding:8px 10px;color:#F0B9B5;font-size:11px;">El buscador de Stock no está disponible.</div>';
+          compResults.style.display = "block";
+          return;
+        }
         try {
           const rows = await window.asimovNewArticle.searchArticles(q);
           const usable = (rows || []).filter(r => !r.is_kit).slice(0, 12);
@@ -854,7 +858,7 @@ td{ border-color:var(--border) !important; }
             compResults.innerHTML = '<div style="padding:8px 10px;opacity:0.6;font-size:11px;">Sin resultados.</div>';
           } else {
             compResults.innerHTML = usable.map(r =>
-              '<div class="comp-opt" data-id="' + escHtml(r.id) + '" data-code="' + escHtml(r.code) + '" data-name="' + escHtml(r.name) + '" data-cost="' + (r.cost_price || 0) + '" data-sale="' + (r.sale_price || 0) + '" ' +
+              '<div class="comp-opt" data-id="' + escHtml(r.id) + '" data-code="' + escHtml(r.code) + '" data-name="' + escHtml(r.name) + '" data-source="' + escHtml(r.source || "local") + '" data-cost="' + (r.cost_price || 0) + '" data-sale="' + (r.sale_price || 0) + '" ' +
               'style="padding:6px 10px;cursor:pointer;font-size:12px;display:flex;gap:8px;" ' +
               'onmouseover="this.style.background=\'rgba(255,255,255,0.08)\'" onmouseout="this.style.background=\'\'">' +
               '<span style="font-family:Consolas,monospace;opacity:0.7;min-width:80px;">' + escHtml(r.code) + '</span>' +
@@ -867,11 +871,12 @@ td{ border-color:var(--border) !important; }
           compResults.querySelectorAll(".comp-opt").forEach(el => {
             el.addEventListener("click", () => {
               const id = el.dataset.id;
-              const existing = kitComponents.find(c => c.articleId === id);
+              const source = el.dataset.source || "local";
+              const existing = kitComponents.find(c => c.articleId === id && c.source === source);
               if (existing) { existing.qty += 1; }
               else {
                 kitComponents.push({
-                  articleId: id, code: el.dataset.code, name: el.dataset.name,
+                  articleId: id, code: el.dataset.code, name: el.dataset.name, source,
                   qty: 1, cost: parseFloat(el.dataset.cost) || 0, sale: parseFloat(el.dataset.sale) || 0,
                 });
               }
@@ -880,8 +885,23 @@ td{ border-color:var(--border) !important; }
               renderKitTable();
             });
           });
-        } catch { compResults.style.display = "none"; }
+        } catch (error) {
+          console.error("[kits] No se pudo buscar en Stock:", error);
+          compResults.innerHTML = '<div style="padding:8px 10px;color:#F0B9B5;font-size:11px;">No se pudo consultar Stock. Reintentá en unos segundos.</div>';
+          compResults.style.display = "block";
+        }
       }, 250);
+    });
+    txtBuscarComp.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        compResults.style.display = "none";
+        return;
+      }
+      if (event.key !== "Enter") return;
+      const firstResult = compResults.querySelector(".comp-opt");
+      if (!firstResult) return;
+      event.preventDefault();
+      firstResult.click();
     });
     document.addEventListener("click", (e) => {
       if (!compResults.contains(e.target) && e.target !== txtBuscarComp) compResults.style.display = "none";
@@ -906,7 +926,12 @@ td{ border-color:var(--border) !important; }
         st: "0", compro: "0", entr: "0",
         linea: (txtLinea.value.trim() || "GENÉRICO").toUpperCase(),
         categoria: (txtCategoria.value.trim() || "VARIOS").toUpperCase(),
-        esquema: kitComponents.map(c => ({ articleId: c.articleId, qty: c.qty }))
+        esquema: kitComponents.map(c => ({
+          articleId: c.articleId,
+          code: c.code,
+          source: c.source || "local",
+          qty: c.qty,
+        }))
       };
       if (window.asimovNewArticle) window.asimovNewArticle.createArticle(article);
     });

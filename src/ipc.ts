@@ -288,7 +288,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
 
     const local = buildWhere("a.name", "a.code");
     const localRows = dbAll(
-      `SELECT a.id, a.code, a.name, a.unit, a.sale_price, a.iva_pct,
+      `SELECT a.id, a.code, a.name, a.unit, a.cost_price, a.sale_price, a.iva_pct, a.is_kit,
               COALESCE(SUM(s.qty),0) as stock_total,
               COALESCE(MIN(s.min_qty),0) as min_qty,
               'local' as source
@@ -300,10 +300,13 @@ export function registerIpcHandlers(deps: IpcDeps): void {
 
     const air = buildWhere("description", "air_code");
     const airRows = dbAll(
-      `SELECT id, air_code as code, description as name, 'un' as unit, price_usd as sale_price,
-              iva_pct, stock as stock_total, 0 as min_qty, 'air' as source
-       FROM air_products
-       WHERE active = 1 ${air.clause}
+      `SELECT id, air_code as code, description as name, 'un' as unit,
+              price_usd as cost_price, price_usd as sale_price,
+              iva_pct, stock as stock_total, 0 as min_qty, 0 as is_kit, 'air' as source
+       FROM air_products ap
+       WHERE active = 1
+         AND NOT EXISTS (SELECT 1 FROM articles a WHERE a.active = 1 AND a.code = ap.air_code)
+         ${air.clause}
        ORDER BY description LIMIT 20000`, air.params);
 
     return [...(localRows as unknown[]), ...(airRows as unknown[])];

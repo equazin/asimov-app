@@ -741,7 +741,11 @@ function loadProductsForPicker(): void {
       // Sin tope real: el catálogo completo de AIR ronda 7500+ productos y un
       // LIMIT menor dejaría afuera artículos (p.ej. las notebooks) del picker.
       const airRows = dbAll(
-        "SELECT air_code, description, part_number, brand, category, price_usd, iva_pct, stock FROM air_products WHERE active = 1 ORDER BY description LIMIT 20000",
+        `SELECT air_code, description, part_number, brand, category, price_usd, iva_pct, stock
+         FROM air_products ap
+         WHERE active = 1
+           AND NOT EXISTS (SELECT 1 FROM articles a WHERE a.active = 1 AND a.code = ap.air_code)
+         ORDER BY description LIMIT 20000`,
         [],
       ) as Array<Record<string, unknown>>;
       for (const a of airRows) {

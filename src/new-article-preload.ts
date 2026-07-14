@@ -5,7 +5,7 @@ const api = {
     ipcRenderer.send("shell:article-created", { article });
   },
   // Esquemas/kits: buscar artículos para usarlos como componentes
-  searchArticles: (search: string) => ipcRenderer.invoke("db:articles:list", search),
+  searchArticles: (search: string) => ipcRenderer.invoke("db:stock:list", search),
   cancel: () => {
     // Send a message with null to close the window without creating
     ipcRenderer.send("shell:article-created", { article: null });
