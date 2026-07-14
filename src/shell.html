@@ -1957,7 +1957,7 @@
     },
     "cuentas-crm": {
       title: "CRM — Pipeline",
-      load: () => asimov().crm.pipelineSummary(),
+      load: async () => { const r = await asimov().crm.pipelineSummary(); return r.ok ? r.data.stages : []; },
       cols: [
         { label: "Etapa",     key: "name",          w: "140px" },
         { label: "Count",     key: "count",         w: "60px" },
