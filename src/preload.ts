@@ -80,6 +80,7 @@ const api = {
 
   // Notify
   notify: (payload: NotifyPayload) => ipcRenderer.invoke("notify:show", payload),
+  openExternal: (url: string) => ipcRenderer.invoke("app:open-external", url),
 
   // Shell prefs
   shell: {
@@ -192,6 +193,10 @@ const api = {
 
   // DB — CRM (unificado con clients)
   crm: {
+    accounts: {
+      list: (search = "", status = "all") => ipcRenderer.invoke("crm:accounts:list", search, status),
+      get: (id: string) => ipcRenderer.invoke("crm:accounts:get", id),
+    },
     pipeline: {
       list: () => ipcRenderer.invoke("crm:pipeline:list"),
       save: (row: unknown) => ipcRenderer.invoke("crm:pipeline:save", row),
@@ -299,8 +304,8 @@ const api = {
     ipcRenderer.send("shell:open-product-selection", { rowId }),
 
   // Abrir formularios nativos desde el shell
-  openNativeForm: (type: string) =>
-    ipcRenderer.send("shell:open-form", type),
+  openNativeForm: (type: string, context?: Record<string, unknown>) =>
+    ipcRenderer.send("shell:open-form", context ? { type, context } : type),
   openInvoiceAdjustment: (invoiceId: string, kind: "NC" | "ND") =>
     ipcRenderer.invoke("shell:open-invoice-adjustment", { invoiceId, kind }) as Promise<{ ok: boolean; error?: string }>,
   openInvoiceEdit: (invoiceId: string) =>

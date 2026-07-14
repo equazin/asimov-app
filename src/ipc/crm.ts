@@ -26,9 +26,28 @@ import {
   deleteTask,
   getClientCrmSummary,
   getPipelineSummary,
+  listCrmAccounts,
+  getCrmAccountWorkspace,
 } from "../crm";
 
 export function registerCrmIpc(_deps: IpcDeps): void {
+  const canWrite = () => {
+    const user = _deps.getCurrentUser?.();
+    return !!user && String(user.role || "").toLowerCase() !== "readonly";
+  };
+  const DENY_WRITE = { ok: false as const, error: "No tenés permisos para modificar el CRM." };
+
+  // ── CRM Accounts ───────────────────────────────────────────────────────
+  ipcMain.handle("crm:accounts:list", (_event, search: unknown, status: unknown) => {
+    try { return { ok: true, data: listCrmAccounts(safeStr(search), safeStr(status) || "all") }; }
+    catch (e) { return { ok: false, error: String(e) }; }
+  });
+
+  ipcMain.handle("crm:accounts:get", (_event, id: unknown) => {
+    try { return { ok: true, data: getCrmAccountWorkspace(safeStr(id)) }; }
+    catch (e) { return { ok: false, error: String(e) }; }
+  });
+
   // ── Pipeline Stages ────────────────────────────────────────────────────
   ipcMain.handle("crm:pipeline:list", () => {
     try { return { ok: true, data: listPipelineStages() }; }
@@ -36,11 +55,13 @@ export function registerCrmIpc(_deps: IpcDeps): void {
   });
 
   ipcMain.handle("crm:pipeline:save", (_event, row: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { return { ok: true, data: savePipelineStage(row as Record<string, unknown>) }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
 
   ipcMain.handle("crm:pipeline:delete", (_event, id: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { deletePipelineStage(safeStr(id)); return { ok: true }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
@@ -57,11 +78,13 @@ export function registerCrmIpc(_deps: IpcDeps): void {
   });
 
   ipcMain.handle("crm:opportunities:save", (_event, row: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { return { ok: true, data: saveOpportunity(row as Record<string, unknown>) }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
 
   ipcMain.handle("crm:opportunities:delete", (_event, id: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { deleteOpportunity(safeStr(id)); return { ok: true }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
@@ -83,11 +106,13 @@ export function registerCrmIpc(_deps: IpcDeps): void {
   });
 
   ipcMain.handle("crm:activities:save", (_event, row: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { return { ok: true, data: saveActivity(row as Record<string, unknown>) }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
 
   ipcMain.handle("crm:activities:delete", (_event, id: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { deleteActivity(safeStr(id)); return { ok: true }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
@@ -109,16 +134,19 @@ export function registerCrmIpc(_deps: IpcDeps): void {
   });
 
   ipcMain.handle("crm:tasks:save", (_event, row: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { return { ok: true, data: saveTask(row as Record<string, unknown>) }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
 
   ipcMain.handle("crm:tasks:complete", (_event, id: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { completeTask(safeStr(id)); return { ok: true }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });
 
   ipcMain.handle("crm:tasks:delete", (_event, id: unknown) => {
+    if (!canWrite()) return DENY_WRITE;
     try { deleteTask(safeStr(id)); return { ok: true }; }
     catch (e) { return { ok: false, error: String(e) }; }
   });

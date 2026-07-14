@@ -20,6 +20,8 @@ import {
   getClientCrmSummary,
   getPipelineSummary,
   listRecentActivities,
+  listCrmAccounts,
+  getCrmAccountWorkspace,
 } from "../src/crm";
 
 beforeAll(() => initTestDb());
@@ -242,6 +244,74 @@ describe("Client CRM Summary", () => {
     expect(summary.opportunities.open).toBe(0);
     expect(summary.activities.total).toBe(0);
     expect(summary.tasks.pending).toBe(0);
+  });
+});
+
+describe("CRM Accounts", () => {
+  it("lists accounts with pipeline and pending action totals", () => {
+    const clientId = seedClient("cli-crm-account", "Cuenta Operativa");
+    saveOpportunity({ client_id: clientId, title: "Renovación", amount: 1000 });
+    saveTask({ client_id: clientId, title: "Llamar", due_date: "2026-07-13" });
+
+    const account = listCrmAccounts("Operativa", "all").find(row => row.id === clientId);
+
+    expect(account).toBeTruthy();
+    expect(account?.open_opportunities).toBe(1);
+    expect(account?.pipeline_value).toBe(1000);
+    expect(account?.pending_tasks).toBe(1);
+    expect(account?.overdue_tasks).toBe(1);
+  });
+
+  it("filters accounts by account status", () => {
+    const clientId = seedClient("cli-crm-prospect", "Cuenta Prospecto");
+    getDb().prepare("UPDATE clients SET account_status = 'prospect' WHERE id = ?").run(clientId);
+
+    expect(listCrmAccounts("Prospecto", "prospect").map(row => row.id)).toContain(clientId);
+    expect(listCrmAccounts("Prospecto", "active").map(row => row.id)).not.toContain(clientId);
+  });
+
+  it("returns the complete account workspace", () => {
+    const clientId = seedClient("cli-crm-detail", "Cuenta Detalle");
+    saveOpportunity({ client_id: clientId, title: "Proyecto", amount: 2500 });
+    saveActivity({ client_id: clientId, type: "call", subject: "Contacto" });
+    saveTask({ client_id: clientId, title: "Seguimiento", due_date: "2026-08-01" });
+
+    const detail = getCrmAccountWorkspace(clientId);
+
+    expect(detail?.account.business_name).toBe("Cuenta Detalle");
+    expect(detail?.opportunities).toHaveLength(1);
+    expect(detail?.activities).toHaveLength(1);
+    expect(detail?.tasks).toHaveLength(1);
+    expect(detail?.summary.opportunities.totalValue).toBe(2500);
+  });
+
+  it("lists opportunities from every status for the workspace", () => {
+    const clientId = seedClient("cli-crm-all", "Cuenta Todos");
+    saveOpportunity({ client_id: clientId, title: "Abierta", amount: 1000 });
+    saveOpportunity({ client_id: clientId, title: "Ganada", amount: 2000, stage: "won", stage_id: "stage-won" });
+
+    const all = listOpportunities("", "all").filter(row => row.client_id === clientId);
+
+    expect(all.map(row => row.status).sort()).toEqual(["open", "won"]);
+  });
+
+  it("rejects CRM records without their required account fields", () => {
+    expect(() => saveOpportunity({ title: "Sin cuenta" })).toThrow("Seleccioná una cuenta");
+    expect(() => saveActivity({ type: "call", subject: "Sin cuenta" })).toThrow("Seleccioná una cuenta");
+    expect(() => saveTask({ client_id: "cli-crm-detail", title: "Sin fecha" })).toThrow("fecha de vencimiento");
+  });
+
+  it("rejects an opportunity association from another account", () => {
+    const firstClient = seedClient("cli-crm-link-a", "Cuenta A");
+    const secondClient = seedClient("cli-crm-link-b", "Cuenta B");
+    const { id: opportunityId } = saveOpportunity({ client_id: firstClient, title: "Proyecto A", amount: 500 });
+
+    expect(() => saveTask({
+      client_id: secondClient,
+      opportunity_id: opportunityId,
+      title: "Seguimiento incorrecto",
+      due_date: "2026-08-01",
+    })).toThrow("no pertenece a la cuenta");
   });
 });
 

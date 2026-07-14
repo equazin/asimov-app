@@ -24,6 +24,20 @@ function enqueueCrmSync(entity: string, id: string, action: "create" | "update" 
   try { enqueueChange(entity, id, action, payload); } catch {}
 }
 
+function requireActiveClient(clientId: string): void {
+  const client = dbGet<{ id: string }>("SELECT id FROM clients WHERE id = ? AND active = 1", [clientId]);
+  if (!client) throw new Error("La cuenta seleccionada no existe o está inactiva.");
+}
+
+function validateOpportunityLink(opportunityId: string, clientId: string): string | null {
+  if (!opportunityId) return null;
+  const opportunity = dbGet<{ client_id: string | null }>("SELECT client_id FROM opportunities WHERE id = ?", [opportunityId]);
+  if (!opportunity || opportunity.client_id !== clientId) {
+    throw new Error("La oportunidad seleccionada no pertenece a la cuenta.");
+  }
+  return opportunityId;
+}
+
 // ─── Pipeline Stages ────────────────────────────────────────────────────────
 
 export interface PipelineStage {
@@ -57,6 +71,66 @@ export function deletePipelineStage(id: string): void {
   dbRun("UPDATE crm_pipeline_stages SET active = 0 WHERE id = ?", [str(id)]);
 }
 
+// ─── CRM Accounts ──────────────────────────────────────────────────────────
+
+export interface CrmAccountListItem {
+  id: string;
+  code: string | null;
+  business_name: string;
+  cuit: string | null;
+  fiscal_type: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  province: string | null;
+  industry: string | null;
+  website: string | null;
+  lead_source: string | null;
+  account_status: string;
+  crm_notes: string | null;
+  assigned_to: string | null;
+  last_contact_at: string | null;
+  created_at: string;
+  updated_at: string;
+  open_opportunities: number;
+  pipeline_value: number;
+  pending_tasks: number;
+  overdue_tasks: number;
+  last_activity_at: string | null;
+}
+
+export function listCrmAccounts(search: string, status = "all"): CrmAccountListItem[] {
+  const q = `%${str(search)}%`;
+  const normalizedStatus = ["all", "active", "prospect", "inactive"].includes(str(status).toLowerCase())
+    ? str(status).toLowerCase()
+    : "all";
+  return dbAll<CrmAccountListItem>(
+    `SELECT c.id, c.code, c.business_name, c.cuit, c.fiscal_type, c.email, c.phone,
+            c.address, c.city, c.province, c.industry, c.website, c.lead_source,
+            c.account_status, c.crm_notes, c.assigned_to, c.last_contact_at,
+            c.created_at, c.updated_at,
+            (SELECT COUNT(*) FROM opportunities o
+             WHERE o.client_id = c.id AND o.status = 'open') AS open_opportunities,
+            COALESCE((SELECT SUM(o.amount) FROM opportunities o
+                      WHERE o.client_id = c.id AND o.status = 'open'), 0) AS pipeline_value,
+            (SELECT COUNT(*) FROM crm_tasks t
+             WHERE t.client_id = c.id AND t.status = 'pending') AS pending_tasks,
+            (SELECT COUNT(*) FROM crm_tasks t
+             WHERE t.client_id = c.id AND t.status = 'pending' AND t.due_date < date('now')) AS overdue_tasks,
+            (SELECT MAX(a.created_at) FROM crm_activities a
+             WHERE a.client_id = c.id) AS last_activity_at
+       FROM clients c
+      WHERE c.active = 1
+        AND (? = 'all' OR lower(COALESCE(c.account_status, 'active')) = ?)
+        AND (c.business_name LIKE ? OR COALESCE(c.code, '') LIKE ? OR COALESCE(c.cuit, '') LIKE ?
+             OR COALESCE(c.email, '') LIKE ? OR COALESCE(c.industry, '') LIKE ?)
+      ORDER BY COALESCE(last_activity_at, c.last_contact_at, c.updated_at) DESC, c.business_name
+      LIMIT 500`,
+    [normalizedStatus, normalizedStatus, q, q, q, q, q]
+  );
+}
+
 // ─── Opportunities ──────────────────────────────────────────────────────────
 
 export interface Opportunity {
@@ -82,13 +156,27 @@ export interface Opportunity {
 
 export function listOpportunities(search: string, status = "open"): Opportunity[] {
   const q = `%${str(search)}%`;
+  const normalizedStatus = ["all", "open", "won", "lost"].includes(str(status).toLowerCase())
+    ? str(status).toLowerCase()
+    : "open";
   return dbAll<Opportunity>(
     `SELECT o.*, c.business_name as client_name
      FROM opportunities o
      LEFT JOIN clients c ON c.id = o.client_id
-     WHERE o.status = ? AND (o.title LIKE ? OR c.business_name LIKE ?)
+     WHERE (? = 'all' OR o.status = ?) AND (o.title LIKE ? OR c.business_name LIKE ?)
      ORDER BY o.updated_at DESC LIMIT 500`,
-    [status, q, q]
+    [normalizedStatus, normalizedStatus, q, q]
+  );
+}
+
+function listClientOpportunities(clientId: string): Opportunity[] {
+  return dbAll<Opportunity>(
+    `SELECT o.*, c.business_name as client_name
+       FROM opportunities o
+       LEFT JOIN clients c ON c.id = o.client_id
+      WHERE o.client_id = ?
+      ORDER BY o.updated_at DESC LIMIT 200`,
+    [str(clientId)]
   );
 }
 
@@ -104,6 +192,11 @@ export function getOpportunity(id: string): Opportunity | undefined {
 
 export function saveOpportunity(row: Record<string, unknown>): { id: string } {
   const id = str(row.id) || randomUUID();
+  const clientId = str(row.client_id);
+  const title = str(row.title);
+  if (!clientId) throw new Error("Seleccioná una cuenta para la oportunidad.");
+  if (!title) throw new Error("Ingresá un título para la oportunidad.");
+  requireActiveClient(clientId);
   const stageId = str(row.stage_id) || null;
   const stage = str(row.stage) || "prospecto";
 
@@ -127,7 +220,7 @@ export function saveOpportunity(row: Record<string, unknown>): { id: string } {
        won_at=excluded.won_at, lost_at=excluded.lost_at, lost_reason=excluded.lost_reason,
        updated_at=datetime('now')`,
     [
-      id, str(row.client_id) || null, str(row.title), num(row.amount),
+      id, clientId, title, Math.max(0, num(row.amount)),
       stage, stageId, num(row.probability) || getStageProbability(stageId),
       str(row.expected_close) || null, str(row.assigned_to) || null,
       str(row.source) || null,
@@ -153,7 +246,9 @@ export function saveOpportunity(row: Record<string, unknown>): { id: string } {
 }
 
 export function deleteOpportunity(id: string): void {
-  dbRun("DELETE FROM opportunities WHERE id = ?", [str(id)]);
+  const safeId = str(id);
+  dbRun("DELETE FROM opportunities WHERE id = ?", [safeId]);
+  enqueueCrmSync("crm_opportunity", safeId, "delete");
 }
 
 export function getOpportunityStageHistory(opportunityId: string): Array<{
@@ -230,34 +325,45 @@ export function listRecentActivities(limit = 50): Activity[] {
 
 export function saveActivity(row: Record<string, unknown>): { id: string } {
   const id = str(row.id) || randomUUID();
+  const clientId = str(row.client_id);
+  const type = str(row.type) || "note";
+  if (!clientId) throw new Error("Seleccioná una cuenta para la actividad.");
+  if (!["note", "call", "email", "meeting", "task", "other"].includes(type)) {
+    throw new Error("El tipo de actividad no es válido.");
+  }
+  requireActiveClient(clientId);
+  const opportunityId = validateOpportunityLink(str(row.opportunity_id), clientId);
+  const existing = dbGet<{ id: string }>("SELECT id FROM crm_activities WHERE id = ?", [id]);
   dbRun(
     `INSERT OR REPLACE INTO crm_activities (id, client_id, type, subject, body, due_date, completed_at, assigned_to, opportunity_id, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,
        COALESCE((SELECT created_at FROM crm_activities WHERE id=?), datetime('now')),
        datetime('now'))`,
     [
-      id, str(row.client_id), str(row.type) || "note",
+      id, clientId, type,
       str(row.subject), str(row.body, 10000) || null,
       str(row.due_date) || null, str(row.completed_at) || null,
-      str(row.assigned_to) || null, str(row.opportunity_id) || null,
+      str(row.assigned_to) || null, opportunityId,
       id
     ]
   );
 
   // Actualizar last_contact_at del cliente si es una actividad completada
-  if (row.completed_at || ["call", "email", "meeting"].includes(str(row.type))) {
+  if (row.completed_at || ["call", "email", "meeting"].includes(type)) {
     dbRun(
       "UPDATE clients SET last_contact_at = datetime('now') WHERE id = ?",
-      [str(row.client_id)]
+      [clientId]
     );
   }
 
-  enqueueCrmSync("crm_activity", id, "create", row);
+  enqueueCrmSync("crm_activity", id, existing ? "update" : "create", row);
   return { id };
 }
 
 export function deleteActivity(id: string): void {
-  dbRun("DELETE FROM crm_activities WHERE id = ?", [str(id)]);
+  const safeId = str(id);
+  dbRun("DELETE FROM crm_activities WHERE id = ?", [safeId]);
+  enqueueCrmSync("crm_activity", safeId, "delete");
 }
 
 // ─── Tasks ──────────────────────────────────────────────────────────────────
@@ -320,6 +426,16 @@ export function getTask(id: string): Task | undefined {
 
 export function saveTask(row: Record<string, unknown>): { id: string } {
   const id = str(row.id) || randomUUID();
+  const clientId = str(row.client_id);
+  const title = str(row.title);
+  const dueDate = str(row.due_date);
+  if (!clientId) throw new Error("Seleccioná una cuenta para la tarea.");
+  if (!title) throw new Error("Ingresá un título para la tarea.");
+  if (!dueDate) throw new Error("Ingresá una fecha de vencimiento para la tarea.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) throw new Error("La fecha de vencimiento no es válida.");
+  requireActiveClient(clientId);
+  const opportunityId = validateOpportunityLink(str(row.opportunity_id), clientId);
+  const existing = dbGet<{ id: string }>("SELECT id FROM crm_tasks WHERE id = ?", [id]);
   const isCompleted = str(row.status) === "completed";
   dbRun(
     `INSERT OR REPLACE INTO crm_tasks (id, client_id, opportunity_id, title, description, due_date, due_time, priority, status, assigned_to, completed_at, reminder_at, created_at, updated_at)
@@ -327,9 +443,9 @@ export function saveTask(row: Record<string, unknown>): { id: string } {
        COALESCE((SELECT created_at FROM crm_tasks WHERE id=?), datetime('now')),
        datetime('now'))`,
     [
-      id, str(row.client_id) || null, str(row.opportunity_id) || null,
-      str(row.title), str(row.description, 5000) || null,
-      str(row.due_date), str(row.due_time) || null,
+      id, clientId, opportunityId,
+      title, str(row.description, 5000) || null,
+      dueDate, str(row.due_time) || null,
       str(row.priority) || "normal", str(row.status) || "pending",
       str(row.assigned_to) || null,
       isCompleted ? new Date().toISOString() : null,
@@ -337,19 +453,23 @@ export function saveTask(row: Record<string, unknown>): { id: string } {
       id
     ]
   );
-  enqueueCrmSync("crm_task", id, "create", row);
+  enqueueCrmSync("crm_task", id, existing ? "update" : "create", row);
   return { id };
 }
 
 export function completeTask(id: string): void {
+  const safeId = str(id);
   dbRun(
     "UPDATE crm_tasks SET status = 'completed', completed_at = datetime('now'), updated_at = datetime('now') WHERE id = ?",
-    [str(id)]
+    [safeId]
   );
+  enqueueCrmSync("crm_task", safeId, "update", { status: "completed" });
 }
 
 export function deleteTask(id: string): void {
-  dbRun("DELETE FROM crm_tasks WHERE id = ?", [str(id)]);
+  const safeId = str(id);
+  dbRun("DELETE FROM crm_tasks WHERE id = ?", [safeId]);
+  enqueueCrmSync("crm_task", safeId, "delete");
 }
 
 // ─── Client CRM Summary ─────────────────────────────────────────────────────
@@ -393,6 +513,45 @@ export function getClientCrmSummary(clientId: string): ClientCrmSummary {
     opportunities: { open: opps.open, won: opps.won, lost: opps.lost, totalValue: opps.totalValue, weightedValue: opps.weightedValue },
     activities: { total: acts.total, lastContact: acts.lastContact },
     tasks: { pending: tasks.pending, overdue: tasks.overdue },
+  };
+}
+
+export interface CrmAccountWorkspace {
+  account: CrmAccountListItem;
+  summary: ClientCrmSummary;
+  opportunities: Opportunity[];
+  activities: Activity[];
+  tasks: Task[];
+}
+
+export function getCrmAccountWorkspace(clientId: string): CrmAccountWorkspace | undefined {
+  const id = str(clientId);
+  const account = dbGet<CrmAccountListItem>(
+    `SELECT c.id, c.code, c.business_name, c.cuit, c.fiscal_type, c.email, c.phone,
+            c.address, c.city, c.province, c.industry, c.website, c.lead_source,
+            c.account_status, c.crm_notes, c.assigned_to, c.last_contact_at,
+            c.created_at, c.updated_at,
+            (SELECT COUNT(*) FROM opportunities o
+             WHERE o.client_id = c.id AND o.status = 'open') AS open_opportunities,
+            COALESCE((SELECT SUM(o.amount) FROM opportunities o
+                      WHERE o.client_id = c.id AND o.status = 'open'), 0) AS pipeline_value,
+            (SELECT COUNT(*) FROM crm_tasks t
+             WHERE t.client_id = c.id AND t.status = 'pending') AS pending_tasks,
+            (SELECT COUNT(*) FROM crm_tasks t
+             WHERE t.client_id = c.id AND t.status = 'pending' AND t.due_date < date('now')) AS overdue_tasks,
+            (SELECT MAX(a.created_at) FROM crm_activities a
+             WHERE a.client_id = c.id) AS last_activity_at
+       FROM clients c
+      WHERE c.id = ? AND c.active = 1`,
+    [id]
+  );
+  if (!account) return undefined;
+  return {
+    account,
+    summary: getClientCrmSummary(id),
+    opportunities: listClientOpportunities(id),
+    activities: listActivities(id),
+    tasks: listClientTasks(id),
   };
 }
 

@@ -269,14 +269,33 @@ function registerGlobalShortcuts(): void {
 // Native form orchestration
 // ---------------------------------------------------------------------------
 
-function openNativeForm(type: NativeFormType): void {
+function sendCrmClientPrefill(window: BrowserWindow | null, contextId: string, context?: Record<string, unknown>): void {
+  if (!window || window.isDestroyed() || !context?.client) return;
+  const send = () => {
+    if (!window.isDestroyed()) window.webContents.send("shell:client-selected", { contextId, client: context.client });
+  };
+  if (window.webContents.isLoadingMainFrame()) window.webContents.once("did-finish-load", send);
+  else send();
+}
+
+function openNativeForm(type: NativeFormType, context?: Record<string, unknown>): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
     case "article":     createNewArticleWindowStandalone(parent); break;
     case "client":      createNewClientWindowStandalone(parent); break;
     case "supplier":    createNewSupplierWindowStandalone(parent); break;
-    case "sale-order":  createNewSaleOrderWindowStandalone(parent); break;
-    case "quote":       createNewQuoteWindowStandalone(parent); break;
+    case "sale-order": {
+      const existed = !!newSaleOrderWindow && !newSaleOrderWindow.isDestroyed();
+      createNewSaleOrderWindowStandalone(parent);
+      if (!existed) sendCrmClientPrefill(newSaleOrderWindow, "pedido-cliente", context);
+      break;
+    }
+    case "quote": {
+      const existed = !!newQuoteWindow && !newQuoteWindow.isDestroyed();
+      createNewQuoteWindowStandalone(parent);
+      if (!existed) sendCrmClientPrefill(newQuoteWindow, "cot-cliente", context);
+      break;
+    }
     case "invoice":     createNewInvoiceWindowStandalone(parent); break;
     case "delivery-note": createNewDeliveryNoteWindowStandalone(parent); break;
     case "receipt":     createNewReceiptWindowStandalone(parent); break;
@@ -512,8 +531,9 @@ if (!gotLock) {
     createLoginWindow();
 
     // --- Shell "Nuevo" buttons → abrir formularios nativos ---
-    ipcMain.on("shell:open-form", (_event, type: NativeFormType) => {
-      openNativeForm(type);
+    ipcMain.on("shell:open-form", (_event, input: NativeFormType | { type?: NativeFormType; context?: Record<string, unknown> }) => {
+      if (typeof input === "string") openNativeForm(input);
+      else if (input?.type) openNativeForm(input.type, input.context);
     });
     ipcMain.handle("shell:open-invoice-adjustment", (_event, input: { invoiceId?: string; kind?: string }) =>
       openInvoiceAdjustment(

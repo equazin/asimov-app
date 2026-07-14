@@ -29,7 +29,7 @@ if (fs.existsSync(brandIcon)) {
 }
 
 // Assets compartidos de impresión de comprobantes (CSS + renderer JS).
-for (const asset of ["comprobante-print.css", "comprobante-print.js"]) {
+for (const asset of ["comprobante-print.css", "comprobante-print.js", "crm-workspace.css", "crm-workspace.js"]) {
   const from = path.join(srcDir, asset);
   const to = path.join(distDir, asset);
   if (fs.existsSync(from)) {

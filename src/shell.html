@@ -703,6 +703,8 @@
   <!-- Motor de impresión de comprobantes (reimpresión desde las listas). -->
   <link rel="stylesheet" href="comprobante-print.css" />
   <script src="comprobante-print.js" defer></script>
+  <link rel="stylesheet" href="crm-workspace.css" />
+  <script src="crm-workspace.js"></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1238,15 +1240,7 @@
 
     <!-- ── Cuentas CRM ────────────────────────────────────── -->
     <div class="view" id="view-cuentas-crm">
-      <div class="view-header">
-        <h1><svg class="ic"><use href="#i-building"/></svg> Cuentas CRM</h1>
-        <span class="badge" id="badge-cuentas-crm">—</span>
-      </div>
-      <div class="toolbar">
-        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar cuenta, industria..." oninput="A.loadView('cuentas-crm',this.value)" /></div>
-        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('cuentas-crm')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
-      </div>
-      <div class="table-wrap" id="table-cuentas-crm">
+      <div id="crm-workspace" class="crm-workspace" aria-live="polite">
         <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
@@ -1792,7 +1786,11 @@
     },
     oportunidades: {
       title: "Oportunidades",
-      load: (s) => asimov().crm.opportunities.list(s),
+      load: async (s) => {
+        const response = await asimov().crm.opportunities.list(s);
+        if (!response?.ok) throw new Error(response?.error || "No se pudieron cargar las oportunidades.");
+        return response.data || [];
+      },
       cols: [
         { label: "Título",   key: "title"                      },
         { label: "Cliente",  key: "client_name",   w: "180px" },
@@ -1986,14 +1984,7 @@
       ],
     },
     "cuentas-crm": {
-      title: "CRM — Pipeline",
-      load: async () => { const r = await asimov().crm.pipelineSummary(); return r.ok ? r.data.stages : []; },
-      cols: [
-        { label: "Etapa",     key: "name",          w: "140px" },
-        { label: "Count",     key: "count",         w: "60px" },
-        { label: "Total",     key: "totalAmount",   w: "110px", fmt: fmtARS, align: "right" },
-        { label: "Ponderado", key: "weightedAmount",w: "110px", fmt: fmtARS, align: "right" },
-      ],
+      title: "CRM",
     },
     auditoria: {
       title: "Auditoría",
@@ -2083,6 +2074,7 @@
     currentRole = String(role || "user").toLowerCase();
     CAN_WRITE = currentRole !== "readonly";
     CAN_AUTHORIZE_ARCA = ["admin", "owner", "superadmin"].includes(currentRole);
+    if (window.CrmWorkspace) window.CrmWorkspace.applyPermissions();
 
     // Ocultar módulos sensibles a los no-admin.
     ADMIN_ONLY_VIEWS.forEach((v) => {
@@ -2118,7 +2110,8 @@
     if (!norm) return;
     if (!canSeeView(norm)) norm = "dashboard";   // módulo no permitido para el rol
     if (norm === currentView) {
-      if (norm !== "dashboard") loadViewData(norm, "");
+      if (norm === "cuentas-crm" && window.CrmWorkspace) window.CrmWorkspace.load();
+      else if (norm !== "dashboard") loadViewData(norm, "");
       return;
     }
 
@@ -2148,6 +2141,10 @@
     if (norm === "knowledge") { loadKnowledge(); return; }
     if (norm === "conversaciones") { loadConversaciones(); return; }
     if (norm === "favoritos") { loadFavoritos(); return; }
+    if (norm === "cuentas-crm") {
+      if (window.CrmWorkspace) window.CrmWorkspace.load();
+      return;
+    }
     if (!loadedViews.has(norm)) {
       loadedViews.add(norm);
       loadViewData(norm, "");
@@ -2207,15 +2204,16 @@
       clearTimeout(_searchTimer);
       _searchTimer = setTimeout(() => loadViewData(viewId, value), 250);
     },
-    openNativeForm: (type) => {
+    openNativeForm: (type, context) => {
       if (window.asimov && window.asimov.openNativeForm) {
-        window.asimov.openNativeForm(type);
+        window.asimov.openNativeForm(type, context);
       }
     },
     annulDoc: (type, id, btn) => annulDoc(type, id, btn),
     reprintDoc: (type, id, btn) => reprintDoc(type, id, btn),
     authorizeStoredInvoice: (id, btn) => authorizeStoredInvoice(id, btn),
     openInvoiceFiscalStatus: (id) => openInvoiceFiscalStatus(id),
+    canWrite: () => CAN_WRITE,
   };
 
   // Normaliza los ítems de la DB al shape que espera el motor de impresión.
@@ -2910,6 +2908,7 @@
       diario: initDiario, reportes: initReportes, "export-contable": initExportContable,
       config: loadConfig, usuarios: loadUsuarios, knowledge: loadKnowledge,
       conversaciones: loadConversaciones, favoritos: loadFavoritos, atajos: () => {},
+      "cuentas-crm": () => window.CrmWorkspace && window.CrmWorkspace.refresh(),
     };
     if (RELOADERS[currentView]) RELOADERS[currentView]();
     else loadViewData(currentView, "");

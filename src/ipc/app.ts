@@ -7,7 +7,7 @@
  *  - print:*   — impresión desde ventana activa + printers preferidos
  *  - notify:*  — notificaciones nativas
  */
-import { app, BrowserWindow, ipcMain, Notification } from "electron";
+import { app, BrowserWindow, ipcMain, Notification, shell } from "electron";
 import {
   getLaunchAtStartup,
   getShellPreferences,
@@ -29,6 +29,19 @@ export function registerAppIpc(deps: IpcDeps): void {
   ipcMain.handle("app:launch-at-startup:set", (_event, value: unknown) => {
     setLaunchAtStartupEnabled(Boolean(value));
     return { ok: true, enabled: getLaunchAtStartup() };
+  });
+  ipcMain.handle("app:open-external", async (_event, value: unknown) => {
+    try {
+      const target = new URL(safeStr(value));
+      const allowedProtocols = ["mailto:", "tel:", "https:", "http:"];
+      if (!allowedProtocols.includes(target.protocol)) {
+        return { ok: false, error: "El enlace externo no está permitido." };
+      }
+      await shell.openExternal(target.toString());
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "El enlace externo no es válido." };
+    }
   });
 
   // --- Shell preferences ---------------------------------------------------

@@ -66,6 +66,10 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   // Enforcement de rol en el proceso main (fuente de verdad; el gating del shell
   // es solo UX). Sin sesión se niega por defecto para las acciones sensibles.
   const isAdmin = makeIsAdmin(deps);
+  const canWrite = () => {
+    const user = deps.getCurrentUser?.();
+    return !!user && String(user.role || "").toLowerCase() !== "readonly";
+  };
 
   // --- Dashboard KPIs ------------------------------------------------------
   ipcMain.handle("db:kpis", () => {
@@ -80,6 +84,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   });
   ipcMain.handle("db:clients:get", (_event, id: unknown) => dbGet("SELECT * FROM clients WHERE id = ?", [safeStr(id)]));
   ipcMain.handle("db:clients:save", (_event, row: unknown) => {
+    if (!canWrite()) return { ok: false, error: "No tenés permisos para modificar clientes." };
     const r = row as Record<string, unknown>;
     const wasExisting = !!safeStr(r.id);
     const { id } = upsertClient(r);
@@ -95,6 +100,7 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     return { ok: true, id };
   });
   ipcMain.handle("db:clients:delete", (_event, id: unknown) => {
+    if (!canWrite()) return { ok: false, error: "No tenés permisos para modificar clientes." };
     const s = safeStr(id);
     dbRun("UPDATE clients SET active = 0 WHERE id = ?", [s]);
     enqueueIfCloud("client", s, "delete");
