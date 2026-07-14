@@ -18,14 +18,14 @@ Descargar el último instalador desde
 **Asimov-Setup-x.x.x.exe**.
 
 Al abrir por primera vez aparece la pantalla de **login**. En el primer arranque
-se crea un usuario administrador por defecto:
+se crea un usuario `admin` con una **contraseña aleatoria** (no hardcodeada):
 
-| Usuario | Contraseña |
-|---------|------------|
-| `admin` | `asimov`   |
+- Se muestra en un diálogo modal una única vez.
+- Se guarda en `%APPDATA%/asimov-app/CREDENCIALES-INICIALES.txt` (borralo cuando
+  la anotes / la cambies).
 
-> ⚠️ **Cambiá estas credenciales apenas ingreses**: creá tu propio usuario admin
-> con contraseña desde *Sistema → Usuarios y Roles* y desactivá el default.
+> ⚠️ **Cambiá esa contraseña apenas ingreses** desde *Sistema → Usuarios y Roles*
+> y borrá el archivo `CREDENCIALES-INICIALES.txt`.
 
 La base de datos se crea automáticamente en `%APPDATA%/asimov-app/asimov.db`.
 

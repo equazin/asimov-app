@@ -45,11 +45,11 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
 - [ ] **Warehouses/cajas custom**: hoy los movimientos referencian los ids por
       defecto (`wh-default`/`ca-default`, iguales en toda PC). Si se crean depósitos
       o cajas propias, falta sincronizarlos como maestros.
-- [ ] **Entidades v4.8.0 local-only**: `exchange_rates`, `document_links` y
-      `kit_components` **no viajan a la nube** (la API v2 no las conoce). Los
-      artículos repreciados sí se encolan como `product`. Para paridad multi-PC de
-      kits/vínculos hay que extender el schema Prisma de v2 + mappers de sync
-      (ver Fase F más abajo).
+- [x] **Entidades v4.8.0 local-only**: `exchange_rates`, `document_links` y
+      `kit_components` ahora sí viajan (rama `feat/sync-fase-f`).
+      Migración Prisma `0003_sync_fase_f` + mappers + `enqueueChange` en cada
+      write site + `applyRemoteChange` en el pull. Pendiente merge y
+      `prisma migrate deploy` en Neon (ver Fase F).
 
 ## 2. Fase 6.5 — Tests 🟡
 
@@ -90,8 +90,9 @@ Falta terminar la cobertura para que **todo** viaje entre PCs.
 - [ ] Investigar el origen de los archivos basura (`{,`, `{`, `,-`, etc.) que
       aparecen en el working tree (parecen errores de shell); ya están
       gitignorados los `*.db`, pero conviene entender de dónde salen.
-- [ ] Rotar / cambiar credenciales sembradas por defecto (`admin/asimov`,
-      `ventas@bartez.com.ar/3418`, `SUPERADMIN_PASSWORD`) antes de producción real.
+- [x] Rotar / cambiar credenciales sembradas por defecto. El `admin` local usa
+      contraseña aleatoria por `seedDefaultAdmin`; `SUPERADMIN_EMAIL`/
+      `SUPERADMIN_PASSWORD` son ahora obligatorias (fail-fast en seed).
 
 ---
 
@@ -134,8 +135,12 @@ Aprovecha la infra ya creada en v4.8.0 (`document_links` + `getLinksFor`).
 - [ ] **Notificaciones internas** (campanita: stock bajo, sync fallida, comprobante AFIP rechazado).
 
 ### Fase F — Deuda multi-PC de v4.8.0
-- [ ] Sincronizar `exchange_rates`, `document_links` y `kit_components` a la nube:
-      extender schema Prisma de v2 + mappers/apply de `src/sync.ts` (ver punto 1).
+- [x] Sincronizar `exchange_rates`, `document_links` y `kit_components` a la
+      nube (rama `feat/sync-fase-f`). Falta:
+  - `prisma migrate deploy` en Neon (`0003_sync_fase_f`)
+  - Deploy de la API en Render
+  - Release desktop v4.18.0 con autoupdate
+  - Tests del `sync.service` para los 3 nuevos casos
 
 ---
 
