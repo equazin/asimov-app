@@ -1737,6 +1737,22 @@
   <span id="status-time">—</span>
 </div>
 
+<div id="cloud-login-modal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:360px;">
+    <h3>Conectar a la nube</h3>
+    <p style="font-size:13px;color:#666;">Ingresá las credenciales de tu empresa en Asimov Cloud.</p>
+    <label>Email</label>
+    <input type="email" id="cloud-email" placeholder="empresa@ejemplo.com" />
+    <label>Contraseña</label>
+    <input type="password" id="cloud-password" placeholder="••••••" />
+    <div id="cloud-login-error" style="color:#c00;font-size:13px;min-height:18px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+      <button class="btn btn-outline" id="cloud-cancel-login">Cancelar</button>
+      <button class="btn btn-primary" id="cloud-submit-login">Conectar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   // ── wait for preload ──────────────────────────────────────────────────
@@ -4607,22 +4623,6 @@
 
 })();
 </script>
-
-<div id="cloud-login-modal" class="modal" style="display:none;">
-  <div class="modal-content" style="max-width:360px;">
-    <h3>Conectar a la nube</h3>
-    <p style="font-size:13px;color:#666;">Ingresá las credenciales de tu empresa en Asimov Cloud.</p>
-    <label>Email</label>
-    <input type="email" id="cloud-email" placeholder="empresa@ejemplo.com" />
-    <label>Contraseña</label>
-    <input type="password" id="cloud-password" placeholder="••••••" />
-    <div id="cloud-login-error" style="color:#c00;font-size:13px;min-height:18px;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
-      <button class="btn btn-outline" id="cloud-cancel-login">Cancelar</button>
-      <button class="btn btn-primary" id="cloud-submit-login">Conectar</button>
-    </div>
-  </div>
-</div>
 
 <div id="print-area"></div>
 </body>
