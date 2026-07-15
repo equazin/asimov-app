@@ -52,4 +52,4 @@ The original Task 1 implementation in `src/shell.html` used `window.cloud` and `
 - Confirmed no remaining `window.cloud` references in `src/shell.html`.
 
 ## Commits
-- `37c79a5` fix(cloud): use window.asimov.cloudSync for cloud UI in shell
+- `2bd2478` fix(cloud): use window.asimov.cloudSync for cloud UI in shell
