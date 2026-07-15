@@ -77,16 +77,18 @@ export function isAirEnabled(): boolean {
 
 export function enqueueAirConfigCloudSync(): void {
   const cfg = getAirLocalConfig();
-  enqueueChange("integration_config", "air", "update", {
-    provider: "air",
-    config: {
-      enabled: cfg.enabled,
-      username: cfg.username,
-      baseUrl: cfg.baseUrl,
-      syncIntervalMinutes: cfg.syncIntervalMinutes,
-      requiresPasswordOnDevice: true,
-    },
-  });
+  try {
+    enqueueChange("integration_config", "air", "update", {
+      provider: "air",
+      config: {
+        enabled: cfg.enabled,
+        username: cfg.username,
+        baseUrl: cfg.baseUrl,
+        syncIntervalMinutes: cfg.syncIntervalMinutes,
+        requiresPasswordOnDevice: true,
+      },
+    });
+  } catch { /* best-effort */ }
 }
 
 // ─── Extracción de token ────────────────────────────────────────────────────

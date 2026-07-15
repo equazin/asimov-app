@@ -49,6 +49,7 @@ import {
 import * as apiClient from "../src/api-client";
 import { enqueueLocalBootstrap, inspectBootstrapState } from "../src/sync-bootstrap";
 import { enqueueIfCloud } from "../src/ipc/shared";
+import { notifyAfipConfigSync } from "../src/afip-service";
 
 /** Respuesta que devolverá el mock para el POST/PATCH de push (el pull siempre va vacío). */
 let pushResponse: { ok: boolean; status: number; body?: string };
@@ -282,6 +283,25 @@ describe("sync queue — retry con backoff", () => {
       wa_poll_interval: "2",
       wa_token: "token-local-cifrado",
     });
+  });
+
+  it("la config de ARCA no filtra certificado ni clave privada", () => {
+    getDb().exec("DELETE FROM sync_queue");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_enabled", "true");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_cuit", "30111111119");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_point_of_sale", "3");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_env", "produccion");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_cert", "FAKE:-----BEGIN CERTIFICATE-----\nMIICiDCCAfGgAwIBAgIQG3\n-----END CERTIFICATE-----");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_key", "FAKE:-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA0Z3VS5\n-----END RSA PRIVATE KEY-----");
+
+    notifyAfipConfigSync();
+
+    const payload = getDb().prepare("SELECT payload FROM sync_queue WHERE entity='integration_config' AND entity_id='afip'").get() as { payload: string } | undefined;
+    expect(payload).toBeDefined();
+    expect(payload?.payload).not.toContain("BEGIN RSA PRIVATE KEY");
+    expect(payload?.payload).not.toContain("BEGIN CERTIFICATE");
+    expect(JSON.parse(payload?.payload ?? "{}").config.hasCert).toBe(true);
+    expect(JSON.parse(payload?.payload ?? "{}").config.hasKey).toBe(true);
   });
 
   it("aplica oportunidades, actividades y tareas CRM remotas", async () => {
