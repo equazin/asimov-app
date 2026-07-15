@@ -7,6 +7,9 @@ function serviceWithPrisma() {
     supplier: { upsert: vi.fn(), updateMany: vi.fn() },
     product: { upsert: vi.fn(), updateMany: vi.fn() },
     integrationConfig: { upsert: vi.fn(), updateMany: vi.fn() },
+    opportunity: { upsert: vi.fn(), updateMany: vi.fn() },
+    activity: { upsert: vi.fn(), updateMany: vi.fn() },
+    task: { upsert: vi.fn(), updateMany: vi.fn() },
     auditLog: { create: vi.fn() },
   };
   return { prisma, service: new SyncService(prisma as never) };
@@ -55,6 +58,30 @@ describe('SyncService — contratos del desktop', () => {
     expect(prisma.integrationConfig.upsert).toHaveBeenCalledWith(expect.objectContaining({
       create: expect.objectContaining({ config: { enabled: true, username: 'usuario' } }),
       update: expect.objectContaining({ config: { enabled: true, username: 'usuario' } }),
+    }));
+  });
+
+  it('aplica oportunidad CRM desde desktop', async () => {
+    const { prisma, service } = serviceWithPrisma();
+
+    const result = await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'crm_opportunity',
+      action: 'update',
+      id: 'opp-1',
+      data: { name: 'Venta grande', stage: 'negotiation', value: 10000, probability: 50 },
+    }]);
+
+    expect(result.processed).toBe(1);
+    expect(result.conflicts).toHaveLength(0);
+    expect(prisma.opportunity.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({
+        id: 'opp-1',
+        tenantId: 'tenant-1',
+        name: 'Venta grande',
+        stage: 'negotiation',
+        value: 10000,
+        probability: 50,
+      }),
     }));
   });
 });
