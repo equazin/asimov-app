@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1784073036.3177488,
-    "ast_hash": "54157a2c25322a3b619545e1df649409",
+    "mtime": 1784128558.473235,
+    "ast_hash": "af7c10404098552b6cae04ec85e1dfe1",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "src/air.ts": {
-    "mtime": 1784127256.5236626,
-    "ast_hash": "09cbc4c705b36defc97511d2bdf391a9",
+    "mtime": 1784128546.3327425,
+    "ast_hash": "cbc5f0a7be6ae7603702c3a7de52a940",
     "semantic_hash": ""
   },
   "src/api-client.ts": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "src/documents.ts": {
-    "mtime": 1784124786.1520982,
-    "ast_hash": "69591acebfb5e2e5d81ba6670fafebef",
+    "mtime": 1784128546.3337421,
+    "ast_hash": "9b52ceb4508c041b6cd948142177c5a6",
     "semantic_hash": ""
   },
   "src/ipc-cloud.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1784127844.8727496,
-    "ast_hash": "b687c0244bc23fa6572ab5993d889185",
+    "mtime": 1784128546.3337421,
+    "ast_hash": "3f1361f2773f58664bd38684430c89ef",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1784123424.2735307,
-    "ast_hash": "56846099008917d5dae7741516f9aafd",
+    "mtime": 1784128546.3347428,
+    "ast_hash": "29fe34a105c359a6624e7e8dfa7accd5",
     "semantic_hash": ""
   },
   "src/product-selection-preload.ts": {
@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "src/sync.ts": {
-    "mtime": 1784126752.799855,
-    "ast_hash": "b1b9ad3fef6c75826bf802d2e25fb909",
+    "mtime": 1784128546.3367424,
+    "ast_hash": "31360c4f51a9d49bc16bd8df7dbc8da8",
     "semantic_hash": ""
   },
   "src/tray.ts": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "test/document-sync.test.ts": {
-    "mtime": 1784124768.3939433,
-    "ast_hash": "ee1705f51c2af2781329a673b93ad0f1",
+    "mtime": 1784128546.3377423,
+    "ast_hash": "f518acbece250f6b6469be5dd3e449b2",
     "semantic_hash": ""
   },
   "test/documents.test.ts": {
@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "test/sync.test.ts": {
-    "mtime": 1784127334.3873684,
-    "ast_hash": "1840ef93984e64aff8b1790978b0cead",
+    "mtime": 1784128546.3377423,
+    "ast_hash": "7f28e62e72c8f676b3edeb108ed072b3",
     "semantic_hash": ""
   },
   "tsconfig.json": {
@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/sync/sync.service.ts": {
-    "mtime": 1784125991.6590476,
-    "ast_hash": "a6f214bacdcd9dec7cb67d2cef0a809c",
+    "mtime": 1784128546.3397412,
+    "ast_hash": "70f59c718663624160a5130388938d04",
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/tenant/tenant.controller.ts": {
@@ -980,8 +980,8 @@
     "semantic_hash": ""
   },
   "docs/desktop-cloud-sync.md": {
-    "mtime": 1784128241.2806075,
-    "ast_hash": "15ea08111324dfc04997dbf793d0012c",
+    "mtime": 1784128546.2622316,
+    "ast_hash": "141dfd577d7a34e84006ad2e1f9e183d",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-06-29-geses-shell-phase-1.md": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1784124505.389671,
-    "ast_hash": "164f3b805d8a13d16fd681f7b7c19802",
+    "mtime": 1784128546.335742,
+    "ast_hash": "b36d0991036ca634a17a4264c2f0e6e7",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "src/afip-service.ts": {
-    "mtime": 1784127299.5714676,
-    "ast_hash": "0a621b7816326745ab68e77f52697f4f",
+    "mtime": 1784128546.3317423,
+    "ast_hash": "f596dd093ee369fd73c69c687399f410",
     "semantic_hash": ""
   },
   "src/afip/crypto.ts": {
@@ -1430,8 +1430,8 @@
     "semantic_hash": ""
   },
   "src/whatsapp.ts": {
-    "mtime": 1784127263.7231965,
-    "ast_hash": "69fb889560850e47e4f33a82ac73f7bf",
+    "mtime": 1784128546.3367424,
+    "ast_hash": "4f6333dd8f8025099cc1d2c08225d16f",
     "semantic_hash": ""
   },
   "v2/packages/api/prisma/migrations/0003_sync_fase_f/migration.sql": {
@@ -1535,8 +1535,8 @@
     "semantic_hash": ""
   },
   "v2/packages/api/src/modules/sync/sync.service.spec.ts": {
-    "mtime": 1784127970.3231542,
-    "ast_hash": "e257c6700391943cc17054e2a1412368",
+    "mtime": 1784128546.3397412,
+    "ast_hash": "8d830ac0ba1b11df0cf63e6d7a457af3",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-07-14-cloud-recovery.md": {
@@ -1630,8 +1630,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-07-15-multi-pc-cloud-sync.md": {
-    "mtime": 1784124419.0369098,
-    "ast_hash": "d9168c072b6949e17e5ded36d345bc0c",
+    "mtime": 1784128546.2632332,
+    "ast_hash": "ac2bee66f3d42a5eb2e778c35ea43ae3",
     "semantic_hash": ""
   },
   ".superpowers/sdd/task-1-brief.md": {
@@ -1700,8 +1700,8 @@
     "semantic_hash": ""
   },
   "v2/packages/api/prisma/migrations/0004_add_crm_entities/migration.sql": {
-    "mtime": 1784125654.194535,
-    "ast_hash": "8981cef6d8a3be7c6a044cbd2118c722",
+    "mtime": 1784128546.3387418,
+    "ast_hash": "ee8f3796ee4ea72ff05cf548106bf8a0",
     "semantic_hash": ""
   },
   ".superpowers/sdd/review-task4-commits.txt": {
