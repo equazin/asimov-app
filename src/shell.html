@@ -4486,8 +4486,9 @@
 
   // ── Cloud login / status ─────────────────────────────────────────────────
   async function refreshCloudStatus() {
-    if (!window.cloud) return;
-    const status = await window.cloud.status();
+    const api = await waitForAsimov();
+    if (!api.cloudSync) return;
+    const status = await api.cloudSync.cloudStatus();
     const dot = document.getElementById('cloud-dot');
     const text = document.getElementById('cloud-text');
     const loginBtn = document.getElementById('cloud-login-btn');
@@ -4515,7 +4516,8 @@
   }
 
   async function submitCloudLogin() {
-    if (!window.cloud) return;
+    const api = await waitForAsimov();
+    if (!api.cloudSync) return;
     const email = document.getElementById('cloud-email').value.trim();
     const password = document.getElementById('cloud-password').value;
     const errorEl = document.getElementById('cloud-login-error');
@@ -4524,7 +4526,7 @@
       errorEl.textContent = 'Ingresá email y contraseña.';
       return;
     }
-    const res = await window.cloud.login(email, password);
+    const res = await api.cloudSync.login(email, password);
     if (res.ok) {
       closeCloudLogin();
       await refreshCloudStatus();
@@ -4535,9 +4537,10 @@
   }
 
   async function doCloudLogout() {
-    if (!window.cloud) return;
+    const api = await waitForAsimov();
+    if (!api.cloudSync) return;
     if (!confirm('¿Desconectar esta PC de la nube?')) return;
-    await window.cloud.logout();
+    await api.cloudSync.logout();
     await refreshCloudStatus();
   }
 
