@@ -855,5 +855,6 @@ export function annulDocument(type: string, id: string): AnnulResult {
     revertSourcesOnAnnul(str(type), docId);
   });
   tx();
+  enqueueDocSnapshot(cfg.refType, docId);
   return { ok: true };
 }

@@ -34,6 +34,9 @@ export class SyncService {
       exchangeRates,
       documentLinks,
       kitComponents,
+      opportunities,
+      activities,
+      tasks,
     ] = await Promise.all([
       this.prisma.client.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
@@ -64,6 +67,15 @@ export class SyncService {
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
       this.prisma.kitComponent.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.opportunity.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.activity.findMany({
+        where: { tenantId, updatedAt: { gt: sinceDate } },
+      }),
+      this.prisma.task.findMany({
         where: { tenantId, updatedAt: { gt: sinceDate } },
       }),
     ]);
@@ -194,6 +206,36 @@ export class SyncService {
       });
     }
     void kitMaxUpdatedAt;
+
+    for (const o of opportunities) {
+      changes.push({
+        entity: 'crm_opportunity',
+        action: o.deletedAt ? 'delete' : 'update',
+        id: o.id,
+        data: o as unknown as Record<string, unknown>,
+        updatedAt: o.updatedAt.toISOString(),
+      });
+    }
+
+    for (const a of activities) {
+      changes.push({
+        entity: 'crm_activity',
+        action: a.deletedAt ? 'delete' : 'update',
+        id: a.id,
+        data: a as unknown as Record<string, unknown>,
+        updatedAt: a.updatedAt.toISOString(),
+      });
+    }
+
+    for (const t of tasks) {
+      changes.push({
+        entity: 'crm_task',
+        action: t.deletedAt ? 'delete' : 'update',
+        id: t.id,
+        data: t as unknown as Record<string, unknown>,
+        updatedAt: t.updatedAt.toISOString(),
+      });
+    }
 
     changes.sort((a, b) => a.updatedAt.localeCompare(b.updatedAt));
 
@@ -416,6 +458,57 @@ export class SyncService {
         break;
       }
 
+      case 'crm_opportunity': {
+        const sanitized = this.sanitizeOpportunityData(data);
+        if (action === 'delete') {
+          await this.prisma.opportunity.updateMany({
+            where: { id, tenantId },
+            data: { deletedAt: new Date(), active: false },
+          });
+        } else {
+          await this.prisma.opportunity.upsert({
+            where: { id },
+            create: { ...sanitized, id, tenantId },
+            update: sanitized,
+          });
+        }
+        break;
+      }
+
+      case 'crm_activity': {
+        const sanitized = this.sanitizeActivityData(data);
+        if (action === 'delete') {
+          await this.prisma.activity.updateMany({
+            where: { id, tenantId },
+            data: { deletedAt: new Date(), active: false },
+          });
+        } else {
+          await this.prisma.activity.upsert({
+            where: { id },
+            create: { ...sanitized, id, tenantId },
+            update: sanitized,
+          });
+        }
+        break;
+      }
+
+      case 'crm_task': {
+        const sanitized = this.sanitizeTaskData(data);
+        if (action === 'delete') {
+          await this.prisma.task.updateMany({
+            where: { id, tenantId },
+            data: { deletedAt: new Date(), active: false },
+          });
+        } else {
+          await this.prisma.task.upsert({
+            where: { id },
+            create: { ...sanitized, id, tenantId },
+            update: sanitized,
+          });
+        }
+        break;
+      }
+
       default:
         throw new Error(`Entidad no soportada para sync: ${entity}`);
     }
@@ -563,6 +656,41 @@ export class SyncService {
       rawJson: rawJson === null ? Prisma.JsonNull : rawJson as Prisma.InputJsonValue,
       syncedAt: syncedAt ? new Date(String(syncedAt)) : null,
       deletedAt: data.deletedAt ? new Date(String(data.deletedAt)) : null,
+    };
+  }
+
+  private sanitizeOpportunityData(data: Record<string, unknown>) {
+    return {
+      clientId: data.clientId ? String(data.clientId) : null,
+      name: String(data.name ?? ''),
+      stage: String(data.stage ?? 'prospecting'),
+      value: Number(data.value ?? 0),
+      probability: Number(data.probability ?? 0),
+      expectedCloseDate: data.expectedCloseDate ? new Date(String(data.expectedCloseDate)) : null,
+      status: String(data.status ?? 'open'),
+      active: data.active === false || data.deletedAt ? false : true,
+    };
+  }
+
+  private sanitizeActivityData(data: Record<string, unknown>) {
+    return {
+      clientId: data.clientId ? String(data.clientId) : null,
+      opportunityId: data.opportunityId ? String(data.opportunityId) : null,
+      type: String(data.type ?? 'note'),
+      notes: data.notes ? String(data.notes) : null,
+      date: data.date ? new Date(String(data.date)) : new Date(),
+      active: data.active === false || data.deletedAt ? false : true,
+    };
+  }
+
+  private sanitizeTaskData(data: Record<string, unknown>) {
+    return {
+      clientId: data.clientId ? String(data.clientId) : null,
+      opportunityId: data.opportunityId ? String(data.opportunityId) : null,
+      title: String(data.title ?? ''),
+      dueDate: data.dueDate ? new Date(String(data.dueDate)) : null,
+      completed: data.completed === true,
+      active: data.active === false || data.deletedAt ? false : true,
     };
   }
 }

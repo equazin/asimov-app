@@ -27,6 +27,7 @@ import {
   getLinksFor,
 } from "./document-links";
 import { getKitInfo, setKitComponents } from "./kits";
+import { notifyAfipConfigSync } from "./afip-service";
 import {
   dbAll,
   dbGet,
@@ -578,6 +579,10 @@ export function registerIpcHandlers(deps: IpcDeps): void {
       // Cambió URL/token/enabled del bot: reiniciar el poll con la config nueva.
       try { stopWhatsappPoll(); if (isWhatsappEnabled()) startWhatsappPoll(); } catch { /* best-effort */ }
       try { enqueueWhatsappConfigCloudSync(); } catch { /* best-effort */ }
+    }
+    if (key.startsWith("afip_")) {
+      // Cambió la config de ARCA: propagar la config pública (sin cert/key) a la nube.
+      try { notifyAfipConfigSync(); } catch { /* best-effort */ }
     }
     return { ok: true };
   });

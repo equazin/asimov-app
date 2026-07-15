@@ -120,5 +120,9 @@
   "118": "dbGet",
   "119": "tray.ts",
   "120": "padron.ts",
-  "121": "dbGet"
+  "121": "dbGet",
+  "122": "TenantController",
+  "123": "AuthController",
+  "124": "AuthService",
+  "125": "auth.service.spec.ts"
 }

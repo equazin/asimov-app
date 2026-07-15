@@ -386,6 +386,8 @@ const api = {
     deviceIntegrations: () => ipcRenderer.invoke("sync:device-integrations") as Promise<{ airPassword: boolean; whatsappToken: boolean; arcaCertificate: boolean; arcaPrivateKey: boolean }>,
     bootstrapUpload: () => ipcRenderer.invoke("sync:bootstrap-upload") as Promise<{ ok: boolean; queued?: number; compacted?: number; error?: string }>,
     cloudStatus: () => ipcRenderer.invoke("cloud:status") as Promise<{ connected: boolean; user: { email: string; name: string; role: string; tenantId: string } | null; apiUrl: string }>,
+    login: (email: string, password: string) => ipcRenderer.invoke("cloud:login", { email, password }) as Promise<{ ok: boolean; error?: string; user?: { email: string; name: string; role: string; tenantId: string }; tenantId?: string }>,
+    logout: () => ipcRenderer.invoke("cloud:logout") as Promise<{ ok: boolean }>,
   },
 };
 

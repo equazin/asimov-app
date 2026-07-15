@@ -48,6 +48,8 @@ import {
 } from "../src/sync";
 import * as apiClient from "../src/api-client";
 import { enqueueLocalBootstrap, inspectBootstrapState } from "../src/sync-bootstrap";
+import { enqueueIfCloud } from "../src/ipc/shared";
+import { notifyAfipConfigSync } from "../src/afip-service";
 
 /** Respuesta que devolverá el mock para el POST/PATCH de push (el pull siempre va vacío). */
 let pushResponse: { ok: boolean; status: number; body?: string };
@@ -283,6 +285,49 @@ describe("sync queue — retry con backoff", () => {
     });
   });
 
+  it("la config de ARCA no filtra certificado ni clave privada", () => {
+    getDb().exec("DELETE FROM sync_queue");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_enabled", "true");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_cuit", "30111111119");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_point_of_sale", "3");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_env", "produccion");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_cert", "FAKE:-----BEGIN CERTIFICATE-----\nMIICiDCCAfGgAwIBAgIQG3\n-----END CERTIFICATE-----");
+    getDb().prepare("INSERT OR REPLACE INTO system_config (key,value) VALUES (?,?)").run("afip_key", "FAKE:-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA0Z3VS5\n-----END RSA PRIVATE KEY-----");
+
+    notifyAfipConfigSync();
+
+    const payload = getDb().prepare("SELECT payload FROM sync_queue WHERE entity='integration_config' AND entity_id='afip'").get() as { payload: string } | undefined;
+    expect(payload).toBeDefined();
+    expect(payload?.payload).not.toContain("BEGIN RSA PRIVATE KEY");
+    expect(payload?.payload).not.toContain("BEGIN CERTIFICATE");
+    expect(JSON.parse(payload?.payload ?? "{}").config.hasCert).toBe(true);
+    expect(JSON.parse(payload?.payload ?? "{}").config.hasKey).toBe(true);
+  });
+
+  it("aplica oportunidades, actividades y tareas CRM remotas", async () => {
+    getDb().exec("DELETE FROM sync_queue; DELETE FROM sync_state; DELETE FROM opportunities; DELETE FROM crm_activities; DELETE FROM crm_tasks;");
+    getDb().prepare("INSERT INTO clients (id, code, business_name) VALUES (?,?,?)").run("crm-client-1", "C-CRM", "Cliente CRM");
+    authorizedFetchMock.mockImplementation(() => Promise.resolve({
+      ok: true, status: 200, text: async () => "",
+      json: async () => ({
+        success: true,
+        data: {
+          changes: [
+            { entity: "crm_opportunity", action: "update", id: "opp-1", updatedAt: "2026-07-14T10:00:00.000Z", data: { id: "opp-1", client_id: null, name: "Venta", stage: "prospecting", value: 5000, probability: 30, status: "open", active: 1 } },
+            { entity: "crm_activity", action: "update", id: "act-1", updatedAt: "2026-07-14T10:00:01.000Z", data: { id: "act-1", client_id: "crm-client-1", opportunity_id: "opp-1", type: "call", notes: "Llamada", date: "2026-07-14T10:00:00.000Z", active: 1 } },
+            { entity: "crm_task", action: "update", id: "task-1", updatedAt: "2026-07-14T10:00:02.000Z", data: { id: "task-1", client_id: null, opportunity_id: "opp-1", title: "Seguimiento", due_date: "2026-07-15T10:00:00.000Z", completed: 0, active: 1 } },
+          ],
+          serverTimestamp: "2026-07-14T10:01:00.000Z",
+        },
+      }),
+    }));
+
+    expect((await runSync()).errors).toBe(0);
+    expect(getDb().prepare("SELECT title FROM opportunities WHERE id=?").get("opp-1")).toMatchObject({ title: "Venta" });
+    expect(getDb().prepare("SELECT body FROM crm_activities WHERE id=?").get("act-1")).toMatchObject({ body: "Llamada" });
+    expect(getDb().prepare("SELECT title FROM crm_tasks WHERE id=?").get("task-1")).toMatchObject({ title: "Seguimiento" });
+  });
+
   it("mapea businessName y precios del servidor a las columnas SQLite", async () => {
     getDb().exec("DELETE FROM sync_queue; DELETE FROM sync_state;");
     const changes = [
@@ -311,5 +356,49 @@ describe("sync queue — retry con backoff", () => {
       .toMatchObject({ business_name: "Proveedor nube", cuit: "30222222223" });
     expect(getDb().prepare("SELECT name, cost_price, sale_price, iva_pct FROM articles WHERE id=?").get("cloud-product"))
       .toMatchObject({ name: "Artículo nube", cost_price: 80, sale_price: 120, iva_pct: 10.5 });
+  });
+});
+
+describe("enqueueIfCloud — encolado de bajas de maestros", () => {
+  it("encola delete de cliente cuando hay sesión cloud", () => {
+    getDb().prepare("INSERT INTO clients (id, code, business_name) VALUES (?,?,?)").run("c-del", "C-DEL", "Cliente");
+    enqueueIfCloud("client", "c-del", "delete");
+    const row = getDb().prepare("SELECT entity, action, entity_id FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
+      entity: string;
+      action: string;
+      entity_id: string;
+    };
+    expect(row).toMatchObject({ entity: "client", action: "delete", entity_id: "c-del" });
+  });
+
+  it("encola delete de proveedor cuando hay sesión cloud", () => {
+    getDb().prepare("INSERT INTO suppliers (id, code, business_name) VALUES (?,?,?)").run("s-del", "P-DEL", "Proveedor");
+    enqueueIfCloud("supplier", "s-del", "delete");
+    const row = getDb().prepare("SELECT entity, action, entity_id FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
+      entity: string;
+      action: string;
+      entity_id: string;
+    };
+    expect(row).toMatchObject({ entity: "supplier", action: "delete", entity_id: "s-del" });
+  });
+
+  it("encola delete de artículo cuando hay sesión cloud", () => {
+    getDb().prepare("INSERT INTO articles (id, code, name) VALUES (?,?,?)").run("a-del", "A-DEL", "Artículo");
+    enqueueIfCloud("product", "a-del", "delete");
+    const row = getDb().prepare("SELECT entity, action, entity_id FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
+      entity: string;
+      action: string;
+      entity_id: string;
+    };
+    expect(row).toMatchObject({ entity: "product", action: "delete", entity_id: "a-del" });
+  });
+
+  it("no encola si no hay sesión cloud", () => {
+    getDb().exec("DELETE FROM sync_queue");
+    vi.mocked(apiClient.isCloudConnected).mockReturnValue(false);
+    enqueueIfCloud("client", "c-no-cloud", "delete");
+    const count = getDb().prepare("SELECT COUNT(*) as n FROM sync_queue").get() as { n: number };
+    expect(count.n).toBe(0);
+    vi.mocked(apiClient.isCloudConnected).mockReturnValue(true);
   });
 });

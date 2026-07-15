@@ -60,17 +60,19 @@ export function isWhatsappEnabled(): boolean {
 
 export function enqueueWhatsappConfigCloudSync(): void {
   const cfg = getWhatsappConfig();
-  enqueueChange("integration_config", "whatsapp", "update", {
-    provider: "whatsapp",
-    config: {
-      enabled: cfg.enabled,
-      baseUrl: cfg.baseUrl,
-      botPhone: cfg.botPhone,
-      pollIntervalMinutes: cfg.pollIntervalMinutes,
-      requiresTokenOnDevice: true,
-      // NUNCA el token — se sincroniza cifrado por su ruta habitual si existe.
-    },
-  });
+  try {
+    enqueueChange("integration_config", "whatsapp", "update", {
+      provider: "whatsapp",
+      config: {
+        enabled: cfg.enabled,
+        baseUrl: cfg.baseUrl,
+        botPhone: cfg.botPhone,
+        pollIntervalMinutes: cfg.pollIntervalMinutes,
+        requiresTokenOnDevice: true,
+        // NUNCA el token — se sincroniza cifrado por su ruta habitual si existe.
+      },
+    });
+  } catch { /* best-effort */ }
 }
 
 // ─── HTTP client ────────────────────────────────────────────────────────────

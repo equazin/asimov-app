@@ -16,6 +16,7 @@
  */
 import { dbAll, dbGet, dbRun } from "./db";
 import { encryptSecret, decryptSecret } from "./secrets";
+import { enqueueChange } from "./sync";
 import { signTRA, certNotAfter, isValidCertPem, isValidKeyPem } from "./afip/crypto";
 import {
   WSAA_URLS, buildLoginTicketRequest, callLoginCms, isTaValid, type AfipTA,
@@ -112,6 +113,25 @@ export function getAfipConfig(): AfipConfig {
   };
 }
 
+/** Encola la configuración pública de AFIP/ARCA para sync multi-PC (sin cert/key). */
+export function notifyAfipConfigSync(): void {
+  const cfg = getAfipConfig();
+  try {
+    enqueueChange("integration_config", "afip", "update", {
+      provider: "afip",
+      config: {
+        enabled: cfg.enabled,
+        cuit: cfg.cuit,
+        environment: cfg.env,
+        pointOfSale: cfg.pointOfSale,
+        hasCert: cfg.hasCert,
+        hasKey: cfg.hasKey,
+        requiresCredentialsOnDevice: true,
+      },
+    });
+  } catch { /* best-effort */ }
+}
+
 export interface SaveCredentialsInput {
   cuit: string;
   pointOfSale: number;
@@ -140,6 +160,9 @@ export function saveAfipCredentials(input: SaveCredentialsInput): { ok: true; ce
   setConfigValue("afip_enabled", input.enabled === false ? "false" : "true");
   // Cambió algo de la config → los TA cacheados (todos los servicios) ya no sirven.
   dbRun("DELETE FROM system_config WHERE key LIKE 'afip_ta%'");
+
+  // Propagar la config pública (sin certificado ni clave) a la nube.
+  notifyAfipConfigSync();
 
   const cfg = getAfipConfig();
   return { ok: true, certExpires: cfg.certExpires };
