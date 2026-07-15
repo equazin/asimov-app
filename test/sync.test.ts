@@ -284,6 +284,30 @@ describe("sync queue — retry con backoff", () => {
     });
   });
 
+  it("aplica oportunidades, actividades y tareas CRM remotas", async () => {
+    getDb().exec("DELETE FROM sync_queue; DELETE FROM sync_state; DELETE FROM opportunities; DELETE FROM crm_activities; DELETE FROM crm_tasks;");
+    getDb().prepare("INSERT INTO clients (id, code, business_name) VALUES (?,?,?)").run("crm-client-1", "C-CRM", "Cliente CRM");
+    authorizedFetchMock.mockImplementation(() => Promise.resolve({
+      ok: true, status: 200, text: async () => "",
+      json: async () => ({
+        success: true,
+        data: {
+          changes: [
+            { entity: "crm_opportunity", action: "update", id: "opp-1", updatedAt: "2026-07-14T10:00:00.000Z", data: { id: "opp-1", client_id: null, name: "Venta", stage: "prospecting", value: 5000, probability: 30, status: "open", active: 1 } },
+            { entity: "crm_activity", action: "update", id: "act-1", updatedAt: "2026-07-14T10:00:01.000Z", data: { id: "act-1", client_id: "crm-client-1", opportunity_id: "opp-1", type: "call", notes: "Llamada", date: "2026-07-14T10:00:00.000Z", active: 1 } },
+            { entity: "crm_task", action: "update", id: "task-1", updatedAt: "2026-07-14T10:00:02.000Z", data: { id: "task-1", client_id: null, opportunity_id: "opp-1", title: "Seguimiento", due_date: "2026-07-15T10:00:00.000Z", completed: 0, active: 1 } },
+          ],
+          serverTimestamp: "2026-07-14T10:01:00.000Z",
+        },
+      }),
+    }));
+
+    expect((await runSync()).errors).toBe(0);
+    expect(getDb().prepare("SELECT title FROM opportunities WHERE id=?").get("opp-1")).toMatchObject({ title: "Venta" });
+    expect(getDb().prepare("SELECT body FROM crm_activities WHERE id=?").get("act-1")).toMatchObject({ body: "Llamada" });
+    expect(getDb().prepare("SELECT title FROM crm_tasks WHERE id=?").get("task-1")).toMatchObject({ title: "Seguimiento" });
+  });
+
   it("mapea businessName y precios del servidor a las columnas SQLite", async () => {
     getDb().exec("DELETE FROM sync_queue; DELETE FROM sync_state;");
     const changes = [

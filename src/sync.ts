@@ -638,6 +638,64 @@ function mapExchangeRate(d: RemoteRow): RemoteRow {
   };
 }
 
+function mapOpportunity(d: RemoteRow): RemoteRow {
+  return {
+    id: d.id,
+    client_id: d.clientId ?? d.client_id ?? null,
+    title: d.name ?? d.title ?? '',
+    amount: d.value ?? d.amount ?? 0,
+    stage: d.stage ?? 'prospecto',
+    stage_id: d.stageId ?? d.stage_id ?? null,
+    probability: d.probability ?? 0,
+    expected_close: d.expectedCloseDate ?? d.expected_close ?? null,
+    assigned_to: d.assignedTo ?? d.assigned_to ?? null,
+    source: d.source ?? null,
+    notes: d.notes ?? null,
+    status: d.status ?? 'open',
+    won_at: d.wonAt ?? d.won_at ?? null,
+    lost_at: d.lostAt ?? d.lost_at ?? null,
+    lost_reason: d.lostReason ?? d.lost_reason ?? null,
+    created_at: d.createdAt ?? d.created_at ?? undefined,
+    updated_at: d.updatedAt ?? d.updated_at ?? undefined,
+  };
+}
+
+function mapCrmActivity(d: RemoteRow): RemoteRow {
+  return {
+    id: d.id,
+    client_id: d.clientId ?? d.client_id ?? '',
+    type: d.type ?? 'note',
+    subject: d.subject ?? null,
+    body: d.notes ?? d.body ?? null,
+    due_date: d.date ?? d.due_date ?? null,
+    completed_at: d.completedAt ?? d.completed_at ?? null,
+    assigned_to: d.assignedTo ?? d.assigned_to ?? null,
+    opportunity_id: d.opportunityId ?? d.opportunity_id ?? null,
+    created_at: d.createdAt ?? d.created_at ?? undefined,
+    updated_at: d.updatedAt ?? d.updated_at ?? undefined,
+  };
+}
+
+function mapCrmTask(d: RemoteRow): RemoteRow {
+  const completed = d.completed === true || d.completed === 1;
+  return {
+    id: d.id,
+    client_id: d.clientId ?? d.client_id ?? null,
+    opportunity_id: d.opportunityId ?? d.opportunity_id ?? null,
+    title: d.title ?? '',
+    description: d.description ?? null,
+    due_date: d.dueDate ?? d.due_date ?? null,
+    due_time: d.dueTime ?? d.due_time ?? null,
+    priority: d.priority ?? 'normal',
+    status: completed ? 'completed' : (d.status ?? 'pending'),
+    assigned_to: d.assignedTo ?? d.assigned_to ?? null,
+    completed_at: d.completedAt ?? d.completed_at ?? null,
+    reminder_at: d.reminderAt ?? d.reminder_at ?? null,
+    created_at: d.createdAt ?? d.created_at ?? undefined,
+    updated_at: d.updatedAt ?? d.updated_at ?? undefined,
+  };
+}
+
 function mapDocumentLink(d: RemoteRow): RemoteRow {
   return {
     source_type: d.sourceType ?? d.source_type ?? '',
@@ -773,17 +831,17 @@ function applyRemoteChange(change: {
     }
     case 'crm_opportunity': {
       if (change.action === 'delete') softDeleteRow('opportunities', change.id);
-      else upsertRow('opportunities', change.id, change.data);
+      else upsertRow('opportunities', change.id, mapOpportunity(change.data));
       break;
     }
     case 'crm_activity': {
       if (change.action === 'delete') softDeleteRow('crm_activities', change.id);
-      else upsertRow('crm_activities', change.id, change.data);
+      else upsertRow('crm_activities', change.id, mapCrmActivity(change.data));
       break;
     }
     case 'crm_task': {
       if (change.action === 'delete') softDeleteRow('crm_tasks', change.id);
-      else upsertRow('crm_tasks', change.id, change.data);
+      else upsertRow('crm_tasks', change.id, mapCrmTask(change.data));
       break;
     }
     case 'document':
