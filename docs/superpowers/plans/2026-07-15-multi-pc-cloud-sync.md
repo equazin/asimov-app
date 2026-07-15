@@ -8,6 +8,8 @@
 
 **Tech Stack:** Electron + TypeScript + better-sqlite3 (desktop); NestJS + Prisma + PostgreSQL (API v2); Vitest (tests).
 
+> **Nota importante sobre APIs en el shell:** la ventana principal (`shell.html`) carga `preload.js`, que expone cloud/sync bajo `window.asimov.cloudSync`, no como `window.cloud` ni `window.sync`. Usar siempre `window.asimov.cloudSync.cloudStatus()`, `.status()`, `.run()`, `.login()`, `.logout()`, etc.
+
 ## Global Constraints
 
 - No se suben credenciales, claves privadas ni certificados a la nube (passwords, tokens, certificados ARCA).
@@ -184,7 +186,7 @@ git commit -m "feat(cloud): UI de login y estado de conexión en el shell"
 - Test: manual (forzar sync, ver contador)
 
 **Interfaces:**
-- Consumes: `window.sync.status()`
+- Consumes: `window.asimov.cloudSync.status()`
 - Produces: badge con cambios pendientes / último sync / error.
 
 - [ ] **Step 1: Agregar badge de sync junto al cloud status**
