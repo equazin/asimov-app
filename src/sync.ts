@@ -661,9 +661,9 @@ function mapOpportunity(d: RemoteRow): RemoteRow {
 }
 
 function mapCrmActivity(d: RemoteRow): RemoteRow {
-  return {
+  const row = {
     id: d.id,
-    client_id: d.clientId ?? d.client_id ?? '',
+    client_id: d.clientId ?? d.client_id,
     type: d.type ?? 'note',
     subject: d.subject ?? null,
     body: d.notes ?? d.body ?? null,
@@ -674,6 +674,8 @@ function mapCrmActivity(d: RemoteRow): RemoteRow {
     created_at: d.createdAt ?? d.created_at ?? undefined,
     updated_at: d.updatedAt ?? d.updated_at ?? undefined,
   };
+  if (!row.client_id) throw new Error('crm_activity missing client_id');
+  return row;
 }
 
 function mapCrmTask(d: RemoteRow): RemoteRow {
