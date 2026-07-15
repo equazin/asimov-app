@@ -1728,6 +1728,7 @@
   <div id="cloud-status-bar" style="display:flex;align-items:center;gap:8px;font-size:12px;">
     <span id="cloud-dot" style="width:8px;height:8px;border-radius:50%;background:#999;"></span>
     <span id="cloud-text">Nube: desconectado</span>
+    <span id="sync-badge" style="display:none;background:#f39c12;color:#fff;padding:2px 6px;border-radius:10px;font-size:11px;"></span>
     <button id="cloud-login-btn" class="btn btn-sm btn-outline">Conectar</button>
     <button id="cloud-logout-btn" class="btn btn-sm btn-outline" style="display:none;">Desconectar</button>
   </div>
@@ -4551,7 +4552,45 @@
     } catch (e) {
       setCloudStatus({ text: 'Nube: error', color: '#999', showLogin: true, showLogout: false });
     }
+    await refreshSyncStatus();
   }
+
+  async function refreshSyncStatus() {
+    const api = await waitForAsimov();
+    if (!api?.cloudSync) return;
+    let s;
+    try {
+      s = await api.cloudSync.status();
+    } catch (e) {
+      console.error('[sync badge]', e);
+      return;
+    }
+    const badge = document.getElementById('sync-badge');
+    if (!badge) return;
+    if (s.syncing) {
+      badge.style.display = '';
+      badge.textContent = 'Sincronizando...';
+      badge.style.background = '#3498db';
+    } else if (!s.connected) {
+      badge.style.display = '';
+      badge.textContent = 'Sin nube';
+      badge.style.background = '#999';
+    } else if (s.pendingChanges > 0) {
+      badge.style.display = '';
+      badge.textContent = `${s.pendingChanges} pendientes`;
+      badge.style.background = '#f39c12';
+    } else if (s.lastError) {
+      badge.style.display = '';
+      badge.textContent = 'Error sync';
+      badge.style.background = '#e74c3c';
+      badge.title = s.lastError;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  setInterval(refreshSyncStatus, 10_000);
+  refreshSyncStatus();
 
   function openCloudLogin() {
     document.getElementById('cloud-login-modal').style.display = 'flex';
