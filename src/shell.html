@@ -4485,24 +4485,55 @@
   }
 
   // ── Cloud login / status ─────────────────────────────────────────────────
-  async function refreshCloudStatus() {
-    const api = await waitForAsimov();
-    if (!api.cloudSync) return;
-    const status = await api.cloudSync.cloudStatus();
+  function setCloudStatus({ text, color, showLogin, showLogout }) {
     const dot = document.getElementById('cloud-dot');
-    const text = document.getElementById('cloud-text');
+    const textEl = document.getElementById('cloud-text');
     const loginBtn = document.getElementById('cloud-login-btn');
     const logoutBtn = document.getElementById('cloud-logout-btn');
-    if (status.connected) {
-      dot.style.background = '#2ecc71';
-      text.textContent = `Nube: ${status.user?.email ?? 'conectado'}`;
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = '';
-    } else {
-      dot.style.background = '#999';
-      text.textContent = 'Nube: desconectado';
-      loginBtn.style.display = '';
-      logoutBtn.style.display = 'none';
+    if (dot) dot.style.background = color || '#999';
+    if (textEl) textEl.textContent = text || 'Nube: desconectado';
+    if (loginBtn) loginBtn.style.display = showLogin ? '' : 'none';
+    if (logoutBtn) logoutBtn.style.display = showLogout ? '' : 'none';
+  }
+
+  async function withCloudSync(fn) {
+    let api;
+    try {
+      api = await waitForAsimov();
+    } catch (e) {
+      console.error('[cloud UI]', e);
+      setCloudStatus({ text: 'Nube: no disponible', color: '#999', showLogin: true, showLogout: false });
+      return;
+    }
+    if (!api?.cloudSync) {
+      setCloudStatus({ text: 'Nube: no disponible', color: '#999', showLogin: true, showLogout: false });
+      return;
+    }
+    try {
+      await fn(api.cloudSync);
+    } catch (e) {
+      console.error('[cloud UI]', e);
+      throw e;
+    }
+  }
+
+  async function refreshCloudStatus() {
+    try {
+      await withCloudSync(async (cloudSync) => {
+        const status = await cloudSync.cloudStatus();
+        if (status.connected) {
+          setCloudStatus({
+            text: `Nube: ${status.user?.email ?? 'conectado'}`,
+            color: '#2ecc71',
+            showLogin: false,
+            showLogout: true,
+          });
+        } else {
+          setCloudStatus({ text: 'Nube: desconectado', color: '#999', showLogin: true, showLogout: false });
+        }
+      });
+    } catch (e) {
+      setCloudStatus({ text: 'Nube: error', color: '#999', showLogin: true, showLogout: false });
     }
   }
 
@@ -4516,47 +4547,63 @@
   }
 
   async function submitCloudLogin() {
-    const api = await waitForAsimov();
-    if (!api.cloudSync) return;
-    const email = document.getElementById('cloud-email').value.trim();
-    const password = document.getElementById('cloud-password').value;
+    const submitBtn = document.getElementById('cloud-submit-login');
+    const emailEl = document.getElementById('cloud-email');
+    const passwordEl = document.getElementById('cloud-password');
     const errorEl = document.getElementById('cloud-login-error');
+    const email = emailEl.value.trim();
+    const password = passwordEl.value;
     errorEl.textContent = '';
     if (!email || !password) {
       errorEl.textContent = 'Ingresá email y contraseña.';
       return;
     }
-    const res = await api.cloudSync.login(email, password);
-    if (res.ok) {
-      closeCloudLogin();
-      await refreshCloudStatus();
-      alert('Conectado a la nube. Se iniciará la sincronización.');
-    } else {
-      errorEl.textContent = res.error || 'No se pudo conectar.';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Conectando...';
+    try {
+      await withCloudSync(async (cloudSync) => {
+        const res = await cloudSync.login(email, password);
+        if (res.ok) {
+          closeCloudLogin();
+          emailEl.value = '';
+          passwordEl.value = '';
+          await refreshCloudStatus();
+          alert('Conectado a la nube. Se iniciará la sincronización.');
+        } else {
+          errorEl.textContent = res.error || 'No se pudo conectar.';
+        }
+      });
+    } catch (e) {
+      errorEl.textContent = 'Error al conectar. Reintentá más tarde.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Conectar';
     }
   }
 
   async function doCloudLogout() {
-    const api = await waitForAsimov();
-    if (!api.cloudSync) return;
     if (!confirm('¿Desconectar esta PC de la nube?')) return;
-    await api.cloudSync.logout();
-    await refreshCloudStatus();
+    try {
+      await withCloudSync(async (cloudSync) => {
+        await cloudSync.logout();
+        await refreshCloudStatus();
+      });
+    } catch (e) {
+      setCloudStatus({ text: 'Nube: error al desconectar', color: '#999', showLogin: true, showLogout: false });
+    }
   }
 
   // Wiring
   document.getElementById('cloud-login-btn').addEventListener('click', openCloudLogin);
   document.getElementById('cloud-logout-btn').addEventListener('click', doCloudLogout);
   document.getElementById('cloud-submit-login').addEventListener('click', submitCloudLogin);
+  document.getElementById('cloud-cancel-login').addEventListener('click', closeCloudLogin);
   document.getElementById('cloud-login-modal').addEventListener('click', (e) => {
     if (e.target.id === 'cloud-login-modal') closeCloudLogin();
   });
 
   // Llamar al iniciar
   refreshCloudStatus();
-
-  window.openCloudLogin = openCloudLogin;
-  window.closeCloudLogin = closeCloudLogin;
 
 })();
 </script>
@@ -4571,7 +4618,7 @@
     <input type="password" id="cloud-password" placeholder="••••••" />
     <div id="cloud-login-error" style="color:#c00;font-size:13px;min-height:18px;"></div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
-      <button class="btn btn-outline" onclick="closeCloudLogin()">Cancelar</button>
+      <button class="btn btn-outline" id="cloud-cancel-login">Cancelar</button>
       <button class="btn btn-primary" id="cloud-submit-login">Conectar</button>
     </div>
   </div>
