@@ -5,13 +5,18 @@
  * (simulando una "PC B" sin ese doc) y se aplica: cabecera, ítems y movimientos
  * de stock/caja deben reconstruirse sin re-ejecutar efectos ni contar doble.
  */
-import { describe, it, expect, beforeEach } from "vitest";
-import { persistGoodsReceipt, persistInvoice, persistReceipt } from "../src/documents";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { persistGoodsReceipt, persistInvoice, persistReceipt, annulDocument } from "../src/documents";
 import { buildDocEnvelope, applyDocEnvelope, deleteDocLocal } from "../src/document-sync";
 import { getDb } from "../src/db";
+import { initSyncTables } from "../src/sync";
 import { initTestDb, resetLedger, seedArticle } from "./helpers";
 
-beforeEach(() => initTestDb());
+vi.mock("../src/api-client", () => ({
+  isCloudConnected: () => true,
+}));
+
+beforeEach(() => { initTestDb(); initSyncTables(); });
 
 const one = (sql: string, ...p: unknown[]) => getDb().prepare(sql).get(...p) as any;
 const count = (sql: string, ...p: unknown[]) => (getDb().prepare(sql).get(...p) as { c: number }).c;
@@ -140,5 +145,24 @@ describe("document-sync — estados fiscales", () => {
     applyDocEnvelope(legacy);
 
     expect(one("SELECT status FROM invoices WHERE id=?", id).status).toBe("borrador");
+  });
+});
+
+describe("document-sync — anulación", () => {
+  it("annulDocument encola el snapshot para propagar la anulación", () => {
+    seedArticle("A1");
+    const { id } = persistGoodsReceipt({
+      proveedorNombre: "Prov",
+      estado: "recibido",
+      items: [{ codigo: "A1", descripcion: "Art", cantPedida: 3, cantRecibida: 3 }],
+    });
+    // Limpiar cola previa
+    getDb().exec("DELETE FROM sync_queue");
+
+    const result = annulDocument("goods-receipt", id);
+
+    expect(result.ok).toBe(true);
+    const rows = getDb().prepare("SELECT entity, action FROM sync_queue WHERE synced_at IS NULL").all() as Array<{ entity: string; action: string }>;
+    expect(rows).toContainEqual({ entity: "document_snapshot", action: "update" });
   });
 });
