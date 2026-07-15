@@ -48,6 +48,7 @@ import {
 } from "../src/sync";
 import * as apiClient from "../src/api-client";
 import { enqueueLocalBootstrap, inspectBootstrapState } from "../src/sync-bootstrap";
+import { enqueueIfCloud } from "../src/ipc/shared";
 
 /** Respuesta que devolverá el mock para el POST/PATCH de push (el pull siempre va vacío). */
 let pushResponse: { ok: boolean; status: number; body?: string };
@@ -311,5 +312,49 @@ describe("sync queue — retry con backoff", () => {
       .toMatchObject({ business_name: "Proveedor nube", cuit: "30222222223" });
     expect(getDb().prepare("SELECT name, cost_price, sale_price, iva_pct FROM articles WHERE id=?").get("cloud-product"))
       .toMatchObject({ name: "Artículo nube", cost_price: 80, sale_price: 120, iva_pct: 10.5 });
+  });
+});
+
+describe("enqueueIfCloud — encolado de bajas de maestros", () => {
+  it("encola delete de cliente cuando hay sesión cloud", () => {
+    getDb().prepare("INSERT INTO clients (id, code, business_name) VALUES (?,?,?)").run("c-del", "C-DEL", "Cliente");
+    enqueueIfCloud("client", "c-del", "delete");
+    const row = getDb().prepare("SELECT entity, action, entity_id FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
+      entity: string;
+      action: string;
+      entity_id: string;
+    };
+    expect(row).toMatchObject({ entity: "client", action: "delete", entity_id: "c-del" });
+  });
+
+  it("encola delete de proveedor cuando hay sesión cloud", () => {
+    getDb().prepare("INSERT INTO suppliers (id, code, business_name) VALUES (?,?,?)").run("s-del", "P-DEL", "Proveedor");
+    enqueueIfCloud("supplier", "s-del", "delete");
+    const row = getDb().prepare("SELECT entity, action, entity_id FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
+      entity: string;
+      action: string;
+      entity_id: string;
+    };
+    expect(row).toMatchObject({ entity: "supplier", action: "delete", entity_id: "s-del" });
+  });
+
+  it("encola delete de artículo cuando hay sesión cloud", () => {
+    getDb().prepare("INSERT INTO articles (id, code, name) VALUES (?,?,?)").run("a-del", "A-DEL", "Artículo");
+    enqueueIfCloud("product", "a-del", "delete");
+    const row = getDb().prepare("SELECT entity, action, entity_id FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
+      entity: string;
+      action: string;
+      entity_id: string;
+    };
+    expect(row).toMatchObject({ entity: "product", action: "delete", entity_id: "a-del" });
+  });
+
+  it("no encola si no hay sesión cloud", () => {
+    getDb().exec("DELETE FROM sync_queue");
+    vi.mocked(apiClient.isCloudConnected).mockReturnValue(false);
+    enqueueIfCloud("client", "c-no-cloud", "delete");
+    const count = getDb().prepare("SELECT COUNT(*) as n FROM sync_queue").get() as { n: number };
+    expect(count.n).toBe(0);
+    vi.mocked(apiClient.isCloudConnected).mockReturnValue(true);
   });
 });
