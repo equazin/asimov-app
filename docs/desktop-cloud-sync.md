@@ -2,7 +2,7 @@
 
 > Documento de requisitos y diseño de la conexión entre la app de escritorio
 > (Electron, local-first) y la plataforma SaaS v2 (API NestJS + Postgres/Neon).
-> **Estado: pendiente de implementar.** Última actualización: 2026-07-03.
+> **Estado: en producción (v4.23.0).** Última actualización: 2026-07-15.
 
 ## Objetivo
 
@@ -50,25 +50,15 @@ Requisitos concretos:
 - `POST /sync/push`: aplica un batch de cambios (last-write-wins).
 - Cubre entidades: clientes, productos, documentos, … (revisar cobertura completa).
 
-## Lo que FALTA para cumplir el objetivo
+## Estado actual
 
-- [ ] **UI de conexión cloud en el desktop**: pantalla "Conectar a la nube"
-      (email + contraseña de la empresa) que llame a `window.cloud.login` y
-      fije la URL de la API a Render. Hoy el plumbing existe pero no hay interfaz.
-- [ ] **Apuntar la URL por defecto** de `api-client.ts` a
-      `https://asimov-api-lwci.onrender.com/api/v1` (o configurable, con la de
-      Render como default de producción).
-- [ ] **Aplicar los cambios del `pull` en la base local** (verificar que `runSync`
-      inserte/actualice las filas remotas en SQLite, no solo que las traiga).
-- [ ] **Enganchar TODAS las escrituras del desktop a `enqueueChange`** (que cada
-      alta/edición/baja se encole para push). Revisar cobertura por entidad.
-- [ ] **Propagación de borrados** (soft-delete) en ambos sentidos.
-- [ ] **Cobertura de entidades**: asegurar que pull/push cubran todo lo compartible
-      (clientes, proveedores, productos, stock, documentos, cta. cte., caja…).
-- [ ] **Numeración de comprobantes multi-PC**: evitar que dos PCs tomen el mismo
-      número. Idealmente la numeración la asigna el server (o secuencias por tenant).
-- [ ] **Feedback en la UI**: indicador de estado (conectado / sincronizando /
-      offline / N cambios pendientes / último sync).
+- [x] UI de conexión cloud en el desktop.
+- [x] Indicador de estado de sync.
+- [x] Propagación de anulaciones de documentos.
+- [x] Sincronización de bajas de maestros.
+- [x] Entidades CRM en sync (Opportunity, Activity, Task).
+- [x] Configuración de AIR/WhatsApp/ARCA sincronizada (sin secretos).
+- [ ] Documentos normalizados desde web/mobile en desktop (reservado para cuando el panel opere documentos).
 
 ## Decisiones pendientes (definir antes de implementar)
 
