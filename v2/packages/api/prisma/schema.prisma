@@ -86,6 +86,9 @@ model Tenant {
   exchangeRates   ExchangeRate[]
   documentLinks   DocumentLink[]
   kitComponents   KitComponent[]
+  opportunities   Opportunity[]
+  activities      Activity[]
+  tasks           Task[]
 
   @@index([status])
   @@index([planId])
@@ -769,4 +772,70 @@ model SyncedDocument {
   @@unique([tenantId, docId])
   @@index([tenantId, updatedAt])
   @@map("synced_documents")
+}
+
+// ============================================================
+// CRM — Oportunidades, actividades y tareas
+// ============================================================
+
+model Opportunity {
+  id          String   @id @default(uuid())
+  tenantId    String
+  clientId    String?
+  name        String
+  stage       String
+  value       Decimal  @default(0) @db.Decimal(12, 2)
+  probability Int      @default(0)
+  expectedCloseDate DateTime?
+  status      String   @default("open")
+  active      Boolean  @default(true)
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([updatedAt])
+  @@map("opportunities")
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  tenantId    String
+  clientId    String?
+  opportunityId String?
+  type        String
+  notes       String?
+  date        DateTime @default(now())
+  active      Boolean  @default(true)
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([updatedAt])
+  @@map("activities")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  tenantId    String
+  clientId    String?
+  opportunityId String?
+  title       String
+  dueDate     DateTime?
+  completed   Boolean  @default(false)
+  active      Boolean  @default(true)
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([updatedAt])
+  @@map("tasks")
 }
