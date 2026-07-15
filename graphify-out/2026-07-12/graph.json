@@ -350,7 +350,7 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "package_dependencies_qrcode",
-      "community": 114,
+      "community": 1,
       "norm_label": "qrcode"
     },
     {
@@ -1030,7 +1030,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_afip_service_getafipconfig",
-      "community": 1,
+      "community": 107,
       "norm_label": "getafipconfig()"
     },
     {
@@ -1050,7 +1050,7 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "src_afip_service_saveafipcredentials",
-      "community": 1,
+      "community": 107,
       "norm_label": "saveafipcredentials()"
     },
     {
@@ -1060,7 +1060,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_afip_service_requirecreds",
-      "community": 19,
+      "community": 1,
       "norm_label": "requirecreds()"
     },
     {
@@ -1100,7 +1100,7 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "src_afip_service_getvalidta",
-      "community": 19,
+      "community": 107,
       "norm_label": "getvalidta()"
     },
     {
@@ -1110,7 +1110,7 @@
       "source_location": "L203",
       "_origin": "ast",
       "id": "src_afip_service_consultarpadron",
-      "community": 19,
+      "community": 120,
       "norm_label": "consultarpadron()"
     },
     {
@@ -1200,7 +1200,7 @@
       "source_location": "L406",
       "_origin": "ast",
       "id": "src_afip_service_buildstoredinvoiceqr",
-      "community": 114,
+      "community": 1,
       "norm_label": "buildstoredinvoiceqr()"
     },
     {
@@ -1210,7 +1210,7 @@
       "source_location": "L443",
       "_origin": "ast",
       "id": "src_afip_service_buildcaeinputfrominvoice",
-      "community": 114,
+      "community": 104,
       "norm_label": "buildcaeinputfrominvoice()"
     },
     {
@@ -1220,7 +1220,7 @@
       "source_location": "L479",
       "_origin": "ast",
       "id": "src_afip_service_buildassociatedvoucher",
-      "community": 1,
+      "community": 104,
       "norm_label": "buildassociatedvoucher()"
     },
     {
@@ -1270,7 +1270,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_crypto",
-      "community": 1,
+      "community": 107,
       "norm_label": "crypto.ts"
     },
     {
@@ -1280,7 +1280,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_afip_crypto_signtra",
-      "community": 1,
+      "community": 107,
       "norm_label": "signtra()"
     },
     {
@@ -1290,7 +1290,7 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_afip_crypto_certnotafter",
-      "community": 1,
+      "community": 107,
       "norm_label": "certnotafter()"
     },
     {
@@ -1300,7 +1300,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_afip_crypto_isvalidcertpem",
-      "community": 1,
+      "community": 107,
       "norm_label": "isvalidcertpem()"
     },
     {
@@ -1310,7 +1310,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "src_afip_crypto_isvalidkeypem",
-      "community": 1,
+      "community": 107,
       "norm_label": "isvalidkeypem()"
     },
     {
@@ -1320,7 +1320,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_domain",
-      "community": 114,
+      "community": 104,
       "norm_label": "domain.ts"
     },
     {
@@ -1330,7 +1330,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_afip_domain_afipunavailableerror",
-      "community": 104,
+      "community": 107,
       "norm_label": "afipunavailableerror"
     },
     {
@@ -1340,7 +1340,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_afip_domain_afipunavailableerror_constructor",
-      "community": 104,
+      "community": 107,
       "norm_label": ".constructor()"
     },
     {
@@ -1360,7 +1360,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_afip_domain_afip_iva_codes",
-      "community": 114,
+      "community": 104,
       "norm_label": "afip_iva_codes"
     },
     {
@@ -1370,7 +1370,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_afip_domain_afipivacode",
-      "community": 114,
+      "community": 104,
       "norm_label": "afipivacode()"
     },
     {
@@ -1380,7 +1380,7 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_afip_domain_round2",
-      "community": 114,
+      "community": 104,
       "norm_label": "round2()"
     },
     {
@@ -1390,7 +1390,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "src_afip_domain_afipaliciva",
-      "community": 114,
+      "community": 104,
       "norm_label": "afipaliciva"
     },
     {
@@ -1400,7 +1400,7 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_afip_domain_buildivaalicuotas",
-      "community": 114,
+      "community": 104,
       "norm_label": "buildivaalicuotas()"
     },
     {
@@ -1410,7 +1410,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "src_afip_domain_getinvoicetypecode",
-      "community": 114,
+      "community": 104,
       "norm_label": "getinvoicetypecode()"
     },
     {
@@ -1420,7 +1420,7 @@
       "source_location": "L93",
       "_origin": "ast",
       "id": "src_afip_domain_voucherkind",
-      "community": 114,
+      "community": 104,
       "norm_label": "voucherkind"
     },
     {
@@ -1430,7 +1430,7 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "src_afip_domain_normalizeivacondition",
-      "community": 114,
+      "community": 104,
       "norm_label": "normalizeivacondition()"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "src_afip_domain_voucherletterforclient",
-      "community": 114,
+      "community": 104,
       "norm_label": "voucherletterforclient()"
     },
     {
@@ -1450,7 +1450,7 @@
       "source_location": "L117",
       "_origin": "ast",
       "id": "src_afip_domain_condicion_iva_receptor",
-      "community": 114,
+      "community": 104,
       "norm_label": "condicion_iva_receptor"
     },
     {
@@ -1460,7 +1460,7 @@
       "source_location": "L125",
       "_origin": "ast",
       "id": "src_afip_domain_condicionivareceptorid",
-      "community": 114,
+      "community": 104,
       "norm_label": "condicionivareceptorid()"
     },
     {
@@ -1470,7 +1470,7 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "src_afip_domain_resolvevouchertypecode",
-      "community": 114,
+      "community": 104,
       "norm_label": "resolvevouchertypecode()"
     },
     {
@@ -1480,7 +1480,7 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "src_afip_domain_requiresassociatedinvoice",
-      "community": 114,
+      "community": 104,
       "norm_label": "requiresassociatedinvoice()"
     },
     {
@@ -1490,7 +1490,7 @@
       "source_location": "L164",
       "_origin": "ast",
       "id": "src_afip_domain_validatevoucherforclient",
-      "community": 114,
+      "community": 104,
       "norm_label": "validatevoucherforclient()"
     },
     {
@@ -1500,7 +1500,7 @@
       "source_location": "L200",
       "_origin": "ast",
       "id": "src_afip_domain_receptordoctype",
-      "community": 114,
+      "community": 104,
       "norm_label": "receptordoctype()"
     },
     {
@@ -1620,7 +1620,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_qr",
-      "community": 104,
+      "community": 1,
       "norm_label": "qr.ts"
     },
     {
@@ -1630,7 +1630,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_afip_qr_afipqrdata",
-      "community": 104,
+      "community": 1,
       "norm_label": "afipqrdata"
     },
     {
@@ -1640,7 +1640,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_afip_qr_buildafipqrurl",
-      "community": 104,
+      "community": 1,
       "norm_label": "buildafipqrurl()"
     },
     {
@@ -1650,7 +1650,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_afip_wsaa",
-      "community": 104,
+      "community": 107,
       "norm_label": "wsaa.ts"
     },
     {
@@ -1670,7 +1670,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_afip_wsaa_wsaa_urls",
-      "community": 104,
+      "community": 107,
       "norm_label": "wsaa_urls"
     },
     {
@@ -1680,7 +1680,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_afip_wsaa_buildloginticketrequest",
-      "community": 104,
+      "community": 107,
       "norm_label": "buildloginticketrequest()"
     },
     {
@@ -1690,7 +1690,7 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "src_afip_wsaa_buildlogincmsenvelope",
-      "community": 104,
+      "community": 107,
       "norm_label": "buildlogincmsenvelope()"
     },
     {
@@ -1700,7 +1700,7 @@
       "source_location": "L58",
       "_origin": "ast",
       "id": "src_afip_wsaa_xmlparser",
-      "community": 104,
+      "community": 107,
       "norm_label": "xmlparser"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_afip_wsaa_extractlogincmsreturn",
-      "community": 104,
+      "community": 107,
       "norm_label": "extractlogincmsreturn()"
     },
     {
@@ -1720,7 +1720,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_afip_wsaa_parseloginticketresponse",
-      "community": 104,
+      "community": 107,
       "norm_label": "parseloginticketresponse()"
     },
     {
@@ -1730,7 +1730,7 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "src_afip_wsaa_istavalid",
-      "community": 104,
+      "community": 107,
       "norm_label": "istavalid()"
     },
     {
@@ -1740,7 +1740,7 @@
       "source_location": "L100",
       "_origin": "ast",
       "id": "src_afip_wsaa_calllogincms",
-      "community": 104,
+      "community": 107,
       "norm_label": "calllogincms()"
     },
     {
@@ -1750,7 +1750,7 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "src_afip_wsaa_finddeep",
-      "community": 104,
+      "community": 107,
       "norm_label": "finddeep()"
     },
     {
@@ -2050,7 +2050,7 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "src_air_getairlocalconfig",
-      "community": 37,
+      "community": 29,
       "norm_label": "getairlocalconfig()"
     },
     {
@@ -2060,7 +2060,7 @@
       "source_location": "L73",
       "_origin": "ast",
       "id": "src_air_isairenabled",
-      "community": 37,
+      "community": 29,
       "norm_label": "isairenabled()"
     },
     {
@@ -2070,7 +2070,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_air_enqueueairconfigcloudsync",
-      "community": 37,
+      "community": 29,
       "norm_label": "enqueueairconfigcloudsync()"
     },
     {
@@ -2187,17 +2187,17 @@
       "label": "fetchArticulosPage()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L251",
+      "source_location": "L265",
       "_origin": "ast",
       "id": "src_air_fetcharticulospage",
-      "community": 37,
+      "community": 29,
       "norm_label": "fetcharticulospage()"
     },
     {
       "label": "fetchSypPage()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L255",
+      "source_location": "L269",
       "_origin": "ast",
       "id": "src_air_fetchsyppage",
       "community": 37,
@@ -2207,7 +2207,7 @@
       "label": "AirProductNormalized",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L261",
+      "source_location": "L275",
       "_origin": "ast",
       "id": "src_air_airproductnormalized",
       "community": 37,
@@ -2217,7 +2217,7 @@
       "label": "Raw",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L276",
+      "source_location": "L290",
       "_origin": "ast",
       "id": "src_air_raw",
       "community": 37,
@@ -2227,7 +2227,7 @@
       "label": "pick()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L278",
+      "source_location": "L292",
       "_origin": "ast",
       "id": "src_air_pick",
       "community": 37,
@@ -2237,7 +2237,7 @@
       "label": "toStr()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L288",
+      "source_location": "L302",
       "_origin": "ast",
       "id": "src_air_tostr",
       "community": 37,
@@ -2247,7 +2247,7 @@
       "label": "toNum()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L294",
+      "source_location": "L308",
       "_origin": "ast",
       "id": "src_air_tonum",
       "community": 37,
@@ -2257,7 +2257,7 @@
       "label": "toInt()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L304",
+      "source_location": "L318",
       "_origin": "ast",
       "id": "src_air_toint",
       "community": 37,
@@ -2267,7 +2267,7 @@
       "label": "parseActive()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L309",
+      "source_location": "L323",
       "_origin": "ast",
       "id": "src_air_parseactive",
       "community": 37,
@@ -2277,7 +2277,7 @@
       "label": "KEYS",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L316",
+      "source_location": "L330",
       "_origin": "ast",
       "id": "src_air_keys",
       "community": 37,
@@ -2287,7 +2287,7 @@
       "label": "LOCATION_KEYS",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L331",
+      "source_location": "L346",
       "_origin": "ast",
       "id": "src_air_location_keys",
       "community": 37,
@@ -2297,7 +2297,7 @@
       "label": "sumLocationStock()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L333",
+      "source_location": "L348",
       "_origin": "ast",
       "id": "src_air_sumlocationstock",
       "community": 37,
@@ -2307,7 +2307,7 @@
       "label": "mapAirProduct()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L345",
+      "source_location": "L360",
       "_origin": "ast",
       "id": "src_air_mapairproduct",
       "community": 37,
@@ -2317,7 +2317,7 @@
       "label": "mapAirProducts()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L392",
+      "source_location": "L413",
       "_origin": "ast",
       "id": "src_air_mapairproducts",
       "community": 37,
@@ -2327,7 +2327,7 @@
       "label": "AirSyncResult",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L403",
+      "source_location": "L424",
       "_origin": "ast",
       "id": "src_air_airsyncresult",
       "community": 37,
@@ -2337,40 +2337,40 @@
       "label": "runAirSync()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L412",
+      "source_location": "L433",
       "_origin": "ast",
       "id": "src_air_runairsync",
-      "community": 37,
+      "community": 29,
       "norm_label": "runairsync()"
     },
     {
       "label": "testAirConnection()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L531",
+      "source_location": "L552",
       "_origin": "ast",
       "id": "src_air_testairconnection",
-      "community": 37,
+      "community": 29,
       "norm_label": "testairconnection()"
     },
     {
       "label": "startAirSyncTimer()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L557",
+      "source_location": "L578",
       "_origin": "ast",
       "id": "src_air_startairsynctimer",
-      "community": 37,
+      "community": 29,
       "norm_label": "startairsynctimer()"
     },
     {
       "label": "stopAirSyncTimer()",
       "file_type": "code",
       "source_file": "src/air.ts",
-      "source_location": "L575",
+      "source_location": "L596",
       "_origin": "ast",
       "id": "src_air_stopairsynctimer",
-      "community": 37,
+      "community": 29,
       "norm_label": "stopairsynctimer()"
     },
     {
@@ -3140,7 +3140,7 @@
       "source_location": "L101",
       "_origin": "ast",
       "id": "src_config_setshellbackground",
-      "community": 106,
+      "community": 29,
       "norm_label": "setshellbackground()"
     },
     {
@@ -3180,7 +3180,7 @@
       "source_location": "L141",
       "_origin": "ast",
       "id": "src_config_getprintpreferences",
-      "community": 88,
+      "community": 29,
       "norm_label": "getprintpreferences()"
     },
     {
@@ -3190,7 +3190,7 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "src_config_setpreferredprinter",
-      "community": 88,
+      "community": 29,
       "norm_label": "setpreferredprinter()"
     },
     {
@@ -3200,7 +3200,7 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_config_setsilentprint",
-      "community": 88,
+      "community": 29,
       "norm_label": "setsilentprint()"
     },
     {
@@ -3227,7 +3227,7 @@
       "label": "nextSequence()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L698",
+      "source_location": "L742",
       "_origin": "ast",
       "id": "src_db_nextsequence",
       "community": 0,
@@ -3237,7 +3237,7 @@
       "label": "getSequenceRefillNames()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L725",
+      "source_location": "L769",
       "_origin": "ast",
       "id": "src_db_getsequencerefillnames",
       "community": 3,
@@ -3247,7 +3247,7 @@
       "label": "getSequenceLocalLast()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L731",
+      "source_location": "L775",
       "_origin": "ast",
       "id": "src_db_getsequencelocallast",
       "community": 3,
@@ -3257,7 +3257,7 @@
       "label": "storeSequenceBlock()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L741",
+      "source_location": "L785",
       "_origin": "ast",
       "id": "src_db_storesequenceblock",
       "community": 3,
@@ -3267,7 +3267,7 @@
       "label": "formatDocNumber()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L749",
+      "source_location": "L793",
       "_origin": "ast",
       "id": "src_db_formatdocnumber",
       "community": 0,
@@ -3277,7 +3277,7 @@
       "label": "initDb()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L758",
+      "source_location": "L802",
       "_origin": "ast",
       "id": "src_db_initdb",
       "community": 105,
@@ -3287,7 +3287,7 @@
       "label": "closeDb()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L783",
+      "source_location": "L827",
       "_origin": "ast",
       "id": "src_db_closedb",
       "community": 105,
@@ -3297,7 +3297,7 @@
       "label": "dbAll()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L794",
+      "source_location": "L838",
       "_origin": "ast",
       "id": "src_db_dball",
       "community": 29,
@@ -3307,7 +3307,7 @@
       "label": "dbGet()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L798",
+      "source_location": "L842",
       "_origin": "ast",
       "id": "src_db_dbget",
       "community": 121,
@@ -3317,7 +3317,7 @@
       "label": "dbRun()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L802",
+      "source_location": "L846",
       "_origin": "ast",
       "id": "src_db_dbrun",
       "community": 105,
@@ -3327,7 +3327,7 @@
       "label": "upsertClient()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L811",
+      "source_location": "L855",
       "_origin": "ast",
       "id": "src_db_upsertclient",
       "community": 96,
@@ -3337,7 +3337,7 @@
       "label": "upsertSupplier()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L822",
+      "source_location": "L866",
       "_origin": "ast",
       "id": "src_db_upsertsupplier",
       "community": 96,
@@ -3347,7 +3347,7 @@
       "label": "upsertArticle()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L833",
+      "source_location": "L877",
       "_origin": "ast",
       "id": "src_db_upsertarticle",
       "community": 96,
@@ -3357,7 +3357,7 @@
       "label": "DashboardKpis",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L847",
+      "source_location": "L891",
       "_origin": "ast",
       "id": "src_db_dashboardkpis",
       "community": 105,
@@ -3367,7 +3367,7 @@
       "label": "getDashboardKpis()",
       "file_type": "code",
       "source_file": "src/db.ts",
-      "source_location": "L857",
+      "source_location": "L901",
       "_origin": "ast",
       "id": "src_db_getdashboardkpis",
       "community": 101,
@@ -4247,7 +4247,7 @@
       "label": "IpcDeps",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L66",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "src_ipc_ipcdeps",
       "community": 29,
@@ -4257,7 +4257,7 @@
       "label": "normalizeShellBackground()",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L71",
+      "source_location": "L83",
       "_origin": "ast",
       "id": "src_ipc_normalizeshellbackground",
       "community": 29,
@@ -4267,7 +4267,7 @@
       "label": "safeStr()",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L80",
+      "source_location": "L92",
       "_origin": "ast",
       "id": "src_ipc_safestr",
       "community": 29,
@@ -4277,7 +4277,7 @@
       "label": "registerIpcHandlers()",
       "file_type": "code",
       "source_file": "src/ipc.ts",
-      "source_location": "L84",
+      "source_location": "L96",
       "_origin": "ast",
       "id": "src_ipc_registeripchandlers",
       "community": 29,
@@ -4380,7 +4380,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_libro_iva",
-      "community": 114,
+      "community": 104,
       "norm_label": "libro-iva.ts"
     },
     {
@@ -4390,7 +4390,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_libro_iva_libroivaresult",
-      "community": 114,
+      "community": 104,
       "norm_label": "libroivaresult"
     },
     {
@@ -4400,7 +4400,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_libro_iva_invoicerow",
-      "community": 114,
+      "community": 104,
       "norm_label": "invoicerow"
     },
     {
@@ -4410,7 +4410,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "src_libro_iva_fmtimporte",
-      "community": 114,
+      "community": 104,
       "norm_label": "fmtimporte()"
     },
     {
@@ -4420,7 +4420,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_libro_iva_fmtnum",
-      "community": 114,
+      "community": 104,
       "norm_label": "fmtnum()"
     },
     {
@@ -4430,7 +4430,7 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "src_libro_iva_fmttext",
-      "community": 114,
+      "community": 104,
       "norm_label": "fmttext()"
     },
     {
@@ -4440,7 +4440,7 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_libro_iva_fmtfecha",
-      "community": 114,
+      "community": 104,
       "norm_label": "fmtfecha()"
     },
     {
@@ -4450,7 +4450,7 @@
       "source_location": "L61",
       "_origin": "ast",
       "id": "src_libro_iva_cbterecordinput",
-      "community": 114,
+      "community": 104,
       "norm_label": "cbterecordinput"
     },
     {
@@ -4460,7 +4460,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "src_libro_iva_buildcbterecord",
-      "community": 114,
+      "community": 104,
       "norm_label": "buildcbterecord()"
     },
     {
@@ -4470,7 +4470,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "src_libro_iva_alicuotarecordinput",
-      "community": 114,
+      "community": 104,
       "norm_label": "alicuotarecordinput"
     },
     {
@@ -4480,7 +4480,7 @@
       "source_location": "L115",
       "_origin": "ast",
       "id": "src_libro_iva_buildalicuotarecord",
-      "community": 114,
+      "community": 104,
       "norm_label": "buildalicuotarecord()"
     },
     {
@@ -4490,7 +4490,7 @@
       "source_location": "L133",
       "_origin": "ast",
       "id": "src_libro_iva_buildlibroivaventas",
-      "community": 114,
+      "community": 104,
       "norm_label": "buildlibroivaventas()"
     },
     {
@@ -4830,7 +4830,7 @@
       "source_location": "L229",
       "_origin": "ast",
       "id": "src_main_registerglobalshortcuts",
-      "community": 88,
+      "community": 4,
       "norm_label": "registerglobalshortcuts()"
     },
     {
@@ -4877,7 +4877,7 @@
       "label": "createClientSelectionWindow()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L764",
+      "source_location": "L766",
       "_origin": "ast",
       "id": "src_main_createclientselectionwindow",
       "community": 4,
@@ -4887,7 +4887,7 @@
       "label": "loadClientsForPicker()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L801",
+      "source_location": "L803",
       "_origin": "ast",
       "id": "src_main_loadclientsforpicker",
       "community": 4,
@@ -4897,7 +4897,7 @@
       "label": "createSupplierSelectionWindow()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L826",
+      "source_location": "L828",
       "_origin": "ast",
       "id": "src_main_createsupplierselectionwindow",
       "community": 4,
@@ -4907,7 +4907,7 @@
       "label": "loadSuppliersForPicker()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L863",
+      "source_location": "L865",
       "_origin": "ast",
       "id": "src_main_loadsuppliersforpicker",
       "community": 4,
@@ -4917,7 +4917,7 @@
       "label": "createNewArticleWindow()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L889",
+      "source_location": "L891",
       "_origin": "ast",
       "id": "src_main_createnewarticlewindow",
       "community": 4,
@@ -4927,7 +4927,7 @@
       "label": "createNewClientWindow()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L903",
+      "source_location": "L905",
       "_origin": "ast",
       "id": "src_main_createnewclientwindow",
       "community": 4,
@@ -4937,7 +4937,7 @@
       "label": "createNewSupplierWindow()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L917",
+      "source_location": "L919",
       "_origin": "ast",
       "id": "src_main_createnewsupplierwindow",
       "community": 4,
@@ -4947,7 +4947,7 @@
       "label": "makeStandaloneForm()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L935",
+      "source_location": "L937",
       "_origin": "ast",
       "id": "src_main_makestandaloneform",
       "community": 117,
@@ -4957,7 +4957,7 @@
       "label": "createNewArticleWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L957",
+      "source_location": "L959",
       "_origin": "ast",
       "id": "src_main_createnewarticlewindowstandalone",
       "community": 117,
@@ -4967,7 +4967,7 @@
       "label": "createNewClientWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L961",
+      "source_location": "L963",
       "_origin": "ast",
       "id": "src_main_createnewclientwindowstandalone",
       "community": 117,
@@ -4977,7 +4977,7 @@
       "label": "createNewSupplierWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L965",
+      "source_location": "L967",
       "_origin": "ast",
       "id": "src_main_createnewsupplierwindowstandalone",
       "community": 117,
@@ -4987,7 +4987,7 @@
       "label": "createNewSaleOrderWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L969",
+      "source_location": "L971",
       "_origin": "ast",
       "id": "src_main_createnewsaleorderwindowstandalone",
       "community": 117,
@@ -4997,7 +4997,7 @@
       "label": "createNewQuoteWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L973",
+      "source_location": "L975",
       "_origin": "ast",
       "id": "src_main_createnewquotewindowstandalone",
       "community": 117,
@@ -5007,7 +5007,7 @@
       "label": "createNewInvoiceWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L977",
+      "source_location": "L979",
       "_origin": "ast",
       "id": "src_main_createnewinvoicewindowstandalone",
       "community": 117,
@@ -5017,7 +5017,7 @@
       "label": "createNewDeliveryNoteWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L981",
+      "source_location": "L983",
       "_origin": "ast",
       "id": "src_main_createnewdeliverynotewindowstandalone",
       "community": 117,
@@ -5027,7 +5027,7 @@
       "label": "createNewReceiptWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L985",
+      "source_location": "L987",
       "_origin": "ast",
       "id": "src_main_createnewreceiptwindowstandalone",
       "community": 117,
@@ -5037,7 +5037,7 @@
       "label": "createNewPurchaseOrderWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L989",
+      "source_location": "L991",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseorderwindowstandalone",
       "community": 117,
@@ -5047,7 +5047,7 @@
       "label": "createNewGoodsReceiptWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L993",
+      "source_location": "L995",
       "_origin": "ast",
       "id": "src_main_createnewgoodsreceiptwindowstandalone",
       "community": 117,
@@ -5057,7 +5057,7 @@
       "label": "createNewPurchaseInvoiceWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L997",
+      "source_location": "L999",
       "_origin": "ast",
       "id": "src_main_createnewpurchaseinvoicewindowstandalone",
       "community": 117,
@@ -5067,7 +5067,7 @@
       "label": "createNewPaymentOrderWindowStandalone()",
       "file_type": "code",
       "source_file": "src/main.ts",
-      "source_location": "L1001",
+      "source_location": "L1003",
       "_origin": "ast",
       "id": "src_main_createnewpaymentorderwindowstandalone",
       "community": 117,
@@ -5290,7 +5290,7 @@
       "source_location": "L85",
       "_origin": "ast",
       "id": "src_menu_showprintersetup",
-      "community": 88,
+      "community": 29,
       "norm_label": "showprintersetup()"
     },
     {
@@ -5787,7 +5787,7 @@
       "label": "AsimovApi",
       "file_type": "code",
       "source_file": "src/preload.ts",
-      "source_location": "L345",
+      "source_location": "L362",
       "_origin": "ast",
       "id": "src_preload_asimovapi",
       "community": 47,
@@ -5980,7 +5980,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_sync_enqueuechange",
-      "community": 37,
+      "community": 29,
       "norm_label": "enqueuechange()"
     },
     {
@@ -6420,7 +6420,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_updater_initautoupdater",
-      "community": 4,
+      "community": 119,
       "norm_label": "initautoupdater()"
     },
     {
@@ -6434,13 +6434,373 @@
       "norm_label": "checkforupdatemanual()"
     },
     {
+      "label": "whatsapp.ts",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_whatsapp",
+      "community": 14,
+      "norm_label": "whatsapp.ts"
+    },
+    {
+      "label": "WhatsappConfig",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "src_whatsapp_whatsappconfig",
+      "community": 14,
+      "norm_label": "whatsappconfig"
+    },
+    {
+      "label": "getWhatsappConfig()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "src_whatsapp_getwhatsappconfig",
+      "community": 29,
+      "norm_label": "getwhatsappconfig()"
+    },
+    {
+      "label": "isWhatsappEnabled()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "src_whatsapp_iswhatsappenabled",
+      "community": 29,
+      "norm_label": "iswhatsappenabled()"
+    },
+    {
+      "label": "enqueueWhatsappConfigCloudSync()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "src_whatsapp_enqueuewhatsappconfigcloudsync",
+      "community": 29,
+      "norm_label": "enqueuewhatsappconfigcloudsync()"
+    },
+    {
+      "label": "WaHttpOpts",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L77",
+      "_origin": "ast",
+      "id": "src_whatsapp_wahttpopts",
+      "community": 14,
+      "norm_label": "wahttpopts"
+    },
+    {
+      "label": "authHeader()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "src_whatsapp_authheader",
+      "community": 14,
+      "norm_label": "authheader()"
+    },
+    {
+      "label": "waHttp()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "src_whatsapp_wahttp",
+      "community": 14,
+      "norm_label": "wahttp()"
+    },
+    {
+      "label": "RemoteWaConversation",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L126",
+      "_origin": "ast",
+      "id": "src_whatsapp_remotewaconversation",
+      "community": 14,
+      "norm_label": "remotewaconversation"
+    },
+    {
+      "label": "RemoteWaMessage",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L136",
+      "_origin": "ast",
+      "id": "src_whatsapp_remotewamessage",
+      "community": 14,
+      "norm_label": "remotewamessage"
+    },
+    {
+      "label": "V1Envelope",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L149",
+      "_origin": "ast",
+      "id": "src_whatsapp_v1envelope",
+      "community": 14,
+      "norm_label": "v1envelope"
+    },
+    {
+      "label": "v1Get()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L156",
+      "_origin": "ast",
+      "id": "src_whatsapp_v1get",
+      "community": 14,
+      "norm_label": "v1get()"
+    },
+    {
+      "label": "v1Post()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L162",
+      "_origin": "ast",
+      "id": "src_whatsapp_v1post",
+      "community": 14,
+      "norm_label": "v1post()"
+    },
+    {
+      "label": "listConversationsRemote()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L168",
+      "_origin": "ast",
+      "id": "src_whatsapp_listconversationsremote",
+      "community": 14,
+      "norm_label": "listconversationsremote()"
+    },
+    {
+      "label": "getConversationRemote()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L173",
+      "_origin": "ast",
+      "id": "src_whatsapp_getconversationremote",
+      "community": 14,
+      "norm_label": "getconversationremote()"
+    },
+    {
+      "label": "sendMessageRemote()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L177",
+      "_origin": "ast",
+      "id": "src_whatsapp_sendmessageremote",
+      "community": 14,
+      "norm_label": "sendmessageremote()"
+    },
+    {
+      "label": "messagePreview()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L187",
+      "_origin": "ast",
+      "id": "src_whatsapp_messagepreview",
+      "community": 14,
+      "norm_label": "messagepreview()"
+    },
+    {
+      "label": "mapConversationForList()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L194",
+      "_origin": "ast",
+      "id": "src_whatsapp_mapconversationforlist",
+      "community": 14,
+      "norm_label": "mapconversationforlist()"
+    },
+    {
+      "label": "mapMessage()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L207",
+      "_origin": "ast",
+      "id": "src_whatsapp_mapmessage",
+      "community": 14,
+      "norm_label": "mapmessage()"
+    },
+    {
+      "label": "RemoteChat",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L227",
+      "_origin": "ast",
+      "id": "src_whatsapp_remotechat",
+      "community": 14,
+      "norm_label": "remotechat"
+    },
+    {
+      "label": "RemoteMessage",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L238",
+      "_origin": "ast",
+      "id": "src_whatsapp_remotemessage",
+      "community": 14,
+      "norm_label": "remotemessage"
+    },
+    {
+      "label": "listChatsRemote()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L249",
+      "_origin": "ast",
+      "id": "src_whatsapp_listchatsremote",
+      "community": 14,
+      "norm_label": "listchatsremote()"
+    },
+    {
+      "label": "getMessagesRemote()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L254",
+      "_origin": "ast",
+      "id": "src_whatsapp_getmessagesremote",
+      "community": 14,
+      "norm_label": "getmessagesremote()"
+    },
+    {
+      "label": "sendMessageOverBot()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L263",
+      "_origin": "ast",
+      "id": "src_whatsapp_sendmessageoverbot",
+      "community": 14,
+      "norm_label": "sendmessageoverbot()"
+    },
+    {
+      "label": "LocalChat",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L272",
+      "_origin": "ast",
+      "id": "src_whatsapp_localchat",
+      "community": 14,
+      "norm_label": "localchat"
+    },
+    {
+      "label": "LocalMessage",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L285",
+      "_origin": "ast",
+      "id": "src_whatsapp_localmessage",
+      "community": 14,
+      "norm_label": "localmessage"
+    },
+    {
+      "label": "listLocalChats()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L296",
+      "_origin": "ast",
+      "id": "src_whatsapp_listlocalchats",
+      "community": 29,
+      "norm_label": "listlocalchats()"
+    },
+    {
+      "label": "listLocalMessages()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L309",
+      "_origin": "ast",
+      "id": "src_whatsapp_listlocalmessages",
+      "community": 29,
+      "norm_label": "listlocalmessages()"
+    },
+    {
+      "label": "upsertChat()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L320",
+      "_origin": "ast",
+      "id": "src_whatsapp_upsertchat",
+      "community": 14,
+      "norm_label": "upsertchat()"
+    },
+    {
+      "label": "upsertMessage()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L341",
+      "_origin": "ast",
+      "id": "src_whatsapp_upsertmessage",
+      "community": 14,
+      "norm_label": "upsertmessage()"
+    },
+    {
+      "label": "WaSyncResult",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L363",
+      "_origin": "ast",
+      "id": "src_whatsapp_wasyncresult",
+      "community": 14,
+      "norm_label": "wasyncresult"
+    },
+    {
+      "label": "runWhatsappSync()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L371",
+      "_origin": "ast",
+      "id": "src_whatsapp_runwhatsappsync",
+      "community": 29,
+      "norm_label": "runwhatsappsync()"
+    },
+    {
+      "label": "sendMessage()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L424",
+      "_origin": "ast",
+      "id": "src_whatsapp_sendmessage",
+      "community": 14,
+      "norm_label": "sendmessage()"
+    },
+    {
+      "label": "testWhatsappConnection()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L447",
+      "_origin": "ast",
+      "id": "src_whatsapp_testwhatsappconnection",
+      "community": 29,
+      "norm_label": "testwhatsappconnection()"
+    },
+    {
+      "label": "startWhatsappPoll()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L462",
+      "_origin": "ast",
+      "id": "src_whatsapp_startwhatsapppoll",
+      "community": 29,
+      "norm_label": "startwhatsapppoll()"
+    },
+    {
+      "label": "stopWhatsappPoll()",
+      "file_type": "code",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L475",
+      "_origin": "ast",
+      "id": "src_whatsapp_stopwhatsapppoll",
+      "community": 29,
+      "norm_label": "stopwhatsapppoll()"
+    },
+    {
       "label": "afip.test.ts",
       "file_type": "code",
       "source_file": "test/afip.test.ts",
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_afip_test",
-      "community": 104,
+      "community": 107,
       "norm_label": "afip.test.ts"
     },
     {
@@ -6450,7 +6810,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "test_afip_test_makeselfsigned",
-      "community": 104,
+      "community": 107,
       "norm_label": "makeselfsigned()"
     },
     {
@@ -6460,7 +6820,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "test_afip_test_escapeforxml",
-      "community": 104,
+      "community": 107,
       "norm_label": "escapeforxml()"
     },
     {
@@ -6770,7 +7130,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "test_libro_iva_test",
-      "community": 114,
+      "community": 104,
       "norm_label": "libro-iva.test.ts"
     },
     {
@@ -9680,7 +10040,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard",
-      "community": 107,
+      "community": 122,
       "norm_label": "jwt-auth.guard.ts"
     },
     {
@@ -9690,7 +10050,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard",
-      "community": 107,
+      "community": 122,
       "norm_label": "jwtauthguard"
     },
     {
@@ -9700,7 +10060,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_ts_injectable",
-      "community": 107,
+      "community": 122,
       "norm_label": "injectable"
     },
     {
@@ -9710,7 +10070,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_constructor",
-      "community": 107,
+      "community": 122,
       "norm_label": ".constructor()"
     },
     {
@@ -9720,7 +10080,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_canactivate",
-      "community": 107,
+      "community": 122,
       "norm_label": ".canactivate()"
     },
     {
@@ -9730,7 +10090,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_handlerequest",
-      "community": 107,
+      "community": 122,
       "norm_label": ".handlerequest()"
     },
     {
@@ -9790,7 +10150,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard",
-      "community": 107,
+      "community": 122,
       "norm_label": "roles.guard.ts"
     },
     {
@@ -9800,7 +10160,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard",
-      "community": 107,
+      "community": 122,
       "norm_label": "rolesguard"
     },
     {
@@ -9810,7 +10170,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_ts_injectable",
-      "community": 107,
+      "community": 122,
       "norm_label": "injectable"
     },
     {
@@ -9820,7 +10180,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard_constructor",
-      "community": 107,
+      "community": 122,
       "norm_label": ".constructor()"
     },
     {
@@ -9830,7 +10190,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard_canactivate",
-      "community": 107,
+      "community": 122,
       "norm_label": ".canactivate()"
     },
     {
@@ -9840,7 +10200,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard",
-      "community": 107,
+      "community": 12,
       "norm_label": "tenant-status.guard.ts"
     },
     {
@@ -9850,7 +10210,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_tenantstatusguard",
-      "community": 107,
+      "community": 12,
       "norm_label": "tenantstatusguard"
     },
     {
@@ -9860,7 +10220,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_ts_injectable",
-      "community": 107,
+      "community": 12,
       "norm_label": "injectable"
     },
     {
@@ -9870,7 +10230,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_tenantstatusguard_constructor",
-      "community": 107,
+      "community": 12,
       "norm_label": ".constructor()"
     },
     {
@@ -9880,7 +10240,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_tenant_status_guard_tenantstatusguard_canactivate",
-      "community": 107,
+      "community": 12,
       "norm_label": ".canactivate()"
     },
     {
@@ -10720,7 +11080,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_constructor",
-      "community": 13,
+      "community": 98,
       "norm_label": ".constructor()"
     },
     {
@@ -10980,7 +11340,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller",
-      "community": 107,
+      "community": 98,
       "norm_label": "auth.controller.ts"
     },
     {
@@ -10990,7 +11350,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller",
-      "community": 123,
+      "community": 122,
       "norm_label": "authcontroller"
     },
     {
@@ -11000,7 +11360,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apitags",
-      "community": 123,
+      "community": 122,
       "norm_label": "apitags"
     },
     {
@@ -11010,7 +11370,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_controller",
-      "community": 123,
+      "community": 122,
       "norm_label": "controller"
     },
     {
@@ -11020,7 +11380,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_public",
-      "community": 123,
+      "community": 122,
       "norm_label": "public"
     },
     {
@@ -11030,7 +11390,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_post",
-      "community": 123,
+      "community": 122,
       "norm_label": "post"
     },
     {
@@ -11040,7 +11400,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "httpcode",
-      "community": 123,
+      "community": 122,
       "norm_label": "httpcode"
     },
     {
@@ -11050,7 +11410,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_apioperation",
-      "community": 123,
+      "community": 122,
       "norm_label": "apioperation"
     },
     {
@@ -11060,7 +11420,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_ts_body",
-      "community": 123,
+      "community": 122,
       "norm_label": "body"
     },
     {
@@ -11070,7 +11430,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "headers",
-      "community": 123,
+      "community": 122,
       "norm_label": "headers"
     },
     {
@@ -11080,7 +11440,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_constructor",
-      "community": 123,
+      "community": 122,
       "norm_label": ".constructor()"
     },
     {
@@ -11090,7 +11450,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_login",
-      "community": 123,
+      "community": 122,
       "norm_label": ".login()"
     },
     {
@@ -11100,7 +11460,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_register",
-      "community": 123,
+      "community": 122,
       "norm_label": ".register()"
     },
     {
@@ -11110,7 +11470,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_refresh",
-      "community": 123,
+      "community": 122,
       "norm_label": ".refresh()"
     },
     {
@@ -11120,7 +11480,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_controller_authcontroller_logout",
-      "community": 123,
+      "community": 122,
       "norm_label": ".logout()"
     },
     {
@@ -11130,7 +11490,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module",
-      "community": 107,
+      "community": 122,
       "norm_label": "auth.module.ts"
     },
     {
@@ -11140,7 +11500,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_authmodule",
-      "community": 107,
+      "community": 122,
       "norm_label": "authmodule"
     },
     {
@@ -11150,7 +11510,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_ts_module",
-      "community": 107,
+      "community": 122,
       "norm_label": "module"
     },
     {
@@ -11160,7 +11520,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec",
-      "community": 125,
+      "community": 12,
       "norm_label": "auth.service.spec.ts"
     },
     {
@@ -11170,7 +11530,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeprismamock",
-      "community": 125,
+      "community": 12,
       "norm_label": "makeprismamock()"
     },
     {
@@ -11180,7 +11540,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makejwt",
-      "community": 125,
+      "community": 12,
       "norm_label": "makejwt()"
     },
     {
@@ -11190,7 +11550,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeconfig",
-      "community": 125,
+      "community": 12,
       "norm_label": "makeconfig()"
     },
     {
@@ -11200,7 +11560,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_makeservice",
-      "community": 125,
+      "community": 12,
       "norm_label": "makeservice()"
     },
     {
@@ -11210,7 +11570,7 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_spec_validreg",
-      "community": 125,
+      "community": 12,
       "norm_label": "validreg"
     },
     {
@@ -11220,7 +11580,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service",
-      "community": 107,
+      "community": 12,
       "norm_label": "auth.service.ts"
     },
     {
@@ -11230,7 +11590,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice",
-      "community": 124,
+      "community": 122,
       "norm_label": "authservice"
     },
     {
@@ -11240,7 +11600,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_ts_injectable",
-      "community": 124,
+      "community": 122,
       "norm_label": "injectable"
     },
     {
@@ -11250,7 +11610,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_constructor",
-      "community": 124,
+      "community": 122,
       "norm_label": ".constructor()"
     },
     {
@@ -11260,7 +11620,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_login",
-      "community": 124,
+      "community": 122,
       "norm_label": ".login()"
     },
     {
@@ -11270,7 +11630,7 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_registertenant",
-      "community": 124,
+      "community": 122,
       "norm_label": ".registertenant()"
     },
     {
@@ -11280,7 +11640,7 @@
       "source_location": "L193",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_refreshtoken",
-      "community": 124,
+      "community": 122,
       "norm_label": ".refreshtoken()"
     },
     {
@@ -11290,7 +11650,7 @@
       "source_location": "L216",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_logout",
-      "community": 124,
+      "community": 122,
       "norm_label": ".logout()"
     },
     {
@@ -11300,7 +11660,7 @@
       "source_location": "L226",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_service_authservice_generatetokens",
-      "community": 124,
+      "community": 122,
       "norm_label": ".generatetokens()"
     },
     {
@@ -11550,7 +11910,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_billing_billing_module_billingmodule",
-      "community": 7,
+      "community": 18,
       "norm_label": "billingmodule"
     },
     {
@@ -11560,7 +11920,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_billing_billing_module_ts_module",
-      "community": 7,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -13380,7 +13740,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module",
-      "community": 18,
+      "community": 21,
       "norm_label": "reports.module.ts"
     },
     {
@@ -13390,7 +13750,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_reportsmodule",
-      "community": 18,
+      "community": 21,
       "norm_label": "reportsmodule"
     },
     {
@@ -13400,7 +13760,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_module_ts_module",
-      "community": 18,
+      "community": 21,
       "norm_label": "module"
     },
     {
@@ -13410,7 +13770,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service",
-      "community": 12,
+      "community": 21,
       "norm_label": "reports.service.ts"
     },
     {
@@ -13420,7 +13780,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_reportperiod",
-      "community": 12,
+      "community": 21,
       "norm_label": "reportperiod"
     },
     {
@@ -13430,7 +13790,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_salesreport",
-      "community": 12,
+      "community": 21,
       "norm_label": "salesreport"
     },
     {
@@ -13440,7 +13800,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_stockreport",
-      "community": 12,
+      "community": 21,
       "norm_label": "stockreport"
     },
     {
@@ -13450,7 +13810,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_reports_reports_service_accountreport",
-      "community": 12,
+      "community": 21,
       "norm_label": "accountreport"
     },
     {
@@ -13530,7 +13890,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sequences_sequences_controller",
-      "community": 38,
+      "community": 98,
       "norm_label": "sequences.controller.ts"
     },
     {
@@ -13710,7 +14070,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_controller",
-      "community": 22,
+      "community": 98,
       "norm_label": "stock.controller.ts"
     },
     {
@@ -13890,7 +14250,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module_stockmodule",
-      "community": 18,
+      "community": 22,
       "norm_label": "stockmodule"
     },
     {
@@ -13900,7 +14260,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_stock_stock_module_ts_module",
-      "community": 18,
+      "community": 22,
       "norm_label": "module"
     },
     {
@@ -14000,7 +14360,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_controller",
-      "community": 26,
+      "community": 98,
       "norm_label": "suppliers.controller.ts"
     },
     {
@@ -14200,7 +14560,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module_suppliersmodule",
-      "community": 18,
+      "community": 26,
       "norm_label": "suppliersmodule"
     },
     {
@@ -14210,7 +14570,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module_ts_module",
-      "community": 18,
+      "community": 26,
       "norm_label": "module"
     },
     {
@@ -14310,7 +14670,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_controller",
-      "community": 30,
+      "community": 98,
       "norm_label": "sync.controller.ts"
     },
     {
@@ -14440,7 +14800,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module_syncmodule",
-      "community": 18,
+      "community": 30,
       "norm_label": "syncmodule"
     },
     {
@@ -14450,7 +14810,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_sync_sync_module_ts_module",
-      "community": 18,
+      "community": 30,
       "norm_label": "module"
     },
     {
@@ -14650,7 +15010,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_ts_post",
-      "community": 14,
+      "community": 122,
       "norm_label": "post"
     },
     {
@@ -14660,7 +15020,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_ts_apioperation",
-      "community": 14,
+      "community": 122,
       "norm_label": "apioperation"
     },
     {
@@ -14670,7 +15030,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_ts_body",
-      "community": 14,
+      "community": 122,
       "norm_label": "body"
     },
     {
@@ -14700,7 +15060,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_ts_param",
-      "community": 14,
+      "community": 122,
       "norm_label": "param"
     },
     {
@@ -14710,7 +15070,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_ts_patch",
-      "community": 14,
+      "community": 122,
       "norm_label": "patch"
     },
     {
@@ -14730,7 +15090,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_tenantcontroller_create",
-      "community": 14,
+      "community": 122,
       "norm_label": ".create()"
     },
     {
@@ -14740,7 +15100,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_tenantcontroller_dashboard",
-      "community": 14,
+      "community": 122,
       "norm_label": ".dashboard()"
     },
     {
@@ -14770,7 +15130,7 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_tenantcontroller_findbyid",
-      "community": 14,
+      "community": 122,
       "norm_label": ".findbyid()"
     },
     {
@@ -14780,7 +15140,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_tenantcontroller_updatestatus",
-      "community": 14,
+      "community": 122,
       "norm_label": ".updatestatus()"
     },
     {
@@ -14790,7 +15150,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_tenantcontroller_updatecustomization",
-      "community": 14,
+      "community": 122,
       "norm_label": ".updatecustomization()"
     },
     {
@@ -14800,7 +15160,7 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_controller_tenantcontroller_setfeatureflag",
-      "community": 14,
+      "community": 122,
       "norm_label": ".setfeatureflag()"
     },
     {
@@ -14820,7 +15180,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module_tenantmodule",
-      "community": 122,
+      "community": 18,
       "norm_label": "tenantmodule"
     },
     {
@@ -14830,7 +15190,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_module_ts_module",
-      "community": 122,
+      "community": 18,
       "norm_label": "module"
     },
     {
@@ -14900,7 +15260,7 @@
       "source_location": "L75",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_findbyid",
-      "community": 14,
+      "community": 122,
       "norm_label": ".findbyid()"
     },
     {
@@ -14910,7 +15270,7 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_updatestatus",
-      "community": 14,
+      "community": 122,
       "norm_label": ".updatestatus()"
     },
     {
@@ -14920,7 +15280,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_updatecustomization",
-      "community": 14,
+      "community": 122,
       "norm_label": ".updatecustomization()"
     },
     {
@@ -14930,7 +15290,7 @@
       "source_location": "L138",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_setfeatureflag",
-      "community": 14,
+      "community": 122,
       "norm_label": ".setfeatureflag()"
     },
     {
@@ -14940,7 +15300,7 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_tenant_tenant_service_tenantservice_getmasterdashboard",
-      "community": 14,
+      "community": 122,
       "norm_label": ".getmasterdashboard()"
     },
     {
@@ -21392,7 +21752,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service",
@@ -21414,7 +21774,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_caerequestinput",
@@ -21568,7 +21928,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_getafipconfig",
@@ -21580,7 +21940,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L823",
+      "source_location": "L904",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_getafipconfig"
@@ -21601,7 +21961,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_savecredentialsinput",
@@ -21645,7 +22005,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_saveafipcredentials",
@@ -21657,7 +22017,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L841",
+      "source_location": "L922",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_saveafipcredentials"
@@ -21909,7 +22269,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_consultarpadron",
@@ -21921,7 +22281,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L949",
+      "source_location": "L1030",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_consultarpadron"
@@ -21931,7 +22291,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_testafipconnection",
@@ -21943,7 +22303,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L850",
+      "source_location": "L931",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_testafipconnection"
@@ -22008,7 +22368,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_runafipdiagnostics",
@@ -22020,7 +22380,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L869",
+      "source_location": "L950",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_runafipdiagnostics"
@@ -22162,7 +22522,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_requestcae",
@@ -22228,7 +22588,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_buildstoredinvoiceqr",
@@ -22240,7 +22600,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L859",
+      "source_location": "L940",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_buildstoredinvoiceqr"
@@ -22382,7 +22742,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_markinvoicependingcae",
@@ -22394,7 +22754,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L906",
+      "source_location": "L987",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_markinvoicependingcae"
@@ -22437,7 +22797,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_getpendingcaeinvoices",
@@ -22449,7 +22809,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L940",
+      "source_location": "L1021",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_getpendingcaeinvoices"
@@ -22470,7 +22830,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L43",
+      "source_location": "L55",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_service_retrypendingcae",
@@ -22482,7 +22842,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L935",
+      "source_location": "L1016",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_service_retrypendingcae"
@@ -22801,7 +23161,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L50",
+      "source_location": "L62",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_domain",
@@ -22899,7 +23259,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L50",
+      "source_location": "L62",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_afip_domain_isafipunavailable",
@@ -22911,7 +23271,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L905",
+      "source_location": "L986",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_afip_domain_isafipunavailable"
@@ -24366,7 +24726,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L261",
+      "source_location": "L275",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_airproductnormalized",
@@ -24396,7 +24756,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L403",
+      "source_location": "L424",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_airsyncresult",
@@ -24446,7 +24806,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L251",
+      "source_location": "L265",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_fetcharticulospage",
@@ -24456,7 +24816,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L255",
+      "source_location": "L269",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_fetchsyppage",
@@ -24496,7 +24856,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L316",
+      "source_location": "L330",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_keys",
@@ -24506,7 +24866,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L331",
+      "source_location": "L346",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_location_keys",
@@ -24526,7 +24886,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L345",
+      "source_location": "L360",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_mapairproduct",
@@ -24536,7 +24896,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L392",
+      "source_location": "L413",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_mapairproducts",
@@ -24546,7 +24906,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L309",
+      "source_location": "L323",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_parseactive",
@@ -24566,7 +24926,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L278",
+      "source_location": "L292",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_pick",
@@ -24576,7 +24936,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L276",
+      "source_location": "L290",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_raw",
@@ -24596,7 +24956,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L412",
+      "source_location": "L433",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_runairsync",
@@ -24606,7 +24966,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L557",
+      "source_location": "L578",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_startairsynctimer",
@@ -24616,7 +24976,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L575",
+      "source_location": "L596",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_stopairsynctimer",
@@ -24626,7 +24986,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L333",
+      "source_location": "L348",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_sumlocationstock",
@@ -24636,7 +24996,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L531",
+      "source_location": "L552",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_testairconnection",
@@ -24646,7 +25006,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L304",
+      "source_location": "L318",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_toint",
@@ -24656,7 +25016,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L294",
+      "source_location": "L308",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_tonum",
@@ -24666,7 +25026,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L288",
+      "source_location": "L302",
       "weight": 1.0,
       "source": "src_air",
       "target": "src_air_tostr",
@@ -24853,7 +25213,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L561",
+      "source_location": "L582",
       "weight": 1.0,
       "source": "src_air_startairsynctimer",
       "target": "src_air_getairlocalconfig",
@@ -24864,7 +25224,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L533",
+      "source_location": "L554",
       "weight": 1.0,
       "source": "src_air_testairconnection",
       "target": "src_air_getairlocalconfig",
@@ -24887,7 +25247,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L762",
+      "source_location": "L779",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_getairlocalconfig"
@@ -24897,7 +25257,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L413",
+      "source_location": "L434",
       "weight": 1.0,
       "source": "src_air_runairsync",
       "target": "src_air_isairenabled",
@@ -24908,7 +25268,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L559",
+      "source_location": "L580",
       "weight": 1.0,
       "source": "src_air_startairsynctimer",
       "target": "src_air_isairenabled",
@@ -24931,7 +25291,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L396",
+      "source_location": "L408",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_isairenabled"
@@ -24986,7 +25346,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L647",
+      "source_location": "L659",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_enqueueairconfigcloudsync"
@@ -25029,7 +25389,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L537",
+      "source_location": "L558",
       "weight": 1.0,
       "source": "src_air_testairconnection",
       "target": "src_air_gettoken",
@@ -25052,7 +25412,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L645",
+      "source_location": "L657",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_resetairauthcache"
@@ -25073,7 +25433,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L226",
+      "source_location": "L240",
       "weight": 1.0,
       "source": "src_air_airrequest",
       "target": "src_air_asarray",
@@ -25127,7 +25487,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L230",
+      "source_location": "L231",
       "weight": 1.0,
       "source": "src_air_airrequest",
       "target": "src_air_parseairerror",
@@ -25149,7 +25509,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L252",
+      "source_location": "L266",
       "weight": 1.0,
       "source": "src_air_fetcharticulospage",
       "target": "src_air_airrequest",
@@ -25160,7 +25520,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L256",
+      "source_location": "L270",
       "weight": 1.0,
       "source": "src_air_fetchsyppage",
       "target": "src_air_airrequest",
@@ -25182,7 +25542,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L444",
+      "source_location": "L465",
       "weight": 1.0,
       "source": "src_air_runairsync",
       "target": "src_air_fetcharticulospage",
@@ -25193,7 +25553,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L541",
+      "source_location": "L562",
       "weight": 1.0,
       "source": "src_air_testairconnection",
       "target": "src_air_fetcharticulospage",
@@ -25204,7 +25564,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L348",
+      "source_location": "L363",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_pick",
@@ -25215,7 +25575,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L348",
+      "source_location": "L363",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_tostr",
@@ -25226,7 +25586,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L373",
+      "source_location": "L392",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_tonum",
@@ -25237,7 +25597,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L305",
+      "source_location": "L319",
       "weight": 1.0,
       "source": "src_air_toint",
       "target": "src_air_tonum",
@@ -25248,7 +25608,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L368",
+      "source_location": "L383",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_toint",
@@ -25259,7 +25619,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L339",
+      "source_location": "L354",
       "weight": 1.0,
       "source": "src_air_sumlocationstock",
       "target": "src_air_toint",
@@ -25270,7 +25630,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L388",
+      "source_location": "L409",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_parseactive",
@@ -25282,7 +25642,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/air.ts",
-      "source_location": "L357",
+      "source_location": "L372",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_location_keys"
@@ -25292,7 +25652,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L364",
+      "source_location": "L379",
       "weight": 1.0,
       "source": "src_air_mapairproduct",
       "target": "src_air_sumlocationstock",
@@ -25303,7 +25663,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L395",
+      "source_location": "L416",
       "weight": 1.0,
       "source": "src_air_mapairproducts",
       "target": "src_air_mapairproduct",
@@ -25314,7 +25674,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L449",
+      "source_location": "L470",
       "weight": 1.0,
       "source": "src_air_runairsync",
       "target": "src_air_mapairproduct",
@@ -25348,7 +25708,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/air.ts",
-      "source_location": "L434",
+      "source_location": "L455",
       "weight": 1.0,
       "source": "src_air_runairsync",
       "target": "src_db_dbrun"
@@ -25359,7 +25719,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/air.ts",
-      "source_location": "L481",
+      "source_location": "L502",
       "weight": 1.0,
       "source": "src_air_runairsync",
       "target": "src_sync_enqueuechange"
@@ -25369,7 +25729,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L568",
+      "source_location": "L589",
       "weight": 1.0,
       "source": "src_air_startairsynctimer",
       "target": "src_air_runairsync",
@@ -25392,7 +25752,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L796",
+      "source_location": "L817",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_runairsync"
@@ -25414,7 +25774,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L804",
+      "source_location": "L825",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_testairconnection"
@@ -25424,7 +25784,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/air.ts",
-      "source_location": "L558",
+      "source_location": "L579",
       "weight": 1.0,
       "source": "src_air_startairsynctimer",
       "target": "src_air_stopairsynctimer",
@@ -25447,7 +25807,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L811",
+      "source_location": "L832",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_startairsynctimer"
@@ -25469,7 +25829,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L816",
+      "source_location": "L837",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_air_stopairsynctimer"
@@ -26159,7 +26519,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L916",
+      "source_location": "L997",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_api_client_iscloudconnected"
@@ -26656,7 +27016,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L662",
+      "source_location": "L679",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_auth_hashpassword"
@@ -26710,7 +27070,7 @@
       "context": "field",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L68",
+      "source_location": "L80",
       "weight": 1.0,
       "source": "src_ipc_ipcdeps",
       "target": "src_auth_sessionuser",
@@ -27746,7 +28106,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L95",
+      "source_location": "L107",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getlaunchatstartup"
@@ -27900,7 +28260,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L102",
+      "source_location": "L114",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getshellpreferences"
@@ -27922,7 +28282,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L105",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_setshellbackground"
@@ -27988,7 +28348,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L108",
+      "source_location": "L120",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getbookmarks"
@@ -28032,7 +28392,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L112",
+      "source_location": "L124",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_addbookmark"
@@ -28076,7 +28436,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L116",
+      "source_location": "L128",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_removebookmark"
@@ -28142,7 +28502,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L124",
+      "source_location": "L136",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_getprintpreferences"
@@ -28219,7 +28579,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L142",
+      "source_location": "L154",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_setpreferredprinter"
@@ -28263,7 +28623,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L143",
+      "source_location": "L155",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_config_setsilentprint"
@@ -28294,7 +28654,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L783",
+      "source_location": "L827",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_closedb",
@@ -28304,7 +28664,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L847",
+      "source_location": "L891",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_dashboardkpis",
@@ -28314,7 +28674,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L794",
+      "source_location": "L838",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_dball",
@@ -28324,7 +28684,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L798",
+      "source_location": "L842",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_dbget",
@@ -28334,7 +28694,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L802",
+      "source_location": "L846",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_dbrun",
@@ -28344,7 +28704,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L749",
+      "source_location": "L793",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_formatdocnumber",
@@ -28354,7 +28714,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L857",
+      "source_location": "L901",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_getdashboardkpis",
@@ -28374,7 +28734,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L731",
+      "source_location": "L775",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_getsequencelocallast",
@@ -28384,7 +28744,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L725",
+      "source_location": "L769",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_getsequencerefillnames",
@@ -28394,7 +28754,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L758",
+      "source_location": "L802",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_initdb",
@@ -28404,7 +28764,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L698",
+      "source_location": "L742",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_nextsequence",
@@ -28414,7 +28774,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L741",
+      "source_location": "L785",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_storesequenceblock",
@@ -28424,7 +28784,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L833",
+      "source_location": "L877",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_upsertarticle",
@@ -28434,7 +28794,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L811",
+      "source_location": "L855",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_upsertclient",
@@ -28444,7 +28804,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L822",
+      "source_location": "L866",
       "weight": 1.0,
       "source": "src_db",
       "target": "src_db_upsertsupplier",
@@ -28499,7 +28859,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db",
@@ -28568,6 +28928,17 @@
       "source_location": "L11",
       "weight": 1.0,
       "source": "src_sync",
+      "target": "src_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_whatsapp",
       "target": "src_db",
       "confidence_score": 1.0
     },
@@ -28719,7 +29090,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L795",
+      "source_location": "L839",
       "weight": 1.0,
       "source": "src_db_dball",
       "target": "src_db_getdb",
@@ -28730,7 +29101,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L799",
+      "source_location": "L843",
       "weight": 1.0,
       "source": "src_db_dbget",
       "target": "src_db_getdb",
@@ -28741,7 +29112,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L803",
+      "source_location": "L847",
       "weight": 1.0,
       "source": "src_db_dbrun",
       "target": "src_db_getdb",
@@ -28752,7 +29123,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L858",
+      "source_location": "L902",
       "weight": 1.0,
       "source": "src_db_getdashboardkpis",
       "target": "src_db_getdb",
@@ -28763,7 +29134,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L732",
+      "source_location": "L776",
       "weight": 1.0,
       "source": "src_db_getsequencelocallast",
       "target": "src_db_getdb",
@@ -28774,7 +29145,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L726",
+      "source_location": "L770",
       "weight": 1.0,
       "source": "src_db_getsequencerefillnames",
       "target": "src_db_getdb",
@@ -28785,7 +29156,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L699",
+      "source_location": "L743",
       "weight": 1.0,
       "source": "src_db_nextsequence",
       "target": "src_db_getdb",
@@ -28796,7 +29167,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L742",
+      "source_location": "L786",
       "weight": 1.0,
       "source": "src_db_storesequenceblock",
       "target": "src_db_getdb",
@@ -28994,7 +29365,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_getdb",
@@ -29006,7 +29377,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L265",
+      "source_location": "L277",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_getdb"
@@ -29368,7 +29739,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_nextsequence",
@@ -29380,7 +29751,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L267",
+      "source_location": "L279",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_nextsequence"
@@ -29599,7 +29970,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_formatdocnumber",
@@ -29611,7 +29982,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L268",
+      "source_location": "L280",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_formatdocnumber"
@@ -29973,7 +30344,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_dball",
@@ -29985,7 +30356,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L167",
+      "source_location": "L179",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_dball"
@@ -30061,7 +30432,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L804",
+      "source_location": "L806",
       "weight": 1.0,
       "source": "src_main_loadclientsforpicker",
       "target": "src_db_dball",
@@ -30083,7 +30454,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L866",
+      "source_location": "L868",
       "weight": 1.0,
       "source": "src_main_loadsuppliersforpicker",
       "target": "src_db_dball",
@@ -30121,6 +30492,50 @@
       "source": "src_sync_tablecolumns",
       "target": "src_db_dball",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_db_dball",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_whatsapp_getwhatsappconfig",
+      "target": "src_db_dball"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L299",
+      "weight": 1.0,
+      "source": "src_whatsapp_listlocalchats",
+      "target": "src_db_dball"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L310",
+      "weight": 1.0,
+      "source": "src_whatsapp_listlocalmessages",
+      "target": "src_db_dball"
     },
     {
       "relation": "imports",
@@ -30303,7 +30718,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_dbget",
@@ -30315,7 +30730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L169",
+      "source_location": "L181",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_dbget"
@@ -30390,6 +30805,39 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_db_dbget",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L393",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_db_dbget"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L438",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessage",
+      "target": "src_db_dbget"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "test/db.test.ts",
       "source_location": "L2",
       "weight": 1.0,
@@ -30446,7 +30894,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L835",
+      "source_location": "L879",
       "weight": 1.0,
       "source": "src_db_upsertarticle",
       "target": "src_db_dbrun",
@@ -30457,7 +30905,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L813",
+      "source_location": "L857",
       "weight": 1.0,
       "source": "src_db_upsertclient",
       "target": "src_db_dbrun",
@@ -30468,7 +30916,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/db.ts",
-      "source_location": "L824",
+      "source_location": "L868",
       "weight": 1.0,
       "source": "src_db_upsertsupplier",
       "target": "src_db_dbrun",
@@ -30765,7 +31213,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_dbrun",
@@ -30777,7 +31225,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L187",
+      "source_location": "L199",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_dbrun"
@@ -30929,6 +31377,61 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_db_dbrun",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L378",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_db_dbrun"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L433",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessage",
+      "target": "src_db_dbrun"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L321",
+      "weight": 1.0,
+      "source": "src_whatsapp_upsertchat",
+      "target": "src_db_dbrun",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L342",
+      "weight": 1.0,
+      "source": "src_whatsapp_upsertmessage",
+      "target": "src_db_dbrun",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "test/air.test.ts",
       "source_location": "L3",
       "weight": 1.0,
@@ -31051,7 +31554,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_upsertclient",
@@ -31063,7 +31566,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L173",
+      "source_location": "L185",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_upsertclient"
@@ -31106,7 +31609,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_upsertsupplier",
@@ -31118,7 +31621,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L201",
+      "source_location": "L213",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_upsertsupplier"
@@ -31161,7 +31664,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_upsertarticle",
@@ -31173,7 +31676,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L233",
+      "source_location": "L245",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_upsertarticle"
@@ -31227,7 +31730,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L53",
+      "source_location": "L65",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_db_getdashboardkpis",
@@ -31239,7 +31742,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L160",
+      "source_location": "L172",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_db_getdashboardkpis"
@@ -31421,7 +31924,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L63",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links",
@@ -31586,7 +32089,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L63",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_getlinksfor",
@@ -31598,7 +32101,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1013",
+      "source_location": "L1094",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_getlinksfor"
@@ -31619,7 +32122,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L63",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_listpendingsaleorders",
@@ -31631,7 +32134,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1005",
+      "source_location": "L1086",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_listpendingsaleorders"
@@ -31652,7 +32155,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L63",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_listclientinvoicesfornote",
@@ -31664,7 +32167,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1009",
+      "source_location": "L1090",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_listclientinvoicesfornote"
@@ -31685,7 +32188,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L63",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_listpendingdeliverynotes",
@@ -31697,7 +32200,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1007",
+      "source_location": "L1088",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_listpendingdeliverynotes"
@@ -31718,7 +32221,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L51",
+      "source_location": "L63",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_document_links_getsourceitems",
@@ -31730,7 +32233,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1011",
+      "source_location": "L1092",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_links_getsourceitems"
@@ -31960,7 +32463,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L918",
+      "source_location": "L999",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_document_sync_builddocenvelope"
@@ -33700,7 +34203,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L42",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_dolar",
@@ -33898,7 +34401,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L42",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_dolar_getlatestrates",
@@ -33910,7 +34413,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1018",
+      "source_location": "L1099",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_getlatestrates"
@@ -33931,7 +34434,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L42",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_dolar_getratehistory",
@@ -33943,7 +34446,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1027",
+      "source_location": "L1108",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_getratehistory"
@@ -33964,7 +34467,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L42",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_dolar_repricearticlesfromusd",
@@ -33976,7 +34479,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1045",
+      "source_location": "L1126",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_repricearticlesfromusd"
@@ -34030,7 +34533,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L42",
+      "source_location": "L54",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_dolar_refreshdolarnow",
@@ -34042,7 +34545,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L1035",
+      "source_location": "L1116",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_dolar_refreshdolarnow"
@@ -34247,7 +34750,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L66",
+      "source_location": "L78",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_ipcdeps",
@@ -34257,7 +34760,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L71",
+      "source_location": "L83",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_normalizeshellbackground",
@@ -34267,7 +34770,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L84",
+      "source_location": "L96",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_registeripchandlers",
@@ -34277,7 +34780,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L80",
+      "source_location": "L92",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_ipc_safestr",
@@ -34288,7 +34791,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L52",
+      "source_location": "L64",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_kits",
@@ -34299,7 +34802,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L52",
+      "source_location": "L64",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_kits_getkitinfo",
@@ -34310,7 +34813,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L52",
+      "source_location": "L64",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_kits_setkitcomponents",
@@ -34321,7 +34824,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L61",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_libro_iva",
@@ -34332,7 +34835,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L49",
+      "source_location": "L61",
       "weight": 1.0,
       "source": "src_ipc",
       "target": "src_libro_iva_buildlibroivaventas",
@@ -34408,6 +34911,127 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_enqueuewhatsappconfigcloudsync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_iswhatsappenabled",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_listlocalchats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_listlocalmessages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_runwhatsappsync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_startwhatsapppoll",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_stopwhatsapppoll",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/ipc.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_ipc",
+      "target": "src_whatsapp_testwhatsappconnection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
       "source_location": "L16",
       "weight": 1.0,
@@ -34431,7 +35055,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L174",
+      "source_location": "L186",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_enqueueifcloud",
@@ -34443,7 +35067,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L89",
+      "source_location": "L101",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_ipcdeps"
@@ -34453,7 +35077,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L105",
+      "source_location": "L117",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_normalizeshellbackground",
@@ -34464,7 +35088,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/ipc.ts",
-      "source_location": "L112",
+      "source_location": "L124",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_ipc_safestr",
@@ -34476,7 +35100,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L986",
+      "source_location": "L1067",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_kits_getkitinfo"
@@ -34487,7 +35111,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L997",
+      "source_location": "L1078",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_kits_setkitcomponents"
@@ -34498,7 +35122,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L959",
+      "source_location": "L1040",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_libro_iva_buildlibroivaventas"
@@ -34509,7 +35133,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L639",
+      "source_location": "L651",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_secrets_encryptsecret"
@@ -34520,7 +35144,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L919",
+      "source_location": "L1000",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_sync_enqueuechange"
@@ -34531,10 +35155,109 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ipc.ts",
-      "source_location": "L97",
+      "source_location": "L109",
       "weight": 1.0,
       "source": "src_ipc_registeripchandlers",
       "target": "src_tray_setlaunchatstartupenabled"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L664",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_enqueuewhatsappconfigcloudsync"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L845",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_getwhatsappconfig"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L663",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_iswhatsappenabled"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L857",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_listlocalchats"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L862",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_listlocalmessages"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L877",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_runwhatsappsync"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L663",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_startwhatsapppoll"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L663",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_stopwhatsapppoll"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/ipc.ts",
+      "source_location": "L892",
+      "weight": 1.0,
+      "source": "src_ipc_registeripchandlers",
+      "target": "src_whatsapp_testwhatsappconnection"
     },
     {
       "relation": "imports",
@@ -35099,7 +35822,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L764",
+      "source_location": "L766",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createclientselectionwindow",
@@ -35129,7 +35852,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L889",
+      "source_location": "L891",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewarticlewindow",
@@ -35139,7 +35862,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L957",
+      "source_location": "L959",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewarticlewindowstandalone",
@@ -35149,7 +35872,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L903",
+      "source_location": "L905",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewclientwindow",
@@ -35159,7 +35882,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L961",
+      "source_location": "L963",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewclientwindowstandalone",
@@ -35169,7 +35892,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L981",
+      "source_location": "L983",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewdeliverynotewindowstandalone",
@@ -35179,7 +35902,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L993",
+      "source_location": "L995",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewgoodsreceiptwindowstandalone",
@@ -35189,7 +35912,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L977",
+      "source_location": "L979",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewinvoicewindowstandalone",
@@ -35199,7 +35922,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L1001",
+      "source_location": "L1003",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewpaymentorderwindowstandalone",
@@ -35209,7 +35932,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L997",
+      "source_location": "L999",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewpurchaseinvoicewindowstandalone",
@@ -35219,7 +35942,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L989",
+      "source_location": "L991",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewpurchaseorderwindowstandalone",
@@ -35229,7 +35952,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L973",
+      "source_location": "L975",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewquotewindowstandalone",
@@ -35239,7 +35962,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L985",
+      "source_location": "L987",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewreceiptwindowstandalone",
@@ -35249,7 +35972,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L969",
+      "source_location": "L971",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewsaleorderwindowstandalone",
@@ -35259,7 +35982,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L917",
+      "source_location": "L919",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewsupplierwindow",
@@ -35269,7 +35992,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L965",
+      "source_location": "L967",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createnewsupplierwindowstandalone",
@@ -35289,7 +36012,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L826",
+      "source_location": "L828",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_createsupplierselectionwindow",
@@ -35329,7 +36052,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L801",
+      "source_location": "L803",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_loadclientsforpicker",
@@ -35349,7 +36072,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L863",
+      "source_location": "L865",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_loadsuppliersforpicker",
@@ -35379,7 +36102,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L935",
+      "source_location": "L937",
       "weight": 1.0,
       "source": "src_main",
       "target": "src_main_makestandaloneform",
@@ -35940,7 +36663,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L793",
+      "source_location": "L795",
       "weight": 1.0,
       "source": "src_main_createclientselectionwindow",
       "target": "src_main_loadclientsforpicker",
@@ -35951,7 +36674,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L855",
+      "source_location": "L857",
       "weight": 1.0,
       "source": "src_main_createsupplierselectionwindow",
       "target": "src_main_loadsuppliersforpicker",
@@ -35962,7 +36685,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L958",
+      "source_location": "L960",
       "weight": 1.0,
       "source": "src_main_createnewarticlewindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -35973,7 +36696,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L962",
+      "source_location": "L964",
       "weight": 1.0,
       "source": "src_main_createnewclientwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -35984,7 +36707,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L982",
+      "source_location": "L984",
       "weight": 1.0,
       "source": "src_main_createnewdeliverynotewindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -35995,7 +36718,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L994",
+      "source_location": "L996",
       "weight": 1.0,
       "source": "src_main_createnewgoodsreceiptwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36006,7 +36729,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L978",
+      "source_location": "L980",
       "weight": 1.0,
       "source": "src_main_createnewinvoicewindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36017,7 +36740,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L1002",
+      "source_location": "L1004",
       "weight": 1.0,
       "source": "src_main_createnewpaymentorderwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36028,7 +36751,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L998",
+      "source_location": "L1000",
       "weight": 1.0,
       "source": "src_main_createnewpurchaseinvoicewindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36039,7 +36762,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L990",
+      "source_location": "L992",
       "weight": 1.0,
       "source": "src_main_createnewpurchaseorderwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36050,7 +36773,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L974",
+      "source_location": "L976",
       "weight": 1.0,
       "source": "src_main_createnewquotewindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36061,7 +36784,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L986",
+      "source_location": "L988",
       "weight": 1.0,
       "source": "src_main_createnewreceiptwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36072,7 +36795,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L970",
+      "source_location": "L972",
       "weight": 1.0,
       "source": "src_main_createnewsaleorderwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36083,7 +36806,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/main.ts",
-      "source_location": "L966",
+      "source_location": "L968",
       "weight": 1.0,
       "source": "src_main_createnewsupplierwindowstandalone",
       "target": "src_main_makestandaloneform",
@@ -36977,7 +37700,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/preload.ts",
-      "source_location": "L345",
+      "source_location": "L362",
       "weight": 1.0,
       "source": "src_preload",
       "target": "src_preload_asimovapi",
@@ -37098,6 +37821,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_secrets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "test/air.test.ts",
       "source_location": "L4",
       "weight": 1.0,
@@ -37170,6 +37904,28 @@
       "source": "test_secrets_test",
       "target": "src_secrets_encryptsecret",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_secrets_decryptsecret",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "src_whatsapp_getwhatsappconfig",
+      "target": "src_secrets_decryptsecret"
     },
     {
       "relation": "imports",
@@ -37632,6 +38388,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_sync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "test/sync.test.ts",
       "source_location": "L36",
       "weight": 1.0,
@@ -37726,6 +38493,28 @@
       "source": "src_sync_pushcloudnativechanges",
       "target": "src_sync_istransientstatus",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_sync_enqueuechange",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "src_whatsapp_enqueuewhatsappconfigcloudsync",
+      "target": "src_sync_enqueuechange"
     },
     {
       "relation": "imports",
@@ -38360,6 +39149,664 @@
       "weight": 1.0,
       "source": "src_updater",
       "target": "src_updater_initautoupdater",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_authheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_enqueuewhatsappconfigcloudsync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L173",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_getconversationremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L254",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_getmessagesremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_iswhatsappenabled",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L249",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_listchatsremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L168",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_listconversationsremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L296",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_listlocalchats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L309",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_listlocalmessages",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L272",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_localchat",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L285",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_localmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L194",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_mapconversationforlist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L207",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_mapmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L187",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_messagepreview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L227",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_remotechat",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L238",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_remotemessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L126",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_remotewaconversation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L136",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_remotewamessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L371",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_runwhatsappsync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L424",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_sendmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L263",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_sendmessageoverbot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L177",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_sendmessageremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L462",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_startwhatsapppoll",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L475",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_stopwhatsapppoll",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L447",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_testwhatsappconnection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L320",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_upsertchat",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L341",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_upsertmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L149",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_v1envelope",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L156",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_v1get",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L162",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_v1post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_wahttp",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_wahttpopts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L363",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_wasyncresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "src_whatsapp",
+      "target": "src_whatsapp_whatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L62",
+      "weight": 1.0,
+      "source": "src_whatsapp_enqueuewhatsappconfigcloudsync",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "src_whatsapp_iswhatsappenabled",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L465",
+      "weight": 1.0,
+      "source": "src_whatsapp_startwhatsapppoll",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L449",
+      "weight": 1.0,
+      "source": "src_whatsapp_testwhatsappconnection",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "src_whatsapp_wahttp",
+      "target": "src_whatsapp_getwhatsappconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L372",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_whatsapp_iswhatsappenabled",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L425",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessage",
+      "target": "src_whatsapp_iswhatsappenabled",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L464",
+      "weight": 1.0,
+      "source": "src_whatsapp_startwhatsapppoll",
+      "target": "src_whatsapp_iswhatsappenabled",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_whatsapp_wahttp",
+      "target": "src_whatsapp_authheader",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L174",
+      "weight": 1.0,
+      "source": "src_whatsapp_getconversationremote",
+      "target": "src_whatsapp_v1get",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L170",
+      "weight": 1.0,
+      "source": "src_whatsapp_listconversationsremote",
+      "target": "src_whatsapp_v1get",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L178",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessageremote",
+      "target": "src_whatsapp_v1post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L250",
+      "weight": 1.0,
+      "source": "src_whatsapp_listchatsremote",
+      "target": "src_whatsapp_listconversationsremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L257",
+      "weight": 1.0,
+      "source": "src_whatsapp_getmessagesremote",
+      "target": "src_whatsapp_getconversationremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L264",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessageoverbot",
+      "target": "src_whatsapp_sendmessageremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L200",
+      "weight": 1.0,
+      "source": "src_whatsapp_mapconversationforlist",
+      "target": "src_whatsapp_messagepreview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L251",
+      "weight": 1.0,
+      "source": "src_whatsapp_listchatsremote",
+      "target": "src_whatsapp_mapconversationforlist",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L258",
+      "weight": 1.0,
+      "source": "src_whatsapp_getmessagesremote",
+      "target": "src_whatsapp_mapmessage",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L265",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessageoverbot",
+      "target": "src_whatsapp_mapmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L387",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_whatsapp_listchatsremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L451",
+      "weight": 1.0,
+      "source": "src_whatsapp_testwhatsappconnection",
+      "target": "src_whatsapp_listchatsremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L398",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_whatsapp_getmessagesremote",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L429",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessage",
+      "target": "src_whatsapp_sendmessageoverbot",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L389",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_whatsapp_upsertchat",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L400",
+      "weight": 1.0,
+      "source": "src_whatsapp_runwhatsappsync",
+      "target": "src_whatsapp_upsertmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L430",
+      "weight": 1.0,
+      "source": "src_whatsapp_sendmessage",
+      "target": "src_whatsapp_upsertmessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L469",
+      "weight": 1.0,
+      "source": "src_whatsapp_startwhatsapppoll",
+      "target": "src_whatsapp_runwhatsappsync",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/whatsapp.ts",
+      "source_location": "L463",
+      "weight": 1.0,
+      "source": "src_whatsapp_startwhatsapppoll",
+      "target": "src_whatsapp_stopwhatsapppoll",
       "confidence_score": 1.0
     },
     {
@@ -60121,5 +61568,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "be79c88732e2e25769c4e51ce60e80ea30b52b98"
+  "built_at_commit": "574c06576f0ba66c44140cceeeae5058d59d3977"
 }

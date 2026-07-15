@@ -12520,7 +12520,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_decorators_currentuser",
-      "community": 16,
+      "community": 153,
       "norm_label": "currentuser"
     },
     {
@@ -12550,7 +12550,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard",
-      "community": 12,
+      "community": 139,
       "norm_label": "jwt-auth.guard.ts"
     },
     {
@@ -12560,7 +12560,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard",
-      "community": 12,
+      "community": 139,
       "norm_label": "jwtauthguard"
     },
     {
@@ -12570,7 +12570,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_ts_injectable",
-      "community": 12,
+      "community": 139,
       "norm_label": "injectable"
     },
     {
@@ -12580,7 +12580,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_constructor",
-      "community": 12,
+      "community": 139,
       "norm_label": ".constructor()"
     },
     {
@@ -12590,7 +12590,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_canactivate",
-      "community": 12,
+      "community": 139,
       "norm_label": ".canactivate()"
     },
     {
@@ -12600,7 +12600,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_jwt_auth_guard_jwtauthguard_handlerequest",
-      "community": 12,
+      "community": 139,
       "norm_label": ".handlerequest()"
     },
     {
@@ -12660,7 +12660,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard",
-      "community": 12,
+      "community": 139,
       "norm_label": "roles.guard.ts"
     },
     {
@@ -12670,7 +12670,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard",
-      "community": 12,
+      "community": 139,
       "norm_label": "rolesguard"
     },
     {
@@ -12680,7 +12680,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_ts_injectable",
-      "community": 12,
+      "community": 139,
       "norm_label": "injectable"
     },
     {
@@ -12690,7 +12690,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard_constructor",
-      "community": 12,
+      "community": 139,
       "norm_label": ".constructor()"
     },
     {
@@ -12700,7 +12700,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_common_guards_roles_guard_rolesguard_canactivate",
-      "community": 12,
+      "community": 139,
       "norm_label": ".canactivate()"
     },
     {
@@ -13500,7 +13500,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller",
-      "community": 144,
+      "community": 153,
       "norm_label": "afipcontroller"
     },
     {
@@ -13510,7 +13510,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_apitags",
-      "community": 144,
+      "community": 153,
       "norm_label": "apitags"
     },
     {
@@ -13520,7 +13520,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_apibearerauth",
-      "community": 144,
+      "community": 153,
       "norm_label": "apibearerauth"
     },
     {
@@ -13530,7 +13530,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_controller",
-      "community": 144,
+      "community": 153,
       "norm_label": "controller"
     },
     {
@@ -13540,7 +13540,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_post",
-      "community": 144,
+      "community": 153,
       "norm_label": "post"
     },
     {
@@ -13550,7 +13550,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_roles",
-      "community": 144,
+      "community": 153,
       "norm_label": "roles"
     },
     {
@@ -13560,7 +13560,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_body",
-      "community": 144,
+      "community": 153,
       "norm_label": "body"
     },
     {
@@ -13570,7 +13570,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_get",
-      "community": 144,
+      "community": 153,
       "norm_label": "get"
     },
     {
@@ -13580,7 +13580,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_ts_param",
-      "community": 144,
+      "community": 153,
       "norm_label": "param"
     },
     {
@@ -13600,7 +13600,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_requestcae",
-      "community": 144,
+      "community": 153,
       "norm_label": ".requestcae()"
     },
     {
@@ -13610,7 +13610,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_getlastnumber",
-      "community": 144,
+      "community": 153,
       "norm_label": ".getlastnumber()"
     },
     {
@@ -13620,7 +13620,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_savecredentials",
-      "community": 144,
+      "community": 153,
       "norm_label": ".savecredentials()"
     },
     {
@@ -13630,7 +13630,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_afip_afip_controller_afipcontroller_testauth",
-      "community": 144,
+      "community": 153,
       "norm_label": ".testauth()"
     },
     {
@@ -14000,7 +14000,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module",
-      "community": 12,
+      "community": 139,
       "norm_label": "auth.module.ts"
     },
     {
@@ -14010,7 +14010,7 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_authmodule",
-      "community": 12,
+      "community": 38,
       "norm_label": "authmodule"
     },
     {
@@ -14020,7 +14020,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_auth_auth_module_ts_module",
-      "community": 12,
+      "community": 38,
       "norm_label": "module"
     },
     {
@@ -14930,7 +14930,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module_clientsmodule",
-      "community": 38,
+      "community": 24,
       "norm_label": "clientsmodule"
     },
     {
@@ -14940,7 +14940,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_clients_clients_module_ts_module",
-      "community": 38,
+      "community": 24,
       "norm_label": "module"
     },
     {
@@ -17070,7 +17070,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module_suppliersmodule",
-      "community": 38,
+      "community": 26,
       "norm_label": "suppliersmodule"
     },
     {
@@ -17080,7 +17080,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "v2_packages_api_src_modules_suppliers_suppliers_module_ts_module",
-      "community": 38,
+      "community": 26,
       "norm_label": "module"
     },
     {
@@ -21884,20 +21884,20 @@
       "norm_label": "api v2 (`v2/packages/api/src/modules/sync/`)"
     },
     {
-      "label": "Estado actual",
+      "label": "Lo que FALTA para cumplir el objetivo",
       "file_type": "document",
       "source_file": "docs/desktop-cloud-sync.md",
       "source_location": "L53",
       "_origin": "ast",
-      "id": "docs_desktop_cloud_sync_estado_actual",
+      "id": "docs_desktop_cloud_sync_lo_que_falta_para_cumplir_el_objetivo",
       "community": 8,
-      "norm_label": "estado actual"
+      "norm_label": "lo que falta para cumplir el objetivo"
     },
     {
       "label": "Decisiones pendientes (definir antes de implementar)",
       "file_type": "document",
       "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L63",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "docs_desktop_cloud_sync_decisiones_pendientes_definir_antes_de_implementar",
       "community": 8,
@@ -21907,7 +21907,7 @@
       "label": "Impacto en releases",
       "file_type": "document",
       "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L80",
+      "source_location": "L90",
       "_origin": "ast",
       "id": "docs_desktop_cloud_sync_impacto_en_releases",
       "community": 8,
@@ -21917,7 +21917,7 @@
       "label": "Referencias de c\u00f3digo",
       "file_type": "document",
       "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L86",
+      "source_location": "L96",
       "_origin": "ast",
       "id": "docs_desktop_cloud_sync_referencias_de_c\u00f3digo",
       "community": 8,
@@ -73857,20 +73857,10 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L63",
+      "source_location": "L73",
       "weight": 1.0,
       "source": "docs_desktop_cloud_sync_asimov_desktop_nube_sincronizaci\u00f3n_multi_pc",
       "target": "docs_desktop_cloud_sync_decisiones_pendientes_definir_antes_de_implementar",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L53",
-      "weight": 1.0,
-      "source": "docs_desktop_cloud_sync_asimov_desktop_nube_sincronizaci\u00f3n_multi_pc",
-      "target": "docs_desktop_cloud_sync_estado_actual",
       "confidence_score": 1.0
     },
     {
@@ -73887,10 +73877,20 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L80",
+      "source_location": "L90",
       "weight": 1.0,
       "source": "docs_desktop_cloud_sync_asimov_desktop_nube_sincronizaci\u00f3n_multi_pc",
       "target": "docs_desktop_cloud_sync_impacto_en_releases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/desktop-cloud-sync.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "docs_desktop_cloud_sync_asimov_desktop_nube_sincronizaci\u00f3n_multi_pc",
+      "target": "docs_desktop_cloud_sync_lo_que_falta_para_cumplir_el_objetivo",
       "confidence_score": 1.0
     },
     {
@@ -73917,7 +73917,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/desktop-cloud-sync.md",
-      "source_location": "L86",
+      "source_location": "L96",
       "weight": 1.0,
       "source": "docs_desktop_cloud_sync_asimov_desktop_nube_sincronizaci\u00f3n_multi_pc",
       "target": "docs_desktop_cloud_sync_referencias_de_c\u00f3digo",
@@ -75365,5 +75365,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "13177207088ee87aedc14b126754ded7b1a474e8"
+  "built_at_commit": "b6a58ee796a172dddffa905a37e90c15a8f69506"
 }
