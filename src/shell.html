@@ -699,6 +699,11 @@
       animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Modal cloud login ── */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: #fff; padding: 20px; border-radius: 8px; width: 90%; }
+    .modal-content input { display: block; width: 100%; margin: 6px 0 12px; padding: 8px; }
   </style>
   <!-- Motor de impresión de comprobantes (reimpresión desde las listas). -->
   <link rel="stylesheet" href="comprobante-print.css" />
@@ -1719,6 +1724,13 @@
   <span id="status-user" title="Usuario en sesión">—</span>
   <span class="sep"></span>
   <span id="status-logout" onclick="doLogout()" title="Cerrar sesión" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">⎋ Salir</span>
+  <span class="sep"></span>
+  <div id="cloud-status-bar" style="display:flex;align-items:center;gap:8px;font-size:12px;">
+    <span id="cloud-dot" style="width:8px;height:8px;border-radius:50%;background:#999;"></span>
+    <span id="cloud-text">Nube: desconectado</span>
+    <button id="cloud-login-btn" class="btn btn-sm btn-outline">Conectar</button>
+    <button id="cloud-logout-btn" class="btn btn-sm btn-outline" style="display:none;">Desconectar</button>
+  </div>
   <span class="sep"></span>
   <span id="status-update" onclick="checkUpdate()" title="Buscar actualizaciones" style="cursor:pointer;padding:0 6px;border-radius:3px;transition:background 120ms;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background=''">↑ v<span id="status-version">—</span></span>
   <span class="sep"></span>
@@ -4472,8 +4484,96 @@
     toast._t = setTimeout(() => { toast.style.opacity = "0"; }, 4000);
   }
 
+  // ── Cloud login / status ─────────────────────────────────────────────────
+  async function refreshCloudStatus() {
+    if (!window.cloud) return;
+    const status = await window.cloud.status();
+    const dot = document.getElementById('cloud-dot');
+    const text = document.getElementById('cloud-text');
+    const loginBtn = document.getElementById('cloud-login-btn');
+    const logoutBtn = document.getElementById('cloud-logout-btn');
+    if (status.connected) {
+      dot.style.background = '#2ecc71';
+      text.textContent = `Nube: ${status.user?.email ?? 'conectado'}`;
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = '';
+    } else {
+      dot.style.background = '#999';
+      text.textContent = 'Nube: desconectado';
+      loginBtn.style.display = '';
+      logoutBtn.style.display = 'none';
+    }
+  }
+
+  function openCloudLogin() {
+    document.getElementById('cloud-login-modal').style.display = 'flex';
+    document.getElementById('cloud-login-error').textContent = '';
+  }
+
+  function closeCloudLogin() {
+    document.getElementById('cloud-login-modal').style.display = 'none';
+  }
+
+  async function submitCloudLogin() {
+    if (!window.cloud) return;
+    const email = document.getElementById('cloud-email').value.trim();
+    const password = document.getElementById('cloud-password').value;
+    const errorEl = document.getElementById('cloud-login-error');
+    errorEl.textContent = '';
+    if (!email || !password) {
+      errorEl.textContent = 'Ingresá email y contraseña.';
+      return;
+    }
+    const res = await window.cloud.login(email, password);
+    if (res.ok) {
+      closeCloudLogin();
+      await refreshCloudStatus();
+      alert('Conectado a la nube. Se iniciará la sincronización.');
+    } else {
+      errorEl.textContent = res.error || 'No se pudo conectar.';
+    }
+  }
+
+  async function doCloudLogout() {
+    if (!window.cloud) return;
+    if (!confirm('¿Desconectar esta PC de la nube?')) return;
+    await window.cloud.logout();
+    await refreshCloudStatus();
+  }
+
+  // Wiring
+  document.getElementById('cloud-login-btn').addEventListener('click', openCloudLogin);
+  document.getElementById('cloud-logout-btn').addEventListener('click', doCloudLogout);
+  document.getElementById('cloud-submit-login').addEventListener('click', submitCloudLogin);
+  document.getElementById('cloud-login-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'cloud-login-modal') closeCloudLogin();
+  });
+
+  // Llamar al iniciar
+  refreshCloudStatus();
+
+  window.openCloudLogin = openCloudLogin;
+  window.closeCloudLogin = closeCloudLogin;
+
 })();
 </script>
+
+<div id="cloud-login-modal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:360px;">
+    <h3>Conectar a la nube</h3>
+    <p style="font-size:13px;color:#666;">Ingresá las credenciales de tu empresa en Asimov Cloud.</p>
+    <label>Email</label>
+    <input type="email" id="cloud-email" placeholder="empresa@ejemplo.com" />
+    <label>Contraseña</label>
+    <input type="password" id="cloud-password" placeholder="••••••" />
+    <div id="cloud-login-error" style="color:#c00;font-size:13px;min-height:18px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+      <button class="btn btn-outline" onclick="closeCloudLogin()">Cancelar</button>
+      <button class="btn btn-primary" id="cloud-submit-login">Conectar</button>
+    </div>
+  </div>
+</div>
+
 <div id="print-area"></div>
 </body>
 </html>
