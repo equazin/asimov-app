@@ -61,6 +61,30 @@ describe('SyncService — contratos del desktop', () => {
     }));
   });
 
+  it('aplica configuración ARCA sin certificados', async () => {
+    const { prisma, service } = serviceWithPrisma();
+
+    const result = await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'integration_config',
+      action: 'update',
+      id: 'afip',
+      data: {
+        provider: 'afip',
+        config: { enabled: true, cuit: '30123456780', environment: 'prod', pointOfSale: 1, hasCert: true, hasKey: true, certificate: 'SECRET', privateKey: 'SECRET' },
+      },
+    }]);
+
+    expect(result.processed).toBe(1);
+    expect(prisma.integrationConfig.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({
+        config: { enabled: true, cuit: '30123456780', environment: 'prod', pointOfSale: 1, hasCert: true, hasKey: true },
+      }),
+      update: expect.objectContaining({
+        config: { enabled: true, cuit: '30123456780', environment: 'prod', pointOfSale: 1, hasCert: true, hasKey: true },
+      }),
+    }));
+  });
+
   it('aplica oportunidad CRM desde desktop', async () => {
     const { prisma, service } = serviceWithPrisma();
 
