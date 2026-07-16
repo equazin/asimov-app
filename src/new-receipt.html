@@ -690,8 +690,9 @@ td{ border-color:var(--border) !important; }
     <!-- ═══════════ FACTURAS COBRADAS ═══════════ -->
     <div class="tab-panel split-panel" id="panel-facturas">
       <div class="fact-toolbar">
-        <button class="btn btn-primary" id="btnAddFact" style="height:26px;padding:0 12px;">+ Agregar factura</button>
-        <span style="font-size:11px;color:var(--text-muted);">Ingrese los comprobantes que se cancelan con este recibo</span>
+        <button class="btn btn-primary" id="btnTraerFactPend" style="height:26px;padding:0 12px;" title="Traer facturas pendientes de cobro del cliente">📋 Traer facturas pendientes</button>
+        <button class="btn btn-outline" id="btnAddFact" style="height:26px;padding:0 12px;">+ Agregar factura</button>
+        <span style="font-size:11px;color:var(--text-muted);flex:1;">Elegí las facturas que se cancelan con este recibo</span>
         <span class="fact-count" id="lblFactCount">0 comprobantes</span>
       </div>
       <div class="fact-table-wrap">
@@ -1033,13 +1034,82 @@ td{ border-color:var(--border) !important; }
     /* ─── Facturas table ─── */
     document.getElementById("btnAddFact").addEventListener("click", function() {
       var id = nextFactId++;
-      facturas.push({ id: id, nroFact: "", fecha: new Date().toISOString().slice(0, 10), importe: 0, saldo: 0, cobrado: 0 });
+      facturas.push({ id: id, invoiceId: null, nroFact: "", fecha: new Date().toISOString().slice(0, 10), importe: 0, saldo: 0, cobrado: 0 });
       renderFacturas();
       setTimeout(function() {
         var inp = document.querySelector('[data-fid="' + id + '"][data-ffield="nroFact"]');
         if (inp) inp.focus();
       }, 30);
     });
+
+    /* ─── Picker de facturas pendientes de cobro ─── */
+    document.getElementById("btnTraerFactPend").addEventListener("click", abrirFacturaPickerCobro);
+
+    async function abrirFacturaPickerCobro() {
+      if (!window.asimovNewReceipt || !window.asimovNewReceipt.listClientInvoicesToCollect) return;
+      var modal = document.getElementById("facturaCobroModal");
+      var lista = document.getElementById("facturaCobroLista");
+      modal.style.display = "flex";
+      lista.textContent = "Buscando facturas...";
+      try {
+        var clientId = (clienteData && clienteData.id) ? String(clienteData.id) : "";
+        var docs = await window.asimovNewReceipt.listClientInvoicesToCollect(clientId);
+        lista.innerHTML = "";
+        if (!docs.length) {
+          lista.textContent = "No hay facturas con saldo pendiente" + (clientId ? " para este cliente." : ".");
+          return;
+        }
+        docs.forEach(function(doc) {
+          var row = document.createElement("button");
+          row.type = "button";
+          row.className = "fact-opt";
+          var saldo = Number(doc.balance || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
+          var total = Number(doc.total || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
+          row.innerHTML =
+            '<div class="fact-opt-info">' +
+              '<span class="fact-opt-num">' + esc(doc.number) + '</span>' +
+              '<span class="fact-opt-sub">' + esc(doc.client_name || "Sin cliente") + ' · ' + esc(doc.date) + ' · Total ' + total + '</span>' +
+            '</div>' +
+            '<span class="fact-opt-amt">Saldo ' + saldo + '</span>';
+          row.addEventListener("click", function() { traerFacturaCobro(doc); });
+          lista.appendChild(row);
+        });
+      } catch (err) {
+        lista.textContent = "No se pudieron cargar las facturas: " + (err && err.message ? err.message : err);
+      }
+    }
+
+    function cerrarFacturaPickerCobro() {
+      document.getElementById("facturaCobroModal").style.display = "none";
+    }
+
+    function traerFacturaCobro(doc) {
+      if (facturas.some(function(f) { return f.invoiceId === doc.id; })) {
+        alert("Esta factura ya está agregada.");
+        return;
+      }
+      // Si el recibo no tenía cliente cargado, autocompletarlo con el de la factura.
+      if (!clienteData && doc.client_id) {
+        clienteData = { id: doc.client_id, razonSocial: doc.client_name, cuit: doc.client_cuit };
+        var nombreEl = document.getElementById("txtClienteNombre");
+        var codigoEl = document.getElementById("txtClienteCodigo");
+        var cuitEl = document.getElementById("txtClienteCuit");
+        if (nombreEl) nombreEl.value = doc.client_name || "";
+        if (codigoEl) codigoEl.value = doc.client_id || "";
+        if (cuitEl) cuitEl.value = doc.client_cuit || "";
+      }
+      var id = nextFactId++;
+      facturas.push({
+        id: id,
+        invoiceId: doc.id,
+        nroFact: doc.number,
+        fecha: doc.date,
+        importe: Number(doc.total || 0),
+        saldo: Number(doc.balance || 0),
+        cobrado: Number(doc.balance || 0),
+      });
+      renderFacturas();
+    }
 
     function renderFacturas() {
       var tbody = document.getElementById("factBody");
@@ -1309,6 +1379,26 @@ td{ border-color:var(--border) !important; }
     document.getElementById("btnPrint").addEventListener("click", function () { window.printComprobante("recibo"); });
     document.addEventListener("keydown", function (e) { if (e.key === "F9") { e.preventDefault(); window.printComprobante("recibo"); } });
   </script>
+
+  <!-- Modal picker de facturas pendientes de cobro -->
+  <div id="facturaCobroModal" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.62);align-items:center;justify-content:center">
+    <div style="background:var(--surface,#151C25);border:1px solid var(--border,#242D39);border-radius:8px;max-width:820px;width:92%;max-height:80vh;overflow:auto;padding:18px;color:var(--text,#E4E9F0)">
+      <h3 style="font-size:13px;margin-bottom:12px;color:var(--accent,#229A5E)">Facturas de venta con saldo pendiente</h3>
+      <div id="facturaCobroLista" style="display:grid;gap:6px">Buscando...</div>
+      <div style="margin-top:12px;text-align:right">
+        <button class="btn btn-outline" onclick="document.getElementById('facturaCobroModal').style.display='none'">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  <style>
+    #facturaCobroModal .fact-opt{background:#1F2632;border:1px solid var(--border,#242D39);border-radius:4px;padding:9px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--text,#E4E9F0);text-align:left}
+    #facturaCobroModal .fact-opt:hover{background:#252D3B;border-color:var(--accent,#229A5E)}
+    #facturaCobroModal .fact-opt-info{display:flex;flex-direction:column;gap:2px;flex:1}
+    #facturaCobroModal .fact-opt-num{font-family:Consolas,monospace;font-weight:700}
+    #facturaCobroModal .fact-opt-sub{font-size:10px;color:var(--text-muted,#8A96A6)}
+    #facturaCobroModal .fact-opt-amt{font-family:Consolas,monospace;font-weight:700;color:var(--accent,#229A5E)}
+  </style>
+
   <div id="print-area"></div>
 </body>
 </html>

@@ -24,6 +24,7 @@ import {
   listPendingPurchaseOrders,
   listPendingPurchaseInvoices,
   listPurchaseInvoicesToPay,
+  listClientInvoicesToCollect,
   getSourceItems,
   getLinksFor,
 } from "./document-links";
@@ -741,6 +742,8 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     listPendingPurchaseInvoices(safeStr(supplierId)));
   ipcMain.handle("db:doc-links:purchase-invoices-to-pay", (_event, supplierId: unknown) =>
     listPurchaseInvoicesToPay(safeStr(supplierId)));
+  ipcMain.handle("db:doc-links:client-invoices-to-collect", (_event, clientId: unknown) =>
+    listClientInvoicesToCollect(safeStr(clientId)));
   ipcMain.handle("db:doc-links:source-items", (_event, type: unknown, id: unknown) =>
     getSourceItems(safeStr(type), safeStr(id)));
   ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>

@@ -251,7 +251,7 @@ export interface ReceiptForm {
   clienteNombre?: string;
   concepto?: string;
   totalCobrado?: number | string;
-  facturas?: Array<{ nroFact?: string; importe?: number | string; saldo?: number | string; cobrado?: number | string }>;
+  facturas?: Array<{ invoiceId?: string; nroFact?: string; importe?: number | string; saldo?: number | string; cobrado?: number | string }>;
 }
 
 export function persistReceipt(form: ReceiptForm): PersistResult {
@@ -278,8 +278,8 @@ export function persistReceipt(form: ReceiptForm): PersistResult {
 
     for (const f of facturas) {
       dbRun(
-        "INSERT INTO receipt_items (id,receipt_id,invoice_number,original_amount,paid_amount) VALUES (?,?,?,?,?)",
-        [randomUUID(), id, str(f.nroFact), num(f.importe ?? f.saldo), num(f.cobrado)],
+        "INSERT INTO receipt_items (id,receipt_id,invoice_id,invoice_number,original_amount,paid_amount) VALUES (?,?,?,?,?,?)",
+        [randomUUID(), id, str(f.invoiceId) || null, str(f.nroFact), num(f.importe ?? f.saldo), num(f.cobrado)],
       );
     }
     if (!cancelled && total > 0) {

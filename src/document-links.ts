@@ -324,6 +324,45 @@ export interface PurchaseInvoiceToPay {
   supplier_cuit: string;
 }
 
+/**
+ * Facturas de venta con saldo pendiente de cobro para el picker del Recibo de
+ * venta. Resta lo cobrado por recibos previos y devuelve solo las que aún
+ * deben algo. Si `clientId` viene vacío, lista de todos los clientes.
+ */
+export interface ClientInvoiceToCollect {
+  id: string;
+  number: string;
+  date: string;
+  status: string;
+  total: number;
+  paid: number;
+  balance: number;
+  client_id: string | null;
+  client_name: string;
+  client_cuit: string;
+}
+
+export function listClientInvoicesToCollect(clientId = ""): ClientInvoiceToCollect[] {
+  const params: string[] = [];
+  const clientFilter = clientId ? "AND f.client_id = ?" : "";
+  if (clientId) params.push(clientId);
+  return dbAll<ClientInvoiceToCollect>(
+    `SELECT f.id, f.number, f.date, f.status, f.total, f.client_id,
+            COALESCE(c.business_name, f.client_name, '') AS client_name,
+            COALESCE(c.cuit, '') AS client_cuit,
+            COALESCE((SELECT SUM(paid_amount) FROM receipt_items WHERE invoice_id = f.id), 0) AS paid,
+            (f.total - COALESCE((SELECT SUM(paid_amount) FROM receipt_items WHERE invoice_id = f.id), 0)) AS balance
+     FROM invoices f
+     LEFT JOIN clients c ON c.id = f.client_id
+     WHERE LOWER(f.status) NOT IN ('anulado','anulada','cancelado')
+       AND UPPER(f.tipo) NOT IN ('NC','ND')
+       ${clientFilter}
+       AND (f.total - COALESCE((SELECT SUM(paid_amount) FROM receipt_items WHERE invoice_id = f.id), 0)) > 0.01
+     ORDER BY f.date DESC, f.created_at DESC LIMIT 100`,
+    params,
+  );
+}
+
 export function listPurchaseInvoicesToPay(supplierId = ""): PurchaseInvoiceToPay[] {
   const params: string[] = [];
   const supplierFilter = supplierId ? "AND f.supplier_id = ?" : "";
