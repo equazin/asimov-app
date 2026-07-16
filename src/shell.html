@@ -1878,6 +1878,7 @@
     stock: {
       title: "Stock",
       load: (s) => asimov().stock.list(s),
+      edit: "article",
       cols: [
         { label: "Código",    key: "code",          w: "90px" },
         { label: "Artículo",  key: "name"                      },
@@ -2232,6 +2233,16 @@
     debouncedSearch: (viewId, value) => {
       clearTimeout(_searchTimer);
       _searchTimer = setTimeout(() => loadViewData(viewId, value), 250);
+    },
+    editRow: (kind, id) => {
+      // Puente para editar filas desde el botón lápiz de renderTable.
+      // Hoy sólo Stock lo usa (kind = "article") — se enruta al form nativo
+      // ya existente que persistArticleForm hace upsert por id.
+      if (kind === "article") {
+        if (window.asimov && window.asimov.openNativeForm) {
+          window.asimov.openNativeForm("article", { articleId: String(id || "") });
+        }
+      }
     },
     openNativeForm: (type, context) => {
       if (window.asimov && window.asimov.openNativeForm) {
@@ -2617,10 +2628,10 @@
   }
 
   // ── table renderer ───────────────────────────────────────────────────
-  function renderTable(containerId, badgeId, cols, rows, annul, printType) {
+  function renderTable(containerId, badgeId, cols, rows, annul, printType, editKind) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    const hasAction = printType || (annul && CAN_WRITE);
+    const hasAction = printType || (annul && CAN_WRITE) || (editKind && CAN_WRITE);
 
     if (!rows || rows.length === 0) {
       container.innerHTML = `<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>`;
@@ -2630,7 +2641,7 @@
       return;
     }
 
-    const actionWidth = printType === "factura" ? "270px" : "150px";
+    const actionWidth = printType === "factura" ? "270px" : (editKind ? "110px" : "150px");
     const ths = cols.map(c =>
       `<th style="${c.w ? `width:${c.w};` : ""}${c.align ? `text-align:${c.align};` : ""}">${c.label}</th>`
     ).join("") + (hasAction ? `<th style="width:${actionWidth};text-align:center;">Acción</th>` : "");
@@ -2658,6 +2669,9 @@
         }
         if (annul && CAN_WRITE && !anulado && !(isInvoice && hasCae)) {
           btns += `<button class="btn btn-outline btn-sm" onclick="A.annulDoc('${annul}','${rid}',this)">Anular</button>`;
+        }
+        if (editKind && CAN_WRITE) {
+          btns += `<button class="btn btn-outline btn-sm" onclick="A.editRow('${editKind}','${rid}')" title="Editar">✏️ Editar</button>`;
         }
         actionTd = `<td style="text-align:center;white-space:nowrap;display:flex;gap:6px;justify-content:center;">${btns || "—"}</td>`;
       }
@@ -2701,7 +2715,7 @@
     try {
       await waitForAsimov();
       const rows = await def.load(search);
-      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul, def.print);
+      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul, def.print, def.edit);
     } catch (e) {
       const el = document.getElementById("table-" + viewId);
       if (el) el.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;

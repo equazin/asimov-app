@@ -774,7 +774,14 @@ td{ border-color:var(--border) !important; }
     const txtCategoria = document.getElementById("txtCategoria");
     const selIva = document.getElementById("selIva");
 
-    txtCodigo.value = Math.floor(100000 + Math.random() * 900000);
+    // `currentArticleId` != "" cuando el shell abre el form en modo edición;
+    // el random se asigna solo si terminamos siendo "nuevo" (el prefill llega
+    // asíncrono, así que lo protegemos con este flag).
+    let currentArticleId = "";
+    let prefillReceived = false;
+    setTimeout(() => {
+      if (!prefillReceived) txtCodigo.value = Math.floor(100000 + Math.random() * 900000);
+    }, 60);
 
     // Tab switching
     document.querySelectorAll(".tab").forEach(tab => {
@@ -908,6 +915,34 @@ td{ border-color:var(--border) !important; }
     });
     txtPrecio.addEventListener("input", renderKitTable);
 
+    // Modo edición: el shell manda todos los campos del artículo existente.
+    if (window.asimovNewArticle && window.asimovNewArticle.onEditPrefill) {
+      window.asimovNewArticle.onEditPrefill(function (data) {
+        prefillReceived = true;
+        currentArticleId = String(data.id || "");
+        txtCodigo.value = String(data.code || "");
+        txtDescripcion.value = String(data.name || "");
+        txtPrecio.value = data.sale_price != null ? String(data.sale_price) : "";
+        txtPrecioUsd.value = data.price_usd != null ? String(data.price_usd) : "";
+        txtLinea.value = String(data.line || "");
+        txtCategoria.value = String(data.category || "");
+        if (data.iva_pct != null) selIva.value = String(data.iva_pct);
+        kitComponents = (data.components || []).map(function (c) {
+          return {
+            articleId: c.articleId, code: c.code || "", name: c.name || "",
+            qty: Number(c.qty) || 1, cost: Number(c.cost_price) || 0, sale: Number(c.sale_price) || 0,
+            source: c.source || "local",
+          };
+        });
+        renderKitTable();
+        // Reflejar el modo edición en el shell del form.
+        var title = document.querySelector("h1, .form-title, #titleBar");
+        if (title && title.textContent.trim().toLowerCase().indexOf("nuevo") === 0) {
+          title.textContent = title.textContent.replace(/nuevo/i, "Editar");
+        }
+      });
+    }
+
     document.getElementById("btnSave").addEventListener("click", () => {
       if (!txtCodigo.value || !txtDescripcion.value) {
         alert("Complete Código y Descripción.");
@@ -918,6 +953,7 @@ td{ border-color:var(--border) !important; }
         return;
       }
       const article = {
+        id: currentArticleId || undefined,
         codigo: txtCodigo.value.trim(),
         descripcion: txtDescripcion.value.trim().toUpperCase(),
         importe: txtPrecio.value || "0",

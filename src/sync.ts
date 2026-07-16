@@ -162,6 +162,34 @@ export function getParkedCount(): number {
   return row.count;
 }
 
+export interface QueueDetailsEntry {
+  id: number;
+  entity: string;
+  entity_id: string;
+  action: string;
+  attempts: number;
+  error: string | null;
+  created_at: string;
+  next_attempt_at: string | null;
+}
+
+/** Detalle de cambios pendientes y aparcados para el panel de diagnóstico. */
+export function getSyncQueueDetails(): {
+  pending: QueueDetailsEntry[];
+  parked: QueueDetailsEntry[];
+} {
+  const cols = 'id, entity, entity_id, action, attempts, error, created_at, next_attempt_at';
+  const pending = dbAll(
+    `SELECT ${cols} FROM sync_queue WHERE synced_at IS NULL AND attempts < ? ORDER BY id ASC`,
+    [MAX_ATTEMPTS],
+  ) as QueueDetailsEntry[];
+  const parked = dbAll(
+    `SELECT ${cols} FROM sync_queue WHERE synced_at IS NULL AND attempts >= ? ORDER BY id ASC`,
+    [MAX_ATTEMPTS],
+  ) as QueueDetailsEntry[];
+  return { pending, parked };
+}
+
 /**
  * Reactiva los cambios que esperaban backoff para que se reintenten ya. Se llama
  * al recuperar la conexión: no tiene sentido esperar el backoff si la nube volvió.

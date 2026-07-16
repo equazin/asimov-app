@@ -16,6 +16,7 @@ import {
   initSyncTables,
   runSync,
   getSyncStatus,
+  getSyncQueueDetails,
   startSyncTimer,
   stopSyncTimer,
   retryParkedChanges,
@@ -77,6 +78,8 @@ export function registerCloudIpcHandlers(): void {
 
   // --- Sync ---
   ipcMain.handle('sync:status', () => getSyncStatus());
+
+  ipcMain.handle('sync:queue-details', () => getSyncQueueDetails());
 
   ipcMain.handle('sync:run', async () => {
     try {

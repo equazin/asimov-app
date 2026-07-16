@@ -25,6 +25,7 @@ import { isAfipUnavailable } from "./afip/domain";
 import { isAirEnabled } from "./air";
 import { loadLocalProductsForPicker, type ProductPickerItem } from "./product-picker";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
+import { getKitComponents } from "./kits";
 import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
@@ -278,10 +279,49 @@ function sendCrmClientPrefill(window: BrowserWindow | null, contextId: string, c
   else send();
 }
 
+function openArticleForEdit(articleId: string): void {
+  const id = String(articleId ?? "").trim();
+  if (!id) return;
+  const article = dbGet<Record<string, unknown>>("SELECT * FROM articles WHERE id = ?", [id]);
+  if (!article) return;
+  const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
+  createNewArticleWindowStandalone(parent);
+  const win = newArticleWindow;
+  if (!win || win.isDestroyed()) return;
+  const components = Number(article.is_kit) === 1 ? getKitComponents(id) : [];
+  const prefill = {
+    id,
+    code: String(article.code ?? ""),
+    name: String(article.name ?? ""),
+    sale_price: Number(article.sale_price ?? 0),
+    price_usd: Number(article.price_usd ?? 0),
+    iva_pct: Number(article.iva_pct ?? 21),
+    category: String(article.category ?? ""),
+    line: "",  // el schema local no persiste "línea"; el input queda vacío al editar
+    components: components.map((c) => ({
+      articleId: c.component_article_id,
+      code: c.code,
+      name: c.name,
+      qty: c.qty,
+      cost_price: c.cost_price,
+      sale_price: c.sale_price,
+      source: "local",
+    })),
+  };
+  const send = () => { if (!win.isDestroyed()) win.webContents.send("article-edit:prefill", prefill); };
+  if (win.webContents.isLoadingMainFrame()) win.webContents.once("did-finish-load", send);
+  else send();
+}
+
 function openNativeForm(type: NativeFormType, context?: Record<string, unknown>): void {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
   switch (type) {
-    case "article":     createNewArticleWindowStandalone(parent); break;
+    case "article": {
+      const editId = String(context?.articleId ?? "").trim();
+      if (editId) openArticleForEdit(editId);
+      else createNewArticleWindowStandalone(parent);
+      break;
+    }
     case "client":      createNewClientWindowStandalone(parent); break;
     case "supplier":    createNewSupplierWindowStandalone(parent); break;
     case "sale-order": {

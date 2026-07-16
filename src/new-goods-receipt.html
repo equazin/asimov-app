@@ -506,7 +506,10 @@ td{ border-color:var(--border) !important; }
       </div>
       <div class="form-group">
         <label>Factura de compra de origen</label>
-        <input type="text" id="facturaOrigen" placeholder="Traer una factura de compra" readonly>
+        <div class="picker-row">
+          <input type="text" id="facturaOrigen" placeholder="Traer una factura de compra" readonly>
+          <button class="picker-btn" type="button" onclick="abrirFacturaPicker()" title="Traer factura de compra">...</button>
+        </div>
       </div>
       <div class="form-group">
         <label>Nro. remito del proveedor</label>

@@ -380,6 +380,7 @@ const api = {
   // en el status bar y para forzar un push/pull manual desde la UI.
   cloudSync: {
     status: () => ipcRenderer.invoke("sync:status") as Promise<{ connected: boolean; pendingChanges: number; parkedChanges: number; lastSync: string | null; syncing: boolean; lastError: string | null }>,
+    queueDetails: () => ipcRenderer.invoke("sync:queue-details") as Promise<{ pending: Array<{ id: number; entity: string; entity_id: string; action: string; attempts: number; error: string | null; created_at: string; next_attempt_at: string | null }>; parked: Array<{ id: number; entity: string; entity_id: string; action: string; attempts: number; error: string | null; created_at: string; next_attempt_at: string | null }> }>,
     run: () => ipcRenderer.invoke("sync:run") as Promise<{ ok: boolean; pushed?: number; pulled?: number; errors?: number; error?: string }>,
     retryParked: () => ipcRenderer.invoke("sync:retry-parked") as Promise<{ ok: boolean; reactivated: number; pushed?: number; pulled?: number; errors?: number }>,
     bootstrapStatus: () => ipcRenderer.invoke("sync:bootstrap-status") as Promise<{ clients: number; suppliers: number; products: number; documents: number; airProducts: number; hasLocalBusinessData: boolean }>,
