@@ -424,6 +424,33 @@ CREATE TABLE IF NOT EXISTS purchase_invoice_items (
   FOREIGN KEY (invoice_id) REFERENCES purchase_invoices(id) ON DELETE CASCADE
 );
 
+-- Recibo de compra: espejo de la tabla receipts pero contra facturas del proveedor.
+-- Documenta un pago concreto que salda una o varias purchase_invoices
+-- (idea = recibo de venta, pero con proveedor en el otro lado del mostrador).
+CREATE TABLE IF NOT EXISTS purchase_receipts (
+  id             TEXT PRIMARY KEY,
+  number         TEXT UNIQUE NOT NULL,
+  supplier_id    TEXT,
+  supplier_name  TEXT,
+  date           TEXT NOT NULL DEFAULT (date('now')),
+  status         TEXT NOT NULL DEFAULT 'borrador',
+  total          REAL NOT NULL DEFAULT 0,
+  payment_method TEXT NOT NULL DEFAULT 'transferencia',
+  notes          TEXT,
+  created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+CREATE TABLE IF NOT EXISTS purchase_receipt_items (
+  id              TEXT PRIMARY KEY,
+  receipt_id      TEXT NOT NULL,
+  invoice_id      TEXT,
+  invoice_number  TEXT,
+  original_amount REAL NOT NULL DEFAULT 0,
+  paid_amount     REAL NOT NULL DEFAULT 0,
+  FOREIGN KEY (receipt_id) REFERENCES purchase_receipts(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS payment_orders (
   id             TEXT PRIMARY KEY,
   number         TEXT UNIQUE NOT NULL,

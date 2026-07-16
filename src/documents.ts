@@ -347,6 +347,64 @@ export function persistPaymentOrder(form: PaymentOrderForm): PersistResult {
   return { id, number, cashMoved };
 }
 
+// ─── Recibo de compra (caja OUT) ─────────────────────────────────────────────
+// Espejo del Recibo de venta: documenta un pago concreto que salda una o
+// varias facturas de compra. A diferencia de la Orden de pago (que autoriza el
+// pago), el Recibo de compra es el comprobante del pago efectivo — misma
+// nomenclatura que el Recibo de venta pero contra proveedor.
+
+export interface PurchaseReceiptForm {
+  id?: string;
+  nroRec?: string;
+  fecha?: string;
+  estado?: string;
+  proveedor?: { id?: string } | null;
+  proveedorNombre?: string;
+  concepto?: string;
+  totalPagado?: number | string;
+  metodo?: string;
+  facturas?: Array<{ nroFact?: string; invoiceId?: string; importe?: number | string; saldo?: number | string; pagado?: number | string }>;
+}
+
+export function persistPurchaseReceipt(form: PurchaseReceiptForm): PersistResult {
+  const db = getDb();
+  const id = str(form.id) || randomUUID();
+  const facturas = Array.isArray(form.facturas) ? form.facturas : [];
+  const date = normalizeDate(form.fecha);
+  const estado = str(form.estado) || "emitido";
+  const cancelled = /anul|cancel/i.test(estado);
+  const total = num(form.totalPagado);
+  const cashAccountId = defaultCashAccountId();
+  let number = str(form.nroRec);
+  let cashMoved = 0;
+
+  const tx = db.transaction(() => {
+    if (!number) number = formatDocNumber("RCP", nextSequence("purchase-receipt"));
+    dbRun(
+      `INSERT OR REPLACE INTO purchase_receipts (id,number,supplier_id,supplier_name,date,status,total,payment_method,notes,created_at)
+       VALUES (?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM purchase_receipts WHERE id=?),datetime('now')))`,
+      [id, number, str(form.proveedor?.id) || null, str(form.proveedorNombre), date, estado, total, str(form.metodo) || "transferencia", str(form.concepto), id],
+    );
+    reverseCashFor("purchase_receipt", id);
+    dbRun("DELETE FROM purchase_receipt_items WHERE receipt_id = ?", [id]);
+
+    for (const f of facturas) {
+      dbRun(
+        "INSERT INTO purchase_receipt_items (id,receipt_id,invoice_id,invoice_number,original_amount,paid_amount) VALUES (?,?,?,?,?,?)",
+        [randomUUID(), id, str(f.invoiceId) || null, str(f.nroFact), num(f.importe ?? f.saldo), num(f.pagado)],
+      );
+    }
+    if (!cancelled && total > 0) {
+      applyCashDelta(cashAccountId, -total, "egreso", `Recibo de compra ${number}`, "purchase_receipt", id);
+      cashMoved = 1;
+    }
+  });
+
+  tx();
+  enqueueDocSnapshot("purchase_receipt", id);
+  return { id, number, cashMoved };
+}
+
 // ─── Documentos sin efecto de stock/caja (solo header + ítems) ───────────────
 // Pedido de venta, cotización, orden de compra, factura de compra y factura de
 // venta se persisten con sus ítems. No mueven stock ni caja: eso ocurre en su

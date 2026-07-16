@@ -11,7 +11,7 @@ const distDir = path.join(root, "dist");
 
 fs.mkdirSync(distDir, { recursive: true });
 
-const files = ["login.html", "shell.html", "product-selection.html", "new-article.html", "client-selection.html", "supplier-selection.html", "new-client.html", "new-supplier.html", "new-sale-order.html", "new-quote.html", "new-invoice.html", "new-delivery-note.html", "new-receipt.html", "new-purchase-order.html", "new-goods-receipt.html", "new-purchase-invoice.html", "new-payment-order.html"];
+const files = ["login.html", "shell.html", "product-selection.html", "new-article.html", "client-selection.html", "supplier-selection.html", "new-client.html", "new-supplier.html", "new-sale-order.html", "new-quote.html", "new-invoice.html", "new-delivery-note.html", "new-receipt.html", "new-purchase-order.html", "new-goods-receipt.html", "new-purchase-invoice.html", "new-payment-order.html", "new-purchase-receipt.html"];
 for (const file of files) {
   const from = path.join(srcDir, file);
   const to = path.join(distDir, file);

@@ -306,6 +306,53 @@ export function listPendingPurchaseInvoices(supplierId = ""): PendingPurchaseDoc
 }
 
 /**
+ * Facturas de compra con saldo pendiente de pago para el picker del Recibo de
+ * compra (o de la Orden de pago). Resta lo pagado por OP + Recibos de compra
+ * previos y devuelve solo las que aún deben algo. Si `supplierId` viene vacío,
+ * lista de todos los proveedores.
+ */
+export interface PurchaseInvoiceToPay {
+  id: string;
+  number: string;
+  date: string;
+  status: string;
+  total: number;
+  paid: number;
+  balance: number;
+  supplier_id: string | null;
+  supplier_name: string;
+  supplier_cuit: string;
+}
+
+export function listPurchaseInvoicesToPay(supplierId = ""): PurchaseInvoiceToPay[] {
+  const params: string[] = [];
+  const supplierFilter = supplierId ? "AND f.supplier_id = ?" : "";
+  if (supplierId) params.push(supplierId);
+  return dbAll<PurchaseInvoiceToPay>(
+    `SELECT f.id, f.number, f.date, f.status, f.total, f.supplier_id,
+            COALESCE(s.business_name, f.supplier_name, '') AS supplier_name,
+            COALESCE(s.cuit, '') AS supplier_cuit,
+            COALESCE((SELECT SUM(paid_amount) FROM payment_order_items WHERE invoice_id = f.id), 0)
+              + COALESCE((SELECT SUM(paid_amount) FROM purchase_receipt_items WHERE invoice_id = f.id), 0)
+              AS paid,
+            (f.total - (
+              COALESCE((SELECT SUM(paid_amount) FROM payment_order_items WHERE invoice_id = f.id), 0)
+              + COALESCE((SELECT SUM(paid_amount) FROM purchase_receipt_items WHERE invoice_id = f.id), 0)
+            )) AS balance
+     FROM purchase_invoices f
+     LEFT JOIN suppliers s ON s.id = f.supplier_id
+     WHERE LOWER(f.status) NOT IN ('anulado','cancelado')
+       ${supplierFilter}
+       AND (f.total - (
+         COALESCE((SELECT SUM(paid_amount) FROM payment_order_items WHERE invoice_id = f.id), 0)
+         + COALESCE((SELECT SUM(paid_amount) FROM purchase_receipt_items WHERE invoice_id = f.id), 0)
+       )) > 0.01
+     ORDER BY f.date DESC, f.created_at DESC LIMIT 100`,
+    params,
+  );
+}
+
+/**
  * Ítems de un documento origen, normalizados para precargar la grilla del
  * destino. Para remitos (sin precio propio) el precio va en 0 y el usuario
  * lo completa o se toma del artículo.

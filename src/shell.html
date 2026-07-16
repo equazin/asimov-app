@@ -781,6 +781,7 @@
       <div class="nav-item" data-view="ordenes-compra"><span class="icon"><svg><use href="#i-cart"/></svg></span> Órd. de Compra</div>
       <div class="nav-item" data-view="recepciones"><span class="icon"><svg><use href="#i-inbox"/></svg></span> Remitos de compra</div>
       <div class="nav-item" data-view="facturas-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas de compra</div>
+      <div class="nav-item" data-view="recibos-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Recibos de compra</div>
       <div class="nav-item" data-view="proveedores"><span class="icon"><svg><use href="#i-factory"/></svg></span> Proveedores</div>
     </div>
 
@@ -983,6 +984,22 @@
         <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('facturas-compra')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-facturas-compra">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Recibos de Compra (pagos contra facturas del proveedor) ─── -->
+    <div class="view" id="view-recibos-compra">
+      <div class="view-header">
+        <h1><svg class="ic"><use href="#i-file"/></svg> Recibos de compra</h1>
+        <span class="badge" id="badge-recibos-compra">—</span>
+        <button class="btn btn-primary" onclick="A.openNativeForm('purchase-receipt')">+ Nuevo recibo de compra</button>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar recibo, proveedor..." oninput="A.loadView('recibos-compra',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recibos-compra')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-recibos-compra">
         <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
@@ -1864,6 +1881,18 @@
         { label: "Total",     key: "total",         w: "110px", fmt: fmtARS, align: "right" },
       ],
     },
+    "recibos-compra": {
+      title: "Recibos de compra",
+      load: (s) => asimov().purchaseReceipts.list(s),
+      cols: [
+        { label: "Número",    key: "number",        w: "130px" },
+        { label: "Proveedor", key: "supplier_name"              },
+        { label: "Fecha",     key: "date",          w: "90px",  fmt: fmtDate },
+        { label: "Método",    key: "payment_method",w: "130px" },
+        { label: "Estado",    key: "status",        w: "100px", fmt: fmtPill },
+        { label: "Total",     key: "total",         w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
     proveedores: {
       title: "Proveedores",
       load: (s) => asimov().suppliers.list(s),
@@ -2191,6 +2220,7 @@
       "/compras": "ordenes-compra", "/compras/ordenes": "ordenes-compra",
       "/compras/recepciones": "recepciones", "/compras/remitos": "recepciones",
       "/compras/facturas": "facturas-compra",
+      "/compras/recibos": "recibos-compra",
       "/compras/proveedores": "proveedores",
       "/stock": "stock", "/stock/articulos": "stock",
       "/stock/movimientos": "movimientos",
@@ -3000,6 +3030,7 @@
         "shell:goods-receipt-saved",
         "shell:purchase-invoice-saved",
         "shell:payment-order-saved",
+        "shell:purchase-receipt-saved",
         "shell:clients-changed",
         "shell:suppliers-changed",
         "shell:articles-changed",

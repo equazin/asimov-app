@@ -23,6 +23,7 @@ const DOC_TABLES: Record<string, DocTableMap> = {
   delivery_note: { header: 'delivery_notes', items: 'delivery_note_items', itemFk: 'note_id' },
   receipt: { header: 'receipts', items: 'receipt_items', itemFk: 'receipt_id' },
   payment_order: { header: 'payment_orders', items: 'payment_order_items', itemFk: 'order_id' },
+  purchase_receipt: { header: 'purchase_receipts', items: 'purchase_receipt_items', itemFk: 'receipt_id' },
   sale_order: { header: 'sale_orders', items: 'sale_order_items', itemFk: 'order_id' },
   quote: { header: 'quotes', items: 'quote_items', itemFk: 'quote_id' },
   invoice: { header: 'invoices', items: 'invoice_items', itemFk: 'invoice_id' },

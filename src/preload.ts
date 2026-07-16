@@ -161,6 +161,10 @@ const api = {
   paymentOrders: {
     list: (search = "") => ipcRenderer.invoke("db:payment-orders:list", search),
   },
+  purchaseReceipts: {
+    list: (search = "") => ipcRenderer.invoke("db:purchase-receipts:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:purchase-receipts:get", id),
+  },
 
   // DB — Stock
   stock: {

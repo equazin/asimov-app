@@ -29,6 +29,7 @@ import { getKitComponents } from "./kits";
 import { authenticate, seedDefaultAdmin, DEFAULT_ADMIN, type SessionUser } from "./auth";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
+  persistPurchaseReceipt,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
   annulDocument, enqueueDocSnapshot,
 } from "./documents";
@@ -54,6 +55,7 @@ const NEW_PURCHASE_ORDER_FILE   = path.join(__dirname, "new-purchase-order.html"
 const NEW_GOODS_RECEIPT_FILE    = path.join(__dirname, "new-goods-receipt.html");
 const NEW_PURCHASE_INVOICE_FILE = path.join(__dirname, "new-purchase-invoice.html");
 const NEW_PAYMENT_ORDER_FILE    = path.join(__dirname, "new-payment-order.html");
+const NEW_PURCHASE_RECEIPT_FILE = path.join(__dirname, "new-purchase-receipt.html");
 
 // Custom title bar para ventanas de formularios nativos (tema Asimov: Ink)
 const TITLE_BAR_OVERLAY = { color: "#14171D", symbolColor: "#e6e8ea", height: 32 } as const;
@@ -69,7 +71,7 @@ let currentUser: SessionUser | null = null;
 type NativeFormType =
   | "article" | "client" | "supplier"
   | "sale-order" | "quote" | "invoice" | "delivery-note" | "receipt"
-  | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order";
+  | "purchase-order" | "goods-receipt" | "purchase-invoice" | "payment-order" | "purchase-receipt";
 
 let productSelectionWindow: BrowserWindow | null = null;
 let newArticleWindow: BrowserWindow | null = null;
@@ -86,6 +88,7 @@ let newPurchaseOrderWindow: BrowserWindow | null = null;
 let newGoodsReceiptWindow: BrowserWindow | null = null;
 let newPurchaseInvoiceWindow: BrowserWindow | null = null;
 let newPaymentOrderWindow: BrowserWindow | null = null;
+let newPurchaseReceiptWindow: BrowserWindow | null = null;
 
 function isDev(): boolean {
   return process.env.BARTEZ_DEV === "1" || !app.isPackaged;
@@ -343,6 +346,7 @@ function openNativeForm(type: NativeFormType, context?: Record<string, unknown>)
     case "goods-receipt":    createNewGoodsReceiptWindowStandalone(parent); break;
     case "purchase-invoice": createNewPurchaseInvoiceWindowStandalone(parent); break;
     case "payment-order":    createNewPaymentOrderWindowStandalone(parent); break;
+    case "purchase-receipt": createNewPurchaseReceiptWindowStandalone(parent); break;
   }
 }
 
@@ -832,6 +836,17 @@ if (!gotLock) {
       }
       if (newPaymentOrderWindow && !newPaymentOrderWindow.isDestroyed()) newPaymentOrderWindow.close();
     });
+    ipcMain.on("shell:purchase-receipt-saved", (_event, data: { receipt?: unknown }) => {
+      if (data && data.receipt) {
+        try {
+          persistPurchaseReceipt(data.receipt as Record<string, unknown>);
+          notifyShell("shell:purchase-receipt-saved");
+        } catch (err) {
+          console.error("[purchase-receipt] no se pudo guardar:", err);
+        }
+      }
+      if (newPurchaseReceiptWindow && !newPurchaseReceiptWindow.isDestroyed()) newPurchaseReceiptWindow.close();
+    });
 
     // --- Anular un documento ya confirmado desde la lista (reversa explícita) ---
     ipcMain.handle("shell:document-annul", (_event, payload: { type?: string; id?: string }) => {
@@ -1197,4 +1212,8 @@ function createNewPurchaseInvoiceWindowStandalone(parent: BrowserWindow | null):
 
 function createNewPaymentOrderWindowStandalone(parent: BrowserWindow | null): void {
   makeStandaloneForm(newPaymentOrderWindow, (w) => { newPaymentOrderWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 560, bg: "#14171D", title: "Tesorería — ORDEN DE PAGO", preload: "new-payment-order-preload.js", file: NEW_PAYMENT_ORDER_FILE }, parent);
+}
+
+function createNewPurchaseReceiptWindowStandalone(parent: BrowserWindow | null): void {
+  makeStandaloneForm(newPurchaseReceiptWindow, (w) => { newPurchaseReceiptWindow = w; }, { width: 1080, height: 720, minWidth: 860, minHeight: 580, bg: "#14171D", title: "Compras — RECIBO NUEVO", preload: "new-purchase-receipt-preload.js", file: NEW_PURCHASE_RECEIPT_FILE }, parent);
 }

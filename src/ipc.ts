@@ -23,6 +23,7 @@ import {
   listClientInvoicesForNote,
   listPendingPurchaseOrders,
   listPendingPurchaseInvoices,
+  listPurchaseInvoicesToPay,
   getSourceItems,
   getLinksFor,
 } from "./document-links";
@@ -303,6 +304,17 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   ipcMain.handle("db:payment-orders:list", (_event, search: unknown) => {
     const q = `%${safeStr(search)}%`;
     return dbAll("SELECT * FROM payment_orders WHERE (number LIKE ? OR supplier_name LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q]);
+  });
+
+  // --- DB: Recibos de compra -----------------------------------------------
+  ipcMain.handle("db:purchase-receipts:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll("SELECT * FROM purchase_receipts WHERE (number LIKE ? OR supplier_name LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q]);
+  });
+  ipcMain.handle("db:purchase-receipts:get", (_event, id: unknown) => {
+    const receipt = dbGet("SELECT * FROM purchase_receipts WHERE id = ?", [safeStr(id)]);
+    const items = dbAll("SELECT * FROM purchase_receipt_items WHERE receipt_id = ?", [safeStr(id)]);
+    return { ...receipt, items };
   });
 
   // --- DB: Stock -----------------------------------------------------------
@@ -727,6 +739,8 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     listPendingPurchaseOrders(safeStr(supplierId)));
   ipcMain.handle("db:doc-links:pending-purchase-invoices", (_event, supplierId: unknown) =>
     listPendingPurchaseInvoices(safeStr(supplierId)));
+  ipcMain.handle("db:doc-links:purchase-invoices-to-pay", (_event, supplierId: unknown) =>
+    listPurchaseInvoicesToPay(safeStr(supplierId)));
   ipcMain.handle("db:doc-links:source-items", (_event, type: unknown, id: unknown) =>
     getSourceItems(safeStr(type), safeStr(id)));
   ipcMain.handle("db:doc-links:get", (_event, type: unknown, id: unknown) =>
