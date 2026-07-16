@@ -575,7 +575,10 @@ td{ border-color:var(--border) !important; }
       </div>
       <div class="form-group span-4">
         <label>OC vinculada</label>
-        <input type="text" id="ocVinculada" placeholder="Traer una orden de compra" readonly>
+        <div class="picker-row">
+          <input type="text" id="ocVinculada" placeholder="Traer una orden de compra" readonly>
+          <button class="picker-btn" type="button" onclick="abrirOrdenPicker()" title="Traer orden de compra">...</button>
+        </div>
       </div>
     </div>
   </div>
