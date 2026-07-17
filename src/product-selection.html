@@ -275,7 +275,7 @@
         <tr>
           <th class="col-code">Código</th>
           <th class="col-desc">Descripción</th>
-          <th class="col-price" style="text-align:right;">Precio USD</th>
+          <th class="col-price" style="text-align:right;">Precio ARS</th>
           <th class="col-iva">IVA</th>
           <th class="col-stock">Stock</th>
           <th class="col-compro">Compro</th>
@@ -360,10 +360,28 @@
             ? '<span class="badge-air">AIR</span>'
             : '<span class="badge-local">LOCAL</span>';
 
+        // Precio ya en ARS. Para artículos AIR (originalmente en USD) se muestra
+        // debajo el precio USD original y la cotización usada, para que quede
+        // claro de dónde sale el número. Si no se pudo convertir (sin cotización),
+        // se muestra en USD y en color de alerta.
+        const isAir = (prod.source || "local") === "air";
+        const noRate = isAir && prod.moneda === "USD";
+        let priceCell;
+        if (noRate) {
+          priceCell = `<span style="color:#e0a030;" title="Falta la cotización del dólar: sincronizá el dólar para convertir a ARS">US$ ${parseFloat(prod.importe).toFixed(2)} ⚠</span>`;
+        } else if (isAir && Number(prod.precioUsd) > 0) {
+          const usd = Number(prod.precioUsd).toFixed(2);
+          const rate = Number(prod.usdRate) > 0 ? Number(prod.usdRate).toFixed(2) : "";
+          priceCell = `$ ${parseFloat(prod.importe).toFixed(2)}`
+            + `<div style="font-size:10px;opacity:.6;">US$ ${usd}${rate ? " × " + rate : ""}</div>`;
+        } else {
+          priceCell = `$ ${parseFloat(prod.importe).toFixed(2)}`;
+        }
+
         tr.innerHTML = `
           <td class="col-code">${escapeHtml(prod.codigo)}</td>
           <td class="col-desc">${escapeHtml(prod.descripcion)}</td>
-          <td class="col-price">$ ${parseFloat(prod.importe).toFixed(2)}</td>
+          <td class="col-price">${priceCell}</td>
           <td class="col-iva">${escapeHtml(prod.iva)}%</td>
           <td class="col-stock">${escapeHtml(prod.st)}</td>
           <td class="col-compro">${escapeHtml(prod.compro)}</td>

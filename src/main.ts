@@ -19,7 +19,7 @@ import { getStoredUser } from "./api-client";
 import { initAutoUpdater, checkForUpdateManual } from "./updater";
 import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll, dbGet } from "./db";
-import { startDolarAutoUpdate } from "./dolar";
+import { startDolarAutoUpdate, getPricingUsdRate } from "./dolar";
 import { authorizeStoredInvoice, retryPendingCae, getAfipConfig } from "./afip-service";
 import { isAfipUnavailable } from "./afip/domain";
 import { isAirEnabled } from "./air";
@@ -975,6 +975,12 @@ function loadProductsForPicker(): void {
     const mapped: ProductPickerItem[] = loadLocalProductsForPicker();
 
     if (isAirEnabled()) {
+      // Los productos de AIR vienen con precio en USD. Se convierten a ARS con la
+      // cotización del dólar oficial (venta) ANTES de mandarlos al picker, para
+      // que cualquier documento (venta o compra) reciba precios en pesos y no
+      // haga falta acordarse de cambiar la moneda. Si no hay cotización todavía
+      // (sync sin correr), se dejan en USD y se marcan como tales.
+      const usdRate = getPricingUsdRate();
       // Sin tope real: el catálogo completo de AIR ronda 7500+ productos y un
       // LIMIT menor dejaría afuera artículos (p.ej. las notebooks) del picker.
       const airRows = dbAll(
@@ -986,12 +992,15 @@ function loadProductsForPicker(): void {
         [],
       ) as Array<Record<string, unknown>>;
       for (const a of airRows) {
+        const priceUsd = Number(a.price_usd) || 0;
+        const converted = usdRate > 0;
+        const priceArs = converted ? Math.round(priceUsd * usdRate * 100) / 100 : priceUsd;
         mapped.push({
           codigo: String(a.air_code ?? ""),
           descripcion: String(a.description ?? ""),
           unidad: "UN",
-          costo: String(a.price_usd ?? "0.00"),
-          importe: String(a.price_usd ?? "0.00"),
+          costo: String(priceArs.toFixed(2)),
+          importe: String(priceArs.toFixed(2)),
           iva: String(a.iva_pct ?? "21"),
           esquema: false,
           st: String(a.stock ?? "0"),
@@ -1000,6 +1009,11 @@ function loadProductsForPicker(): void {
           linea: String(a.brand ?? ""),
           categoria: String(a.category ?? ""),
           source: "air",
+          // Si se pudo convertir, la lista queda en ARS; si no, sigue en USD y el
+          // picker lo muestra para que el operador sepa que falta la cotización.
+          moneda: converted ? "ARS" : "USD",
+          precioUsd: priceUsd,
+          usdRate: converted ? usdRate : 0,
         });
       }
     }

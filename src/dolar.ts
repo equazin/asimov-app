@@ -151,6 +151,20 @@ export function getLatestRates(): StoredRate[] {
   `);
 }
 
+/**
+ * Cotización que el sistema usa para convertir precios USD → ARS al cargar
+ * artículos en cualquier documento. Criterio: última venta del dólar OFICIAL;
+ * si aún no se sincronizó el oficial, cae a la venta de cualquier casa
+ * disponible. Devuelve 0 si no hay ninguna cotización (el llamador decide).
+ */
+export function getPricingUsdRate(): number {
+  const rates = getLatestRates();
+  const oficial = rates.find((r) => String(r.casa).toLowerCase() === "oficial");
+  if (oficial && Number.isFinite(oficial.venta) && oficial.venta > 0) return oficial.venta;
+  const anyRate = rates.find((r) => Number.isFinite(r.venta) && r.venta > 0);
+  return anyRate ? anyRate.venta : 0;
+}
+
 /** Historial de una casa (por defecto blue), más reciente primero. */
 export function getRateHistory(casa: string, limit = 100): StoredRate[] {
   return dbAll<StoredRate>(

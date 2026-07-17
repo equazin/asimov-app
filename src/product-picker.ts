@@ -16,6 +16,14 @@ export interface ProductPickerItem {
   linea: string;
   categoria: string;
   source: "local" | "air";
+  /** Moneda en la que está expresado `costo`/`importe` YA en la lista. Siempre
+   *  "ARS": los artículos AIR (originalmente USD) se convierten antes de enviar
+   *  la lista al picker, para que todo documento reciba precios en pesos. */
+  moneda: "ARS" | "USD";
+  /** Precio original en USD (solo AIR) — para aclarar el origen en el picker. */
+  precioUsd?: number;
+  /** Cotización usada para convertir USD → ARS (solo AIR). 0 si no había. */
+  usdRate?: number;
 }
 
 /**
@@ -58,5 +66,6 @@ export function loadLocalProductsForPicker(): ProductPickerItem[] {
     linea: "",
     categoria: String(article.category ?? ""),
     source: "local",
+    moneda: "ARS",
   }));
 }

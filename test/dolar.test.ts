@@ -5,6 +5,7 @@ import {
   fetchDolarRates,
   storeRates,
   getLatestRates,
+  getPricingUsdRate,
   getRateHistory,
   repriceArticlesFromUsd,
   refreshDolarNow,
@@ -122,6 +123,22 @@ describe("storeRates / getLatestRates / getRateHistory", () => {
     const history = getRateHistory("blue", 2);
     expect(history).toHaveLength(2);
     expect(history[0].venta).toBe(1320);
+  });
+});
+
+describe("getPricingUsdRate (cotización de conversión de precios)", () => {
+  it("devuelve la venta del oficial cuando existe", () => {
+    storeRates(parseDolarResponse(SAMPLE_API_RESPONSE));
+    expect(getPricingUsdRate()).toBe(1060); // oficial.venta
+  });
+
+  it("cae a otra casa si no hay oficial", () => {
+    storeRates([{ casa: "blue", nombre: "Blue", compra: 1290, venta: 1310, fechaActualizacion: "2026-07-08T13:00:00.000Z" }]);
+    expect(getPricingUsdRate()).toBe(1310);
+  });
+
+  it("devuelve 0 si no hay ninguna cotización", () => {
+    expect(getPricingUsdRate()).toBe(0);
   });
 });
 
