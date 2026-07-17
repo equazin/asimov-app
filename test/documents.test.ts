@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder, persistPurchaseReceipt,
+  persistInternalExpense,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
   annulDocument, deleteDocument, setInvoicePrintPreferences,
   previewCommissionForInvoice, createCommissionNoteFromInvoice,
@@ -386,6 +387,35 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "COD1", cantidad: 2, precio: 100 }], totales: { total: 242 } });
     expect(stockOf("art-COD1")).toBe(0);
     expect(cashBalance()).toBe(0);
+  });
+});
+
+describe("documents — gastos internos", () => {
+  it("registra el comprobante y descuenta el importe de la cuenta elegida", () => {
+    const before = cashBalance();
+    const expense = persistInternalExpense({
+      date: "2026-07-17",
+      category: "Limpieza e higiene",
+      concept: "Productos de limpieza",
+      payee: "Supermercado",
+      amount: 1250.5,
+      paymentMethod: "transferencia",
+      accountId: "ca-default",
+      reference: "TICKET-10",
+    });
+    expect(one("SELECT category, concept, amount, reference FROM internal_expenses WHERE id=?", expense.id))
+      .toMatchObject({ category: "Limpieza e higiene", concept: "Productos de limpieza", amount: 1250.5, reference: "TICKET-10" });
+    expect(cashBalance()).toBeCloseTo(before - 1250.5);
+    expect(one("SELECT amount, reference_type FROM cash_movements WHERE reference_id=?", expense.id))
+      .toMatchObject({ amount: -1250.5, reference_type: "internal_expense" });
+    expect(annulDocument("internal-expense", expense.id).ok).toBe(true);
+    expect(cashBalance()).toBeCloseTo(before);
+  });
+
+  it("rechaza importes no positivos y datos obligatorios vacíos", () => {
+    expect(() => persistInternalExpense({ category: "Otros gastos", concept: "X", amount: 0 })).toThrow(/mayor a cero/i);
+    expect(() => persistInternalExpense({ concept: "X", amount: 10 })).toThrow(/categoría/i);
+    expect(() => persistInternalExpense({ category: "Otros gastos", amount: 10 })).toThrow(/concepto/i);
   });
 });
 

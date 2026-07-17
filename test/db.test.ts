@@ -69,10 +69,11 @@ describe("db — KPIs del dashboard", () => {
     seedArticle("COD1", 1);
     upsertClient({ business_name: "Cli 1" });
     dbRun("INSERT INTO sale_orders (id,number,date,status,total) VALUES ('so1','PED-1',date('now'),'confirmado',1000)");
+    dbRun("INSERT INTO invoices (id,number,date,status,total) VALUES ('inv1','FAC-1',date('now'),'autorizada',750)");
     dbRun("INSERT INTO tickets (id,number,status) VALUES ('t1','TCK-1','abierto')");
     const k = getDashboardKpis();
     expect(k.clientsTotal).toBe(1);
-    expect(k.salesToday).toBe(1000);
+    expect(k.salesToday).toBe(750);
     expect(k.ticketsOpen).toBe(1);
     expect(typeof k.cashBalance).toBe("number");
   });

@@ -521,6 +521,26 @@ CREATE TABLE IF NOT EXISTS cash_movements (
   FOREIGN KEY (account_id) REFERENCES cash_accounts(id)
 );
 
+CREATE TABLE IF NOT EXISTS internal_expenses (
+  id             TEXT PRIMARY KEY,
+  number         TEXT UNIQUE NOT NULL,
+  date           TEXT NOT NULL DEFAULT (date('now')),
+  category       TEXT NOT NULL,
+  concept        TEXT NOT NULL,
+  payee          TEXT,
+  amount         REAL NOT NULL,
+  payment_method TEXT NOT NULL DEFAULT 'transferencia',
+  account_id     TEXT NOT NULL,
+  reference      TEXT,
+  notes          TEXT,
+  status         TEXT NOT NULL DEFAULT 'emitido',
+  created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (account_id) REFERENCES cash_accounts(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_internal_expenses_date ON internal_expenses(date);
+CREATE INDEX IF NOT EXISTS idx_internal_expenses_category ON internal_expenses(category);
+
 -- ============================================================
 -- CRM (unificado con clients)
 -- ============================================================
@@ -1303,7 +1323,7 @@ export function getDashboardKpis(): DashboardKpis {
   const today = new Date().toISOString().slice(0, 10);
 
   const salesToday = (db.prepare(
-    "SELECT COALESCE(SUM(total),0) as v FROM sale_orders WHERE date = ? AND status != 'cancelado'"
+    "SELECT COALESCE(SUM(total),0) as v FROM invoices WHERE date = ? AND lower(status) NOT IN ('anulado','cancelado','rechazada')"
   ).get(today) as any)?.v ?? 0;
 
   const invoicesPending = (db.prepare(

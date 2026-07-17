@@ -102,6 +102,11 @@ const api = {
   // DB — KPIs
   kpis: () => ipcRenderer.invoke("db:kpis"),
 
+  internalExpenses: {
+    list: (search = "") => ipcRenderer.invoke("db:internal-expenses:list", search),
+    create: (input: unknown) => ipcRenderer.invoke("db:internal-expenses:create", input) as Promise<{ ok: boolean; error?: string; id?: string; number?: string }>,
+  },
+
   // DB — Clientes
   clients: {
     list: (search = "") => ipcRenderer.invoke("db:clients:list", search),

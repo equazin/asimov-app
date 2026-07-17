@@ -55,7 +55,7 @@ import { registerAirIpc } from "./ipc/air";
 import { registerWhatsappIpc } from "./ipc/wa";
 import { registerAfipIpc } from "./ipc/afip";
 import { registerCrmIpc } from "./ipc/crm";
-import { setInvoicePrintPreferences, previewCommissionForInvoice } from "./documents";
+import { setInvoicePrintPreferences, previewCommissionForInvoice, persistInternalExpense, type InternalExpenseForm } from "./documents";
 
 export function registerIpcHandlers(deps: IpcDeps): void {
   // Grupos autocontenidos extraídos a src/ipc/*.
@@ -418,7 +418,24 @@ export function registerIpcHandlers(deps: IpcDeps): void {
   // --- DB: Caja -----------------------------------------------------------
   ipcMain.handle("db:cash-accounts:list", () => dbAll("SELECT * FROM cash_accounts WHERE active = 1 ORDER BY name"));
   ipcMain.handle("db:cash-movements:list", (_event, accountId: unknown) => {
-    return dbAll("SELECT * FROM cash_movements WHERE account_id = ? ORDER BY date DESC LIMIT 500", [safeStr(accountId)]);
+    return dbAll(`SELECT *, COALESCE(reference_type, '') || CASE WHEN reference_id IS NOT NULL THEN ' · ' || reference_id ELSE '' END AS reference
+                  FROM cash_movements WHERE account_id = ? ORDER BY date DESC LIMIT 500`, [safeStr(accountId)]);
+  });
+  ipcMain.handle("db:internal-expenses:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(`SELECT e.*, ca.name AS account_name FROM internal_expenses e
+                  LEFT JOIN cash_accounts ca ON ca.id = e.account_id
+                  WHERE e.concept LIKE ? OR e.category LIKE ? OR e.payee LIKE ? OR e.number LIKE ?
+                  ORDER BY e.date DESC, e.created_at DESC LIMIT 500`, [q, q, q, q]);
+  });
+  ipcMain.handle("db:internal-expenses:create", (_event, input: unknown) => {
+    if (!canWrite()) return { ok: false, error: "No tenés permisos para registrar gastos." };
+    try {
+      const result = persistInternalExpense((input && typeof input === "object" ? input : {}) as InternalExpenseForm);
+      return { ok: true, ...result };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : "No se pudo registrar el gasto." };
+    }
   });
 
   // --- DB: Tickets ---------------------------------------------------------

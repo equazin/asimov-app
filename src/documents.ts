@@ -115,6 +115,47 @@ export interface PersistResult {
   cashMoved?: number;
 }
 
+export interface InternalExpenseForm {
+  date?: string;
+  category?: string;
+  concept?: string;
+  payee?: string;
+  amount?: number | string;
+  paymentMethod?: string;
+  accountId?: string;
+  reference?: string;
+  notes?: string;
+}
+
+/** Registra un gasto operativo sin afectar compras, proveedores ni stock. */
+export function persistInternalExpense(form: InternalExpenseForm): PersistResult {
+  const db = getDb();
+  const id = randomUUID();
+  const date = normalizeDate(form.date);
+  const category = str(form.category);
+  const concept = str(form.concept);
+  const amount = round2(num(form.amount));
+  const accountId = str(form.accountId) || defaultCashAccountId();
+  if (!category) throw new Error("Elegí una categoría para el gasto.");
+  if (!concept) throw new Error("Ingresá el concepto del gasto.");
+  if (!(amount > 0)) throw new Error("El importe del gasto debe ser mayor a cero.");
+  const account = dbGet<{ id: string }>("SELECT id FROM cash_accounts WHERE id = ? AND active = 1", [accountId]);
+  if (!account) throw new Error("La cuenta de pago seleccionada no existe o está inactiva.");
+
+  let number = "";
+  db.transaction(() => {
+    number = formatDocNumber("GAS", nextSequence("internal-expense"));
+    dbRun(
+      `INSERT INTO internal_expenses (id,number,date,category,concept,payee,amount,payment_method,account_id,reference,notes,status)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [id, number, date, category, concept, str(form.payee), amount,
+       str(form.paymentMethod) || "transferencia", accountId, str(form.reference), str(form.notes), "emitido"],
+    );
+    applyCashDelta(accountId, -amount, "egreso", `Gasto ${number}: ${concept}`, "internal_expense", id);
+  })();
+  return { id, number, cashMoved: 1 };
+}
+
 // ─── Recepción de mercadería (stock IN) ──────────────────────────────────────
 
 export interface GoodsReceiptForm {
@@ -901,6 +942,7 @@ const ANNULLABLE: Record<string, { table: string; refType: string; effect: Annul
   "goods-receipt":    { table: "goods_receipts",    refType: "goods_receipt",    effect: "stock" },
   "receipt":          { table: "receipts",          refType: "receipt",          effect: "cash" },
   "payment-order":    { table: "payment_orders",    refType: "payment_order",    effect: "cash" },
+  "internal-expense": { table: "internal_expenses", refType: "internal_expense", effect: "cash" },
   "sale-order":       { table: "sale_orders",        refType: "sale_order",       effect: "none" },
   "quote":            { table: "quotes",             refType: "quote",            effect: "none" },
   "invoice":          { table: "invoices",           refType: "invoice",          effect: "none" },
