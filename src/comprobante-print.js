@@ -151,6 +151,19 @@
       fiscalLine: fullFiscalLine(),
     });
   }
+  function mbComision(data) {
+    return band({
+      docName: "NOTA DE COMISIÓN",
+      docSub: "Documento no fiscal",
+      badge: '<span class="badge-nofac">DOCUMENTO NO VÁLIDO COMO FACTURA</span>',
+      numRows: [
+        { k: "Nº", v: data.number },
+        { k: "Fecha", v: data.date },
+        { k: "Factura", v: d(data.invoiceNumber, "—") },
+      ],
+      fiscalLine: fullFiscalLine(),
+    });
+  }
 
   // ---------- Destinatario ----------
   function partyBlock(data) {
@@ -167,8 +180,36 @@
     );
   }
 
+  // ---------- Tabla de ítems: nota de comisión ----------
+  // Detalle del cálculo por línea: costo, precio, diferencia y comisión. La
+  // comisión de cada línea es tasa% × (precio − costo) × cantidad.
+  function comisionItemsTable(data) {
+    var items = data.items || [];
+    if (!items.length) return "";
+    var head =
+      "<thead><tr>" +
+      "<th>Código</th><th>Descripción</th><th class=\"c\">Cant.</th>" +
+      "<th class=\"r\">Costo</th><th class=\"r\">Precio</th><th class=\"r\">Diferencia</th><th class=\"r\">Comisión</th>" +
+      "</tr></thead>";
+    var body = items.map(function (it) {
+      return (
+        "<tr>" +
+        "<td>" + esc(it.code || "") + "</td>" +
+        "<td>" + esc(it.description || "") + "</td>" +
+        '<td class="c">' + num3(it.qty) + "</td>" +
+        '<td class="r">' + money(it.unitCost) + "</td>" +
+        '<td class="r">' + money(it.unitPrice) + "</td>" +
+        '<td class="r">' + money(it.diff) + "</td>" +
+        '<td class="r">' + money(it.commission) + "</td>" +
+        "</tr>"
+      );
+    }).join("");
+    return '<table class="items">' + head + "<tbody>" + body + "</tbody></table>";
+  }
+
   // ---------- Tabla de ítems ----------
   function itemsTable(type, data) {
+    if (type === "comision") return comisionItemsTable(data);
     var items = data.items || [];
     if (!items.length) return "";
     var withPrices = type !== "remito";
@@ -251,6 +292,17 @@
         '<tr class="grand"><td class="k">TOTAL RECIBIDO</td><td class="v">' + money(data.total) + "</td></tr>" +
         "</table></div>";
     }
+    if (type === "comision") {
+      var rate = Number(data.ratePct);
+      var rateHtml = isFinite(rate) && rate > 0
+        ? '<tr><td class="k">Tasa aplicada</td><td class="v">' + rate.toLocaleString("es-AR", { maximumFractionDigits: 2 }) + "%</td></tr>"
+        : "";
+      return '<div class="totals"><table>' +
+        (data.baseAmount != null ? '<tr><td class="k">Base (precio − costo)</td><td class="v">' + money(data.baseAmount) + "</td></tr>" : "") +
+        rateHtml +
+        '<tr class="grand"><td class="k">TOTAL COMISIÓN</td><td class="v">' + money(data.total) + "</td></tr>" +
+        "</table></div>";
+    }
     var t = data.totals || {};
     var rows = "";
     if (t.subtotal != null) rows += '<tr><td class="k">Subtotal</td><td class="v">' + money(t.subtotal) + "</td></tr>";
@@ -297,7 +349,7 @@
       "</div>";
   }
 
-  var MEMBRETE = { factura: mbFactura, pedido: mbPedido, presupuesto: mbPresupuesto, remito: mbRemito, recibo: mbRecibo };
+  var MEMBRETE = { factura: mbFactura, pedido: mbPedido, presupuesto: mbPresupuesto, remito: mbRemito, recibo: mbRecibo, comision: mbComision };
 
   window.renderComprobante = function (type, data) {
     var area = document.getElementById("print-area");

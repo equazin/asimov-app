@@ -186,4 +186,26 @@ describe("impresión monocroma de comprobantes", () => {
     expect(area.innerHTML).toContain('<span class="l">A</span>');
     expect(area.innerHTML).not.toContain('<div class="doc-name">FACTURA</div>');
   });
+
+  it("imprime la nota de comisión con detalle costo/precio/diferencia y total de comisión", () => {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, {
+      window,
+      document: { getElementById: () => area },
+      Intl, Number, String, isFinite, setTimeout,
+    });
+    const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
+    renderComprobante("comision", {
+      number: "COM-00000001", date: "2026-07-17", invoiceNumber: "0001-00000002",
+      party: { name: "Intermediario SA" }, ratePct: 10.5, baseAmount: 100, total: 10.5,
+      items: [{ code: "A", description: "Uno", qty: 1, unitCost: 100, unitPrice: 200, diff: 100, commission: 10.5 }],
+    });
+    expect(area.innerHTML).toContain("NOTA DE COMISIÓN");
+    expect(area.innerHTML).toContain("DOCUMENTO NO VÁLIDO COMO FACTURA");
+    expect(area.innerHTML).toContain("Diferencia");
+    expect(area.innerHTML).toContain("TOTAL COMISIÓN");
+    expect(area.innerHTML).toContain("10,5%");
+    expect(area.innerHTML).not.toContain('class="afip-cae"');
+  });
 });

@@ -2044,6 +2044,7 @@
     "notas-comision": {
       title: "Notas de comisión",
       annul: "commission-note",
+      print: "comision",
       load: (s) => asimov().commissionNotes.list(s),
       cols: [
         { label: "Número",    key: "number",          w: "110px" },
@@ -2441,6 +2442,20 @@
       } else if (type === "recibo") {
         const rc = await api.receipts.get(id);
         data = { number: rc.number, date: fmtDate(rc.date), total: rc.total, party: { name: rc.client_name || "" }, notes: rc.notes || "", items: [] };
+      } else if (type === "comision") {
+        const cn = await api.commissionNotes.get(id);
+        data = {
+          number: cn.number, date: fmtDate(cn.date), invoiceNumber: cn.invoice_number || "",
+          party: { name: cn.client_name || "" }, notes: cn.notes || "",
+          ratePct: Number(cn.rate_pct) || 0, baseAmount: Number(cn.base_amount) || 0, total: Number(cn.total) || 0,
+          items: (cn.items || []).map(function (it) {
+            return {
+              code: it.code || "", description: it.description || "", qty: Number(it.qty) || 0,
+              unitCost: Number(it.unit_cost) || 0, unitPrice: Number(it.unit_price) || 0,
+              diff: Number(it.diff) || 0, commission: Number(it.commission) || 0,
+            };
+          }),
+        };
       } else { return; }
       window.renderComprobante(type, data);
       setTimeout(function () { window.print(); }, 80);
