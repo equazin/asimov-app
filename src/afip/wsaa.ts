@@ -120,9 +120,21 @@ export async function callLoginCms(
     // Ante error, AFIP suele mandar un SOAP Fault con detalle útil.
     let detail = `HTTP ${res.status}`;
     try { detail = findDeep(xmlParser.parse(text), 'faultstring') as string || detail; } catch { /* usa el HTTP */ }
-    throw new Error(`WSAA LoginCms falló: ${detail}`);
+    throw new Error(`WSAA LoginCms falló: ${decodeXmlEntities(detail)}`);
   }
   return parseLoginTicketResponse(extractLoginCmsReturn(text));
+}
+
+/** ARCA a veces devuelve el faultstring escapado una segunda vez. */
+function decodeXmlEntities(value: string): string {
+  return value
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex: string) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_match, decimal: string) => String.fromCodePoint(parseInt(decimal, 10)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
 }
 
 /** Busca recursivamente la primera aparición de una key en un objeto parseado. */

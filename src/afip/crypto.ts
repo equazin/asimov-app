@@ -26,6 +26,9 @@ export function signTRA(traXml: string, certPem: string, keyPem: string): string
   } catch {
     throw new Error("Clave privada AFIP inválida: no es un PEM de clave válido.");
   }
+  if (!certificateMatchesPrivateKey(certPem, keyPem)) {
+    throw new Error("El certificado AFIP y la clave privada no corresponden entre sí. Cargá el .crt y el .key generados como el mismo par.");
+  }
 
   const p7 = forge.pkcs7.createSignedData();
   p7.content = forge.util.createBuffer(traXml, "utf8");
@@ -44,6 +47,18 @@ export function signTRA(traXml: string, certPem: string, keyPem: string): string
 
   const der = forge.asn1.toDer(p7.toAsn1()).getBytes();
   return forge.util.encode64(der);
+}
+
+/** Comprueba que la clave pública del certificado pertenezca a la clave privada. */
+export function certificateMatchesPrivateKey(certPem: string, keyPem: string): boolean {
+  try {
+    const cert = forge.pki.certificateFromPem(certPem);
+    const publicKey = cert.publicKey as forge.pki.rsa.PublicKey;
+    const privateKey = forge.pki.privateKeyFromPem(keyPem) as forge.pki.rsa.PrivateKey;
+    return publicKey.n.compareTo(privateKey.n) === 0 && publicKey.e.compareTo(privateKey.e) === 0;
+  } catch {
+    return false;
+  }
 }
 
 /** Lee la fecha de expiración (`notAfter`) de un certificado PEM. */

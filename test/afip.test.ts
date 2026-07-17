@@ -1,6 +1,6 @@
 import { beforeEach, describe, it, expect } from "vitest";
 import * as forge from "node-forge";
-import { signTRA, certNotAfter, isValidCertPem, isValidKeyPem } from "../src/afip/crypto";
+import { signTRA, certNotAfter, isValidCertPem, isValidKeyPem, certificateMatchesPrivateKey } from "../src/afip/crypto";
 import {
   buildLoginTicketRequest, buildLoginCmsEnvelope, extractLoginCmsReturn,
   parseLoginTicketResponse, isTaValid,
@@ -138,6 +138,15 @@ describe("afip/crypto — firma CMS", () => {
     expect(() => signTRA("", certPem, keyPem)).toThrow(/vacío/);
     expect(certNotAfter(certPem).getTime()).toBeGreaterThan(Date.now());
   });
+
+  it("detecta un certificado y una clave que no forman el mismo par", () => {
+    const first = makeSelfSigned();
+    const second = makeSelfSigned();
+    expect(certificateMatchesPrivateKey(first.certPem, first.keyPem)).toBe(true);
+    expect(certificateMatchesPrivateKey(first.certPem, second.keyPem)).toBe(false);
+    expect(() => signTRA(buildLoginTicketRequest("wsfe"), first.certPem, second.keyPem))
+      .toThrow(/no corresponden entre sí/);
+  });
 });
 
 describe("afip/wsaa", () => {
@@ -159,6 +168,15 @@ describe("afip/wsaa", () => {
     expect(isTaValid({ expiration: new Date(Date.now() + 30 * 60_000).toISOString() })).toBe(true);
     expect(isTaValid({ expiration: new Date(Date.now() + 2 * 60_000).toISOString() })).toBe(false);
     expect(isTaValid(null)).toBe(false);
+  });
+
+  it("decodifica entidades XML que ARCA deja escapadas en el error", async () => {
+    const fetchFault = (() => Promise.resolve({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve("<Envelope><Body><Fault><faultstring>Firma inv&amp;#xE1;lida</faultstring></Fault></Body></Envelope>"),
+    } as Response)) as typeof fetch;
+    await expect(callLoginCms(WSAA_URLS.produccion, "CMS", fetchFault)).rejects.toThrow(/Firma inválida/);
   });
 });
 

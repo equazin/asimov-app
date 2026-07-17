@@ -17,7 +17,7 @@
 import { dbAll, dbGet, dbRun } from "./db";
 import { encryptSecret, decryptSecret } from "./secrets";
 import { enqueueChange } from "./sync";
-import { signTRA, certNotAfter, isValidCertPem, isValidKeyPem } from "./afip/crypto";
+import { signTRA, certNotAfter, isValidCertPem, isValidKeyPem, certificateMatchesPrivateKey } from "./afip/crypto";
 import {
   WSAA_URLS, buildLoginTicketRequest, callLoginCms, isTaValid, type AfipTA,
 } from "./afip/wsaa";
@@ -146,12 +146,25 @@ export function saveAfipCredentials(input: SaveCredentialsInput): { ok: true; ce
   const cuit = String(input.cuit ?? "").replace(/\D/g, "");
   if (!/^\d{11}$/.test(cuit)) throw new Error("CUIT inválido: deben ser 11 dígitos.");
 
+  const current = readConfigMap();
+  const currentCert = current.afip_cert ? decryptSecret(current.afip_cert) : "";
+  const currentKey = current.afip_key ? decryptSecret(current.afip_key) : "";
+  const nextCert = input.certPem?.trim() ? input.certPem : currentCert;
+  const nextKey = input.keyPem?.trim() ? input.keyPem : currentKey;
+
   if (input.certPem !== undefined && input.certPem !== "") {
     if (!isValidCertPem(input.certPem)) throw new Error("El certificado no es un PEM válido (.crt/.pem).");
-    setConfigValue("afip_cert", input.certPem, true);
   }
   if (input.keyPem !== undefined && input.keyPem !== "") {
     if (!isValidKeyPem(input.keyPem)) throw new Error("La clave privada no es un PEM válido (.key).");
+  }
+  if (nextCert && nextKey && !certificateMatchesPrivateKey(nextCert, nextKey)) {
+    throw new Error("El certificado y la clave privada no corresponden entre sí. Seleccioná el .crt y el .key generados como el mismo par.");
+  }
+  if (input.certPem !== undefined && input.certPem !== "") {
+    setConfigValue("afip_cert", input.certPem, true);
+  }
+  if (input.keyPem !== undefined && input.keyPem !== "") {
     setConfigValue("afip_key", input.keyPem, true);
   }
   setConfigValue("afip_cuit", cuit);
@@ -275,8 +288,13 @@ export async function runAfipDiagnostics(): Promise<AfipDiagnostics> {
   };
 
   // 1. Certificado y clave.
+  const stored = readConfigMap();
+  const storedCert = stored.afip_cert ? decryptSecret(stored.afip_cert) : "";
+  const storedKey = stored.afip_key ? decryptSecret(stored.afip_key) : "";
   if (!cfg.hasCert || !cfg.hasKey) {
     add("cert", "Certificado y clave", "error", "Falta cargar el certificado (.crt) y/o la clave (.key) en Configuración → AFIP.");
+  } else if (!certificateMatchesPrivateKey(storedCert, storedKey)) {
+    add("cert", "Certificado y clave", "error", "El certificado y la clave privada no corresponden entre sí. Volvé a cargar el .crt y el .key generados como el mismo par.");
   } else if (cfg.certExpires && new Date(cfg.certExpires).getTime() < Date.now()) {
     add("cert", "Certificado y clave", "error", `El certificado venció el ${cfg.certExpires.slice(0, 10)}. Generá uno nuevo en el portal de AFIP.`);
   } else {
