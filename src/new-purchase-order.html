@@ -772,14 +772,20 @@ td{ border-color:var(--border) !important; }
   }
 
   function recalcTotals(){
-    var bruto = 0, descMonto = 0;
+    // El IVA se calcula por fila según el ivaPct del artículo (21 / 10,5 / 0),
+    // no una tasa fija: un artículo 10,5% no debe totalizarse como 21%.
+    var bruto = 0, descMonto = 0, iva21 = 0, iva105 = 0;
     document.querySelectorAll('#itemsBody tr').forEach(function(tr){
       bruto += parseFloat(tr.dataset.bruto)||0;
       descMonto += parseFloat(tr.dataset.desc_monto)||0;
+      var netLine = parseFloat(tr.dataset.sub)||0;
+      var iva = parseFloat(tr.dataset.ivaPct);
+      if(!Number.isFinite(iva)) iva = 21;
+      if(iva === 21) iva21 += netLine * 0.21;
+      else if(iva === 10.5) iva105 += netLine * 0.105;
+      // iva === 0 (exento / no gravado): no suma IVA.
     });
     var neto = bruto - descMonto;
-    var iva21 = neto * 0.21;
-    var iva105 = 0;
     var total = neto + iva21 + iva105;
     document.getElementById('t-bruto').textContent = '$ '+fmtNum(bruto);
     document.getElementById('t-desc').textContent = '$ '+fmtNum(descMonto);

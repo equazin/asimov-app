@@ -758,7 +758,13 @@ export function persistPurchaseOrder(form: PurchaseOrderForm): PersistResult {
   const items = Array.isArray(form.items) ? form.items : [];
   const date = normalizeDate(form.fecha);
   let number = str(form.nroOC);
-  const total = items.reduce((s, it) => s + (num(it.subtotal) || lineSubtotal(num(it.cantidad), num(it.precio))), 0);
+  // El total de la OC incluye IVA por línea (21 / 10,5 / 0), igual que la factura
+  // de compra. Antes se guardaba el neto sin IVA, lo que subvaluaba la orden.
+  const total = items.reduce((s, it) => {
+    const net = num(it.subtotal) || lineSubtotal(num(it.cantidad), num(it.precio));
+    const ivaPct = Number.isFinite(Number(it.ivaPct)) ? Number(it.ivaPct) : 21;
+    return s + net + net * ivaPct / 100;
+  }, 0);
 
   const tx = db.transaction(() => {
     if (!number) number = formatDocNumber("OC", nextSequence("purchase-order"));

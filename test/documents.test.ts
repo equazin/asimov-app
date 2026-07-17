@@ -357,6 +357,19 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     });
   });
 
+  it("orden de compra: el total incluye el IVA por línea (10,5% no se totaliza como 21%)", () => {
+    const res = persistPurchaseOrder({
+      proveedorNombre: "Prov", fecha: "06/07/2026",
+      items: [
+        { codigo: "A", descripcion: "Diez y medio", cantidad: 1, precio: 1000, ivaPct: 10.5, subtotal: 1000 }, // +105
+        { codigo: "B", descripcion: "Veintiuno",    cantidad: 1, precio: 1000, ivaPct: 21,   subtotal: 1000 }, // +210
+      ],
+    });
+    // neto 2000 + IVA (105 + 210) = 2315; NO 2000 + 21% = 2420.
+    expect(one("SELECT total FROM purchase_orders WHERE id=?", res.id).total).toBe(2315);
+    expect(one("SELECT iva_pct FROM purchase_order_items WHERE order_id=? AND code='A'", res.id).iva_pct).toBe(10.5);
+  });
+
   it("factura de compra: subtotal + IVA + percepciones = total, número del proveedor", () => {
     const res = persistPurchaseInvoice({
       tipo: "A", nroFactura: "A-0001-00000123", fechaFactura: "06/07/2026", proveedorNombre: "Prov", percepciones: 10,
