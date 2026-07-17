@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1784245520.9058373,
-    "ast_hash": "aab33ae183dcefd0906495836804f803",
+    "mtime": 1784296431.7363393,
+    "ast_hash": "cafe41d04fa3065f337370bb0bb674c7",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "src/db.ts": {
-    "mtime": 1784237893.6706111,
-    "ast_hash": "69f56d20e0b7eb0a1f91b29024e9414e",
+    "mtime": 1784295628.1477048,
+    "ast_hash": "37a4664dbcba6684b85dc3d087b37538",
     "semantic_hash": ""
   },
   "src/document-sync.ts": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "src/documents.ts": {
-    "mtime": 1784245350.9515767,
-    "ast_hash": "bbd9e2f132b21e731c94d3dd519798f2",
+    "mtime": 1784295708.39174,
+    "ast_hash": "265b36578e5b35158c88fe7f0f590a69",
     "semantic_hash": ""
   },
   "src/ipc-cloud.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1784245337.3319135,
-    "ast_hash": "24b0779c668cb3b066f67aeff9bf02de",
+    "mtime": 1784295752.0267599,
+    "ast_hash": "cf4648ffbd983616b0ad27aa2861b58f",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "src/main.ts": {
-    "mtime": 1784237497.6881745,
-    "ast_hash": "ba72e6577751a2c4fe28b4d918612efe",
+    "mtime": 1784295769.755167,
+    "ast_hash": "224c96f20458eff683dbc116a2022cb0",
     "semantic_hash": ""
   },
   "src/masters.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1784237351.6494215,
-    "ast_hash": "88af8ee545bd4944069f4c9af62a7ddf",
+    "mtime": 1784295787.780941,
+    "ast_hash": "e22e4bb5ccc743836f9051675fe8946b",
     "semantic_hash": ""
   },
   "src/product-selection-preload.ts": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "test/documents.test.ts": {
-    "mtime": 1784070030.265295,
-    "ast_hash": "aa5e22ba32991b7522931ce42b58ab24",
+    "mtime": 1784296164.3730984,
+    "ast_hash": "1ccf085ff932814d587c6de58fde4ccd",
     "semantic_hash": ""
   },
   "test/helpers.ts": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1784237803.883893,
-    "ast_hash": "96ac864a8e011c91557ca16fafe8f973",
+    "mtime": 1784296020.1443598,
+    "ast_hash": "c8fe7b4adbfad4ca1b7d57297a963d90",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
