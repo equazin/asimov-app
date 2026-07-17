@@ -27,7 +27,12 @@ import {
   onSyncApplied,
   type SyncCycleEvent,
 } from './sync';
-import { enqueueLocalBootstrap, inspectBootstrapState, inspectDeviceIntegrationStatus } from './sync-bootstrap';
+import {
+  enqueueInternalExpenseBackfill,
+  enqueueLocalBootstrap,
+  inspectBootstrapState,
+  inspectDeviceIntegrationStatus,
+} from './sync-bootstrap';
 
 export function registerCloudIpcHandlers(
   notifyRenderer?: (channel: string, payload?: SyncCycleEvent) => void,
@@ -52,6 +57,7 @@ export function registerCloudIpcHandlers(
       recoverRetryableParkedChanges();
       recoverLegacySyncConflicts();
       recoverLegacyGatewayErrors();
+      enqueueInternalExpenseBackfill();
       compactPendingChanges();
       startSyncTimer();
       let sync: { pushed: number; pulled: number; errors: number } | undefined;
@@ -135,6 +141,7 @@ export function registerCloudIpcHandlers(
     recoverRetryableParkedChanges();
     recoverLegacySyncConflicts();
     recoverLegacyGatewayErrors();
+    enqueueInternalExpenseBackfill();
     compactPendingChanges();
     startSyncTimer();
     void runSync().catch(() => {});

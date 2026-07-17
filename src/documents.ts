@@ -153,6 +153,7 @@ export function persistInternalExpense(form: InternalExpenseForm): PersistResult
     );
     applyCashDelta(accountId, -amount, "egreso", `Gasto ${number}: ${concept}`, "internal_expense", id);
   })();
+  enqueueDocSnapshot("internal_expense", id);
   return { id, number, cashMoved: 1 };
 }
 

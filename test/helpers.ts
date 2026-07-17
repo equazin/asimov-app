@@ -18,6 +18,7 @@ export function resetLedger(): void {
     DELETE FROM stock_movements;
     DELETE FROM article_stock;
     DELETE FROM cash_movements;
+    DELETE FROM internal_expenses;
     UPDATE cash_accounts SET balance = 0;
     DELETE FROM delivery_note_items;   DELETE FROM delivery_notes;
     DELETE FROM goods_receipt_items;   DELETE FROM goods_receipts;

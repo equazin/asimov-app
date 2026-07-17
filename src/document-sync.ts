@@ -13,8 +13,8 @@ import { getDb, dbAll, dbGet, dbRun } from './db';
 
 interface DocTableMap {
   header: string;
-  items: string;
-  itemFk: string;
+  items?: string;
+  itemFk?: string;
 }
 
 /** Tabla de cabecera, tabla de ítems y FK de ítems para cada tipo de documento. */
@@ -29,6 +29,7 @@ const DOC_TABLES: Record<string, DocTableMap> = {
   invoice: { header: 'invoices', items: 'invoice_items', itemFk: 'invoice_id' },
   purchase_order: { header: 'purchase_orders', items: 'purchase_order_items', itemFk: 'order_id' },
   purchase_invoice: { header: 'purchase_invoices', items: 'purchase_invoice_items', itemFk: 'invoice_id' },
+  internal_expense: { header: 'internal_expenses' },
 };
 
 export function isSyncableDocType(type: string): boolean {
@@ -84,7 +85,9 @@ export function buildDocEnvelope(type: string, id: string): DocEnvelope | null {
   return {
     type,
     header,
-    items: dbAll(`SELECT * FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]) as Row[],
+    items: t.items && t.itemFk
+      ? dbAll(`SELECT * FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]) as Row[]
+      : [],
     stockMovements: dbAll(
       'SELECT * FROM stock_movements WHERE reference_type = ? AND reference_id = ?',
       [type, id],
@@ -160,9 +163,11 @@ export function applyDocEnvelope(env: DocEnvelope): void {
     const header = env.type === 'invoice' ? mergeInvoiceFiscalState(env.header) : env.header;
     replaceRow(t.header, header);
 
-    dbRun(`DELETE FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]);
-    for (const item of env.items ?? []) {
-      replaceRow(t.items, item);
+    if (t.items && t.itemFk) {
+      dbRun(`DELETE FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]);
+      for (const item of env.items ?? []) {
+        replaceRow(t.items, item);
+      }
     }
 
     for (const m of env.stockMovements ?? []) {
@@ -195,7 +200,7 @@ export function deleteDocLocal(type: string, id: string): void {
   getDb().transaction(() => {
     reverseStock(type, id);
     reverseCash(type, id);
-    dbRun(`DELETE FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]);
+    if (t.items && t.itemFk) dbRun(`DELETE FROM ${t.items} WHERE ${t.itemFk} = ?`, [id]);
     dbRun(`DELETE FROM ${t.header} WHERE id = ?`, [id]);
   })();
 }

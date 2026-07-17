@@ -6,10 +6,11 @@
  * de stock/caja deben reconstruirse sin re-ejecutar efectos ni contar doble.
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { persistGoodsReceipt, persistInvoice, persistReceipt, annulDocument } from "../src/documents";
+import { persistGoodsReceipt, persistInternalExpense, persistInvoice, persistReceipt, annulDocument } from "../src/documents";
 import { buildDocEnvelope, applyDocEnvelope, deleteDocLocal } from "../src/document-sync";
 import { getDb } from "../src/db";
 import { initSyncTables } from "../src/sync";
+import { enqueueInternalExpenseBackfill } from "../src/sync-bootstrap";
 import { initTestDb, resetLedger, seedArticle } from "./helpers";
 
 vi.mock("../src/api-client", () => ({
@@ -90,6 +91,48 @@ describe("document-sync — recibo con efecto de caja", () => {
 
     expect(one("SELECT total FROM receipts WHERE id = ?", id)).toBeTruthy();
     expect(cashBalance()).toBe(500);
+  });
+});
+
+describe("document-sync — gasto interno con efecto de caja", () => {
+  it("se encola y reconstruye el gasto completo en la otra PC", () => {
+    const { id } = persistInternalExpense({
+      date: "2026-07-17",
+      category: "Limpieza e higiene",
+      concept: "Artículos de limpieza",
+      payee: "Supermercado",
+      amount: 1250.5,
+      accountId: "ca-default",
+      reference: "TICKET-10",
+    });
+    const queued = one(
+      "SELECT entity, action FROM sync_queue WHERE entity_id = ? ORDER BY id DESC LIMIT 1",
+      id,
+    );
+    expect(queued).toMatchObject({ entity: "document_snapshot", action: "update" });
+
+    const env = buildDocEnvelope("internal_expense", id)!;
+    expect(env.items).toEqual([]);
+    expect(env.cashMovements).toHaveLength(1);
+    resetLedger();
+
+    applyDocEnvelope(env);
+
+    expect(one("SELECT category, concept, amount FROM internal_expenses WHERE id = ?", id))
+      .toMatchObject({ category: "Limpieza e higiene", concept: "Artículos de limpieza", amount: 1250.5 });
+    expect(cashBalance()).toBe(-1250.5);
+  });
+
+  it("recupera una sola vez los gastos creados por versiones anteriores", () => {
+    const { id } = persistInternalExpense({
+      category: "Otros gastos", concept: "Gasto histórico", amount: 500, accountId: "ca-default",
+    });
+    getDb().prepare("DELETE FROM sync_queue WHERE entity_id = ?").run(id);
+    getDb().prepare("DELETE FROM sync_state WHERE key = 'internal_expense_cloud_backfill_v1'").run();
+
+    expect(enqueueInternalExpenseBackfill()).toBe(1);
+    expect(enqueueInternalExpenseBackfill()).toBe(0);
+    expect(count("SELECT COUNT(*) c FROM sync_queue WHERE entity='document_snapshot' AND entity_id=?", id)).toBe(1);
   });
 });
 

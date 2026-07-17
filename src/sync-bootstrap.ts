@@ -1,5 +1,5 @@
 /** Initial upload of an existing local installation to its cloud tenant. */
-import { dbAll, dbGet } from './db';
+import { dbAll, dbGet, dbRun } from './db';
 import { buildDocEnvelope } from './document-sync';
 import { compactPendingChanges, enqueueChange } from './sync';
 import { getAirLocalConfig } from './air';
@@ -18,7 +18,29 @@ const DOCUMENT_TABLES: Array<[type: string, table: string]> = [
   ['invoice', 'invoices'],
   ['purchase_order', 'purchase_orders'],
   ['purchase_invoice', 'purchase_invoices'],
+  ['internal_expense', 'internal_expenses'],
 ];
+
+const INTERNAL_EXPENSE_BACKFILL_KEY = 'internal_expense_cloud_backfill_v1';
+
+/** Encola una sola vez los gastos creados antes de que este tipo tuviera sync. */
+export function enqueueInternalExpenseBackfill(): number {
+  const done = dbGet<{ value: string }>('SELECT value FROM sync_state WHERE key = ?', [INTERNAL_EXPENSE_BACKFILL_KEY]);
+  if (done) return 0;
+
+  let queued = 0;
+  for (const row of dbAll<{ id: string }>('SELECT id FROM internal_expenses')) {
+    const envelope = buildDocEnvelope('internal_expense', row.id);
+    if (!envelope) continue;
+    enqueueChange('document_snapshot', row.id, 'update', envelope as unknown as Row);
+    queued++;
+  }
+  dbRun('INSERT OR REPLACE INTO sync_state (key, value) VALUES (?, ?)', [
+    INTERNAL_EXPENSE_BACKFILL_KEY,
+    new Date().toISOString(),
+  ]);
+  return queued;
+}
 
 function count(table: string): number {
   return (dbGet(`SELECT COUNT(*) AS count FROM ${table}`) as { count: number }).count;
