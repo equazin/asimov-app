@@ -117,6 +117,26 @@ function isTransientStatus(status: number): boolean {
   return status === 408 || status === 429 || status >= 500;
 }
 
+function isCloudAvailabilityStatus(status: number): boolean {
+  return status === 502 || status === 503 || status === 504;
+}
+
+function readableHttpError(status: number, body: string): string {
+  if (isCloudAvailabilityStatus(status)) return `Nube temporalmente no disponible (HTTP ${status}).`;
+  const compact = body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return `HTTP ${status}: ${compact.slice(0, 300) || 'respuesta sin detalle'}`;
+}
+
+/** Un 502/503/504 de Render es indisponibilidad, no un dato inválido: se reintenta siempre. */
+function markCloudAvailabilityFailure(id: number, attempts: number, status: number): void {
+  const nextAttempts = Math.min(attempts + 1, MAX_ATTEMPTS - 1);
+  const seconds = [5, 10, 20, 30, 45, 60, 60][Math.min(nextAttempts - 1, 6)];
+  dbRun(
+    "UPDATE sync_queue SET attempts = ?, next_attempt_at = datetime('now', ?), error = ? WHERE id = ?",
+    [nextAttempts, `+${seconds} seconds`, `Nube temporalmente no disponible (HTTP ${status}). Reintentando automáticamente.`, id],
+  );
+}
+
 export function enqueueChange(
   entity: string,
   entityId: string,
@@ -345,8 +365,10 @@ async function pushChanges(): Promise<{ pushed: number; errors: number }> {
         pushed++;
       } else {
         const errBody = await response.text().catch(() => 'Unknown error');
-        const message = `HTTP ${response.status}: ${errBody}`;
-        if (isTransientStatus(response.status)) {
+        const message = readableHttpError(response.status, errBody);
+        if (isCloudAvailabilityStatus(response.status)) {
+          markCloudAvailabilityFailure(entry.id, entry.attempts, response.status);
+        } else if (isTransientStatus(response.status)) {
           markTransientFailure(entry.id, entry.attempts, message);
         } else {
           markPermanentFailure(entry.id, message);
@@ -407,9 +429,11 @@ async function pushCloudNativeChanges(
 
     if (!response.ok) {
       const errBody = await response.text().catch(() => 'Unknown error');
-      const message = `HTTP ${response.status}: ${errBody}`;
+      const message = readableHttpError(response.status, errBody);
       for (const entry of entries) {
-        if (isTransientStatus(response.status)) {
+        if (isCloudAvailabilityStatus(response.status)) {
+          markCloudAvailabilityFailure(entry.id, entry.attempts, response.status);
+        } else if (isTransientStatus(response.status)) {
           markTransientFailure(entry.id, entry.attempts, message);
         } else {
           markPermanentFailure(entry.id, message);

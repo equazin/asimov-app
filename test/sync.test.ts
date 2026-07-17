@@ -109,6 +109,22 @@ describe("sync queue — retry con backoff", () => {
     // Sigue contando como pendiente (no se perdió) pero espera el backoff.
     expect(getPendingCount()).toBe(1);
     expect(getPendingChanges()).toHaveLength(0);
+    expect(row.error).toBe("Nube temporalmente no disponible (HTTP 503). Reintentando automáticamente.");
+  });
+
+  it("un 502 de Render no guarda HTML ni termina aparcando el cambio", async () => {
+    enqueueChange("client", "c-render", "create", { name: "Cliente" });
+    pushResponse = { ok: false, status: 502, body: "<!DOCTYPE html><html><body>gateway</body></html>" };
+
+    for (let i = 0; i < 10; i++) {
+      getDb().prepare("UPDATE sync_queue SET next_attempt_at=NULL WHERE synced_at IS NULL").run();
+      await runSync();
+    }
+
+    expect(getParkedCount()).toBe(0);
+    expect(getPendingCount()).toBe(1);
+    expect(queueRow().error).not.toContain("DOCTYPE");
+    expect(queueRow().attempts).toBe(7);
   });
 
   it("un fallo permanente (422) aparca el cambio sin reintentar", async () => {
