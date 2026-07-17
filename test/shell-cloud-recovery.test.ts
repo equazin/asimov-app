@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const shell = readFileSync(resolve(process.cwd(), 'src/shell.html'), 'utf8');
+const preload = readFileSync(resolve(process.cwd(), 'src/preload.ts'), 'utf8');
 
 describe('panel de recuperación cloud', () => {
   it('abre el estado detallado desde el indicador', () => {
@@ -17,5 +18,10 @@ describe('panel de recuperación cloud', () => {
     expect(shell).toContain('AIR necesita su contraseña en esta PC.');
     expect(shell).toContain('WhatsApp necesita su token en esta PC.');
     expect(shell).toContain('ARCA necesita certificado y clave privada en esta PC.');
+  });
+  it('refresca la vista activa cuando llegan cambios remotos', () => {
+    expect(preload).toContain('ipcRenderer.on("sync:applied"');
+    expect(shell).toContain('api.cloudSync.onApplied');
+    expect(shell).toContain('event.pulled > 0) refreshCurrentView()');
   });
 });

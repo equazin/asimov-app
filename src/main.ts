@@ -225,9 +225,9 @@ function logout(): void {
 }
 
 /** Avisa al shell principal que cambió un conjunto de datos, para que refresque la vista activa. */
-function notifyShell(channel: string): void {
+function notifyShell(channel: string, payload?: unknown): void {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send(channel);
+    mainWindow.webContents.send(channel, payload);
   }
 }
 
@@ -480,8 +480,8 @@ if (!gotLock) {
 
     registerIpcHandlers({ getMainWindow, getCurrentUser: () => currentUser });
     // Cloud + sync (v2): IPC handlers para login contra la API de Render,
-    // cola de sync offline-first y timer de push/pull cada 30 s.
-    registerCloudIpcHandlers();
+    // cola de sync offline-first y actualización automática casi en tiempo real.
+    registerCloudIpcHandlers((channel, payload) => notifyShell(channel, payload));
 
     // Cotización del dólar: fetch inmediato + cada 30 min; se difunde a todas
     // las ventanas para el widget del status bar y la vista Dólar.

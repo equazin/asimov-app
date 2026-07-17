@@ -3623,6 +3623,12 @@
       };
       refreshSyncBadge();
       setInterval(refreshSyncBadge, 5000);
+      if (api.cloudSync.onApplied) {
+        api.cloudSync.onApplied(function(event) {
+          refreshSyncBadge();
+          if (event && event.pulled > 0) refreshCurrentView();
+        });
+      }
 
       // ── Cotización del dólar en el status bar ─────────────────────────
       if (api.dolar) {

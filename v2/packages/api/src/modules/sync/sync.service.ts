@@ -251,20 +251,30 @@ export class SyncService {
       id: string;
       data: Record<string, unknown>;
     }>,
-  ): Promise<{ processed: number; conflicts: string[] }> {
+  ): Promise<{
+    processed: number;
+    conflicts: string[];
+    conflictDetails: Array<{ id: string; entity: string; error: string }>;
+  }> {
     let processed = 0;
     const conflicts: string[] = [];
+    const conflictDetails: Array<{ id: string; entity: string; error: string }> = [];
 
     for (const change of changes) {
       try {
         await this.applyChange(tenantId, userId, change);
         processed++;
-      } catch {
+      } catch (error) {
         conflicts.push(change.id);
+        conflictDetails.push({
+          id: change.id,
+          entity: change.entity,
+          error: this.publicSyncError(error),
+        });
       }
     }
 
-    return { processed, conflicts };
+    return { processed, conflicts, conflictDetails };
   }
 
   private async applyChange(
@@ -513,17 +523,28 @@ export class SyncService {
         throw new Error(`Entidad no soportada para sync: ${entity}`);
     }
 
-    await this.prisma.auditLog.create({
-      data: {
-        tenantId,
-        userId,
-        action: `sync_${action}`,
-        entityType: entity,
-        entityId: id,
-        origin: 'desktop',
-        newValues: { source: 'desktop_sync' },
-      },
-    });
+    // La auditoría es secundaria: si falla después de aplicar la mutación, no
+    // debemos informar un conflicto y hacer que el desktop la reintente sin fin.
+    try {
+      await this.prisma.auditLog.create({
+        data: {
+          tenantId,
+          userId,
+          action: `sync_${action}`,
+          entityType: entity,
+          entityId: id,
+          origin: 'desktop',
+          newValues: { source: 'desktop_sync' },
+        },
+      });
+    } catch {
+      // Best-effort. La escritura principal ya fue confirmada.
+    }
+  }
+
+  private publicSyncError(error: unknown): string {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.replace(/\s+/g, ' ').slice(0, 300) || 'Error interno al aplicar el cambio';
   }
 
   private sanitizeClientData(data: Record<string, unknown>) {
@@ -562,7 +583,7 @@ export class SyncService {
       category: data.category ? String(data.category) : null,
       salePrice: Number(data.salePrice ?? data.sale_price ?? data.price ?? 0),
       costPrice: Number(data.costPrice ?? data.cost_price ?? data.cost ?? 0),
-      ivaRate: Number(data.ivaRate ?? data.iva_rate ?? data.ivaPct ?? 21),
+      ivaPct: Number(data.ivaPct ?? data.iva_pct ?? data.ivaRate ?? 21),
     };
   }
 

@@ -24,7 +24,7 @@ describe('SyncService — contratos del desktop', () => {
       data: { code: 'C1', name: 'Cliente local', taxId: '20123456789', ivaCondition: 'responsable_inscripto' },
     }]);
 
-    expect(result).toEqual({ processed: 1, conflicts: [] });
+    expect(result).toEqual({ processed: 1, conflicts: [], conflictDetails: [] });
     expect(prisma.client.upsert).toHaveBeenCalledWith(expect.objectContaining({
       create: expect.objectContaining({
         id: 'client-1', tenantId: 'tenant-1', businessName: 'Cliente local', cuit: '20123456789',
@@ -43,8 +43,36 @@ describe('SyncService — contratos del desktop', () => {
 
     expect(result.processed).toBe(1);
     expect(prisma.product.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      create: expect.objectContaining({ salePrice: 150, costPrice: 100, ivaRate: 10.5 }),
+      create: expect.objectContaining({ salePrice: 150, costPrice: 100, ivaPct: 10.5 }),
     }));
+  });
+
+  it('no convierte una falla de auditoría posterior en conflicto de sync', async () => {
+    const { prisma, service } = serviceWithPrisma();
+    prisma.auditLog.create.mockRejectedValueOnce(new Error('audit unavailable'));
+
+    const result = await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'client', action: 'update', id: 'client-audit',
+      data: { code: 'C-AUDIT', name: 'Cliente aplicado' },
+    }]);
+
+    expect(prisma.client.upsert).toHaveBeenCalledOnce();
+    expect(result).toEqual({ processed: 1, conflicts: [], conflictDetails: [] });
+  });
+
+  it('devuelve el motivo y la entidad cuando una mutación realmente falla', async () => {
+    const { prisma, service } = serviceWithPrisma();
+    prisma.product.upsert.mockRejectedValueOnce(new Error('Código duplicado'));
+
+    const result = await service.pushChanges('tenant-1', 'user-1', [{
+      entity: 'product', action: 'update', id: 'product-bad', data: { code: 'DUP', name: 'Duplicado' },
+    }]);
+
+    expect(result).toEqual({
+      processed: 0,
+      conflicts: ['product-bad'],
+      conflictDetails: [{ id: 'product-bad', entity: 'product', error: 'Código duplicado' }],
+    });
   });
 
   it('elimina credenciales de la configuración antes de guardarla', async () => {

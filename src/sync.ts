@@ -18,14 +18,37 @@ import {
 import { ensureSequenceBlocks } from './sequences';
 import { applyDocEnvelope, deleteDocLocal, type DocEnvelope } from './document-sync';
 
-const SYNC_INTERVAL_MS = 30_000;
+const SYNC_INTERVAL_MS = 3_000;
+const ENQUEUE_SYNC_DELAY_MS = 250;
 /** Tras este número de intentos fallidos, el cambio se "aparca" (deja de reintentarse). */
 const MAX_ATTEMPTS = 8;
 let syncTimer: ReturnType<typeof setInterval> | null = null;
+let scheduledSync: ReturnType<typeof setTimeout> | null = null;
 let isSyncing = false;
+let rerunRequested = false;
 /** Recuerda si el último ciclo encontró la nube caída, para forzar reintento al volver. */
 let wasOffline = false;
 let lastCycleError: string | null = null;
+
+export interface SyncCycleEvent {
+  pushed: number;
+  pulled: number;
+  errors: number;
+  changedEntities: string[];
+}
+
+const syncListeners = new Set<(event: SyncCycleEvent) => void>();
+
+export function onSyncApplied(listener: (event: SyncCycleEvent) => void): () => void {
+  syncListeners.add(listener);
+  return () => syncListeners.delete(listener);
+}
+
+function emitSyncApplied(event: SyncCycleEvent): void {
+  for (const listener of syncListeners) {
+    try { listener(event); } catch { /* un observador no debe romper el motor */ }
+  }
+}
 
 export function initSyncTables(): void {
   const db = getDb();
@@ -104,6 +127,17 @@ export function enqueueChange(
     `INSERT INTO sync_queue (entity, entity_id, action, payload) VALUES (?, ?, ?, ?)`,
     [entity, entityId, action, payload ? JSON.stringify(payload) : null],
   );
+  requestSync();
+}
+
+/** Agenda un ciclo inmediato sin bloquear la escritura local que lo originó. */
+export function requestSync(delayMs = ENQUEUE_SYNC_DELAY_MS): void {
+  if (!isCloudConnected()) return;
+  if (scheduledSync) clearTimeout(scheduledSync);
+  scheduledSync = setTimeout(() => {
+    scheduledSync = null;
+    void runSync().catch(() => {});
+  }, Math.max(0, delayMs));
 }
 
 export function getLastSyncTimestamp(): string | null {
@@ -221,6 +255,16 @@ export function recoverRetryableParkedChanges(): number {
   dbRun(
     `UPDATE sync_queue SET attempts = 0, next_attempt_at = NULL, error = NULL WHERE ${where}`,
     [MAX_ATTEMPTS],
+  );
+  return row.count;
+}
+
+/** Reactiva conflictos opacos generados por versiones anteriores de la API. */
+export function recoverLegacySyncConflicts(): number {
+  const where = `synced_at IS NULL AND error LIKE '%sync_conflict%'`;
+  const row = dbGet(`SELECT COUNT(*) AS count FROM sync_queue WHERE ${where}`) as { count: number };
+  dbRun(
+    `UPDATE sync_queue SET attempts = 0, next_attempt_at = NULL, error = NULL WHERE ${where}`,
   );
   return row.count;
 }
@@ -376,17 +420,33 @@ async function pushCloudNativeChanges(
 
     const result = await response.json() as {
       success: boolean;
-      data?: { conflicts?: string[] };
+      data?: {
+        conflicts?: string[];
+        conflictDetails?: Array<{ id: string; entity: string; error: string }>;
+      };
     };
+    if (!result.success) {
+      for (const entry of entries) markTransientFailure(entry.id, entry.attempts, 'La API rechazó el lote de sincronización.');
+      return { pushed: 0, errors: entries.length };
+    }
     const conflicts = new Set(result.data?.conflicts ?? []);
+    const detailRows = result.data?.conflictDetails ?? [];
+    const conflictDetails = new Map(
+      detailRows.map((detail) => [`${detail.entity}:${detail.id}`, detail.error]),
+    );
     let pushed = 0;
     let errors = 0;
 
     for (const entry of entries) {
-      if (conflicts.has(entry.entity_id)) {
+      const conflictKey = `${entry.entity}:${entry.entity_id}`;
+      const hasConflict = detailRows.length > 0
+        ? conflictDetails.has(conflictKey)
+        : conflicts.has(entry.entity_id);
+      if (hasConflict) {
         // El server no pudo aplicar el cambio: puede ser un hipo transitorio de DB
         // o un dato inválido. Reintentamos con backoff; si persiste, se aparca.
-        markTransientFailure(entry.id, entry.attempts, 'sync_conflict');
+        const detail = conflictDetails.get(conflictKey) ?? 'El servidor no informó el motivo.';
+        markTransientFailure(entry.id, entry.attempts, `sync_conflict ${entry.entity}:${entry.entity_id}: ${detail}`);
         errors++;
       } else {
         dbRun("UPDATE sync_queue SET synced_at = datetime('now'), error = NULL WHERE id = ?", [entry.id]);
@@ -420,7 +480,7 @@ function entityToApiPath(entity: string): string {
   return map[entity] ?? entity;
 }
 
-async function pullChanges(): Promise<{ pulled: number; failed: number }> {
+async function pullChanges(): Promise<{ pulled: number; failed: number; changedEntities: string[] }> {
   const lastSync = getLastSyncTimestamp();
   const since = lastSync ?? '2020-01-01T00:00:00.000Z';
   const url = `/sync/pull?since=${encodeURIComponent(since)}`;
@@ -430,7 +490,7 @@ async function pullChanges(): Promise<{ pulled: number; failed: number }> {
 
     if (!response.ok) {
       lastCycleError = `Error al descargar cambios: HTTP ${response.status}`;
-      return { pulled: 0, failed: 1 };
+      return { pulled: 0, failed: 1, changedEntities: [] };
     }
 
     const result = await response.json() as {
@@ -447,18 +507,27 @@ async function pullChanges(): Promise<{ pulled: number; failed: number }> {
       };
     };
 
-    if (!result.success) return { pulled: 0, failed: 1 };
+    if (!result.success) return { pulled: 0, failed: 1, changedEntities: [] };
 
     const { changes, serverTimestamp } = result.data;
 
+    const priority: Record<string, number> = {
+      client: 0, supplier: 0, product: 0, external_catalog_product: 1,
+      integration_config: 1, exchange_rate: 1, kit_set: 2,
+      document_snapshot: 3, document_link: 4,
+    };
+    const orderedChanges = [...changes].sort((a, b) =>
+      (priority[a.entity] ?? 2) - (priority[b.entity] ?? 2) || a.updatedAt.localeCompare(b.updatedAt));
     let applied = 0;
     let failed = 0;
-    for (const change of changes) {
+    const changedEntities = new Set<string>();
+    for (const change of orderedChanges) {
       // Un cambio que falle (p.ej. FK de un maestro aún no aplicado) no debe
       // abortar el resto del pull; se reintentará en el próximo ciclo.
       try {
         applyRemoteChange(change);
         applied++;
+        changedEntities.add(change.entity);
       } catch (err) {
         failed++;
         lastCycleError = `No se pudo aplicar ${change.entity}:${change.id}: ${String(err)}`.slice(0, 500);
@@ -466,10 +535,10 @@ async function pullChanges(): Promise<{ pulled: number; failed: number }> {
     }
 
     if (failed === 0) setLastSyncTimestamp(serverTimestamp);
-    return { pulled: applied, failed };
+    return { pulled: applied, failed, changedEntities: [...changedEntities] };
   } catch (err) {
     lastCycleError = err instanceof Error ? err.message : String(err);
-    return { pulled: 0, failed: 1 };
+    return { pulled: 0, failed: 1, changedEntities: [] };
   }
 }
 
@@ -888,24 +957,34 @@ export async function runSync(): Promise<{
   pulled: number;
   errors: number;
 }> {
-  if (isSyncing) return { pushed: 0, pulled: 0, errors: 0 };
-  if (!isCloudConnected()) return { pushed: 0, pulled: 0, errors: 0 };
-
-  const isOnline = await apiTestConnection();
-  if (!isOnline) {
-    wasOffline = true;
-    if (!isCloudConnected()) lastCycleError = 'La sesión de la nube venció. Iniciá sesión nuevamente.';
+  if (scheduledSync) {
+    clearTimeout(scheduledSync);
+    scheduledSync = null;
+  }
+  if (isSyncing) {
+    rerunRequested = true;
     return { pushed: 0, pulled: 0, errors: 0 };
   }
-
-  // Acabamos de recuperar la conexión: reintentar ya lo que estaba esperando backoff.
-  if (wasOffline) {
-    resetBackoffForRetryable();
-    wasOffline = false;
-  }
+  if (!isCloudConnected()) return { pushed: 0, pulled: 0, errors: 0 };
 
   isSyncing = true;
+  let online = false;
   try {
+    online = await apiTestConnection();
+    if (!online) {
+      wasOffline = true;
+      lastCycleError = isCloudConnected()
+        ? 'No se pudo contactar la nube. Se reintentará automáticamente.'
+        : 'La sesión de la nube venció. Iniciá sesión nuevamente.';
+      return { pushed: 0, pulled: 0, errors: 0 };
+    }
+
+    // Acabamos de recuperar la conexión: reintentar ya lo que estaba esperando backoff.
+    if (wasOffline) {
+      resetBackoffForRetryable();
+      wasOffline = false;
+    }
+
     lastCycleError = null;
     compactPendingChanges();
     // Reservar bloques de numeración pendientes antes de push (para que los
@@ -914,14 +993,19 @@ export async function runSync(): Promise<{
 
     const pushResult = await pushChanges();
     const pullResult = await pullChanges();
-
-    return {
+    const event: SyncCycleEvent = {
       pushed: pushResult.pushed,
       pulled: pullResult.pulled,
       errors: pushResult.errors + pullResult.failed,
+      changedEntities: pullResult.changedEntities,
     };
+    if (event.pushed > 0 || event.pulled > 0 || event.errors > 0) emitSyncApplied(event);
+    return { pushed: event.pushed, pulled: event.pulled, errors: event.errors };
   } finally {
     isSyncing = false;
+    const shouldContinue = online && (rerunRequested || getPendingChanges().length > 0);
+    rerunRequested = false;
+    if (shouldContinue) requestSync(100);
   }
 }
 
@@ -936,6 +1020,10 @@ export function stopSyncTimer(): void {
   if (syncTimer) {
     clearInterval(syncTimer);
     syncTimer = null;
+  }
+  if (scheduledSync) {
+    clearTimeout(scheduledSync);
+    scheduledSync = null;
   }
 }
 

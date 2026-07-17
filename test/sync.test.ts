@@ -5,7 +5,7 @@
  * real: así se verifica que un fallo transitorio NO pierde el cambio (lo agenda
  * para reintento) y que un fallo permanente lo aparca.
  */
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 const fetchMock = vi.fn();
 const authorizedFetchMock = vi.fn();
@@ -42,9 +42,12 @@ import {
   getParkedCount,
   retryParkedChanges,
   recoverRetryableParkedChanges,
+  recoverLegacySyncConflicts,
   compactPendingChanges,
   getLastSyncTimestamp,
+  onSyncApplied,
   runSync,
+  stopSyncTimer,
 } from "../src/sync";
 import * as apiClient from "../src/api-client";
 import { enqueueLocalBootstrap, inspectBootstrapState } from "../src/sync-bootstrap";
@@ -80,6 +83,8 @@ beforeEach(() => {
     });
   });
 });
+
+afterEach(() => stopSyncTimer());
 
 const queueRow = () => getDb().prepare("SELECT * FROM sync_queue ORDER BY id DESC LIMIT 1").get() as {
   attempts: number;
@@ -144,6 +149,35 @@ describe("sync queue — retry con backoff", () => {
     expect(recoverRetryableParkedChanges()).toBe(2);
     expect(getPendingCount()).toBe(2);
     expect(getParkedCount()).toBe(1);
+  });
+
+  it("reactiva conflictos opacos creados por versiones anteriores", () => {
+    getDb().prepare(
+      "INSERT INTO sync_queue (entity, entity_id, action, attempts, error, next_attempt_at) VALUES (?,?,?,?,?,datetime('now','+2 hours'))",
+    ).run("product", "p-old", "update", 8, "parked_after_retries: sync_conflict");
+
+    expect(recoverLegacySyncConflicts()).toBe(1);
+    expect(getPendingChanges()).toHaveLength(1);
+    expect(queueRow()).toMatchObject({ attempts: 0, error: null, next_attempt_at: null });
+  });
+
+  it("conserva el detalle que devuelve la API para un conflicto real", async () => {
+    enqueueChange("product", "p-bad", "update", { code: "DUP", name: "Duplicado" });
+    authorizedFetchMock.mockImplementation((url: string) => Promise.resolve({
+      ok: true,
+      status: 200,
+      text: async () => "",
+      json: async () => String(url).includes("/sync/pull")
+        ? { success: true, data: { changes: [], serverTimestamp: new Date().toISOString() } }
+        : { success: true, data: {
+            conflicts: ["p-bad"],
+            conflictDetails: [{ id: "p-bad", entity: "product", error: "Código duplicado" }],
+          } },
+    }));
+
+    await runSync();
+
+    expect(queueRow().error).toContain("product:p-bad: Código duplicado");
   });
 
   it("compacta estados AIR repetidos y conserva el payload más nuevo", () => {
@@ -356,6 +390,23 @@ describe("sync queue — retry con backoff", () => {
       .toMatchObject({ business_name: "Proveedor nube", cuit: "30222222223" });
     expect(getDb().prepare("SELECT name, cost_price, sale_price, iva_pct FROM articles WHERE id=?").get("cloud-product"))
       .toMatchObject({ name: "Artículo nube", cost_price: 80, sale_price: 120, iva_pct: 10.5 });
+  });
+  it("publica las entidades aplicadas para refrescar las ventanas abiertas", async () => {
+    getDb().exec("DELETE FROM sync_queue; DELETE FROM sync_state;");
+    const received: Array<{ pulled: number; changedEntities: string[] }> = [];
+    const unsubscribe = onSyncApplied((event) => received.push(event));
+    authorizedFetchMock.mockImplementation(() => Promise.resolve({
+      ok: true, status: 200, text: async () => "",
+      json: async () => ({ success: true, data: {
+        changes: [{ entity: "client", action: "update", id: "live-client", updatedAt: "2026-07-17T18:00:00.000Z", data: { businessName: "En vivo" } }],
+        serverTimestamp: "2026-07-17T18:00:01.000Z",
+      } }),
+    }));
+
+    await runSync();
+    unsubscribe();
+
+    expect(received).toContainEqual(expect.objectContaining({ pulled: 1, changedEntities: ["client"] }));
   });
 });
 

@@ -21,12 +21,18 @@ import {
   stopSyncTimer,
   retryParkedChanges,
   recoverRetryableParkedChanges,
+  recoverLegacySyncConflicts,
   compactPendingChanges,
+  onSyncApplied,
+  type SyncCycleEvent,
 } from './sync';
 import { enqueueLocalBootstrap, inspectBootstrapState, inspectDeviceIntegrationStatus } from './sync-bootstrap';
 
-export function registerCloudIpcHandlers(): void {
+export function registerCloudIpcHandlers(
+  notifyRenderer?: (channel: string, payload?: SyncCycleEvent) => void,
+): void {
   initSyncTables();
+  onSyncApplied((event) => notifyRenderer?.('sync:applied', event));
 
   // --- Cloud auth ---
   ipcMain.handle('cloud:status', () => ({
@@ -43,6 +49,7 @@ export function registerCloudIpcHandlers(): void {
     try {
       const result = await apiLogin(data.email, data.password);
       recoverRetryableParkedChanges();
+      recoverLegacySyncConflicts();
       compactPendingChanges();
       startSyncTimer();
       let sync: { pushed: number; pulled: number; errors: number } | undefined;
@@ -124,6 +131,7 @@ export function registerCloudIpcHandlers(): void {
   // Auto-start sync if user was previously logged in
   if (isCloudConnected()) {
     recoverRetryableParkedChanges();
+    recoverLegacySyncConflicts();
     compactPendingChanges();
     startSyncTimer();
     void runSync().catch(() => {});
