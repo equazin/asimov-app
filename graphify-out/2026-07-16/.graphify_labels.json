@@ -106,6 +106,7 @@
   "104": "domain.ts",
   "105": "api-client.ts",
   "106": "afip.test.ts",
+  "107": "dbAll",
   "108": "stock.module.ts",
   "109": "format.ts",
   "110": "Fases",
@@ -150,6 +151,5 @@
   "149": "purchase-document-flow-ui.test.ts",
   "150": "menu.ts",
   "151": "new-purchase-receipt-preload.ts",
-  "152": "auth.module.ts",
   "160": "migration.sql"
 }

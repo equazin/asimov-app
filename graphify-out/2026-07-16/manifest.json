@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1784245520.9058373,
-    "ast_hash": "aab33ae183dcefd0906495836804f803",
+    "mtime": 1784237949.814365,
+    "ast_hash": "8e750652c38be479bae6af18511ffe40",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "src/db.ts": {
-    "mtime": 1784295628.1477048,
-    "ast_hash": "37a4664dbcba6684b85dc3d087b37538",
+    "mtime": 1784237893.6706111,
+    "ast_hash": "69f56d20e0b7eb0a1f91b29024e9414e",
     "semantic_hash": ""
   },
   "src/document-sync.ts": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "src/documents.ts": {
-    "mtime": 1784295708.39174,
-    "ast_hash": "265b36578e5b35158c88fe7f0f590a69",
+    "mtime": 1784237893.6716113,
+    "ast_hash": "0531045dd2d4ea1520058e429e55a86b",
     "semantic_hash": ""
   },
   "src/ipc-cloud.ts": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/ipc.ts": {
-    "mtime": 1784295752.0267599,
-    "ast_hash": "cf4648ffbd983616b0ad27aa2861b58f",
+    "mtime": 1784237893.6716113,
+    "ast_hash": "a1a7c9cf6ead56c6f5f7e9c630ca4724",
     "semantic_hash": ""
   },
   "src/login-preload.ts": {
@@ -110,8 +110,8 @@
     "semantic_hash": ""
   },
   "src/main.ts": {
-    "mtime": 1784295769.755167,
-    "ast_hash": "224c96f20458eff683dbc116a2022cb0",
+    "mtime": 1784237497.6881745,
+    "ast_hash": "ba72e6577751a2c4fe28b4d918612efe",
     "semantic_hash": ""
   },
   "src/masters.ts": {
@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "src/new-receipt-preload.ts": {
-    "mtime": 1784245363.6687944,
-    "ast_hash": "4cea6384126c121e4d0302c882c6b041",
+    "mtime": 1782836953.8339708,
+    "ast_hash": "2ba997722d341e845a169a294e059f18",
     "semantic_hash": ""
   },
   "src/new-sale-order-preload.ts": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "src/preload.ts": {
-    "mtime": 1784295787.780941,
-    "ast_hash": "e22e4bb5ccc743836f9051675fe8946b",
+    "mtime": 1784237351.6494215,
+    "ast_hash": "88af8ee545bd4944069f4c9af62a7ddf",
     "semantic_hash": ""
   },
   "src/product-selection-preload.ts": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "test/documents.test.ts": {
-    "mtime": 1784296164.3730984,
-    "ast_hash": "1ccf085ff932814d587c6de58fde4ccd",
+    "mtime": 1784070030.265295,
+    "ast_hash": "aa5e22ba32991b7522931ce42b58ab24",
     "semantic_hash": ""
   },
   "test/helpers.ts": {
@@ -1115,8 +1115,8 @@
     "semantic_hash": ""
   },
   "src/new-receipt.html": {
-    "mtime": 1784245463.3465247,
-    "ast_hash": "5d701d0c31ee304aad4e6a581987ada8",
+    "mtime": 1783753584.884956,
+    "ast_hash": "fb2a94a4559dc44ef95be52d4fe34c35",
     "semantic_hash": ""
   },
   "src/new-sale-order.html": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1784296020.1443598,
-    "ast_hash": "c8fe7b4adbfad4ca1b7d57297a963d90",
+    "mtime": 1784237803.883893,
+    "ast_hash": "96ac864a8e011c91557ca16fafe8f973",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "src/document-links.ts": {
-    "mtime": 1784245323.2286263,
-    "ast_hash": "1e09e2d089561f615166fee0968711ea",
+    "mtime": 1784237893.6716113,
+    "ast_hash": "87903e0d0f1715225e1226d1ac6173dd",
     "semantic_hash": ""
   },
   "test/document-links.test.ts": {
