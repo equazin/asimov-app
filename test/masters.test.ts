@@ -28,6 +28,11 @@ describe("masters — mapeo UI → schema", () => {
     expect(row("clients", id).fiscal_type).toBe("final");
   });
 
+  it("cliente: permite guardar sin CUIT", () => {
+    const { id } = persistClientForm({ razonSocial: "Consumidor final", cuit: "" });
+    expect(row("clients", id).cuit).toBeNull();
+  });
+
   it("proveedor: mapea domicilio/telefono y activa", () => {
     const { id } = persistSupplierForm({ razonSocial: "Prov SA", domicilio: "Av 9", telefono: "0800", cuit: "20-9" });
     const s = row("suppliers", id);

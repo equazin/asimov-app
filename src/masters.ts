@@ -55,7 +55,7 @@ export function persistClientForm(form: ClientForm): { id: string } {
     id: str(form.id),
     code: str(form.codigo) || null,
     business_name: str(form.razonSocial),
-    cuit: str(form.cuit),
+    cuit: str(form.cuit) || null,
     fiscal_type: str(form.condicionIva) || "final",
     email: str(form.email),
     phone: str(form.telefono),

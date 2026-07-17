@@ -196,6 +196,10 @@
     }
 
     .required-star::after { content: " *"; color: var(--danger); }
+    .optional-label {
+      margin-left: 4px; color: var(--text-muted); font-size: 9px;
+      font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
   
 /* ASIMOV-THEME-START */
 :root{
@@ -426,8 +430,8 @@ td{ border-color:var(--border) !important; }
         <div class="field span-3"><label class="required-star">Razón Social</label><input type="text" id="txtRazonSocial" placeholder="Nombre o razón social..." /></div>
 
         <div class="field"><label>Titular</label><input type="text" /></div>
-        <div class="field with-btn"><label class="required-star">C.U.I.T.</label>
-          <input type="text" id="txtCuit" placeholder="XX-XXXXXXXX-X" />
+        <div class="field with-btn"><label>C.U.I.T. <span class="optional-label">Opcional</span></label>
+          <input type="text" id="txtCuit" placeholder="XX-XXXXXXXX-X (opcional)" />
           <button class="field-btn" id="btnPadron" title="Consultar el CUIT en el padrón de AFIP (autocompleta razón social, condición IVA y domicilio)">🔎</button>
         </div>
         <div class="field"><label>Condición IVA</label>

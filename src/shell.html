@@ -507,6 +507,27 @@
     .asimov-modal .am-field input:focus { border-color: var(--accent-hi); box-shadow: 0 0 0 2px rgba(76,158,227,0.25); }
     .asimov-modal .am-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 
+    .commission-modal { width: min(500px, calc(100vw - 32px)); max-width: 500px; min-width: 0; }
+    .commission-intro { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .commission-invoice {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--input-bg);
+    }
+    .commission-invoice .label { color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .commission-invoice strong { color: var(--text); font-size: 13px; font-variant-numeric: tabular-nums; }
+    .commission-fields { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 12px; }
+    .commission-preview { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); }
+    .commission-preview-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .commission-preview-row span:first-child { color: var(--muted); }
+    .commission-preview-row span:last-child { color: var(--text); font-variant-numeric: tabular-nums; }
+    .commission-preview-row.total { padding-top: 8px; border-top: 1px solid var(--border); font-weight: 700; }
+    .commission-preview-row.total span:first-child { color: var(--text); }
+    .commission-preview-row.total span:last-child { color: var(--accent-hi); font-size: 15px; }
+    .commission-error { min-height: 0; color: #F0B9B5; font-size: 11.5px; line-height: 1.4; }
+    .commission-error:empty { display: none; }
+    @media (max-width: 540px) { .commission-fields { grid-template-columns: 1fr; } }
+
     .invoice-row { cursor: pointer; }
     .invoice-row:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: -2px; }
     .invoice-fiscal-modal { width: min(520px, calc(100vw - 32px)); max-width: 520px; min-width: 0; }
@@ -1788,27 +1809,38 @@
 </div>
 
 <!-- Nota de comisión (costo de sobrefacturación) -->
-<div id="commission-modal" class="modal" style="display:none;">
-  <div class="modal-content" style="max-width:440px;">
-    <h3>Nota de comisión</h3>
-    <p style="font-size:13px;color:#666;margin:0 0 10px;">
-      Factura <strong id="commission-invoice-number">—</strong>. Calcula la comisión
-      (costo de sobrefacturación) como <strong>tasa % × (precio − costo)</strong> por ítem.
-      No toca la factura ni ARCA.
-    </p>
-    <label>Cliente al que le facturás la comisión</label>
-    <input type="text" id="commission-client" list="commission-client-list" placeholder="Razón social del cliente intermediario" autocomplete="off" />
-    <datalist id="commission-client-list"></datalist>
-    <label style="margin-top:8px;">Tasa (%)</label>
-    <input type="number" id="commission-rate" min="0" max="100" step="0.1" value="10.5" />
-    <div id="commission-preview" style="margin-top:12px;padding:10px 12px;background:rgba(0,0,0,0.04);border-radius:8px;font-size:13px;">
-      <div style="display:flex;justify-content:space-between;"><span>Base (Σ precio − costo)</span><span id="commission-base">$ 0,00</span></div>
-      <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:4px;"><span>Comisión a cobrar</span><span id="commission-total">$ 0,00</span></div>
+<div id="commission-modal" class="asimov-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="commission-title">
+  <div class="asimov-modal commission-modal">
+    <div class="am-header">
+      <span id="commission-title">Crear nota de comisión</span>
+      <button class="am-close" id="commission-close" type="button" aria-label="Cerrar">×</button>
     </div>
-    <div id="commission-error" style="color:#c00;font-size:13px;min-height:18px;margin-top:6px;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
-      <button class="btn btn-outline" id="commission-cancel">Cancelar</button>
-      <button class="btn btn-primary" id="commission-submit">Crear nota</button>
+    <div class="am-body">
+      <div class="commission-invoice">
+        <span class="label">Factura de origen</span>
+        <strong id="commission-invoice-number">—</strong>
+      </div>
+      <p class="commission-intro">La comisión se calcula sobre la diferencia entre el precio de venta y el costo de cada ítem. Esta nota es interna: no modifica la factura ni se envía a ARCA.</p>
+      <div class="commission-fields">
+        <label class="am-field">
+          <span>Cliente intermediario <em class="am-req">*</em></span>
+          <input type="text" id="commission-client" list="commission-client-list" placeholder="Buscar por razón social" autocomplete="off" />
+        </label>
+        <datalist id="commission-client-list"></datalist>
+        <label class="am-field">
+          <span>Tasa (%) <em class="am-req">*</em></span>
+          <input type="number" id="commission-rate" min="0" max="100" step="0.1" value="10.5" inputmode="decimal" />
+        </label>
+      </div>
+      <div class="commission-preview" id="commission-preview" aria-live="polite">
+        <div class="commission-preview-row"><span>Base comisionable</span><span id="commission-base">$ 0,00</span></div>
+        <div class="commission-preview-row total"><span>Comisión a cobrar</span><span id="commission-total">$ 0,00</span></div>
+      </div>
+      <div id="commission-error" class="commission-error" role="alert"></div>
+      <div class="am-actions">
+        <button class="btn btn-outline" id="commission-cancel" type="button">Cancelar</button>
+        <button class="btn btn-primary" id="commission-submit" type="button">Crear nota</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2755,6 +2787,8 @@
     document.getElementById("commission-base").textContent = "$ 0,00";
     document.getElementById("commission-total").textContent = "$ 0,00";
     document.getElementById("commission-modal").style.display = "flex";
+    document.getElementById("commission-submit").disabled = false;
+    document.getElementById("commission-submit").textContent = "Crear nota";
     // Cargar clientes para el autocompletado (una vez por apertura).
     try {
       _commissionClients = await asimov().clients.list("") || [];
@@ -2764,6 +2798,7 @@
         .join("");
     } catch (_) { _commissionClients = []; }
     refreshCommissionPreview();
+    document.getElementById("commission-client").focus();
   }
 
   async function refreshCommissionPreview() {
@@ -4909,6 +4944,7 @@
 
   // Nota de comisión: wiring del modal.
   document.getElementById('commission-cancel').addEventListener('click', closeCommissionDialog);
+  document.getElementById('commission-close').addEventListener('click', closeCommissionDialog);
   document.getElementById('commission-submit').addEventListener('click', submitCommission);
   document.getElementById('commission-rate').addEventListener('input', refreshCommissionPreview);
   document.getElementById('commission-modal').addEventListener('click', (e) => {
