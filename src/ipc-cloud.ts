@@ -22,6 +22,7 @@ import {
   retryParkedChanges,
   recoverRetryableParkedChanges,
   recoverLegacySyncConflicts,
+  recoverLegacyGatewayErrors,
   compactPendingChanges,
   onSyncApplied,
   type SyncCycleEvent,
@@ -50,6 +51,7 @@ export function registerCloudIpcHandlers(
       const result = await apiLogin(data.email, data.password);
       recoverRetryableParkedChanges();
       recoverLegacySyncConflicts();
+      recoverLegacyGatewayErrors();
       compactPendingChanges();
       startSyncTimer();
       let sync: { pushed: number; pulled: number; errors: number } | undefined;
@@ -132,6 +134,7 @@ export function registerCloudIpcHandlers(
   if (isCloudConnected()) {
     recoverRetryableParkedChanges();
     recoverLegacySyncConflicts();
+    recoverLegacyGatewayErrors();
     compactPendingChanges();
     startSyncTimer();
     void runSync().catch(() => {});

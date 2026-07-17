@@ -43,7 +43,9 @@ import {
   retryParkedChanges,
   recoverRetryableParkedChanges,
   recoverLegacySyncConflicts,
+  recoverLegacyGatewayErrors,
   compactPendingChanges,
+  getSyncStatus,
   getLastSyncTimestamp,
   onSyncApplied,
   runSync,
@@ -175,6 +177,21 @@ describe("sync queue — retry con backoff", () => {
     expect(recoverLegacySyncConflicts()).toBe(1);
     expect(getPendingChanges()).toHaveLength(1);
     expect(queueRow()).toMatchObject({ attempts: 0, error: null, next_attempt_at: null });
+  });
+
+  it("limpia el HTML 502 heredado y nunca lo muestra en el estado", () => {
+    getDb().prepare(
+      "INSERT INTO sync_queue (entity, entity_id, action, attempts, error, next_attempt_at) VALUES (?,?,?,?,?,datetime('now','+2 hours'))",
+    ).run("external_catalog_product", "air:old", "update", 3, "HTTP 502: <!DOCTYPE html><html>gateway</html>");
+
+    expect(getSyncStatus().lastError).not.toContain("DOCTYPE");
+    expect(recoverLegacyGatewayErrors()).toBe(1);
+    expect(getPendingChanges()).toHaveLength(1);
+    expect(queueRow()).toMatchObject({
+      attempts: 0,
+      next_attempt_at: null,
+      error: "Nube temporalmente no disponible. Reintentando automáticamente.",
+    });
   });
 
   it("conserva el detalle que devuelve la API para un conflicto real", async () => {
@@ -423,6 +440,25 @@ describe("sync queue — retry con backoff", () => {
     unsubscribe();
 
     expect(received).toContainEqual(expect.objectContaining({ pulled: 1, changedEntities: ["client"] }));
+  });
+
+  it("fragmenta una carga AIR y no envía el rawJson pesado", async () => {
+    for (let i = 0; i < 60; i++) {
+      enqueueChange("external_catalog_product", `air-${i}`, "update", {
+        code: `AIR-${i}`,
+        description: `Producto ${i}`,
+        rawJson: `RAW-SENTINEL-${i}-${"x".repeat(5_000)}`,
+      });
+    }
+
+    const result = await runSync();
+    const pushBodies = authorizedFetchMock.mock.calls
+      .filter(([url]) => String(url).includes("/sync/push"))
+      .map(([, init]) => JSON.parse(String((init as { body?: string }).body)) as { changes: unknown[] });
+
+    expect(result).toMatchObject({ pushed: 60, errors: 0 });
+    expect(pushBodies.map((body) => body.changes.length)).toEqual([25, 25, 10]);
+    expect(JSON.stringify(pushBodies)).not.toContain("RAW-SENTINEL");
   });
 });
 

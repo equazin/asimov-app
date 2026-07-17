@@ -20,6 +20,8 @@ import { applyDocEnvelope, deleteDocLocal, type DocEnvelope } from './document-s
 
 const SYNC_INTERVAL_MS = 3_000;
 const ENQUEUE_SYNC_DELAY_MS = 250;
+/** Lotes chicos evitan que Render corte cargas masivas del catálogo AIR con HTTP 502. */
+const CLOUD_PUSH_BATCH_SIZE = 25;
 /** Tras este número de intentos fallidos, el cambio se "aparca" (deja de reintentarse). */
 const MAX_ATTEMPTS = 8;
 let syncTimer: ReturnType<typeof setInterval> | null = null;
@@ -289,6 +291,22 @@ export function recoverLegacySyncConflicts(): number {
   return row.count;
 }
 
+/** Limpia errores HTML de gateways guardados por versiones anteriores y los reactiva. */
+export function recoverLegacyGatewayErrors(): number {
+  const where = `synced_at IS NULL AND (
+    error LIKE 'HTTP 502:%' OR error LIKE 'HTTP 503:%' OR error LIKE 'HTTP 504:%'
+    OR error LIKE '%<!DOCTYPE html%' OR error LIKE '%<html%'
+  )`;
+  const row = dbGet(`SELECT COUNT(*) AS count FROM sync_queue WHERE ${where}`) as { count: number };
+  dbRun(
+    `UPDATE sync_queue
+     SET attempts = 0, next_attempt_at = NULL,
+         error = 'Nube temporalmente no disponible. Reintentando automáticamente.'
+     WHERE ${where}`,
+  );
+  return row.count;
+}
+
 /** Conserva sólo el estado más nuevo de cada entidad cloud con semántica upsert. */
 export function compactPendingChanges(): number {
   const entities = "'integration_config','external_catalog_product','document_snapshot','kit_set'";
@@ -411,11 +429,37 @@ function isCloudNativeEntity(entity: string): boolean {
 async function pushCloudNativeChanges(
   entries: QueueEntry[],
 ): Promise<{ pushed: number; errors: number }> {
+  let pushed = 0;
+  let errors = 0;
+  for (let offset = 0; offset < entries.length; offset += CLOUD_PUSH_BATCH_SIZE) {
+    const batch = entries.slice(offset, offset + CLOUD_PUSH_BATCH_SIZE);
+    const result = await pushCloudNativeBatch(batch);
+    pushed += result.pushed;
+    errors += result.errors;
+    // Si la nube rechazó un lote, esperar al próximo ciclo evita martillarla
+    // inmediatamente con el resto de una carga masiva.
+    if (result.errors > 0) break;
+  }
+  return { pushed, errors };
+}
+
+function cloudPayload(entry: QueueEntry): Record<string, unknown> {
+  const data = entry.payload ? JSON.parse(entry.payload) as Record<string, unknown> : {};
+  if (entry.entity !== 'external_catalog_product') return data;
+  // rawJson es la respuesta original del proveedor y puede pesar cientos de KB.
+  // Los campos normalizados ya contienen todo lo necesario para sincronizar AIR.
+  const { rawJson: _rawJson, raw_json: _rawJsonSnake, ...normalized } = data;
+  return normalized;
+}
+
+async function pushCloudNativeBatch(
+  entries: QueueEntry[],
+): Promise<{ pushed: number; errors: number }> {
   const changes = entries.map((entry) => ({
     entity: entry.entity,
     action: entry.action,
     id: entry.entity_id,
-    data: entry.payload ? JSON.parse(entry.payload) as Record<string, unknown> : {},
+    data: cloudPayload(entry),
   }));
 
   try {
@@ -993,6 +1037,7 @@ export async function runSync(): Promise<{
 
   isSyncing = true;
   let online = false;
+  let cycleHadErrors = false;
   try {
     online = await apiTestConnection();
     if (!online) {
@@ -1023,11 +1068,13 @@ export async function runSync(): Promise<{
       errors: pushResult.errors + pullResult.failed,
       changedEntities: pullResult.changedEntities,
     };
+    cycleHadErrors = event.errors > 0;
     if (event.pushed > 0 || event.pulled > 0 || event.errors > 0) emitSyncApplied(event);
     return { pushed: event.pushed, pulled: event.pulled, errors: event.errors };
   } finally {
     isSyncing = false;
-    const shouldContinue = online && (rerunRequested || getPendingChanges().length > 0);
+    const shouldContinue = online && !cycleHadErrors
+      && (rerunRequested || getPendingChanges().length > 0);
     rerunRequested = false;
     if (shouldContinue) requestSync(100);
   }
@@ -1059,15 +1106,24 @@ export function getSyncStatus(): {
   syncing: boolean;
   lastError: string | null;
 } {
+  const storedError = (dbGet(
+    `SELECT error FROM sync_queue WHERE synced_at IS NULL AND error IS NOT NULL
+     ORDER BY id DESC LIMIT 1`,
+  ) as { error?: string } | undefined)?.error ?? null;
   return {
     connected: isCloudConnected(),
     pendingChanges: getPendingCount(),
     parkedChanges: getParkedCount(),
     lastSync: getLastSyncTimestamp(),
     syncing: isSyncing,
-    lastError: lastCycleError ?? (dbGet(
-      `SELECT error FROM sync_queue WHERE synced_at IS NULL AND error IS NOT NULL
-       ORDER BY id DESC LIMIT 1`,
-    ) as { error?: string } | undefined)?.error ?? null,
+    lastError: sanitizeSyncError(lastCycleError ?? storedError),
   };
+}
+
+function sanitizeSyncError(error: string | null): string | null {
+  if (!error) return null;
+  if (/<!doctype html|<html|data:font\/woff/i.test(error)) {
+    return 'Nube temporalmente no disponible. Reintentando automáticamente.';
+  }
+  return error.length > 500 ? `${error.slice(0, 497)}...` : error;
 }
