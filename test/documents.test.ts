@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
-  persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
+  persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder, persistPurchaseReceipt,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
   annulDocument, deleteDocument, setInvoicePrintPreferences,
   previewCommissionForInvoice, createCommissionNoteFromInvoice,
@@ -386,6 +386,36 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "COD1", cantidad: 2, precio: 100 }], totales: { total: 242 } });
     expect(stockOf("art-COD1")).toBe(0);
     expect(cashBalance()).toBe(0);
+  });
+});
+
+describe("documents — recibo de compra con pagos flexibles", () => {
+  it("toma el total de varios medios de pago y conserva su desglose", () => {
+    const receipt = persistPurchaseReceipt({
+      proveedorNombre: "Proveedor",
+      totalPagado: 9999,
+      mediosPago: [
+        { metodo: "transferencia", importe: 700, banco: "Banco Francés", referencia: "TR-1", fecha: "2026-07-17" },
+        { metodo: "efectivo", importe: 300, fecha: "2026-07-17" },
+      ],
+      facturas: [{ nroFact: "A-1", importe: 800, saldo: 800, pagado: 800 }],
+    });
+
+    const header = one("SELECT total, payment_method, payment_breakdown FROM purchase_receipts WHERE id=?", receipt.id);
+    expect(header.total).toBe(1000);
+    expect(header.payment_method).toBe("multiple");
+    expect(JSON.parse(header.payment_breakdown)).toHaveLength(2);
+    expect(one("SELECT paid_amount FROM purchase_receipt_items WHERE receipt_id=?", receipt.id).paid_amount).toBe(800);
+  });
+
+  it("permite dejar todo el pago a cuenta sin asociar facturas", () => {
+    const receipt = persistPurchaseReceipt({
+      proveedorNombre: "Proveedor",
+      mediosPago: [{ metodo: "transferencia", importe: 500 }],
+      facturas: [],
+    });
+    expect(one("SELECT total FROM purchase_receipts WHERE id=?", receipt.id).total).toBe(500);
+    expect(one("SELECT COUNT(*) count FROM purchase_receipt_items WHERE receipt_id=?", receipt.id).count).toBe(0);
   });
 });
 

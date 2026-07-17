@@ -363,6 +363,13 @@ export interface PurchaseReceiptForm {
   concepto?: string;
   totalPagado?: number | string;
   metodo?: string;
+  mediosPago?: Array<{
+    metodo?: string;
+    importe?: number | string;
+    banco?: string;
+    referencia?: string;
+    fecha?: string;
+  }>;
   facturas?: Array<{ nroFact?: string; invoiceId?: string; importe?: number | string; saldo?: number | string; pagado?: number | string }>;
 }
 
@@ -373,7 +380,21 @@ export function persistPurchaseReceipt(form: PurchaseReceiptForm): PersistResult
   const date = normalizeDate(form.fecha);
   const estado = str(form.estado) || "emitido";
   const cancelled = /anul|cancel/i.test(estado);
-  const total = num(form.totalPagado);
+  const mediosPago = (Array.isArray(form.mediosPago) ? form.mediosPago : [])
+    .map((p) => ({
+      metodo: str(p.metodo) || "transferencia",
+      importe: num(p.importe),
+      banco: str(p.banco),
+      referencia: str(p.referencia),
+      fecha: normalizeDate(p.fecha || form.fecha),
+    }))
+    .filter((p) => p.importe > 0);
+  const total = mediosPago.length
+    ? round2(mediosPago.reduce((sum, p) => sum + p.importe, 0))
+    : num(form.totalPagado);
+  const paymentMethod = mediosPago.length > 1
+    ? "multiple"
+    : mediosPago[0]?.metodo || str(form.metodo) || "transferencia";
   const cashAccountId = defaultCashAccountId();
   let number = str(form.nroRec);
   let cashMoved = 0;
@@ -381,9 +402,10 @@ export function persistPurchaseReceipt(form: PurchaseReceiptForm): PersistResult
   const tx = db.transaction(() => {
     if (!number) number = formatDocNumber("RCP", nextSequence("purchase-receipt"));
     dbRun(
-      `INSERT OR REPLACE INTO purchase_receipts (id,number,supplier_id,supplier_name,date,status,total,payment_method,notes,created_at)
-       VALUES (?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM purchase_receipts WHERE id=?),datetime('now')))`,
-      [id, number, str(form.proveedor?.id) || null, str(form.proveedorNombre), date, estado, total, str(form.metodo) || "transferencia", str(form.concepto), id],
+      `INSERT OR REPLACE INTO purchase_receipts (id,number,supplier_id,supplier_name,date,status,total,payment_method,payment_breakdown,notes,created_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,COALESCE((SELECT created_at FROM purchase_receipts WHERE id=?),datetime('now')))`,
+      [id, number, str(form.proveedor?.id) || null, str(form.proveedorNombre), date, estado, total, paymentMethod,
+       mediosPago.length ? JSON.stringify(mediosPago) : null, str(form.concepto), id],
     );
     reverseCashFor("purchase_receipt", id);
     dbRun("DELETE FROM purchase_receipt_items WHERE receipt_id = ?", [id]);

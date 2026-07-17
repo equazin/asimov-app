@@ -436,6 +436,7 @@ CREATE TABLE IF NOT EXISTS purchase_receipts (
   status         TEXT NOT NULL DEFAULT 'borrador',
   total          REAL NOT NULL DEFAULT 0,
   payment_method TEXT NOT NULL DEFAULT 'transferencia',
+  payment_breakdown TEXT,
   notes          TEXT,
   created_at     TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
@@ -997,6 +998,8 @@ export function initDb(dbPath?: string): void {
   // Necesario para calcular la comisión / costo de sobrefacturación de la factura
   // (rate% × (precio − costo) por línea). Opcional: facturas viejas quedan en 0.
   try { _db.exec("ALTER TABLE invoice_items ADD COLUMN cost REAL NOT NULL DEFAULT 0"); } catch {}
+  // Desglose JSON de los medios usados en cada recibo de compra.
+  try { _db.exec("ALTER TABLE purchase_receipts ADD COLUMN payment_breakdown TEXT"); } catch {}
   migrateCrmSchema();
   migrateInvoiceNumberUniqueness();
   migrateCrmUnification();

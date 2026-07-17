@@ -62,6 +62,17 @@
     .fact-input{width:100%;background:transparent;border:1px solid transparent;color:var(--text);padding:2px 4px;font-family:Consolas,monospace;font-size:12px;height:22px;text-align:right;outline:none;border-radius:3px}
     .fact-input:focus{border-color:var(--accent)}
     .del-row-btn{background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:14px;line-height:1;padding:2px 6px}
+    .payment-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0}
+    .payment-help{color:var(--text-muted);font-size:11px;line-height:1.4}
+    .payment-list{display:grid;gap:8px}
+    .payment-row{display:grid;grid-template-columns:160px 140px minmax(160px,1fr) minmax(150px,1fr) 130px 30px;gap:8px;align-items:end;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:6px}
+    .payment-row .form-group>span{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
+    .payment-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+    .payment-summary-item{padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;gap:4px}
+    .payment-summary-item .label{color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+    .payment-summary-item .amount{font:700 14px Consolas,monospace;color:var(--text)}
+    .payment-summary-item.balance .amount{color:var(--accent)}
+    @media(max-width:900px){.payment-row{grid-template-columns:repeat(2,minmax(0,1fr))}.payment-summary{grid-template-columns:1fr}}
     .footer{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:8px;justify-content:space-between}
     .footer-totals{display:flex;gap:16px;font-size:12px}
     .footer-totals .lbl{color:var(--text-muted);margin-right:4px}
@@ -179,31 +190,16 @@
   </div>
 
   <div class="tab-panel" id="panel-pago">
-    <div class="section-title">Forma de pago</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Método</label>
-        <select id="metodoPago">
-          <option value="transferencia">Transferencia bancaria</option>
-          <option value="efectivo">Efectivo</option>
-          <option value="cheque">Cheque</option>
-          <option value="tarjeta">Tarjeta</option>
-          <option value="mercadopago">MercadoPago</option>
-          <option value="otro">Otro</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Banco / Cuenta origen</label>
-        <input type="text" id="bancoOrigen" placeholder="Ej: Santander CTA. 000...">
-      </div>
-      <div class="form-group">
-        <label>Nro. de referencia</label>
-        <input type="text" id="referenciaPago" placeholder="Nro. transferencia / cheque">
-      </div>
-      <div class="form-group">
-        <label>Fecha operación</label>
-        <input type="date" id="fechaPago">
-      </div>
+    <div class="section-title">Medios de pago</div>
+    <div class="payment-toolbar">
+      <p class="payment-help">Ingresá el importe real de cada medio. Podés combinar transferencia, efectivo, cheque u otros.</p>
+      <button class="btn btn-outline" type="button" onclick="agregarMedioPago()">+ Agregar medio</button>
+    </div>
+    <div class="payment-list" id="paymentList"></div>
+    <div class="payment-summary">
+      <div class="payment-summary-item"><span class="label">Aplicado a facturas</span><span class="amount" id="paymentApplied">$ 0,00</span></div>
+      <div class="payment-summary-item"><span class="label">Total pagado</span><span class="amount" id="paymentTotal">$ 0,00</span></div>
+      <div class="payment-summary-item balance"><span class="label" id="paymentBalanceLabel">Saldo a cuenta</span><span class="amount" id="paymentBalance">$ 0,00</span></div>
     </div>
   </div>
 
@@ -222,6 +218,7 @@
 <div class="footer">
   <div class="footer-totals">
     <div><span class="lbl">Facturas:</span><span class="val" id="ftrCount">0</span></div>
+    <div><span class="lbl">Aplicado:</span><span class="val" id="ftrApplied">$ 0,00</span></div>
     <div><span class="lbl">Total pagado:</span><span class="val" id="ftrTotal">$ 0,00</span></div>
   </div>
   <div class="footer-buttons">
@@ -244,6 +241,8 @@
   var facturas = []; // {id?:string, nroFact, fecha, importe, saldo, pagado}
   var nextFactId = 1;
   var proveedorId = null;
+  var mediosPago = [{ metodo:"transferencia", importe:0, banco:"", referencia:"", fecha:new Date().toISOString().slice(0,10), _localId:1 }];
+  var nextPaymentId = 2;
 
   // ────── Tabs ──────
   document.querySelectorAll(".tab").forEach(function(t){
@@ -257,7 +256,67 @@
 
   // ────── Fecha default ──────
   document.getElementById("fecha").value = new Date().toISOString().slice(0,10);
-  document.getElementById("fechaPago").value = new Date().toISOString().slice(0,10);
+
+  function paymentMethodOptions(selected){
+    var options = [
+      ["transferencia","Transferencia bancaria"], ["efectivo","Efectivo"],
+      ["cheque","Cheque"], ["tarjeta","Tarjeta"],
+      ["mercadopago","Mercado Pago"], ["otro","Otro"]
+    ];
+    return options.map(function(o){ return '<option value="'+o[0]+'"'+(selected===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join("");
+  }
+
+  function agregarMedioPago(){
+    mediosPago.push({ metodo:"transferencia", importe:0, banco:"", referencia:"", fecha:new Date().toISOString().slice(0,10), _localId:nextPaymentId++ });
+    renderMediosPago();
+  }
+
+  function renderMediosPago(){
+    var list = document.getElementById("paymentList");
+    list.innerHTML = mediosPago.map(function(p){
+      return '<div class="payment-row">' +
+        '<label class="form-group"><span>Método</span><select data-pid="'+p._localId+'" data-pf="metodo">'+paymentMethodOptions(p.metodo)+'</select></label>' +
+        '<label class="form-group"><span>Importe</span><input type="number" min="0" step="0.01" inputmode="decimal" data-pid="'+p._localId+'" data-pf="importe" value="'+p.importe+'"></label>' +
+        '<label class="form-group"><span>Banco / cuenta</span><input data-pid="'+p._localId+'" data-pf="banco" value="'+esc(p.banco)+'" placeholder="Banco o cuenta de origen"></label>' +
+        '<label class="form-group"><span>Referencia</span><input data-pid="'+p._localId+'" data-pf="referencia" value="'+esc(p.referencia)+'" placeholder="Transferencia, cheque…"></label>' +
+        '<label class="form-group"><span>Fecha</span><input type="date" data-pid="'+p._localId+'" data-pf="fecha" value="'+esc(p.fecha)+'"></label>' +
+        '<button class="del-row-btn" type="button" data-remove-payment="'+p._localId+'" title="Quitar medio" aria-label="Quitar medio de pago">×</button>' +
+      '</div>';
+    }).join("");
+    list.querySelectorAll("input,select").forEach(function(el){
+      el.addEventListener("input", function(){
+        var p = mediosPago.find(function(x){ return x._localId === Number(el.dataset.pid); });
+        if(!p) return;
+        p[el.dataset.pf] = el.dataset.pf === "importe" ? (parseFloat(el.value)||0) : el.value;
+        if(el.dataset.pf === "importe") redistributeApplications(totalMediosPago());
+        recalc();
+      });
+    });
+    list.querySelectorAll("[data-remove-payment]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        if(mediosPago.length === 1){ alert("El recibo debe tener al menos un medio de pago."); return; }
+        mediosPago = mediosPago.filter(function(x){ return x._localId !== Number(btn.dataset.removePayment); });
+        redistributeApplications(totalMediosPago());
+        renderMediosPago();
+        recalc();
+      });
+    });
+    recalc();
+  }
+
+  function totalMediosPago(){
+    return mediosPago.reduce(function(sum,p){ return sum + (Number(p.importe)||0); },0);
+  }
+
+  function redistributeApplications(total){
+    var restante = Math.max(0, Number(total)||0);
+    facturas.forEach(function(f){
+      var max = Math.max(0, Number(f.saldo)||Number(f.importe)||0);
+      f.pagado = Math.min(max, restante);
+      restante = Math.max(0, restante - f.pagado);
+    });
+    renderFacturas();
+  }
 
   // ────── Proveedor picker ──────
   function abrirProveedorPicker(){
@@ -368,8 +427,7 @@
     if(count === 0){
       tbody.innerHTML = '<tr id="factEmptyRow"><td colspan="7" style="text-align:center;color:var(--text-muted);font-style:italic;padding:30px">Sin facturas</td></tr>';
       document.getElementById("factTotalCell").textContent = "$ 0,00";
-      document.getElementById("ftrTotal").textContent = "$ 0,00";
-      document.getElementById("hdrTotal").textContent = "$ 0,00";
+      recalc();
       return;
     }
     var totalPag = 0;
@@ -405,15 +463,21 @@
       });
     });
     document.getElementById("factTotalCell").textContent = fmtCurrency(totalPag);
-    document.getElementById("ftrTotal").textContent = fmtCurrency(totalPag);
-    document.getElementById("hdrTotal").textContent = fmtCurrency(totalPag);
+    recalc();
   }
 
   function recalc(){
-    var totalPag = facturas.reduce(function(a,f){ return a + (Number(f.pagado)||0); }, 0);
-    document.getElementById("factTotalCell").textContent = fmtCurrency(totalPag);
-    document.getElementById("ftrTotal").textContent = fmtCurrency(totalPag);
-    document.getElementById("hdrTotal").textContent = fmtCurrency(totalPag);
+    var aplicado = facturas.reduce(function(a,f){ return a + (Number(f.pagado)||0); }, 0);
+    var pagado = totalMediosPago();
+    var diferencia = pagado - aplicado;
+    document.getElementById("factTotalCell").textContent = fmtCurrency(aplicado);
+    document.getElementById("ftrApplied").textContent = fmtCurrency(aplicado);
+    document.getElementById("ftrTotal").textContent = fmtCurrency(pagado);
+    document.getElementById("hdrTotal").textContent = fmtCurrency(pagado);
+    document.getElementById("paymentApplied").textContent = fmtCurrency(aplicado);
+    document.getElementById("paymentTotal").textContent = fmtCurrency(pagado);
+    document.getElementById("paymentBalanceLabel").textContent = diferencia >= 0 ? "Saldo a cuenta" : "Falta asignar";
+    document.getElementById("paymentBalance").textContent = fmtCurrency(Math.abs(diferencia));
   }
 
   function fmtCurrency(n){
@@ -430,11 +494,10 @@
       alert("Seleccioná un proveedor antes de guardar.");
       return;
     }
-    if(facturas.length === 0){
-      alert("Agregá al menos una factura al recibo.");
-      return;
-    }
-    var totalPag = facturas.reduce(function(a,f){ return a + (Number(f.pagado)||0); }, 0);
+    var totalPag = totalMediosPago();
+    if(totalPag <= 0){ alert("Ingresá un importe mayor a cero en al menos un medio de pago."); return; }
+    var aplicado = facturas.reduce(function(a,f){ return a + (Number(f.pagado)||0); }, 0);
+    if(aplicado - totalPag > 0.009){ alert("El importe aplicado a facturas no puede superar el total pagado."); return; }
     var receipt = {
       nroRec: document.getElementById("nroRec").value.trim() || undefined,
       fecha: document.getElementById("fecha").value,
@@ -442,8 +505,9 @@
       proveedor: { id: proveedorId },
       proveedorNombre: document.getElementById("proveedorNombre").value.trim(),
       concepto: document.getElementById("concepto").value.trim(),
-      metodo: document.getElementById("metodoPago").value,
+      metodo: mediosPago.length > 1 ? "multiple" : mediosPago[0].metodo,
       totalPagado: totalPag,
+      mediosPago: mediosPago.map(function(p){ return { metodo:p.metodo, importe:p.importe, banco:p.banco, referencia:p.referencia, fecha:p.fecha }; }),
       facturas: facturas.map(function(f){
         return {
           invoiceId: f.id || undefined,
@@ -454,13 +518,8 @@
         };
       }),
     };
-    // Adjuntar detalles del método de pago como notas si están cargados.
-    var referencia = document.getElementById("referenciaPago").value.trim();
-    var banco = document.getElementById("bancoOrigen").value.trim();
     var obs = document.getElementById("observaciones").value.trim();
     var partes = [];
-    if(banco) partes.push("Banco/Cta: " + banco);
-    if(referencia) partes.push("Ref: " + referencia);
     if(obs) partes.push(obs);
     if(partes.length) receipt.concepto = (receipt.concepto ? receipt.concepto + " — " : "") + partes.join(" · ");
     if(window.asimovNewPurchaseReceipt) window.asimovNewPurchaseReceipt.savePurchaseReceipt(receipt);
@@ -469,6 +528,8 @@
   function cancelar(){
     if(window.asimovNewPurchaseReceipt) window.asimovNewPurchaseReceipt.cancel();
   }
+
+  renderMediosPago();
 
   document.addEventListener("keydown", function(e){
     if(e.key === "F8"){ e.preventDefault(); guardar(); }
