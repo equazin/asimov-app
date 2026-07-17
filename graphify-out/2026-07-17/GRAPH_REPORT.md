@@ -1,16 +1,16 @@
 # Graph Report - Asimov ERP  (2026-07-17)
 
 ## Corpus Check
-- 257 files · ~380,656 words
+- 257 files · ~381,111 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2374 nodes · 4980 edges · 152 communities (117 shown, 35 thin omitted)
+- 2376 nodes · 4989 edges · 154 communities (119 shown, 35 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 22 edges (avg confidence: 0.57)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1273ebfa`
+- Built from commit: `1afa6d94`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -152,11 +152,13 @@
 - Global Constraints
 - AuthService
 - dbAll
+- menu.ts
 - new-quote-client-ui.test.ts
 - openNativeForm
 - sequences.controller.ts
 - Global Constraints
 - purchase-document-flow-ui.test.ts
+- AfipController
 - new-purchase-receipt-preload.ts
 - auth.module.ts
 - migration.sql
@@ -178,37 +180,37 @@
   src/ipc/app.ts → package.json
 - `run()` --indirect_call--> `d()`  [INFERRED]
   scripts/verify-shell-bridge.js → src/comprobante-print.js
+- `resetCrm()` --calls--> `getDb()`  [EXTRACTED]
+  test/crm.test.ts → src/db.ts
+- `seedClient()` --calls--> `getDb()`  [EXTRACTED]
+  test/crm.test.ts → src/db.ts
 - `count()` --calls--> `getDb()`  [EXTRACTED]
   test/document-sync.test.ts → src/db.ts
-- `row()` --calls--> `getDb()`  [EXTRACTED]
-  test/masters.test.ts → src/db.ts
-- `queueRow()` --calls--> `getDb()`  [EXTRACTED]
-  test/sync.test.ts → src/db.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (152 total, 35 thin omitted)
+## Communities (154 total, 35 thin omitted)
 
 ### Community 0 - "documents.ts"
 Cohesion: 0.10
-Nodes (66): dbRun(), formatDocNumber(), getDb(), nextSequence(), revertSourcesOnAnnul(), annulDocument(), AnnulEffect, ANNULLABLE (+58 more)
+Nodes (64): dbRun(), formatDocNumber(), getDb(), nextSequence(), DocumentSource, annulDocument(), AnnulEffect, ANNULLABLE (+56 more)
 
 ### Community 1 - "ipc.ts"
-Cohesion: 0.11
-Nodes (33): applyIntegrationConfig(), applyKitSet(), applyRemoteChange(), backoffMinutes(), entityToApiPath(), getLastSyncTimestamp(), getPendingChanges(), isCloudNativeEntity() (+25 more)
+Cohesion: 0.12
+Nodes (32): applyIntegrationConfig(), applyKitSet(), applyRemoteChange(), backoffMinutes(), entityToApiPath(), getLastSyncTimestamp(), isCloudNativeEntity(), isTransientStatus() (+24 more)
 
 ### Community 2 - "page.tsx"
 Cohesion: 0.07
 Nodes (58): actionOptions, actionVariant, AuditEntry, AuditPage(), DashboardLayout(), DashboardData, DashboardPage(), SubscriptionRow (+50 more)
 
 ### Community 3 - "sync.ts"
-Cohesion: 0.14
-Nodes (41): Activity, ActivityType, ClientCrmSummary, completeTask(), CrmAccountListItem, CrmAccountWorkspace, deleteActivity(), deleteOpportunity() (+33 more)
+Cohesion: 0.13
+Nodes (43): Activity, ActivityType, ClientCrmSummary, completeTask(), CrmAccountListItem, CrmAccountWorkspace, deleteActivity(), deleteOpportunity() (+35 more)
 
 ### Community 4 - "main.ts"
 Cohesion: 0.05
-Nodes (59): getWindowBounds(), setWindowBounds(), APP_ICON_FILE, CLIENT_SELECTION_FILE, completeLogin(), createClientSelectionWindow(), createLoginWindow(), createMainWindow() (+51 more)
+Nodes (44): getWindowBounds(), setWindowBounds(), APP_ICON_FILE, CLIENT_SELECTION_FILE, completeLogin(), createClientSelectionWindow(), createLoginWindow(), createMainWindow() (+36 more)
 
 ### Community 5 - "api.ts"
 Cohesion: 0.16
@@ -220,7 +222,7 @@ Nodes (23): dependencies, @asimov/shared, bcryptjs, class-transformer, class-val
 
 ### Community 7 - "BillingService"
 Cohesion: 0.07
-Nodes (21): Cron, BillingController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param (+13 more)
+Nodes (19): Cron, BillingController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param (+11 more)
 
 ### Community 8 - "Fases"
 Cohesion: 0.20
@@ -235,8 +237,8 @@ Cohesion: 0.06
 Nodes (33): devDependencies, turbo, typescript, engines, node, name, private, scripts (+25 more)
 
 ### Community 11 - "ProductsController"
-Cohesion: 0.11
-Nodes (15): ProductsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+7 more)
+Cohesion: 0.10
+Nodes (17): ProductsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+9 more)
 
 ### Community 12 - "PrismaService"
 Cohesion: 0.17
@@ -244,7 +246,7 @@ Nodes (24): SessionUser, computeArsPrice(), DOLAR_CASAS, DolarRate, fetchDolarRa
 
 ### Community 13 - "afip.service.ts"
 Cohesion: 0.07
-Nodes (54): certNotAfter(), decryptSecret(), encryptSecret(), isEncrypted(), loadEncKey(), signTRA(), AFIP_IVA_CODES, AfipAlicIva (+46 more)
+Nodes (52): certNotAfter(), decryptSecret(), encryptSecret(), isEncrypted(), loadEncKey(), signTRA(), AFIP_IVA_CODES, AfipAlicIva (+44 more)
 
 ### Community 14 - "TenantController"
 Cohesion: 0.11
@@ -255,8 +257,8 @@ Cohesion: 0.06
 Nodes (30): dependencies, @asimov/shared, date-fns, expo, expo-camera, expo-local-authentication, expo-notifications, expo-router (+22 more)
 
 ### Community 16 - "CustomizationService"
-Cohesion: 0.10
-Nodes (16): RequestUser, CustomizationController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param (+8 more)
+Cohesion: 0.09
+Nodes (19): CurrentUser, Public(), RequestUser, Roles(), CustomizationController, ApiBearerAuth, ApiTags, Body (+11 more)
 
 ### Community 17 - "package.json"
 Cohesion: 0.07
@@ -275,8 +277,8 @@ Cohesion: 0.07
 Nodes (27): dependencies, @asimov/shared, clsx, date-fns, lucide-react, next, react, react-dom (+19 more)
 
 ### Community 21 - "ReportsController"
-Cohesion: 0.10
-Nodes (20): CurrentUser, AfipController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param (+12 more)
+Cohesion: 0.11
+Nodes (16): ReportsController, ApiBearerAuth, ApiTags, Controller, Get, Query, Res, Roles (+8 more)
 
 ### Community 22 - "StockController"
 Cohesion: 0.12
@@ -291,8 +293,8 @@ Cohesion: 0.11
 Nodes (15): ClientsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Delete, Get (+7 more)
 
 ### Community 25 - "DocumentsService"
-Cohesion: 0.10
-Nodes (16): DocumentsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Get, Param (+8 more)
+Cohesion: 0.12
+Nodes (14): DocumentsController, ApiBearerAuth, ApiOperation, ApiTags, Body, Controller, Get, Param (+6 more)
 
 ### Community 26 - "SuppliersController"
 Cohesion: 0.11
@@ -312,15 +314,15 @@ Nodes (8): authenticate(), DEFAULT_ADMIN, ensureUser(), generateInitialPassword(
 
 ### Community 30 - "SyncService"
 Cohesion: 0.10
-Nodes (10): SyncController, ApiBearerAuth, ApiTags, Body, Controller, Get, Post, Query (+2 more)
+Nodes (11): SyncController, ApiBearerAuth, ApiTags, Body, Controller, Get, Post, Query (+3 more)
 
 ### Community 31 - "compilerOptions"
 Cohesion: 0.09
 Nodes (21): compilerOptions, declaration, emitDecoratorMetadata, esModuleInterop, experimentalDecorators, forceConsistentCasingInFileNames, lib, module (+13 more)
 
 ### Community 32 - "comprobante-print.js"
-Cohesion: 0.15
-Nodes (24): { app, BrowserWindow, ipcMain }, DIST, path, run(), band(), bandLeft(), bandRight(), caeBlock() (+16 more)
+Cohesion: 0.16
+Nodes (26): { app, BrowserWindow, ipcMain }, DIST, path, run(), band(), bandLeft(), bandRight(), caeBlock() (+18 more)
 
 ### Community 33 - "compilerOptions"
 Cohesion: 0.10
@@ -344,7 +346,7 @@ Nodes (11): appIpc, copyAssets, dbIpc, ipc, main, optionalSource(), preload, she
 
 ### Community 38 - "sequences.controller.ts"
 Cohesion: 0.08
-Nodes (23): Global, AppModule, Module, PrismaModule, Module, bootstrap(), AuthModule, Module (+15 more)
+Nodes (24): Global, AppModule, Module, PrismaModule, Module, bootstrap(), AfipModule, Module (+16 more)
 
 ### Community 39 - "Asimov — Manual de marca"
 Cohesion: 0.12
@@ -443,8 +445,8 @@ Cohesion: 0.50
 Nodes (3): api, AsimovNewArticleApi, EditPrefill
 
 ### Community 88 - "menu.ts"
-Cohesion: 0.14
-Nodes (36): addBookmark(), BookmarkEntry, DEFAULTS, DesktopConfig, getBookmarks(), getPrintPreferences(), getShell(), getShellPreferences() (+28 more)
+Cohesion: 0.20
+Nodes (21): addBookmark(), BookmarkEntry, DEFAULTS, DesktopConfig, getBookmarks(), getPrintPreferences(), getShell(), getShellPreferences() (+13 more)
 
 ### Community 94 - "getDb"
 Cohesion: 0.20
@@ -455,16 +457,16 @@ Cohesion: 0.19
 Nodes (25): "account_movements", "audit_logs", "cash_accounts", "cash_movements", "clients", "document_items", "documents", "feature_flags" (+17 more)
 
 ### Community 96 - "masters.ts"
-Cohesion: 0.18
-Nodes (16): applyDocEnvelope(), buildDocEnvelope(), deleteDocLocal(), DOC_TABLES, DocEnvelope, DocTableMap, mergeInvoiceFiscalState(), replaceRow() (+8 more)
+Cohesion: 0.24
+Nodes (11): applyDocEnvelope(), deleteDocLocal(), DOC_TABLES, DocEnvelope, DocTableMap, mergeInvoiceFiscalState(), replaceRow(), reverseCash() (+3 more)
 
 ### Community 97 - "db.ts"
 Cohesion: 0.15
 Nodes (13): scripts, build, db:deploy, db:generate, db:migrate, db:seed, db:studio, dev (+5 more)
 
 ### Community 98 - "RequestUser"
-Cohesion: 0.32
-Nodes (8): closeDb(), DashboardKpis, ensureCrmIndexes(), initDb(), migrateCrmSchema(), migrateCrmUnification(), migrateInvoiceNumberUniqueness(), seedBase()
+Cohesion: 0.17
+Nodes (16): closeDb(), DashboardKpis, ensureCrmIndexes(), initDb(), migrateCrmSchema(), migrateCrmUnification(), migrateInvoiceNumberUniqueness(), buildDocEnvelope() (+8 more)
 
 ### Community 101 - "afip.test.ts"
 Cohesion: 0.50
@@ -487,8 +489,8 @@ Cohesion: 0.21
 Nodes (12): AfipUnavailableError, AfipQrData, buildAfipQrUrl(), buildLoginCmsEnvelope(), buildLoginTicketRequest(), callLoginCms(), extractLoginCmsReturn(), findDeep() (+4 more)
 
 ### Community 107 - "DocumentSource"
-Cohesion: 0.40
-Nodes (5): DocumentSource, DeliveryNoteForm, GoodsReceiptForm, InvoiceForm, PurchaseInvoiceForm
+Cohesion: 0.23
+Nodes (16): createNewArticleWindowStandalone(), createNewClientWindowStandalone(), createNewDeliveryNoteWindowStandalone(), createNewGoodsReceiptWindowStandalone(), createNewPaymentOrderWindowStandalone(), createNewPurchaseInvoiceWindowStandalone(), createNewPurchaseOrderWindowStandalone(), createNewPurchaseReceiptWindowStandalone() (+8 more)
 
 ### Community 108 - "stock.module.ts"
 Cohesion: 0.22
@@ -531,8 +533,8 @@ Cohesion: 0.10
 Nodes (20): Execution Handoff, File Map, Gaps, Global Constraints, Multi-PC / Nube — Implementation Plan, Placeholder scan, Self-Review, Spec coverage (+12 more)
 
 ### Community 119 - "tray.ts"
-Cohesion: 0.23
-Nodes (15): getLaunchAtStartup(), setLaunchAtStartup(), applyLaunchAtStartup(), createTrayIcon(), iconPath(), initTray(), notifyUpdateAvailable(), rebuildTrayMenu() (+7 more)
+Cohesion: 0.24
+Nodes (14): getLaunchAtStartup(), setLaunchAtStartup(), applyLaunchAtStartup(), createTrayIcon(), iconPath(), initTray(), notifyUpdateAvailable(), rebuildTrayMenu() (+6 more)
 
 ### Community 120 - "padron.ts"
 Cohesion: 0.26
@@ -540,11 +542,11 @@ Nodes (10): buildGetPersonaEnvelope(), callPadron(), collectImpuestos(), escapeX
 
 ### Community 121 - "dbGet"
 Cohesion: 0.27
-Nodes (10): computeBuildableStock(), explodeKitComponents(), getKitComponents(), getKitInfo(), KitComponent, KitComponentInput, KitInfo, seedArticle() (+2 more)
+Nodes (11): computeBuildableStock(), explodeKitComponents(), getKitComponents(), getKitInfo(), KitComponent, KitComponentInput, KitInfo, setKitComponents() (+3 more)
 
 ### Community 123 - "ApiOperation"
-Cohesion: 0.06
-Nodes (31): Headers, HttpCode, AuthController, ApiOperation, ApiTags, Body, Controller, Post (+23 more)
+Cohesion: 0.07
+Nodes (25): Headers, HttpCode, AuthController, ApiOperation, ApiTags, Body, Controller, Post (+17 more)
 
 ### Community 124 - "auth.module.ts"
 Cohesion: 0.14
@@ -559,8 +561,8 @@ Cohesion: 0.33
 Nodes (5): Cierre inferior para todos los comprobantes - Plan de implementación, Global Constraints, Task 1: Cubrir los cinco formatos con pruebas, Task 2: Unificar el resumen inferior, Task 3: Verificar impresión y publicar
 
 ### Community 127 - "dbAll"
-Cohesion: 0.19
-Nodes (17): AirComponentRef, AirProductRow, refreshAirKitProxy(), refreshAllAirKitProxies(), resolveKitComponentArticle(), syncProxyStock(), upsertArticle(), setKitComponents() (+9 more)
+Cohesion: 0.18
+Nodes (18): AirComponentRef, AirProductRow, refreshAirKitProxy(), refreshAllAirKitProxies(), resolveKitComponentArticle(), syncProxyStock(), upsertArticle(), upsertClient() (+10 more)
 
 ### Community 128 - "shell-invoice-fiscal-status.test.ts"
 Cohesion: 0.33
@@ -575,8 +577,8 @@ Cohesion: 0.50
 Nodes (3): invoiceHtml, pickerSource, productSelectionHtml
 
 ### Community 133 - "auth.module.ts"
-Cohesion: 0.11
-Nodes (35): AirLocalConfig, airPost(), AirProductNormalized, AirRateLimitError, airRequest(), AirSyncResult, asArray(), extractJson() (+27 more)
+Cohesion: 0.10
+Nodes (36): AirLocalConfig, airPost(), AirProductNormalized, AirRateLimitError, airRequest(), AirSyncResult, asArray(), extractJson() (+28 more)
 
 ### Community 134 - "Pedidos y cotizaciones con kits, margen y dólar oficial Implementation Plan"
 Cohesion: 0.29
@@ -595,8 +597,8 @@ Cohesion: 0.42
 Nodes (8): getAccessToken(), getApiBaseUrl(), isCloudConnected(), getSequenceLocalLast(), getSequenceRefillNames(), storeSequenceBlock(), ensureSequenceBlocks(), fetchMock
 
 ### Community 140 - "sync-bootstrap.ts"
-Cohesion: 0.19
-Nodes (20): apiLogin(), apiTestConnection(), setApiBaseUrl(), registerCloudIpcHandlers(), inspectDeviceIntegrationStatus(), compactPendingChanges(), getParkedCount(), getPendingCount() (+12 more)
+Cohesion: 0.18
+Nodes (21): apiLogin(), apiTestConnection(), setApiBaseUrl(), registerCloudIpcHandlers(), inspectDeviceIntegrationStatus(), compactPendingChanges(), getParkedCount(), getPendingChanges() (+13 more)
 
 ### Community 141 - "Global Constraints"
 Cohesion: 0.33
@@ -607,8 +609,12 @@ Cohesion: 0.12
 Nodes (62): accountById(), activityById(), applyPermissions(), bindRootEvents(), canWrite(), clientOptions(), closeParentDialog(), completeTask() (+54 more)
 
 ### Community 143 - "dbAll"
-Cohesion: 0.16
-Nodes (28): enqueueAirConfigCloudSync(), resetAirAuthCache(), dbAll(), getDashboardKpis(), upsertClient(), upsertSupplier(), applySourceLink(), ClientInvoiceToCollect (+20 more)
+Cohesion: 0.17
+Nodes (27): enqueueAirConfigCloudSync(), dbAll(), getDashboardKpis(), applySourceLink(), ClientInvoiceToCollect, DOC_TABLES, getLinksFor(), getSourceItems() (+19 more)
+
+### Community 144 - "menu.ts"
+Cohesion: 0.28
+Nodes (15): bookmarkMenuItems(), broadcast(), buildAppMenu(), chooseBackgroundImage(), currentPath(), currentTitle(), focusedContents(), focusedWindow() (+7 more)
 
 ### Community 146 - "openNativeForm"
 Cohesion: 0.22
@@ -622,9 +628,13 @@ Nodes (11): SequencesController, ApiBearerAuth, ApiTags, Body, Controller, Post,
 Cohesion: 0.29
 Nodes (6): Flujo de compras: remitos y facturas Implementation Plan, Global Constraints, Task 1: Vínculos y consultas del flujo de compras, Task 2: Selectores en factura y remito de compra, Task 3: Navegación y terminología de compras, Task 4: Revisión y entrega
 
+### Community 150 - "AfipController"
+Cohesion: 0.23
+Nodes (9): AfipController, ApiBearerAuth, ApiTags, Body, Controller, Get, Param, Post (+1 more)
+
 ### Community 152 - "auth.module.ts"
-Cohesion: 0.06
-Nodes (23): Public(), Roles(), JwtAuthGuard, Injectable, PlanLimitGuard, Injectable, RolesGuard, Injectable (+15 more)
+Cohesion: 0.05
+Nodes (23): JwtAuthGuard, Injectable, PlanLimitGuard, Injectable, RolesGuard, Injectable, TenantStatusGuard, Injectable (+15 more)
 
 ### Community 160 - "migration.sql"
 Cohesion: 0.50
@@ -641,14 +651,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `response()` connect `AuthService` to `openNativeForm`?**
   _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Why does `dbRun()` connect `documents.ts` to `masters.ts`, `ipc.ts`, `RequestUser`, `sync.ts`, `auth.module.ts`, `afip.test.ts`, `PrismaService`, `sync-bootstrap.ts`, `TenantController`, `dbAll`, `auth.module.ts`, `wsfe.ts`, `libro-iva.ts`, `dbGet`, `auth.module.ts`, `RequestUser`, `dbAll`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `RequestUser` connect `CustomizationService` to `sequences.controller.ts`, `BillingService`, `ProductsController`, `sequences.controller.ts`, `ReportsController`, `StockController`, `SyncService`, `auth.module.ts`, `ClientsController`, `SuppliersController`, `DocumentsService`?**
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `RequestUser` connect `CustomizationService` to `BillingService`, `ProductsController`, `sequences.controller.ts`, `SyncService`, `ReportsController`, `AfipController`, `StockController`, `auth.module.ts`, `ClientsController`, `SuppliersController`, `DocumentsService`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **What connects `name`, `productName`, `version` to the rest of the system?**
   _876 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `documents.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.09818913480885312 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10266847580280417 - nodes in this community are weakly interconnected._
 - **Should `ipc.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1140819964349376 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11742424242424243 - nodes in this community are weakly interconnected._
 - **Should `page.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.06518987341772152 - nodes in this community are weakly interconnected._

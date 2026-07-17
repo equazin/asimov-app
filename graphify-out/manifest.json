@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1784297172.3675275,
-    "ast_hash": "b0efedf7876ae25fa6c2bdcfe79ded1f",
+    "mtime": 1784297701.644451,
+    "ast_hash": "ee00399d2ea81a573d4f0994f6469e1d",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "src/documents.ts": {
-    "mtime": 1784295708.39174,
-    "ast_hash": "265b36578e5b35158c88fe7f0f590a69",
+    "mtime": 1784297911.7828324,
+    "ast_hash": "1b804cf6dffcf98a0426281b12ae6cc4",
     "semantic_hash": ""
   },
   "src/ipc-cloud.ts": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "test/documents.test.ts": {
-    "mtime": 1784296164.3730984,
-    "ast_hash": "1ccf085ff932814d587c6de58fde4ccd",
+    "mtime": 1784297962.8944843,
+    "ast_hash": "0644b5ee4cfacdf302806d2a8cd650f6",
     "semantic_hash": ""
   },
   "test/helpers.ts": {
@@ -1105,8 +1105,8 @@
     "semantic_hash": ""
   },
   "src/new-purchase-order.html": {
-    "mtime": 1784049740.1695795,
-    "ast_hash": "a91b371f01be87a29aa782e296cee18d",
+    "mtime": 1784297902.6950002,
+    "ast_hash": "d70475542f1b209abee54fbdf1aece6a",
     "semantic_hash": ""
   },
   "src/new-quote.html": {

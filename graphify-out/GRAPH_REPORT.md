@@ -1,7 +1,7 @@
 # Graph Report - Asimov ERP  (2026-07-17)
 
 ## Corpus Check
-- 257 files · ~381,111 words
+- 257 files · ~381,330 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1afa6d94`
+- Built from commit: `de24b242`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
