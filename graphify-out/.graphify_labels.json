@@ -143,11 +143,13 @@
   "141": "Global Constraints",
   "142": "AuthService",
   "143": "dbAll",
+  "144": "menu.ts",
   "145": "new-quote-client-ui.test.ts",
   "146": "openNativeForm",
   "147": "sequences.controller.ts",
   "148": "Global Constraints",
   "149": "purchase-document-flow-ui.test.ts",
+  "150": "AfipController",
   "151": "new-purchase-receipt-preload.ts",
   "152": "auth.module.ts",
   "160": "migration.sql"

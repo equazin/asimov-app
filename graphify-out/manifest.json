@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1784296431.7363393,
-    "ast_hash": "cafe41d04fa3065f337370bb0bb674c7",
+    "mtime": 1784297172.3675275,
+    "ast_hash": "b0efedf7876ae25fa6c2bdcfe79ded1f",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "src/comprobante-print.js": {
-    "mtime": 1784045465.7696335,
-    "ast_hash": "c1797d955a3ee7be656b11c32ca6f27f",
+    "mtime": 1784297513.8881176,
+    "ast_hash": "b638712a470985503368602135248c6e",
     "semantic_hash": ""
   },
   "src/config.ts": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "src/shell.html": {
-    "mtime": 1784296020.1443598,
-    "ast_hash": "c8fe7b4adbfad4ca1b7d57297a963d90",
+    "mtime": 1784297532.6504824,
+    "ast_hash": "6ebbfb3e889279f40fadbbcd20cbb7eb",
     "semantic_hash": ""
   },
   "src/supplier-selection.html": {
@@ -1480,8 +1480,8 @@
     "semantic_hash": ""
   },
   "test/comprobante-print.test.ts": {
-    "mtime": 1784049825.4592001,
-    "ast_hash": "896cf04e0805292290fb6f14ee313cb2",
+    "mtime": 1784297590.6634321,
+    "ast_hash": "0d59fbdfab5c291cdb6274125dd9219e",
     "semantic_hash": ""
   },
   "src/air-kit-proxy.ts": {
