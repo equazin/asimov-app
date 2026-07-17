@@ -646,20 +646,20 @@ td{ border-color:var(--border) !important; }
     <div class="tab-panel items-panel" id="panel-items">
       <div class="items-toolbar">
         <button class="btn btn-primary" id="btnAddRow" style="height:26px;padding:0 12px;">+ Agregar ítem</button>
-        <button class="btn" id="btnTraerPedido" style="height:26px;padding:0 12px;" title="Traer los ítems de un pedido pendiente del cliente">📋 Traer pedido</button>
+        <button class="btn" id="btnTraerFactura" style="height:26px;padding:0 12px;" title="Traer los ítems de una factura de venta del cliente">🧾 Traer factura</button>
         <span class="origen-badge" id="lblOrigen" style="display:none;background:rgba(46,163,110,0.15);color:#2ea36e;border:1px solid rgba(46,163,110,0.4);border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">
           📎 <span id="lblOrigenTexto"></span>
-          <span id="btnQuitarOrigen" style="cursor:pointer;margin-left:4px;font-weight:700;" title="Desvincular pedido de origen">×</span>
+          <span id="btnQuitarOrigen" style="cursor:pointer;margin-left:4px;font-weight:700;" title="Desvincular factura de origen">×</span>
         </span>
         <span class="items-hint">Cant. pedida → cant. entregada | F4 o + = buscar artículo | Insert = nueva fila</span>
         <span class="items-count" id="lblItemCount">0 ítems</span>
       </div>
 
-      <!-- Modal selector de pedido pendiente -->
+      <!-- Modal selector de factura de venta -->
       <div id="origenModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:center;justify-content:center;">
         <div style="background:var(--panel,#111823);color:inherit;border:1px solid rgba(255,255,255,0.15);border-radius:8px;width:560px;max-height:70vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.5);">
           <div style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;">
-            <strong>Traer pedido pendiente</strong>
+            <strong>Traer factura de venta</strong>
             <span style="flex:1"></span>
             <span id="origenModalClose" style="cursor:pointer;font-size:18px;padding:0 6px;">×</span>
           </div>
@@ -1033,16 +1033,19 @@ td{ border-color:var(--border) !important; }
       return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    /* ─── Documentos entrelazados: traer pedido ─── */
-    var origenDoc = null; // { tipo: "sale-order", id, numero }
+    /* ─── Documentos entrelazados: traer factura ─── */
+    var origenDoc = null; // { tipo: "invoice", id, numero }
 
     function setOrigen(doc) {
       origenDoc = doc;
       var badge = document.getElementById("lblOrigen");
+      var facturaVinculada = document.getElementById("txtFacturaVinculada");
       if (doc) {
-        document.getElementById("lblOrigenTexto").textContent = "Pedido " + (doc.numero || "");
+        document.getElementById("lblOrigenTexto").textContent = "Factura " + (doc.numero || "");
+        if (facturaVinculada) facturaVinculada.value = doc.numero || "";
         badge.style.display = "inline-flex";
       } else {
+        if (facturaVinculada) facturaVinculada.value = "";
         badge.style.display = "none";
       }
     }
@@ -1054,7 +1057,7 @@ td{ border-color:var(--border) !important; }
       if (e.target === this) closeOrigenModal();
     });
 
-    document.getElementById("btnTraerPedido").addEventListener("click", async function() {
+    document.getElementById("btnTraerFactura").addEventListener("click", async function() {
       if (!clienteData || !clienteData.id) {
         alert("Primero seleccioná el destinatario (F4 en Razón Social).");
         return;
@@ -1064,9 +1067,9 @@ td{ border-color:var(--border) !important; }
       body.innerHTML = '<div style="padding:16px;opacity:0.6;">Buscando...</div>';
       modal.style.display = "flex";
       try {
-        var docs = await window.asimovNewDeliveryNote.listPendingSaleOrders(String(clienteData.id));
+        var docs = await window.asimovNewDeliveryNote.listInvoicesForDeliveryNote(String(clienteData.id));
         if (!docs || docs.length === 0) {
-          body.innerHTML = '<div style="padding:16px;opacity:0.6;">Este cliente no tiene pedidos pendientes de remitir.</div>';
+          body.innerHTML = '<div style="padding:16px;opacity:0.6;">Este cliente no tiene facturas disponibles para remitir.</div>';
           return;
         }
         body.innerHTML = docs.map(function(d) {
@@ -1081,18 +1084,18 @@ td{ border-color:var(--border) !important; }
             '</div>';
         }).join("");
         body.querySelectorAll(".origen-item").forEach(function(el) {
-          el.addEventListener("click", function() { importPedido(el.dataset.id, el.dataset.num); });
+          el.addEventListener("click", function() { importFactura(el.dataset.id, el.dataset.num); });
         });
       } catch (e) {
-        body.innerHTML = '<div style="padding:16px;color:#E5544B;">' + esc(e.message || "Error al buscar pedidos") + '</div>';
+        body.innerHTML = '<div style="padding:16px;color:#E5544B;">' + esc(e.message || "Error al buscar facturas") + '</div>';
       }
     });
 
-    async function importPedido(id, numero) {
+    async function importFactura(id, numero) {
       try {
-        var srcItems = await window.asimovNewDeliveryNote.getSourceItems("sale-order", id);
-        if (!srcItems || srcItems.length === 0) { alert("El pedido no tiene ítems."); return; }
-        if (items.length > 0 && !confirm("El remito ya tiene ítems cargados. ¿Reemplazarlos por los del pedido?")) return;
+        var srcItems = await window.asimovNewDeliveryNote.getSourceItems("invoice", id);
+        if (!srcItems || srcItems.length === 0) { alert("La factura no tiene ítems."); return; }
+        if (items.length > 0 && !confirm("El remito ya tiene ítems cargados. ¿Reemplazarlos por los de la factura?")) return;
         items = [];
         srcItems.forEach(function(it) {
           var qty = parseFloat(it.qty) || 1;
@@ -1106,7 +1109,7 @@ td{ border-color:var(--border) !important; }
             lote: "",
           });
         });
-        setOrigen({ tipo: "sale-order", id: id, numero: numero });
+        setOrigen({ tipo: "invoice", id: id, numero: numero });
         renderItemsTable();
         closeOrigenModal();
       } catch (e) {

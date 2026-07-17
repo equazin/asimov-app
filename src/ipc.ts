@@ -21,6 +21,7 @@ import {
   listPendingSaleOrders,
   listPendingDeliveryNotes,
   listClientInvoicesForNote,
+  listInvoicesForDeliveryNote,
   listPendingPurchaseOrders,
   listPendingPurchaseInvoices,
   listPurchaseInvoicesToPay,
@@ -785,6 +786,8 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     listPendingDeliveryNotes(safeStr(clientId)));
   ipcMain.handle("db:doc-links:client-invoices", (_event, clientId: unknown) =>
     listClientInvoicesForNote(safeStr(clientId)));
+  ipcMain.handle("db:doc-links:invoices-for-delivery-note", (_event, clientId: unknown) =>
+    listInvoicesForDeliveryNote(safeStr(clientId)));
   ipcMain.handle("db:doc-links:pending-purchase-orders", (_event, supplierId: unknown) =>
     listPendingPurchaseOrders(safeStr(supplierId)));
   ipcMain.handle("db:doc-links:pending-purchase-invoices", (_event, supplierId: unknown) =>

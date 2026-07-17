@@ -6,6 +6,7 @@ import {
   listPendingSaleOrders,
   listPendingDeliveryNotes,
   listClientInvoicesForNote,
+  listInvoicesForDeliveryNote,
   listPendingPurchaseOrders,
   listPendingPurchaseInvoices,
   getSourceItems,
@@ -207,6 +208,37 @@ describe("getSourceItems", () => {
 
   it("tipo desconocido devuelve []", () => {
     expect(getSourceItems("otro", "x")).toEqual([]);
+  });
+});
+
+describe("factura → remito", () => {
+  it("lista una factura disponible, crea el remito y evita volver a ofrecerla", () => {
+    const invoice = persistInvoice({
+      cliente: { id: CLIENT_ID }, clienteNombre: "ACME SRL",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantidad: 2, precio: 250000, iva: 21 }],
+    });
+    expect(listInvoicesForDeliveryNote(CLIENT_ID).map((doc) => doc.id)).toContain(invoice.id);
+
+    const delivery = persistDeliveryNote({
+      cliente: { id: CLIENT_ID }, clienteNombre: "ACME SRL",
+      items: [{ codigo: "R5-5600G", descripcion: "RYZEN 5 5600G", cantPedida: 2, cantEntregada: 2 }],
+      origen: { tipo: "invoice", id: invoice.id },
+    });
+
+    expect(getLinksFor("delivery-note", delivery.id).origins[0]).toMatchObject({
+      doc_type: "invoice",
+      doc_id: invoice.id,
+    });
+    expect(dbGet<{ status: string }>("SELECT status FROM invoices WHERE id=?", [invoice.id])?.status).toBe("borrador");
+    expect(listInvoicesForDeliveryNote(CLIENT_ID).map((doc) => doc.id)).not.toContain(invoice.id);
+  });
+
+  it("excluye notas de crédito y facturas anuladas", () => {
+    dbRun("INSERT INTO invoices (id,number,client_id,client_name,tipo,status) VALUES (?,?,?,?,?,?)",
+      ["inv-nc", "NC-1", CLIENT_ID, "ACME SRL", "NC", "autorizada"]);
+    dbRun("INSERT INTO invoices (id,number,client_id,client_name,tipo,status) VALUES (?,?,?,?,?,?)",
+      ["inv-anulada", "A-2", CLIENT_ID, "ACME SRL", "A", "anulada"]);
+    expect(listInvoicesForDeliveryNote(CLIENT_ID)).toEqual([]);
   });
 });
 

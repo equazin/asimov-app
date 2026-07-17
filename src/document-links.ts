@@ -1,10 +1,10 @@
 /**
- * Vínculos entre documentos (trazabilidad pedido → remito → factura).
+ * Vínculos entre documentos y su trazabilidad.
  *
  * Cuando una factura "trae" un pedido o remito, se registra el vínculo en
  * document_links y el documento de origen cambia de estado automáticamente:
  *   pedido  → factura : pedido pasa a "facturado"
- *   pedido  → remito  : pedido pasa a "remitido"
+ *   factura → remito  : la factura conserva su estado fiscal
  *   remito  → factura : remito pasa a "facturado"
  * Al anular el documento destino, el origen vuelve a "pendiente".
  */
@@ -97,6 +97,7 @@ function isAllowedLink(sourceType: string, targetType: string): boolean {
     (sourceType === "quote" && targetType === "sale-order") ||
     (sourceType === "sale-order" && (targetType === "delivery-note" || targetType === "invoice")) ||
     (sourceType === "delivery-note" && targetType === "invoice") ||
+    (sourceType === "invoice" && targetType === "delivery-note") ||
     (sourceType === "invoice" && targetType === "invoice") ||
     (sourceType === "purchase-order" && targetType === "purchase-invoice") ||
     (sourceType === "purchase-invoice" && targetType === "goods-receipt")
@@ -240,6 +241,30 @@ export function listClientInvoicesForNote(clientId: string): PendingDoc[] {
      WHERE f.client_id = ? AND LOWER(f.status) = 'autorizada'
        AND f.cae IS NOT NULL AND trim(f.cae) <> ''
        AND UPPER(f.tipo) NOT IN ('NC','ND')
+     ORDER BY f.date DESC, f.created_at DESC LIMIT 50`,
+    [clientId],
+  );
+}
+
+/** Facturas de venta disponibles para generar un remito de venta. */
+export function listInvoicesForDeliveryNote(clientId: string): PendingDoc[] {
+  if (!clientId) return [];
+  return dbAll<PendingDoc>(
+    `SELECT f.id, f.number, f.date, f.status, f.total, f.client_name,
+            (SELECT COUNT(*) FROM invoice_items i WHERE i.invoice_id = f.id) AS items_count
+     FROM invoices f
+     WHERE f.client_id = ?
+       AND LOWER(f.status) NOT IN ('anulado','anulada','cancelado','cancelada','rechazada')
+       AND UPPER(f.tipo) NOT IN ('NC','ND')
+       AND NOT EXISTS (
+         SELECT 1
+         FROM document_links l
+         JOIN delivery_notes d ON d.id = l.target_id
+         WHERE l.source_type = 'invoice'
+           AND l.source_id = f.id
+           AND l.target_type = 'delivery-note'
+           AND LOWER(d.status) NOT IN ('anulado','anulada','cancelado','cancelada')
+       )
      ORDER BY f.date DESC, f.created_at DESC LIMIT 50`,
     [clientId],
   );
