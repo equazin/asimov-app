@@ -55,7 +55,7 @@ import { registerAirIpc } from "./ipc/air";
 import { registerWhatsappIpc } from "./ipc/wa";
 import { registerAfipIpc } from "./ipc/afip";
 import { registerCrmIpc } from "./ipc/crm";
-import { setInvoicePrintPreferences, previewCommissionForInvoice, persistInternalExpense, type InternalExpenseForm } from "./documents";
+import { setInvoicePrintPreferences, previewCommissionForInvoice, persistInternalExpense, persistStockAdjustment, type InternalExpenseForm, type StockAdjustmentForm } from "./documents";
 
 export function registerIpcHandlers(deps: IpcDeps): void {
   // Grupos autocontenidos extraídos a src/ipc/*.
@@ -382,6 +382,21 @@ export function registerIpcHandlers(deps: IpcDeps): void {
                   LEFT JOIN warehouses w ON w.id = sm.warehouse_id
                   WHERE a.name LIKE ? OR a.code LIKE ?
                   ORDER BY sm.date DESC LIMIT 500`, [q, q]);
+  });
+  ipcMain.handle("db:stock-adjustments:create", (_event, input: unknown) => {
+    if (!canWrite()) return { ok: false, error: "No tenés permisos para ajustar stock." };
+    try {
+      return { ok: true, ...persistStockAdjustment((input && typeof input === "object" ? input : {}) as StockAdjustmentForm) };
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : "No se pudo registrar el ajuste." };
+    }
+  });
+  ipcMain.handle("db:stock-adjustments:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll(`SELECT sa.*, a.code AS article_code, a.name AS article_name, w.name AS warehouse_name
+                  FROM stock_adjustments sa JOIN articles a ON a.id=sa.article_id JOIN warehouses w ON w.id=sa.warehouse_id
+                  WHERE a.name LIKE ? OR a.code LIKE ? OR sa.reason LIKE ? OR sa.number LIKE ?
+                  ORDER BY sa.date DESC, sa.created_at DESC LIMIT 500`, [q, q, q, q]);
   });
 
   // --- DB: Depósitos -------------------------------------------------------

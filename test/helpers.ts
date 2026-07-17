@@ -14,6 +14,7 @@ export function initTestDb(): void {
 
 export function resetLedger(): void {
   getDb().exec(`
+    DELETE FROM stock_adjustments;
     DELETE FROM stock_movements;
     DELETE FROM article_stock;
     DELETE FROM cash_movements;

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder, persistPurchaseReceipt,
   persistInternalExpense,
+  persistStockAdjustment,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
   annulDocument, deleteDocument, setInvoicePrintPreferences,
   previewCommissionForInvoice, createCommissionNoteFromInvoice,
@@ -387,6 +388,25 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     persistInvoice({ tipo: "B", clienteNombre: "C", items: [{ codigo: "COD1", cantidad: 2, precio: 100 }], totales: { total: 242 } });
     expect(stockOf("art-COD1")).toBe(0);
     expect(cashBalance()).toBe(0);
+  });
+});
+
+describe("documents — ajustes internos de stock", () => {
+  it("registra entradas y salidas trazables y permite anularlas", () => {
+    seedArticle("AJ-1", 1);
+    const input = persistStockAdjustment({ articleId: "art-AJ-1", warehouseId: "wh-default", direction: "entrada", qty: 2, reason: "Existencia inicial" });
+    expect(stockOf("art-AJ-1")).toBe(2);
+    expect(one("SELECT qty,reference_type FROM stock_movements WHERE reference_id=?", input.id))
+      .toMatchObject({ qty: 2, reference_type: "stock_adjustment" });
+    const output = persistStockAdjustment({ articleId: "art-AJ-1", warehouseId: "wh-default", direction: "salida", qty: 1, reason: "Uso interno" });
+    expect(stockOf("art-AJ-1")).toBe(1);
+    expect(annulDocument("stock-adjustment", output.id).ok).toBe(true);
+    expect(stockOf("art-AJ-1")).toBe(2);
+  });
+
+  it("impide una salida superior al stock disponible", () => {
+    seedArticle("AJ-2", 1);
+    expect(() => persistStockAdjustment({ articleId: "art-AJ-2", direction: "salida", qty: 1, reason: "Rotura" })).toThrow(/stock insuficiente/i);
   });
 });
 

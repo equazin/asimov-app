@@ -819,6 +819,7 @@
       <div class="nav-label">Stock</div>
       <div class="nav-item" data-view="stock"><span class="icon"><svg><use href="#i-box"/></svg></span> Stock</div>
       <div class="nav-item" data-view="movimientos"><span class="icon"><svg><use href="#i-swap"/></svg></span> Movimientos</div>
+      <div class="nav-item" data-view="ajustes-stock"><span class="icon"><svg><use href="#i-swap"/></svg></span> Ajustes internos</div>
       <div class="nav-item" data-view="depositos"><span class="icon"><svg><use href="#i-building"/></svg></span> Depósitos</div>
       <div class="nav-item" data-view="series"><span class="icon"><svg><use href="#i-hash"/></svg></span> Núm. de Serie</div>
       <div class="nav-item" data-view="alertas-stock"><span class="icon"><svg><use href="#i-alert"/></svg></span> Alertas</div>
@@ -1073,6 +1074,7 @@
       <div class="view-header">
         <h1><svg class="ic"><use href="#i-swap"/></svg> Movimientos de Stock</h1>
         <span class="badge" id="badge-movimientos">—</span>
+        <button class="btn btn-primary" onclick="openStockAdjustmentDialog()">+ Ajuste interno</button>
       </div>
       <div class="toolbar">
         <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar artículo, depósito..." oninput="A.loadView('movimientos',this.value)" /></div>
@@ -1081,6 +1083,12 @@
       <div class="table-wrap" id="table-movimientos">
         <div class="loading"><div class="spinner"></div></div>
       </div>
+    </div>
+
+    <div class="view" id="view-ajustes-stock">
+      <div class="view-header"><h1><svg class="ic"><use href="#i-swap"/></svg> Ajustes internos de stock</h1><span class="badge" id="badge-ajustes-stock">—</span><button class="btn btn-primary" onclick="openStockAdjustmentDialog()">+ Nuevo ajuste</button></div>
+      <div class="toolbar"><div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar artículo o motivo…" oninput="A.loadView('ajustes-stock',this.value)" /></div></div>
+      <div class="table-wrap" id="table-ajustes-stock"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
     <!-- ── Depósitos ────────────────────────────────────────── -->
@@ -1889,6 +1897,26 @@
   </div>
 </div>
 
+<div id="stock-adjustment-modal" class="asimov-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="stock-adjustment-title">
+  <div class="asimov-modal expense-modal">
+    <div class="am-header"><span id="stock-adjustment-title">Ajuste interno de stock</span><button class="am-close" id="stock-adjustment-close" type="button" aria-label="Cerrar">×</button></div>
+    <div class="am-body">
+      <p class="commission-intro">Usalo para existencias iniciales, diferencias de inventario, roturas o correcciones que no provienen de una compra o venta.</p>
+      <div class="expense-form-grid">
+        <label class="am-field wide"><span>Artículo <em class="am-req">*</em></span><select id="stock-adjustment-article"></select></label>
+        <label class="am-field"><span>Depósito <em class="am-req">*</em></span><select id="stock-adjustment-warehouse"></select></label>
+        <label class="am-field"><span>Tipo <em class="am-req">*</em></span><select id="stock-adjustment-direction"><option value="entrada">Entrada — sumar stock</option><option value="salida">Salida — restar stock</option></select></label>
+        <label class="am-field"><span>Fecha <em class="am-req">*</em></span><input type="date" id="stock-adjustment-date" /></label>
+        <label class="am-field"><span>Cantidad <em class="am-req">*</em></span><input type="number" id="stock-adjustment-qty" min="0.01" step="0.01" inputmode="decimal" /></label>
+        <label class="am-field wide"><span>Motivo <em class="am-req">*</em></span><select id="stock-adjustment-reason"><option value="">Seleccionar…</option><option>Existencia inicial</option><option>Diferencia de inventario</option><option>Mercadería encontrada</option><option>Rotura o pérdida</option><option>Uso interno</option><option>Corrección de carga</option><option>Otro ajuste</option></select></label>
+        <label class="am-field wide"><span>Observaciones</span><textarea id="stock-adjustment-notes" placeholder="Detalle adicional opcional"></textarea></label>
+      </div>
+      <div id="stock-adjustment-error" class="commission-error" role="alert"></div>
+      <div class="am-actions"><button class="btn btn-outline" id="stock-adjustment-cancel" type="button">Cancelar</button><button class="btn btn-primary" id="stock-adjustment-submit" type="button">Registrar ajuste</button></div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   // ── wait for preload ──────────────────────────────────────────────────
@@ -2047,6 +2075,17 @@
         { label: "Cantidad",  key: "qty",            w: "80px",  align: "right", fmt: fmtNum },
         { label: "Depósito",  key: "warehouse_name", w: "140px" },
         { label: "Ref.",      key: "reference",      w: "120px" },
+      ],
+    },
+    "ajustes-stock": {
+      title: "Ajustes internos de stock",
+      annul: "stock-adjustment",
+      load: (s) => asimov().stockAdjustments.list(s),
+      cols: [
+        { label: "Número", key: "number", w: "100px" }, { label: "Fecha", key: "date", w: "90px", fmt: fmtDate },
+        { label: "Artículo", key: "article_name" }, { label: "Tipo", key: "direction", w: "90px", fmt: fmtPill },
+        { label: "Cantidad", key: "qty", w: "90px", align: "right", fmt: fmtNum },
+        { label: "Depósito", key: "warehouse_name", w: "140px" }, { label: "Motivo", key: "reason", w: "180px" },
       ],
     },
     depositos: {
@@ -3253,6 +3292,50 @@
   }
 
   window.openExpenseDialog = openExpenseDialog;
+
+  async function openStockAdjustmentDialog() {
+    const modal = document.getElementById("stock-adjustment-modal");
+    const error = document.getElementById("stock-adjustment-error");
+    error.textContent = "";
+    document.getElementById("stock-adjustment-date").value = new Date().toISOString().slice(0, 10);
+    document.getElementById("stock-adjustment-direction").value = "entrada";
+    document.getElementById("stock-adjustment-qty").value = "";
+    document.getElementById("stock-adjustment-reason").value = "";
+    document.getElementById("stock-adjustment-notes").value = "";
+    modal.style.display = "flex";
+    try {
+      const [articles, warehouses] = await Promise.all([asimov().articles.list(""), asimov().warehouses.list()]);
+      document.getElementById("stock-adjustment-article").innerHTML = (articles || []).filter(a => a.manages_stock).map(a => `<option value="${escAttr(a.id)}">${esc(a.code || "S/C")} · ${esc(a.name)} · stock ${fmtNum(a.stock_total || 0)}</option>`).join("");
+      document.getElementById("stock-adjustment-warehouse").innerHTML = (warehouses || []).map(w => `<option value="${escAttr(w.id)}">${esc(w.name)}</option>`).join("");
+      if (!articles?.length || !warehouses?.length) error.textContent = "Necesitás al menos un artículo con stock y un depósito activo.";
+    } catch (e) { error.textContent = e?.message || "No se pudieron cargar los datos de stock."; }
+  }
+
+  function closeStockAdjustmentDialog() { document.getElementById("stock-adjustment-modal").style.display = "none"; }
+
+  async function submitStockAdjustment() {
+    const btn = document.getElementById("stock-adjustment-submit");
+    const error = document.getElementById("stock-adjustment-error");
+    error.textContent = ""; btn.disabled = true; btn.textContent = "Registrando…";
+    try {
+      const result = await asimov().stockMovements.createAdjustment({
+        date: document.getElementById("stock-adjustment-date").value,
+        articleId: document.getElementById("stock-adjustment-article").value,
+        warehouseId: document.getElementById("stock-adjustment-warehouse").value,
+        direction: document.getElementById("stock-adjustment-direction").value,
+        qty: Number(document.getElementById("stock-adjustment-qty").value),
+        reason: document.getElementById("stock-adjustment-reason").value,
+        notes: document.getElementById("stock-adjustment-notes").value.trim(),
+      });
+      if (!result?.ok) throw new Error(result?.error || "No se pudo registrar el ajuste.");
+      closeStockAdjustmentDialog();
+      navigate("ajustes-stock");
+      await loadViewData("ajustes-stock", "");
+    } catch (e) { error.textContent = e?.message || "No se pudo registrar el ajuste."; }
+    finally { btn.disabled = false; btn.textContent = "Registrar ajuste"; }
+  }
+
+  window.openStockAdjustmentDialog = openStockAdjustmentDialog;
 
   // ── caja ─────────────────────────────────────────────────────────────
   async function loadCaja() {
@@ -5071,6 +5154,12 @@
   document.getElementById('expense-submit').addEventListener('click', submitExpense);
   document.getElementById('expense-modal').addEventListener('click', (e) => {
     if (e.target.id === 'expense-modal') closeExpenseDialog();
+  });
+  document.getElementById('stock-adjustment-close').addEventListener('click', closeStockAdjustmentDialog);
+  document.getElementById('stock-adjustment-cancel').addEventListener('click', closeStockAdjustmentDialog);
+  document.getElementById('stock-adjustment-submit').addEventListener('click', submitStockAdjustment);
+  document.getElementById('stock-adjustment-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'stock-adjustment-modal') closeStockAdjustmentDialog();
   });
 
   // Llamar al iniciar

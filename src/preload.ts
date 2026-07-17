@@ -190,6 +190,10 @@ const api = {
   },
   stockMovements: {
     list: (search = "") => ipcRenderer.invoke("db:stock-movements:list", search),
+    createAdjustment: (input: unknown) => ipcRenderer.invoke("db:stock-adjustments:create", input) as Promise<{ ok: boolean; error?: string; id?: string; number?: string }>,
+  },
+  stockAdjustments: {
+    list: (search = "") => ipcRenderer.invoke("db:stock-adjustments:list", search),
   },
   warehouses: {
     list: () => ipcRenderer.invoke("db:warehouses:list"),

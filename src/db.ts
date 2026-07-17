@@ -495,6 +495,22 @@ CREATE TABLE IF NOT EXISTS stock_movements (
   FOREIGN KEY (warehouse_id) REFERENCES warehouses(id)
 );
 
+CREATE TABLE IF NOT EXISTS stock_adjustments (
+  id           TEXT PRIMARY KEY,
+  number       TEXT UNIQUE NOT NULL,
+  date         TEXT NOT NULL DEFAULT (date('now')),
+  article_id   TEXT NOT NULL,
+  warehouse_id TEXT NOT NULL,
+  direction    TEXT NOT NULL,
+  qty          REAL NOT NULL,
+  reason       TEXT NOT NULL,
+  notes        TEXT,
+  status       TEXT NOT NULL DEFAULT 'emitido',
+  created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (article_id) REFERENCES articles(id),
+  FOREIGN KEY (warehouse_id) REFERENCES warehouses(id)
+);
+
 -- ============================================================
 -- TESORERÍA
 -- ============================================================

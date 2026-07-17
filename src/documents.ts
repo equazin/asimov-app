@@ -156,6 +156,47 @@ export function persistInternalExpense(form: InternalExpenseForm): PersistResult
   return { id, number, cashMoved: 1 };
 }
 
+export interface StockAdjustmentForm {
+  date?: string;
+  articleId?: string;
+  warehouseId?: string;
+  direction?: "entrada" | "salida" | string;
+  qty?: number | string;
+  reason?: string;
+  notes?: string;
+}
+
+/** Ajusta existencias sin crear una compra/venta ni afectar caja. */
+export function persistStockAdjustment(form: StockAdjustmentForm): PersistResult {
+  const db = getDb();
+  const id = randomUUID();
+  const articleId = str(form.articleId);
+  const warehouseId = str(form.warehouseId) || defaultWarehouseId();
+  const direction = str(form.direction) === "salida" ? "salida" : "entrada";
+  const qty = num(form.qty);
+  const reason = str(form.reason);
+  if (!(qty > 0)) throw new Error("La cantidad debe ser mayor a cero.");
+  if (!reason) throw new Error("Indicá el motivo del ajuste.");
+  const article = dbGet<{ id: string; name: string; manages_stock: number }>("SELECT id,name,manages_stock FROM articles WHERE id=? AND active=1", [articleId]);
+  if (!article) throw new Error("El artículo seleccionado no existe o está inactivo.");
+  if (!article.manages_stock) throw new Error("El artículo seleccionado no administra stock.");
+  const warehouse = dbGet<{ id: string }>("SELECT id FROM warehouses WHERE id=? AND active=1", [warehouseId]);
+  if (!warehouse) throw new Error("El depósito seleccionado no existe o está inactivo.");
+  const current = Number(dbGet<{ qty: number }>("SELECT qty FROM article_stock WHERE article_id=? AND warehouse_id=?", [articleId, warehouseId])?.qty || 0);
+  if (direction === "salida" && qty > current) throw new Error(`Stock insuficiente: hay ${current} unidades disponibles.`);
+
+  let number = "";
+  db.transaction(() => {
+    number = formatDocNumber("AJ", nextSequence("stock-adjustment"));
+    dbRun(`INSERT INTO stock_adjustments (id,number,date,article_id,warehouse_id,direction,qty,reason,notes,status)
+           VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      [id, number, normalizeDate(form.date), articleId, warehouseId, direction, qty, reason, str(form.notes), "emitido"]);
+    const signedQty = direction === "salida" ? -qty : qty;
+    applyStockDelta(articleId, warehouseId, signedQty, direction, "stock_adjustment", id, `Ajuste ${number}: ${reason}`);
+  })();
+  return { id, number, stockMoved: 1 };
+}
+
 // ─── Recepción de mercadería (stock IN) ──────────────────────────────────────
 
 export interface GoodsReceiptForm {
@@ -943,6 +984,7 @@ const ANNULLABLE: Record<string, { table: string; refType: string; effect: Annul
   "receipt":          { table: "receipts",          refType: "receipt",          effect: "cash" },
   "payment-order":    { table: "payment_orders",    refType: "payment_order",    effect: "cash" },
   "internal-expense": { table: "internal_expenses", refType: "internal_expense", effect: "cash" },
+  "stock-adjustment": { table: "stock_adjustments", refType: "stock_adjustment", effect: "stock" },
   "sale-order":       { table: "sale_orders",        refType: "sale_order",       effect: "none" },
   "quote":            { table: "quotes",             refType: "quote",            effect: "none" },
   "invoice":          { table: "invoices",           refType: "invoice",          effect: "none" },
