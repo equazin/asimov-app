@@ -799,6 +799,7 @@
       <div class="nav-item" data-view="facturas"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas</div>
       <div class="nav-item" data-view="remitos"><span class="icon"><svg><use href="#i-truck"/></svg></span> Remitos</div>
       <div class="nav-item" data-view="recibos"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Recibos</div>
+      <div class="nav-item" data-view="notas-comision"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Notas de comisión</div>
       <div class="nav-item" data-view="precios"><span class="icon"><svg><use href="#i-pricetag"/></svg></span> Lista de Precios</div>
     </div>
 
@@ -1138,6 +1139,21 @@
         <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('recibos')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
       </div>
       <div class="table-wrap" id="table-recibos">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Notas de comisión (costo de sobrefacturación) ────── -->
+    <div class="view" id="view-notas-comision">
+      <div class="view-header">
+        <h1><svg class="ic"><use href="#i-receipt"/></svg> Notas de comisión</h1>
+        <span class="badge" id="badge-notas-comision">—</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar número, cliente, factura..." oninput="A.loadView('notas-comision',this.value)" /></div>
+        <div class="toolbar-right"><button class="btn btn-outline btn-sm" onclick="A.loadView('notas-comision')"><svg class="ic"><use href="#i-refresh"/></svg> Refrescar</button></div>
+      </div>
+      <div class="table-wrap" id="table-notas-comision">
         <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
@@ -1771,6 +1787,32 @@
   </div>
 </div>
 
+<!-- Nota de comisión (costo de sobrefacturación) -->
+<div id="commission-modal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:440px;">
+    <h3>Nota de comisión</h3>
+    <p style="font-size:13px;color:#666;margin:0 0 10px;">
+      Factura <strong id="commission-invoice-number">—</strong>. Calcula la comisión
+      (costo de sobrefacturación) como <strong>tasa % × (precio − costo)</strong> por ítem.
+      No toca la factura ni ARCA.
+    </p>
+    <label>Cliente al que le facturás la comisión</label>
+    <input type="text" id="commission-client" list="commission-client-list" placeholder="Razón social del cliente intermediario" autocomplete="off" />
+    <datalist id="commission-client-list"></datalist>
+    <label style="margin-top:8px;">Tasa (%)</label>
+    <input type="number" id="commission-rate" min="0" max="100" step="0.1" value="10.5" />
+    <div id="commission-preview" style="margin-top:12px;padding:10px 12px;background:rgba(0,0,0,0.04);border-radius:8px;font-size:13px;">
+      <div style="display:flex;justify-content:space-between;"><span>Base (Σ precio − costo)</span><span id="commission-base">$ 0,00</span></div>
+      <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:4px;"><span>Comisión a cobrar</span><span id="commission-total">$ 0,00</span></div>
+    </div>
+    <div id="commission-error" style="color:#c00;font-size:13px;min-height:18px;margin-top:6px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+      <button class="btn btn-outline" id="commission-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="commission-submit">Crear nota</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   // ── wait for preload ──────────────────────────────────────────────────
@@ -1997,6 +2039,19 @@
         { label: "Cliente",   key: "client_name"                },
         { label: "Fecha",     key: "date",           w: "90px",  fmt: fmtDate },
         { label: "Total",     key: "total",          w: "110px", fmt: fmtARS, align: "right" },
+      ],
+    },
+    "notas-comision": {
+      title: "Notas de comisión",
+      annul: "commission-note",
+      load: (s) => asimov().commissionNotes.list(s),
+      cols: [
+        { label: "Número",    key: "number",          w: "110px" },
+        { label: "Cliente",   key: "client_name"                 },
+        { label: "Factura",   key: "invoice_number",  w: "130px" },
+        { label: "Fecha",     key: "date",            w: "90px",  fmt: fmtDate },
+        { label: "Tasa",      key: "rate_pct",        w: "70px",  align: "right", fmt: (v) => (v ?? 0) + "%" },
+        { label: "Comisión",  key: "total",           w: "120px", fmt: fmtARS, align: "right" },
       ],
     },
     precios: {
@@ -2280,6 +2335,9 @@
       }
     },
     annulDoc: (type, id, btn) => annulDoc(type, id, btn),
+    deleteDoc: (type, id, btn) => deleteDoc(type, id, btn),
+    toggleShowAnnulled: (viewId, checked) => toggleShowAnnulled(viewId, checked),
+    openCommissionDialog: (invoiceId, invoiceNumber) => openCommissionDialog(invoiceId, invoiceNumber),
     reprintDoc: (type, id, btn) => reprintDoc(type, id, btn),
     authorizeStoredInvoice: (id, btn) => authorizeStoredInvoice(id, btn),
     openInvoiceFiscalStatus: (id) => openInvoiceFiscalStatus(id),
@@ -2637,6 +2695,116 @@
     }, 20);
   }
 
+  // Estado por-vista del toggle "Ver anulados". Por defecto false: los anulados
+  // se ocultan del listado para reducir ruido; el usuario los ve tildando el
+  // checkbox que renderTable inyecta arriba de cada lista con `annul`.
+  const showAnnulled = {};
+  function isAnnulledStatus(s) { return /anul|cancel|rechaz/i.test(String(s ?? "")); }
+  async function toggleShowAnnulled(viewId, checked) {
+    showAnnulled[viewId] = !!checked;
+    await loadViewData(viewId);
+  }
+
+  // Borrado físico desde la lista. Solo se ofrece cuando el documento está
+  // anulado/rechazado o —para facturas— nunca tuvo CAE. El backend además
+  // rechaza cualquier factura con CAE (rastro fiscal obligatorio).
+  async function deleteDoc(type, id, btn) {
+    if (!id) return;
+    if (!confirm("¿Borrar este documento definitivamente? Esta acción no se puede deshacer.")) return;
+    if (btn) { btn.disabled = true; btn.textContent = "…"; }
+    try {
+      const res = await asimov().deleteDocument(type, id);
+      if (!res || !res.ok) {
+        alert((res && res.error) || "No se pudo borrar el documento.");
+        if (btn) { btn.disabled = false; btn.textContent = "🗑 Borrar"; }
+        return;
+      }
+      refreshCurrentView();
+    } catch (e) {
+      alert((e && e.message) || "Error al borrar el documento.");
+      if (btn) { btn.disabled = false; btn.textContent = "🗑 Borrar"; }
+    }
+  }
+
+  // ── Nota de comisión (costo de sobrefacturación) ──────────────────────
+  let _commissionInvoiceId = "";
+  let _commissionClients = [];
+
+  async function openCommissionDialog(invoiceId, invoiceNumber) {
+    if (!invoiceId) return;
+    _commissionInvoiceId = invoiceId;
+    document.getElementById("commission-invoice-number").textContent = invoiceNumber || "—";
+    document.getElementById("commission-client").value = "";
+    document.getElementById("commission-rate").value = "10.5";
+    document.getElementById("commission-error").textContent = "";
+    document.getElementById("commission-base").textContent = "$ 0,00";
+    document.getElementById("commission-total").textContent = "$ 0,00";
+    document.getElementById("commission-modal").style.display = "flex";
+    // Cargar clientes para el autocompletado (una vez por apertura).
+    try {
+      _commissionClients = await asimov().clients.list("") || [];
+      const dl = document.getElementById("commission-client-list");
+      dl.innerHTML = _commissionClients
+        .map((c) => `<option value="${escAttr(String(c.business_name || ""))}"></option>`)
+        .join("");
+    } catch (_) { _commissionClients = []; }
+    refreshCommissionPreview();
+  }
+
+  async function refreshCommissionPreview() {
+    if (!_commissionInvoiceId) return;
+    const rate = parseFloat(document.getElementById("commission-rate").value);
+    try {
+      const res = await asimov().commissionNotes.preview(_commissionInvoiceId, Number.isFinite(rate) ? rate : undefined);
+      const errEl = document.getElementById("commission-error");
+      if (!res || !res.ok) {
+        errEl.textContent = (res && res.error) || "No se pudo calcular la comisión.";
+        document.getElementById("commission-base").textContent = "$ 0,00";
+        document.getElementById("commission-total").textContent = "$ 0,00";
+        return;
+      }
+      errEl.textContent = "";
+      document.getElementById("commission-base").textContent = fmtARS(res.base_amount || 0);
+      document.getElementById("commission-total").textContent = fmtARS(res.total || 0);
+    } catch (e) {
+      document.getElementById("commission-error").textContent = (e && e.message) || "Error al calcular.";
+    }
+  }
+
+  function closeCommissionDialog() {
+    document.getElementById("commission-modal").style.display = "none";
+    _commissionInvoiceId = "";
+  }
+
+  async function submitCommission() {
+    if (!_commissionInvoiceId) return;
+    const name = document.getElementById("commission-client").value.trim();
+    const rate = parseFloat(document.getElementById("commission-rate").value);
+    const errEl = document.getElementById("commission-error");
+    if (!name) { errEl.textContent = "Elegí el cliente al que le facturás la comisión."; return; }
+    const match = _commissionClients.find((c) => String(c.business_name || "").trim() === name);
+    const btn = document.getElementById("commission-submit");
+    btn.disabled = true; btn.textContent = "…";
+    try {
+      const res = await asimov().commissionNotes.create({
+        invoiceId: _commissionInvoiceId,
+        clienteId: match ? match.id : undefined,
+        clienteNombre: name,
+        ratePct: Number.isFinite(rate) ? rate : undefined,
+      });
+      if (!res || !res.ok) {
+        errEl.textContent = (res && res.error) || "No se pudo crear la nota.";
+        btn.disabled = false; btn.textContent = "Crear nota";
+        return;
+      }
+      closeCommissionDialog();
+      navigate("notas-comision");
+    } catch (e) {
+      errEl.textContent = (e && e.message) || "Error al crear la nota.";
+      btn.disabled = false; btn.textContent = "Crear nota";
+    }
+  }
+
   // Anula un documento confirmado desde su lista: revierte efectos (stock/caja)
   // en el main y marca el estado como "anulado". Refresca la vista al terminar.
   async function annulDoc(type, id, btn) {
@@ -2658,20 +2826,29 @@
   }
 
   // ── table renderer ───────────────────────────────────────────────────
-  function renderTable(containerId, badgeId, cols, rows, annul, printType, editKind) {
+  function renderTable(containerId, badgeId, cols, rows, annul, printType, editKind, viewId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const hasAction = printType || (annul && CAN_WRITE) || (editKind && CAN_WRITE);
+    // Toggle "Ver anulados": solo en vistas con `annul` (documentos que se pueden anular).
+    const annulToggle = (annul && viewId)
+      ? `<div style="display:flex;justify-content:flex-end;padding:4px 8px;font-size:12px;opacity:.85;">
+           <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+             <input type="checkbox" ${showAnnulled[viewId] ? "checked" : ""} onchange="A.toggleShowAnnulled('${viewId}', this.checked)" />
+             Ver anulados
+           </label>
+         </div>`
+      : "";
 
     if (!rows || rows.length === 0) {
-      container.innerHTML = `<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>`;
+      container.innerHTML = `${annulToggle}<div class="empty-state"><span class="emo">📭</span><span>Sin resultados.</span></div>`;
       const badge = document.getElementById(badgeId);
       if (badge) badge.textContent = "0";
       document.getElementById("status-count").textContent = "0 registros";
       return;
     }
 
-    const actionWidth = printType === "factura" ? "270px" : (editKind ? "110px" : "150px");
+    const actionWidth = printType === "factura" ? "360px" : (editKind ? "110px" : "150px");
     const ths = cols.map(c =>
       `<th style="${c.w ? `width:${c.w};` : ""}${c.align ? `text-align:${c.align};` : ""}">${c.label}</th>`
     ).join("") + (hasAction ? `<th style="width:${actionWidth};text-align:center;">Acción</th>` : "");
@@ -2700,6 +2877,16 @@
         if (annul && CAN_WRITE && !anulado && !(isInvoice && hasCae)) {
           btns += `<button class="btn btn-outline btn-sm" onclick="A.annulDoc('${annul}','${rid}',this)">Anular</button>`;
         }
+        // Nota de comisión (costo de sobrefacturación): solo facturas de venta no anuladas.
+        if (isInvoice && CAN_WRITE && !anulado) {
+          const rnum = escAttr(String(row.number ?? ""));
+          btns += `<button class="btn btn-outline btn-sm" title="Generar nota de comisión" onclick="A.openCommissionDialog('${rid}','${rnum}')">💼 Comisión</button>`;
+        }
+        // Borrar: solo anulados/rechazados o facturas sin CAE. Nunca facturas autorizadas.
+        const canDelete = annul && CAN_WRITE && (anulado || (isInvoice && !hasCae) || (annul === "purchase-invoice" && !hasCae));
+        if (canDelete) {
+          btns += `<button class="btn btn-outline btn-sm" title="Borrar definitivamente" onclick="A.deleteDoc('${annul}','${rid}',this)">🗑 Borrar</button>`;
+        }
         if (editKind && CAN_WRITE) {
           btns += `<button class="btn btn-outline btn-sm" onclick="A.editRow('${editKind}','${rid}')" title="Editar">✏️ Editar</button>`;
         }
@@ -2711,7 +2898,7 @@
       return `<tr${rowAttrs}>${tds}${actionTd}</tr>`;
     }).join("");
 
-    container.innerHTML = `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    container.innerHTML = `${annulToggle}<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
     container.querySelectorAll("tr.invoice-row").forEach((row) => {
       const openStatus = () => openInvoiceFiscalStatus(row.dataset.invoiceId || "");
       row.addEventListener("dblclick", (event) => {
@@ -2744,8 +2931,11 @@
     if (container) container.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
     try {
       await waitForAsimov();
-      const rows = await def.load(search);
-      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul, def.print, def.edit);
+      let rows = await def.load(search);
+      if (def.annul && !showAnnulled[viewId] && Array.isArray(rows)) {
+        rows = rows.filter((r) => !isAnnulledStatus(r && r.status));
+      }
+      renderTable("table-" + viewId, "badge-" + viewId, def.cols, rows, def.annul, def.print, def.edit, viewId);
     } catch (e) {
       const el = document.getElementById("table-" + viewId);
       if (el) el.innerHTML = `<div class="empty-state"><span class="emo">❌</span><span>${e.message || "Error al cargar datos"}</span></div>`;
@@ -4700,6 +4890,14 @@
   document.getElementById('cloud-cancel-login').addEventListener('click', closeCloudLogin);
   document.getElementById('cloud-login-modal').addEventListener('click', (e) => {
     if (e.target.id === 'cloud-login-modal') closeCloudLogin();
+  });
+
+  // Nota de comisión: wiring del modal.
+  document.getElementById('commission-cancel').addEventListener('click', closeCommissionDialog);
+  document.getElementById('commission-submit').addEventListener('click', submitCommission);
+  document.getElementById('commission-rate').addEventListener('input', refreshCommissionPreview);
+  document.getElementById('commission-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'commission-modal') closeCommissionDialog();
   });
 
   // Llamar al iniciar

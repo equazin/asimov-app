@@ -31,7 +31,8 @@ import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistPurchaseReceipt,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
-  annulDocument, enqueueDocSnapshot,
+  annulDocument, deleteDocument, enqueueDocSnapshot,
+  createCommissionNoteFromInvoice,
 } from "./documents";
 
 // ---------------------------------------------------------------------------
@@ -846,6 +847,44 @@ if (!gotLock) {
         }
       }
       if (newPurchaseReceiptWindow && !newPurchaseReceiptWindow.isDestroyed()) newPurchaseReceiptWindow.close();
+    });
+
+    // --- Crear una nota de comisión (costo de sobrefacturación) desde factura ---
+    ipcMain.handle("shell:commission-note:create", (_event, payload: {
+      invoiceId?: string; clienteId?: string; clienteNombre?: string; ratePct?: number; observaciones?: string;
+    }) => {
+      if (currentUser?.role === "readonly") {
+        return { ok: false, error: "No tenés permisos para crear notas de comisión." };
+      }
+      try {
+        const result = createCommissionNoteFromInvoice({
+          invoiceId: String(payload?.invoiceId ?? ""),
+          clienteId: payload?.clienteId ? String(payload.clienteId) : undefined,
+          clienteNombre: String(payload?.clienteNombre ?? ""),
+          ratePct: typeof payload?.ratePct === "number" ? payload.ratePct : Number(payload?.ratePct),
+          observaciones: payload?.observaciones ? String(payload.observaciones) : undefined,
+        });
+        if (result.ok) notifyShell("shell:articles-changed");
+        return result;
+      } catch (err) {
+        console.error("[commission-note] no se pudo crear:", err);
+        return { ok: false, error: err instanceof Error ? err.message : "Error al crear la nota." };
+      }
+    });
+
+    // --- Borrar físicamente un documento (solo anulados/rechazados/sin CAE) ---
+    ipcMain.handle("shell:document-delete", (_event, payload: { type?: string; id?: string }) => {
+      if (currentUser?.role === "readonly") {
+        return { ok: false, error: "No tenés permisos para borrar documentos." };
+      }
+      try {
+        const result = deleteDocument(String(payload?.type ?? ""), String(payload?.id ?? ""));
+        if (result.ok) notifyShell("shell:articles-changed");
+        return result;
+      } catch (err) {
+        console.error("[delete] no se pudo borrar:", err);
+        return { ok: false, error: err instanceof Error ? err.message : "Error al borrar." };
+      }
     });
 
     // --- Anular un documento ya confirmado desde la lista (reversa explícita) ---

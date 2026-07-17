@@ -519,6 +519,9 @@ export interface SaleDocItem {
   articleId?: string;
   codigo?: string; descripcion?: string; unidad?: string;
   cantidad?: number | string; precio?: number | string; descuento?: number | string; iva?: number | string;
+  /** Costo unitario en la moneda de ingreso. Se persiste en ARS para calcular
+   *  luego la comisión (rate% × (precio − costo)). Opcional; default 0. */
+  costo?: number | string;
 }
 
 function saleSourceCurrency(monedaPrecios?: string, moneda?: string): "USD" | "ARS" {
@@ -695,9 +698,14 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
     for (const it of items) {
       const qty = num(it.cantidad), price = num(it.precio), ivaPct = num(it.iva) || 21;
       const sub = lineSubtotal(qty, price);
+      // Costo unitario a ARS: los ítems normalizados conservan `costo` en la
+      // moneda de origen; si la factura fue en USD, convertir con la cotización.
+      const cost = sourceCurrency === "USD"
+        ? round2(num(it.costo) * (usdRate ?? 0))
+        : round2(num(it.costo));
       dbRun(
-        "INSERT INTO invoice_items (id,invoice_id,article_id,code,description,qty,unit_price,iva_pct,subtotal,iva_amount) VALUES (?,?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, ivaPct, sub, Math.round(sub * ivaPct) / 100],
+        "INSERT INTO invoice_items (id,invoice_id,article_id,code,description,qty,unit_price,iva_pct,subtotal,iva_amount,cost) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, ivaPct, sub, Math.round(sub * ivaPct) / 100, cost],
       );
     }
     if (form.origen) applySourceLink("invoice", id, form.origen);
@@ -870,6 +878,7 @@ const ANNULLABLE: Record<string, { table: string; refType: string; effect: Annul
   "invoice":          { table: "invoices",           refType: "invoice",          effect: "none" },
   "purchase-order":   { table: "purchase_orders",    refType: "purchase_order",   effect: "none" },
   "purchase-invoice": { table: "purchase_invoices",  refType: "purchase_invoice", effect: "none" },
+  "commission-note":  { table: "commission_notes",   refType: "commission_note",  effect: "none" },
 };
 
 export interface AnnulResult {
@@ -915,4 +924,191 @@ export function annulDocument(type: string, id: string): AnnulResult {
   tx();
   enqueueDocSnapshot(cfg.refType, docId);
   return { ok: true };
+}
+
+// ─── Borrado físico desde la lista (limpieza de prueba / anulados) ───────────
+// A diferencia de anular, borra la fila y todo su rastro. Solo se permite en
+// documentos ya anulados/rechazados o —para facturas— sin CAE. Nunca borra una
+// factura autorizada por ARCA (dejar rastro fiscal es obligatorio: la baja
+// legal es una NC, no un DELETE). Reversa idempotente de stock/caja por si el
+// documento tuvo efectos, borra vínculos y encola la baja para la nube.
+const DELETABLE: Record<string, { table: string; refType: string; effect: AnnulEffect }> = {
+  ...ANNULLABLE,
+  "purchase-receipt": { table: "purchase_receipts", refType: "purchase_receipt", effect: "cash" },
+};
+
+export interface DeleteResult {
+  ok: boolean;
+  error?: string;
+}
+
+/**
+ * Borra físicamente un documento por tipo + id. Guardas:
+ *  - facturas con CAE (autorizadas por ARCA) NUNCA se borran.
+ *  - resto de tipos: solo si el estado es anulado/cancelado/rechazado, o
+ *    —para facturas/facturas de compra— si nunca tuvieron CAE.
+ * Reversa stock/caja residual, limpia document_links y borra la fila (los
+ * ítems caen por ON DELETE CASCADE). Idempotente ante id inexistente.
+ */
+export function deleteDocument(type: string, id: string): DeleteResult {
+  const cfg = DELETABLE[str(type)];
+  if (!cfg) return { ok: false, error: `Tipo de documento no borrable: ${type}` };
+  const docId = str(id);
+  if (!docId) return { ok: false, error: "Falta el identificador del documento." };
+
+  const db = getDb();
+  const isInvoiceType = type === "invoice" || type === "purchase-invoice";
+  const row = dbGet<{ status: string; cae?: string | null }>(
+    isInvoiceType
+      ? `SELECT status, cae FROM ${cfg.table} WHERE id = ?`
+      : `SELECT status FROM ${cfg.table} WHERE id = ?`,
+    [docId],
+  );
+  if (!row) return { ok: false, error: "Documento no encontrado." };
+
+  const status = str(row.status);
+  const isAnnulled = /anul|cancel|rechaz/i.test(status);
+  const hasCae = isInvoiceType && !!str(row.cae ?? "");
+
+  if (isInvoiceType && hasCae) {
+    return {
+      ok: false,
+      error: "Una factura autorizada por ARCA no puede borrarse. Emití una nota de crédito.",
+    };
+  }
+  if (!isAnnulled && !isInvoiceType) {
+    return {
+      ok: false,
+      error: "Solo se pueden borrar documentos anulados. Anulá el documento primero.",
+    };
+  }
+
+  const tx = db.transaction(() => {
+    if (cfg.effect === "stock") reverseStockFor(cfg.refType, docId);
+    else if (cfg.effect === "cash") reverseCashFor(cfg.refType, docId);
+    dbRun("DELETE FROM document_links WHERE (source_type = ? AND source_id = ?) OR (target_type = ? AND target_id = ?)", [type, docId, type, docId]);
+    dbRun(`DELETE FROM ${cfg.table} WHERE id = ?`, [docId]);
+  });
+  tx();
+
+  if (isCloudConnected()) {
+    try { enqueueChange("document_snapshot", docId, "delete", { doc_type: cfg.refType, doc_id: docId }); }
+    catch { /* best-effort */ }
+  }
+  return { ok: true };
+}
+
+// ─── Nota de comisión (costo de sobrefacturación) ────────────────────────────
+// Documento interno (sin CAE) que registra lo que el operador realmente cobra a
+// su cliente intermediario: rate% × (precio − costo) por línea de una factura ya
+// emitida. La factura al cliente final no se toca. No mueve caja: es el detalle
+// de lo que hay que cobrar, no el cobro en sí (para eso está el recibo).
+
+/** Tasa por defecto: IVA 10,5% sobre la diferencia (precio − costo). */
+export const DEFAULT_COMMISSION_RATE = 10.5;
+
+export interface CommissionLine {
+  code: string;
+  description: string;
+  qty: number;
+  unit_cost: number;
+  unit_price: number;
+  diff: number;        // (precio − costo) × qty
+  commission: number;  // rate% × diff
+}
+
+export interface CommissionPreview {
+  ok: boolean;
+  error?: string;
+  invoice_number?: string;
+  rate_pct?: number;
+  base_amount?: number;   // Σ diff
+  total?: number;         // Σ commission
+  lines?: CommissionLine[];
+}
+
+/** Normaliza la tasa: número finito entre 0 y 100; si no, usa el default. */
+function normalizeRate(rate: unknown): number {
+  const r = num(rate);
+  return Number.isFinite(r) && r >= 0 && r <= 100 ? r : DEFAULT_COMMISSION_RATE;
+}
+
+/** Calcula (sin persistir) la comisión de una factura a una tasa dada. */
+export function previewCommissionForInvoice(invoiceId: string, ratePct?: number): CommissionPreview {
+  const id = str(invoiceId);
+  if (!id) return { ok: false, error: "Falta la factura de origen." };
+  const inv = dbGet<{ number: string }>("SELECT number FROM invoices WHERE id = ?", [id]);
+  if (!inv) return { ok: false, error: "Factura no encontrada." };
+  const rate = normalizeRate(ratePct);
+  const rows = getDb()
+    .prepare("SELECT code, description, qty, unit_price, cost FROM invoice_items WHERE invoice_id = ?")
+    .all(id) as Array<{ code: string; description: string; qty: number; unit_price: number; cost: number }>;
+
+  const lines: CommissionLine[] = rows.map((r) => {
+    const qty = num(r.qty);
+    const unitCost = num(r.cost);
+    const unitPrice = num(r.unit_price);
+    const diff = round2((unitPrice - unitCost) * qty);
+    return {
+      code: str(r.code),
+      description: str(r.description),
+      qty,
+      unit_cost: unitCost,
+      unit_price: unitPrice,
+      diff,
+      commission: round2(diff * rate / 100),
+    };
+  });
+  const baseAmount = round2(lines.reduce((s, l) => s + l.diff, 0));
+  const total = round2(lines.reduce((s, l) => s + l.commission, 0));
+  return { ok: true, invoice_number: str(inv.number), rate_pct: rate, base_amount: baseAmount, total, lines };
+}
+
+export interface CommissionNoteInput {
+  invoiceId: string;
+  clienteId?: string;
+  clienteNombre?: string;
+  ratePct?: number;
+  observaciones?: string;
+}
+
+export interface CommissionNoteResult {
+  ok: boolean;
+  error?: string;
+  id?: string;
+  number?: string;
+  total?: number;
+}
+
+/** Crea y persiste la nota de comisión a partir de una factura. */
+export function createCommissionNoteFromInvoice(input: CommissionNoteInput): CommissionNoteResult {
+  const preview = previewCommissionForInvoice(str(input.invoiceId), input.ratePct);
+  if (!preview.ok || !preview.lines) return { ok: false, error: preview.error ?? "No se pudo calcular la comisión." };
+  if (!(preview.total! > 0)) {
+    return { ok: false, error: "La comisión da $0 (precio ≤ costo o falta cargar costos en la factura)." };
+  }
+  const clienteNombre = str(input.clienteNombre);
+  if (!clienteNombre) return { ok: false, error: "Elegí el cliente al que le facturás la comisión." };
+
+  const db = getDb();
+  const id = randomUUID();
+  const date = normalizeDate(undefined);
+  let number = "";
+  const tx = db.transaction(() => {
+    number = formatDocNumber("COM", nextSequence("commission-note"));
+    dbRun(
+      `INSERT INTO commission_notes (id,number,invoice_id,invoice_number,client_id,client_name,date,status,rate_pct,base_amount,total,notes)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [id, number, str(input.invoiceId) || null, str(preview.invoice_number), str(input.clienteId) || null,
+       clienteNombre, date, "emitido", preview.rate_pct, preview.base_amount, preview.total, str(input.observaciones)],
+    );
+    for (const l of preview.lines!) {
+      dbRun(
+        "INSERT INTO commission_note_items (id,note_id,code,description,qty,unit_cost,unit_price,diff,commission) VALUES (?,?,?,?,?,?,?,?,?)",
+        [randomUUID(), id, l.code, l.description, l.qty, l.unit_cost, l.unit_price, l.diff, l.commission],
+      );
+    }
+  });
+  tx();
+  return { ok: true, id, number, total: preview.total };
 }

@@ -55,7 +55,7 @@ import { registerAirIpc } from "./ipc/air";
 import { registerWhatsappIpc } from "./ipc/wa";
 import { registerAfipIpc } from "./ipc/afip";
 import { registerCrmIpc } from "./ipc/crm";
-import { setInvoicePrintPreferences } from "./documents";
+import { setInvoicePrintPreferences, previewCommissionForInvoice } from "./documents";
 
 export function registerIpcHandlers(deps: IpcDeps): void {
   // Grupos autocontenidos extraídos a src/ipc/*.
@@ -281,6 +281,23 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     const receipt = dbGet("SELECT * FROM receipts WHERE id = ?", [safeStr(id)]);
     const items = dbAll("SELECT * FROM receipt_items WHERE receipt_id = ?", [safeStr(id)]);
     return { ...receipt, items };
+  });
+
+  // --- DB: Notas de comisión (costo de sobrefacturación) -------------------
+  ipcMain.handle("db:commission-notes:list", (_event, search: unknown) => {
+    const q = `%${safeStr(search)}%`;
+    return dbAll("SELECT * FROM commission_notes WHERE (number LIKE ? OR client_name LIKE ? OR invoice_number LIKE ?) ORDER BY created_at DESC LIMIT 500", [q, q, q]);
+  });
+  ipcMain.handle("db:commission-notes:get", (_event, id: unknown) => {
+    const note = dbGet("SELECT * FROM commission_notes WHERE id = ?", [safeStr(id)]);
+    const items = dbAll("SELECT * FROM commission_note_items WHERE note_id = ?", [safeStr(id)]);
+    return { ...note, items };
+  });
+  // Cálculo sin persistir: el diálogo muestra la comisión antes de crear la nota.
+  ipcMain.handle("db:commission-notes:preview", (_event, input: unknown) => {
+    const data = input && typeof input === "object" ? input as Record<string, unknown> : {};
+    const rate = typeof data.ratePct === "number" ? data.ratePct : Number(data.ratePct);
+    return previewCommissionForInvoice(safeStr(data.invoiceId), Number.isFinite(rate) ? rate : undefined);
   });
 
   // --- DB: Órdenes de compra -----------------------------------------------

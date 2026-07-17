@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   persistGoodsReceipt, persistDeliveryNote, persistReceipt, persistPaymentOrder,
   persistSaleOrder, persistQuote, persistInvoice, persistPurchaseOrder, persistPurchaseInvoice,
-  annulDocument, setInvoicePrintPreferences,
+  annulDocument, deleteDocument, setInvoicePrintPreferences,
+  previewCommissionForInvoice, createCommissionNoteFromInvoice,
 } from "../src/documents";
 import { getDb } from "../src/db";
 import { initTestDb, seedArticle } from "./helpers";
@@ -442,5 +443,70 @@ describe("documents — anulación (reversa de efectos)", () => {
     expect(annulDocument("tipo-raro", rec.id).ok).toBe(false);    // tipo no anulable
     expect(annulDocument("receipt", "no-existe").ok).toBe(false); // id inexistente
     expect(cashBalance()).toBe(0);                                 // no se revirtió de más
+  });
+});
+
+describe("documents — nota de comisión (costo de sobrefacturación)", () => {
+  it("persiste el costo por ítem en la factura", () => {
+    const res = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli Final",
+      items: [{ codigo: "X", descripcion: "Art", cantidad: 2, precio: 150, iva: 21, costo: 100 }],
+    });
+    expect(one("SELECT cost FROM invoice_items WHERE invoice_id=?", res.id).cost).toBe(100);
+  });
+
+  it("preview calcula tasa% × (precio − costo) por ítem", () => {
+    const inv = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [
+        { codigo: "A", descripcion: "Uno", cantidad: 2, precio: 150, iva: 21, costo: 100 }, // diff 100 → 10.5
+        { codigo: "B", descripcion: "Dos", cantidad: 1, precio: 200, iva: 21, costo: 120 }, // diff 80 → 8.4
+      ],
+    });
+    const p = previewCommissionForInvoice(inv.id, 10.5);
+    expect(p.ok).toBe(true);
+    expect(p.base_amount).toBeCloseTo(180);   // 100 + 80
+    expect(p.total).toBeCloseTo(18.9);        // 10.5 + 8.4
+  });
+
+  it("crea la nota de comisión con su total y líneas", () => {
+    const inv = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "A", descripcion: "Uno", cantidad: 1, precio: 200, iva: 21, costo: 100 }],
+    });
+    const note = createCommissionNoteFromInvoice({ invoiceId: inv.id, clienteNombre: "Intermediario SA", ratePct: 10.5 });
+    expect(note.ok).toBe(true);
+    expect(note.number).toMatch(/^COM-/);
+    expect(note.total).toBeCloseTo(10.5);
+    const h = one("SELECT client_name, invoice_number, total, rate_pct FROM commission_notes WHERE id=?", note.id);
+    expect(h.client_name).toBe("Intermediario SA");
+    expect(h.rate_pct).toBe(10.5);
+    expect(one("SELECT COUNT(*) c FROM commission_note_items WHERE note_id=?", note.id).c).toBe(1);
+  });
+
+  it("rechaza crear la nota si no hay cliente, comisión $0 o factura inexistente", () => {
+    const inv = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "A", descripcion: "Uno", cantidad: 1, precio: 100, iva: 21, costo: 100 }], // diff 0
+    });
+    expect(createCommissionNoteFromInvoice({ invoiceId: inv.id, clienteNombre: "X", ratePct: 10.5 }).ok).toBe(false); // $0
+    const inv2 = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "A", descripcion: "Uno", cantidad: 1, precio: 200, iva: 21, costo: 100 }],
+    });
+    expect(createCommissionNoteFromInvoice({ invoiceId: inv2.id, clienteNombre: "", ratePct: 10.5 }).ok).toBe(false); // sin cliente
+    expect(createCommissionNoteFromInvoice({ invoiceId: "no-existe", clienteNombre: "X" }).ok).toBe(false); // sin factura
+  });
+
+  it("la nota de comisión se puede anular y luego borrar", () => {
+    const inv = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli",
+      items: [{ codigo: "A", descripcion: "Uno", cantidad: 1, precio: 200, iva: 21, costo: 100 }],
+    });
+    const note = createCommissionNoteFromInvoice({ invoiceId: inv.id, clienteNombre: "Interm", ratePct: 10.5 });
+    expect(deleteDocument("commission-note", note.id!).ok).toBe(false); // no anulada aún
+    expect(annulDocument("commission-note", note.id!).ok).toBe(true);
+    expect(deleteDocument("commission-note", note.id!).ok).toBe(true);
+    expect(one("SELECT COUNT(*) c FROM commission_notes WHERE id=?", note.id).c).toBe(0);
   });
 });

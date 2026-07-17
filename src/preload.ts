@@ -95,6 +95,10 @@ const api = {
   annulDocument: (type: string, id: string) =>
     ipcRenderer.invoke("shell:document-annul", { type, id }) as Promise<{ ok: boolean; error?: string }>,
 
+  // Documentos — borrar físicamente (solo anulados/rechazados/sin CAE)
+  deleteDocument: (type: string, id: string) =>
+    ipcRenderer.invoke("shell:document-delete", { type, id }) as Promise<{ ok: boolean; error?: string }>,
+
   // DB — KPIs
   kpis: () => ipcRenderer.invoke("db:kpis"),
 
@@ -146,6 +150,15 @@ const api = {
   receipts: {
     list: (search = "") => ipcRenderer.invoke("db:receipts:list", search),
     get: (id: string) => ipcRenderer.invoke("db:receipts:get", id),
+  },
+  // Notas de comisión (costo de sobrefacturación): documento interno derivado de una factura.
+  commissionNotes: {
+    list: (search = "") => ipcRenderer.invoke("db:commission-notes:list", search),
+    get: (id: string) => ipcRenderer.invoke("db:commission-notes:get", id),
+    preview: (invoiceId: string, ratePct?: number) =>
+      ipcRenderer.invoke("db:commission-notes:preview", { invoiceId, ratePct }) as Promise<{ ok: boolean; error?: string; invoice_number?: string; rate_pct?: number; base_amount?: number; total?: number; lines?: unknown[] }>,
+    create: (input: { invoiceId: string; clienteId?: string; clienteNombre?: string; ratePct?: number; observaciones?: string }) =>
+      ipcRenderer.invoke("shell:commission-note:create", input) as Promise<{ ok: boolean; error?: string; id?: string; number?: string; total?: number }>,
   },
 
   // DB — Compras

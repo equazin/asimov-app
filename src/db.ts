@@ -793,6 +793,45 @@ CREATE TABLE IF NOT EXISTS document_links (
 );
 
 -- ============================================================
+-- Notas de comisión (costo de sobrefacturación) — documento interno
+-- ============================================================
+-- Documenta lo que el operador realmente cobra a su cliente intermediario
+-- cuando factura a un tercero al precio que ese cliente le pasó. NO es fiscal
+-- (sin CAE, no va a ARCA): la factura al cliente final ya lleva el circuito
+-- fiscal completo. Se genera desde una factura y calcula rate% × (precio − costo)
+-- por línea. total = Σ comisión de las líneas.
+
+CREATE TABLE IF NOT EXISTS commission_notes (
+  id             TEXT PRIMARY KEY,
+  number         TEXT NOT NULL,
+  invoice_id     TEXT,                              -- factura de origen
+  invoice_number TEXT,
+  client_id      TEXT,                              -- cliente intermediario (quien encarga)
+  client_name    TEXT,
+  date           TEXT NOT NULL DEFAULT (date('now')),
+  status         TEXT NOT NULL DEFAULT 'emitido',
+  rate_pct       REAL NOT NULL DEFAULT 10.5,        -- tasa aplicada a la diferencia
+  base_amount    REAL NOT NULL DEFAULT 0,           -- Σ (precio − costo) × qty
+  total          REAL NOT NULL DEFAULT 0,           -- Σ rate% × diferencia
+  notes          TEXT,
+  created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (client_id) REFERENCES clients(id)
+);
+
+CREATE TABLE IF NOT EXISTS commission_note_items (
+  id          TEXT PRIMARY KEY,
+  note_id     TEXT NOT NULL,
+  code        TEXT,
+  description TEXT NOT NULL,
+  qty         REAL NOT NULL DEFAULT 1,
+  unit_cost   REAL NOT NULL DEFAULT 0,
+  unit_price  REAL NOT NULL DEFAULT 0,
+  diff        REAL NOT NULL DEFAULT 0,              -- (precio − costo) × qty
+  commission  REAL NOT NULL DEFAULT 0,              -- rate% × diff
+  FOREIGN KEY (note_id) REFERENCES commission_notes(id) ON DELETE CASCADE
+);
+
+-- ============================================================
 -- Cotizaciones de moneda (dólar)
 -- ============================================================
 
@@ -954,6 +993,10 @@ export function initDb(dbPath?: string): void {
   try { _db.exec("ALTER TABLE quotes ADD COLUMN currency TEXT NOT NULL DEFAULT 'ARS'"); } catch {}
   try { _db.exec("ALTER TABLE quotes ADD COLUMN subtotal REAL NOT NULL DEFAULT 0"); } catch {}
   try { _db.exec("ALTER TABLE quotes ADD COLUMN iva_amount REAL NOT NULL DEFAULT 0"); } catch {}
+  // Costo unitario por ítem de factura (en ARS, igual escala que unit_price).
+  // Necesario para calcular la comisión / costo de sobrefacturación de la factura
+  // (rate% × (precio − costo) por línea). Opcional: facturas viejas quedan en 0.
+  try { _db.exec("ALTER TABLE invoice_items ADD COLUMN cost REAL NOT NULL DEFAULT 0"); } catch {}
   migrateCrmSchema();
   migrateInvoiceNumberUniqueness();
   migrateCrmUnification();
