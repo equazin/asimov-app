@@ -45,7 +45,11 @@
     /* Topbar arriba + content abajo (antes era sidebar-izquierda + content-derecha). */
     #app { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
-    /* ── Topbar (menú horizontal con dropdowns tipo File/Edit) ─ */
+    /* ── Topbar (menú horizontal con dropdowns tipo File/Edit) ─
+       overflow QUEDA visible (sin scroll horizontal): si se pone
+       overflow-x: auto, el spec CSS convierte overflow-y implícitamente
+       en auto también, y los dropdowns absolutos quedan recortados
+       dentro de los 40px de alto del topbar. */
     #topbar {
       display: flex;
       align-items: stretch;
@@ -54,14 +58,12 @@
       border-bottom: 1px solid #1A212B;
       padding: 0 4px;
       flex-shrink: 0;
-      overflow-x: auto;
-      overflow-y: visible;
-      height: 40px;
+      overflow: visible;
+      min-height: 40px;
       position: relative;
       z-index: 40;
+      flex-wrap: nowrap;
     }
-    #topbar::-webkit-scrollbar { height: 6px; }
-    #topbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 
     #topbar-logo {
       display: flex;
