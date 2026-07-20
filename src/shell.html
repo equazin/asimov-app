@@ -42,64 +42,120 @@
     }
 
     /* ── Layout ─────────────────────────────────────────────── */
-    #app { display: flex; flex: 1; min-height: 0; }
+    /* Topbar arriba + content abajo (antes era sidebar-izquierda + content-derecha). */
+    #app { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
-    /* ── Sidebar ─────────────────────────────────────────────── */
-    #sidebar {
-      width: var(--sidebar-w);
-      background: #0B0F15;
-      border-right: 1px solid #1A212B;
+    /* ── Topbar (menú horizontal con dropdowns tipo File/Edit) ─ */
+    #topbar {
       display: flex;
-      flex-direction: column;
-      overflow-y: auto;
+      align-items: stretch;
+      gap: 2px;
+      background: #0B0F15;
+      border-bottom: 1px solid #1A212B;
+      padding: 0 4px;
       flex-shrink: 0;
+      overflow-x: auto;
+      overflow-y: visible;
+      height: 40px;
+      position: relative;
+      z-index: 40;
     }
-    #sidebar-logo {
+    #topbar::-webkit-scrollbar { height: 6px; }
+    #topbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+    #topbar-logo {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 12px 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      background: rgba(0,0,0,0.15);
+      padding: 0 12px 0 8px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      margin-right: 4px;
+      flex-shrink: 0;
     }
-    #sidebar-logo img { width: 26px; height: 26px; border-radius: 5px; }
-    #sidebar-logo .name {
+    #topbar-logo img { width: 22px; height: 22px; border-radius: 4px; }
+    #topbar-logo .name {
       font-size: 13px;
       font-weight: 700;
       color: #fff;
       letter-spacing: 0.3px;
     }
-    .nav-section { padding: 8px 0 2px; }
-    .nav-label {
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.38);
-      padding: 0 12px 3px;
-    }
-    .nav-item {
+
+    /* Grupo = trigger + dropdown; el "abierto" muestra el dropdown. */
+    .menu-group { position: relative; display: flex; align-items: stretch; }
+    .menu-trigger {
       display: flex;
       align-items: center;
-      gap: 7px;
-      padding: 5px 12px;
+      gap: 4px;
+      padding: 0 12px;
       cursor: pointer;
       color: rgba(255,255,255,0.72);
       font-size: 12px;
-      font-weight: 400;
-      border-left: 2px solid transparent;
-      transition: background 100ms, color 100ms, border-color 100ms;
+      font-weight: 500;
+      background: transparent;
+      border: none;
       user-select: none;
+      transition: background 100ms, color 100ms;
+      white-space: nowrap;
     }
-    .nav-item:hover { background: rgba(76,158,227,0.07); color: #fff; }
+    .menu-trigger .caret {
+      font-size: 8px;
+      opacity: 0.55;
+      margin-left: 2px;
+      transition: transform 150ms;
+    }
+    .menu-trigger:hover,
+    .menu-group.open .menu-trigger,
+    .menu-trigger.active {
+      background: rgba(76,158,227,0.10);
+      color: #fff;
+    }
+    .menu-group.open .menu-trigger .caret { transform: rotate(180deg); }
+    .menu-trigger.active {
+      color: #fff;
+      box-shadow: inset 0 -2px 0 var(--accent-hi);
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 210px;
+      background: #0B0F15;
+      border: 1px solid #1A212B;
+      border-top: 2px solid var(--accent-hi);
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+      padding: 6px 0;
+      z-index: 60;
+    }
+    .menu-group.open .menu-dropdown { display: block; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.78);
+      font-size: 12px;
+      font-weight: 400;
+      transition: background 100ms, color 100ms;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .nav-item:hover { background: rgba(76,158,227,0.10); color: #fff; }
     .nav-item.active {
       background: var(--accent-lt);
       color: #fff;
-      border-left-color: var(--accent-hi);
       font-weight: 600;
     }
     .nav-item .icon { flex-shrink: 0; width: 17px; text-align: center; display: inline-flex; align-items: center; justify-content: center; }
     .nav-item .icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+
+    /* Los alignments a la derecha del topbar (Sistema queda contra el borde) */
+    #topbar .menu-spacer { flex: 1; min-width: 6px; }
+    #topbar .menu-group.align-right .menu-dropdown { left: auto; right: 0; }
 
     /* ── Content ─────────────────────────────────────────────── */
     #content {
@@ -786,92 +842,111 @@
 <div id="app">
 
   <!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════ -->
-  <nav id="sidebar">
-    <div id="sidebar-logo">
+  <nav id="topbar">
+    <div id="topbar-logo">
       <img src="icon.png" alt="A" />
       <span class="name">Asimov</span>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-item active" data-view="dashboard">
-        <span class="icon"><svg><use href="#i-home"/></svg></span> Dashboard
+    <!-- Dashboard queda como acceso directo, sin dropdown -->
+    <button class="menu-trigger nav-item" data-view="dashboard" style="border-radius:0;">
+      <span class="icon"><svg><use href="#i-home"/></svg></span> Dashboard
+    </button>
+
+    <div class="menu-group" data-group="ventas">
+      <button class="menu-trigger" type="button">Ventas <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="pedidos"><span class="icon"><svg><use href="#i-clip"/></svg></span> Pedidos</div>
+        <div class="nav-item" data-view="cotizaciones"><span class="icon"><svg><use href="#i-tag"/></svg></span> Cotizaciones</div>
+        <div class="nav-item" data-view="clientes"><span class="icon"><svg><use href="#i-users"/></svg></span> Clientes</div>
+        <div class="nav-item" data-view="oportunidades"><span class="icon"><svg><use href="#i-target"/></svg></span> Oportunidades</div>
       </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Ventas</div>
-      <div class="nav-item" data-view="pedidos"><span class="icon"><svg><use href="#i-clip"/></svg></span> Pedidos</div>
-      <div class="nav-item" data-view="cotizaciones"><span class="icon"><svg><use href="#i-tag"/></svg></span> Cotizaciones</div>
-      <div class="nav-item" data-view="clientes"><span class="icon"><svg><use href="#i-users"/></svg></span> Clientes</div>
-      <div class="nav-item" data-view="oportunidades"><span class="icon"><svg><use href="#i-target"/></svg></span> Oportunidades</div>
+    <div class="menu-group" data-group="compras">
+      <button class="menu-trigger" type="button">Compras <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="ordenes-compra"><span class="icon"><svg><use href="#i-cart"/></svg></span> Órd. de Compra</div>
+        <div class="nav-item" data-view="recepciones"><span class="icon"><svg><use href="#i-inbox"/></svg></span> Remitos de compra</div>
+        <div class="nav-item" data-view="facturas-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas de compra</div>
+        <div class="nav-item" data-view="recibos-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Recibos de compra</div>
+        <div class="nav-item" data-view="proveedores"><span class="icon"><svg><use href="#i-factory"/></svg></span> Proveedores</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Compras</div>
-      <div class="nav-item" data-view="ordenes-compra"><span class="icon"><svg><use href="#i-cart"/></svg></span> Órd. de Compra</div>
-      <div class="nav-item" data-view="recepciones"><span class="icon"><svg><use href="#i-inbox"/></svg></span> Remitos de compra</div>
-      <div class="nav-item" data-view="facturas-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas de compra</div>
-      <div class="nav-item" data-view="recibos-compra"><span class="icon"><svg><use href="#i-file"/></svg></span> Recibos de compra</div>
-      <div class="nav-item" data-view="proveedores"><span class="icon"><svg><use href="#i-factory"/></svg></span> Proveedores</div>
+    <div class="menu-group" data-group="stock">
+      <button class="menu-trigger" type="button">Stock <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="stock"><span class="icon"><svg><use href="#i-box"/></svg></span> Stock</div>
+        <div class="nav-item" data-view="movimientos"><span class="icon"><svg><use href="#i-swap"/></svg></span> Movimientos</div>
+        <div class="nav-item" data-view="ajustes-stock"><span class="icon"><svg><use href="#i-swap"/></svg></span> Ajustes internos</div>
+        <div class="nav-item" data-view="depositos"><span class="icon"><svg><use href="#i-building"/></svg></span> Depósitos</div>
+        <div class="nav-item" data-view="series"><span class="icon"><svg><use href="#i-hash"/></svg></span> Núm. de Serie</div>
+        <div class="nav-item" data-view="alertas-stock"><span class="icon"><svg><use href="#i-alert"/></svg></span> Alertas</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Stock</div>
-      <div class="nav-item" data-view="stock"><span class="icon"><svg><use href="#i-box"/></svg></span> Stock</div>
-      <div class="nav-item" data-view="movimientos"><span class="icon"><svg><use href="#i-swap"/></svg></span> Movimientos</div>
-      <div class="nav-item" data-view="ajustes-stock"><span class="icon"><svg><use href="#i-swap"/></svg></span> Ajustes internos</div>
-      <div class="nav-item" data-view="depositos"><span class="icon"><svg><use href="#i-building"/></svg></span> Depósitos</div>
-      <div class="nav-item" data-view="series"><span class="icon"><svg><use href="#i-hash"/></svg></span> Núm. de Serie</div>
-      <div class="nav-item" data-view="alertas-stock"><span class="icon"><svg><use href="#i-alert"/></svg></span> Alertas</div>
+    <div class="menu-group" data-group="facturacion">
+      <button class="menu-trigger" type="button">Facturación <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="facturas"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas</div>
+        <div class="nav-item" data-view="remitos"><span class="icon"><svg><use href="#i-truck"/></svg></span> Remitos</div>
+        <div class="nav-item" data-view="recibos"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Recibos</div>
+        <div class="nav-item" data-view="notas-comision"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Notas de comisión</div>
+        <div class="nav-item" data-view="precios"><span class="icon"><svg><use href="#i-pricetag"/></svg></span> Lista de Precios</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Facturación</div>
-      <div class="nav-item" data-view="facturas"><span class="icon"><svg><use href="#i-file"/></svg></span> Facturas</div>
-      <div class="nav-item" data-view="remitos"><span class="icon"><svg><use href="#i-truck"/></svg></span> Remitos</div>
-      <div class="nav-item" data-view="recibos"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Recibos</div>
-      <div class="nav-item" data-view="notas-comision"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Notas de comisión</div>
-      <div class="nav-item" data-view="precios"><span class="icon"><svg><use href="#i-pricetag"/></svg></span> Lista de Precios</div>
+    <div class="menu-group" data-group="crm">
+      <button class="menu-trigger" type="button">CRM <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="cuentas-crm"><span class="icon"><svg><use href="#i-crm"/></svg></span> Cuentas CRM</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">CRM</div>
-      <div class="nav-item" data-view="cuentas-crm"><span class="icon"><svg><use href="#i-crm"/></svg></span> Cuentas CRM</div>
+    <div class="menu-group" data-group="tesoreria">
+      <button class="menu-trigger" type="button">Tesorería <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="dolar"><span class="icon"><svg><use href="#i-dollar"/></svg></span> Dólar</div>
+        <div class="nav-item" data-view="caja"><span class="icon"><svg><use href="#i-wallet"/></svg></span> Caja</div>
+        <div class="nav-item" data-view="gastos-internos"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Gastos internos</div>
+        <div class="nav-item" data-view="cta-cte-clientes"><span class="icon"><svg><use href="#i-user"/></svg></span> Cta. Cte. Clientes</div>
+        <div class="nav-item" data-view="cta-cte-proveedores"><span class="icon"><svg><use href="#i-factory"/></svg></span> Cta. Cte. Prov.</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Tesorería</div>
-      <div class="nav-item" data-view="dolar"><span class="icon"><svg><use href="#i-dollar"/></svg></span> Dólar</div>
-      <div class="nav-item" data-view="caja"><span class="icon"><svg><use href="#i-wallet"/></svg></span> Caja</div>
-      <div class="nav-item" data-view="gastos-internos"><span class="icon"><svg><use href="#i-receipt"/></svg></span> Gastos internos</div>
-      <div class="nav-item" data-view="cta-cte-clientes"><span class="icon"><svg><use href="#i-user"/></svg></span> Cta. Cte. Clientes</div>
-      <div class="nav-item" data-view="cta-cte-proveedores"><span class="icon"><svg><use href="#i-factory"/></svg></span> Cta. Cte. Prov.</div>
+    <div class="menu-group" data-group="contabilidad">
+      <button class="menu-trigger" type="button">Contabilidad <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="diario"><span class="icon"><svg><use href="#i-book"/></svg></span> Diario</div>
+        <div class="nav-item" data-view="reportes"><span class="icon"><svg><use href="#i-chart"/></svg></span> Reportes</div>
+        <div class="nav-item" data-view="export-contable"><span class="icon"><svg><use href="#i-export"/></svg></span> Export Contable</div>
+        <div class="nav-item" data-view="auditoria"><span class="icon"><svg><use href="#i-magnify"/></svg></span> Auditoría</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">Contabilidad</div>
-      <div class="nav-item" data-view="diario"><span class="icon"><svg><use href="#i-book"/></svg></span> Diario</div>
-      <div class="nav-item" data-view="reportes"><span class="icon"><svg><use href="#i-chart"/></svg></span> Reportes</div>
-      <div class="nav-item" data-view="export-contable"><span class="icon"><svg><use href="#i-export"/></svg></span> Export Contable</div>
-      <div class="nav-item" data-view="auditoria"><span class="icon"><svg><use href="#i-magnify"/></svg></span> Auditoría</div>
+    <div class="menu-group" data-group="rma">
+      <button class="menu-trigger" type="button">RMA <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="tickets"><span class="icon"><svg><use href="#i-wrench"/></svg></span> Tickets</div>
+        <div class="nav-item" data-view="ordenes-trabajo"><span class="icon"><svg><use href="#i-gear"/></svg></span> Órd. de Trabajo</div>
+        <div class="nav-item" data-view="garantias"><span class="icon"><svg><use href="#i-shield"/></svg></span> Garantías</div>
+      </div>
     </div>
 
-    <div class="nav-section">
-      <div class="nav-label">RMA</div>
-      <div class="nav-item" data-view="tickets"><span class="icon"><svg><use href="#i-wrench"/></svg></span> Tickets</div>
-      <div class="nav-item" data-view="ordenes-trabajo"><span class="icon"><svg><use href="#i-gear"/></svg></span> Órd. de Trabajo</div>
-      <div class="nav-item" data-view="garantias"><span class="icon"><svg><use href="#i-shield"/></svg></span> Garantías</div>
-    </div>
+    <span class="menu-spacer"></span>
 
-    <div class="nav-section">
-      <div class="nav-label">Sistema</div>
-      <div class="nav-item" data-view="config"><span class="icon"><svg><use href="#i-gear"/></svg></span> Configuración</div>
-      <div class="nav-item" data-view="integraciones"><span class="icon"><svg><use href="#i-plug"/></svg></span> Integraciones</div>
-      <div class="nav-item" data-view="usuarios"><span class="icon"><svg><use href="#i-users"/></svg></span> Usuarios y Roles</div>
-      <div class="nav-item" data-view="knowledge"><span class="icon"><svg><use href="#i-bookopen"/></svg></span> Base Conocimiento</div>
-      <div class="nav-item" data-view="conversaciones"><span class="icon"><svg><use href="#i-message"/></svg></span> Conversaciones</div>
-      <div class="nav-item" data-view="favoritos"><span class="icon"><svg><use href="#i-star"/></svg></span> Favoritos / Apariencia</div>
-      <div class="nav-item" data-view="atajos"><span class="icon"><svg><use href="#i-keyboard"/></svg></span> Atajos de teclado</div>
+    <div class="menu-group align-right" data-group="sistema">
+      <button class="menu-trigger" type="button">Sistema <span class="caret">▼</span></button>
+      <div class="menu-dropdown">
+        <div class="nav-item" data-view="config"><span class="icon"><svg><use href="#i-gear"/></svg></span> Configuración</div>
+        <div class="nav-item" data-view="integraciones"><span class="icon"><svg><use href="#i-plug"/></svg></span> Integraciones</div>
+        <div class="nav-item" data-view="usuarios"><span class="icon"><svg><use href="#i-users"/></svg></span> Usuarios y Roles</div>
+        <div class="nav-item" data-view="knowledge"><span class="icon"><svg><use href="#i-bookopen"/></svg></span> Base Conocimiento</div>
+        <div class="nav-item" data-view="conversaciones"><span class="icon"><svg><use href="#i-message"/></svg></span> Conversaciones</div>
+        <div class="nav-item" data-view="favoritos"><span class="icon"><svg><use href="#i-star"/></svg></span> Favoritos / Apariencia</div>
+        <div class="nav-item" data-view="atajos"><span class="icon"><svg><use href="#i-keyboard"/></svg></span> Atajos de teclado</div>
+      </div>
     </div>
   </nav>
 
@@ -3378,13 +3453,59 @@
     }
   };
 
-  // ── sidebar clicks ───────────────────────────────────────────────────
+  // ── nav clicks (topbar + shortcuts) ────────────────────────────────────
   document.querySelectorAll(".nav-item[data-view]").forEach(el => {
-    el.addEventListener("click", () => navigate(el.dataset.view));
+    el.addEventListener("click", () => {
+      navigate(el.dataset.view);
+      closeAllMenus();
+    });
   });
   document.querySelectorAll(".shortcut[data-view]").forEach(el => {
     el.addEventListener("click", () => navigate(el.dataset.view));
   });
+
+  // ── Topbar dropdowns (menu-group triggers) ─────────────────────────────
+  function closeAllMenus() {
+    document.querySelectorAll("#topbar .menu-group.open").forEach(g => g.classList.remove("open"));
+  }
+  document.querySelectorAll("#topbar .menu-group > .menu-trigger").forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const group = btn.parentElement;
+      const wasOpen = group.classList.contains("open");
+      closeAllMenus();
+      if (!wasOpen) group.classList.add("open");
+    });
+    // Hover en un trigger cuando ya hay otro abierto = cambiar de menú.
+    btn.addEventListener("mouseenter", () => {
+      const anyOpen = document.querySelector("#topbar .menu-group.open");
+      if (anyOpen && anyOpen !== btn.parentElement) {
+        closeAllMenus();
+        btn.parentElement.classList.add("open");
+      }
+    });
+  });
+  // Click fuera del topbar cierra los dropdowns.
+  document.addEventListener("click", (ev) => {
+    if (!ev.target.closest("#topbar .menu-group")) closeAllMenus();
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") closeAllMenus();
+  });
+
+  // Al navegar, marcar el trigger padre del ítem activo como active (highlight
+  // visual del "grupo abierto en la vista actual").
+  const _origNavigate = navigate;
+  navigate = function (viewId) {
+    _origNavigate(viewId);
+    document.querySelectorAll("#topbar .menu-trigger").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(`#topbar .nav-item.active[data-view]`).forEach(item => {
+      const group = item.closest(".menu-group");
+      const trigger = group && group.querySelector(".menu-trigger");
+      if (trigger) trigger.classList.add("active");
+      // Si el propio Dashboard es trigger directo (sin grupo), ya se autoactiva por la clase active.
+    });
+  };
 
   // expose for kpi cards
   window.navigate = navigate;
