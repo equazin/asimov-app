@@ -4,7 +4,7 @@
  * Búsqueda por múltiples términos con "+" (ej. "NB+LENOVO" trae filas que
  * contienen ambos). El resto son wrappers finos sobre `src/air.ts`.
  */
-import { ipcMain } from "electron";
+import { dialog, ipcMain } from "electron";
 import { dbAll, dbGet } from "../db";
 import {
   getAirLocalConfig,
@@ -14,6 +14,7 @@ import {
   startAirSyncTimer,
   stopAirSyncTimer,
 } from "../air";
+import { parseAirNotaFromFile } from "../air-pdf";
 import { safeStr, type IpcDeps } from "./shared";
 
 export function registerAirIpc(_deps: IpcDeps): void {
@@ -77,5 +78,36 @@ export function registerAirIpc(_deps: IpcDeps): void {
   ipcMain.handle("air:sync-timer:stop", () => {
     stopAirSyncTimer();
     return { ok: true };
+  });
+
+  // Importa una Nota de Venta de AIR (PDF) y devuelve los ítems parseados
+  // + matcheados contra `air_products` local, para autocargar una Orden de
+  // Compra. Si `filePath` viene vacío, abre un diálogo del OS para elegirlo.
+  ipcMain.handle("air:parse-pdf", async (_event, filePathIn: unknown) => {
+    try {
+      let filePath = safeStr(filePathIn, 4000);
+      if (!filePath) {
+        const win = _deps.getMainWindow();
+        const picked = win && !win.isDestroyed()
+          ? await dialog.showOpenDialog(win, {
+              title: "Elegí el PDF del pedido de AIR",
+              filters: [{ name: "PDF", extensions: ["pdf"] }],
+              properties: ["openFile"],
+            })
+          : await dialog.showOpenDialog({
+              title: "Elegí el PDF del pedido de AIR",
+              filters: [{ name: "PDF", extensions: ["pdf"] }],
+              properties: ["openFile"],
+            });
+        if (picked.canceled || picked.filePaths.length === 0) {
+          return { ok: false, cancelled: true };
+        }
+        filePath = picked.filePaths[0];
+      }
+      const nota = await parseAirNotaFromFile(filePath);
+      return { ok: true, data: nota };
+    } catch (err: unknown) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
   });
 }

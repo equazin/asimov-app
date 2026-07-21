@@ -117,6 +117,14 @@ export function registerIpcHandlers(deps: IpcDeps): void {
     return dbAll("SELECT * FROM suppliers WHERE active = 1 AND (business_name LIKE ? OR cuit LIKE ? OR code LIKE ?) ORDER BY business_name LIMIT 500", [q, q, q]);
   });
   ipcMain.handle("db:suppliers:get", (_event, id: unknown) => dbGet("SELECT * FROM suppliers WHERE id = ?", [safeStr(id)]));
+  // Fuzzy find por nombre — sirve para autoseleccionar el proveedor "AIR" al
+  // importar un PDF de Nota de Venta de AIR en una Orden de Compra.
+  ipcMain.handle("db:suppliers:find-by-name", (_event, name: unknown) => {
+    const n = safeStr(name);
+    if (!n) return null;
+    const q = `%${n}%`;
+    return dbGet("SELECT * FROM suppliers WHERE active = 1 AND business_name LIKE ? ORDER BY LENGTH(business_name) LIMIT 1", [q]);
+  });
   ipcMain.handle("db:suppliers:save", (_event, row: unknown) => {
     const r = row as Record<string, unknown>;
     const wasExisting = !!safeStr(r.id);

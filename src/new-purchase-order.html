@@ -571,6 +571,7 @@ td{ border-color:var(--border) !important; }
     <div class="items-toolbar">
       <button type="button" class="btn-sm" id="btnAddItem">+ Agregar ítem</button>
       <button type="button" class="btn-sm secondary" id="btnPickProduct">🔍 Buscar producto (F4)</button>
+      <button type="button" class="btn-sm secondary" id="btnImportAirPdf" title="Importar una Nota de Venta de AIR (PDF) y autocargar los ítems">📄 Importar PDF de AIR</button>
       <span class="hint">Insert = nueva fila · Del = eliminar fila · F4 = buscar producto</span>
     </div>
     <div class="table-wrap">
@@ -922,9 +923,99 @@ td{ border-color:var(--border) !important; }
   document.getElementById('btnPickSupplier').addEventListener('click',abrirProveedorPicker);
   document.getElementById('btnAddItem').addEventListener('click',function(){agregarFila()});
   document.getElementById('btnPickProduct').addEventListener('click',abrirProductoPicker);
+  document.getElementById('btnImportAirPdf').addEventListener('click',importarPdfAir);
   document.getElementById('btnSave').addEventListener('click',guardar);
   document.getElementById('btnPrint').addEventListener('click',imprimir);
   document.getElementById('btnAnnul').addEventListener('click',anular);
+
+  /**
+   * Importa una "Nota de Venta" de AIR (PDF) y autocompleta la Orden de
+   * Compra: setea el proveedor AIR, carga cada ítem del PDF con
+   * cantidad + código + descripción + precio unitario del catálogo local
+   * (air_products, ya sincronizado). Si el código no está en el catálogo,
+   * se carga igual pero con la descripción del PDF y precio del PDF.
+   */
+  async function importarPdfAir(){
+    var api = window.asimovNewPurchaseOrder;
+    if(!api || !api.importAirPdf){
+      alert('La importación de PDF de AIR no está disponible en esta versión.');
+      return;
+    }
+    // Si ya hay ítems, avisar que se van a reemplazar.
+    var rows = document.querySelectorAll('#itemsBody tr');
+    if(rows.length && !confirm('Se van a reemplazar los ítems actuales por los del PDF. ¿Continuar?')) return;
+
+    var btn = document.getElementById('btnImportAirPdf');
+    var original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳ Parseando...';
+    try {
+      var res = await api.importAirPdf();
+      if(res.cancelled) return;
+      if(!res.ok || !res.data){
+        alert('No se pudo leer el PDF: ' + (res.error || 'formato no reconocido.'));
+        return;
+      }
+      var nota = res.data;
+
+      // 1) Setear el proveedor "AIR" en el encabezado (búsqueda fuzzy por nombre).
+      try {
+        var prov = await api.findSupplierByName('AIR');
+        if(prov){
+          proveedorId = prov.id;
+          document.getElementById('proveedorNombre').value = prov.business_name || '';
+          document.getElementById('proveedorCuit').value = prov.cuit || '';
+          document.getElementById('proveedorIva').value = prov.fiscal_type || '';
+        } else {
+          alert('No encontré un proveedor cuyo nombre contenga "AIR" en la lista. Creá uno y volvé a importar.');
+        }
+      } catch(_) {}
+
+      // 2) Referenciar el nº de nota origen en el campo "referencias".
+      var refInput = document.getElementById('referencias');
+      if(refInput) refInput.value = ('Nota AIR ' + (nota.number||'')).trim();
+
+      // 3) Vaciar la grilla y cargar cada ítem del PDF.
+      var tbody = document.getElementById('itemsBody');
+      tbody.innerHTML = '';
+      nota.items.forEach(function(it){
+        var tr = agregarFila();
+        var descripcion = (it.match && it.match.localName) ? it.match.localName : it.descriptionFromPdf;
+        var precio = (it.match && Number.isFinite(it.match.localCostArs) && it.match.localCostArs > 0)
+          ? it.match.localCostArs
+          : it.unitPrice;
+        var iva = (it.match && Number.isFinite(it.match.localIvaPct) && it.match.localIvaPct > 0)
+          ? it.match.localIvaPct
+          : (it.ivaPct > 0 ? it.ivaPct : 21);
+        tr.dataset.articleId = (it.match && it.match.articleId) ? it.match.articleId : '';
+        tr.dataset.ivaPct = String(iva);
+        tr.querySelector('[data-col=codigo]').value = it.code || '';
+        tr.querySelector('[data-col=desc]').value = descripcion;
+        tr.querySelector('[data-col=unidad]').value = 'UN';
+        tr.querySelector('[data-col=cant]').value = it.qty || 1;
+        tr.querySelector('[data-col=precio]').value = precio || 0;
+        tr.querySelector('[data-col=desc_pct]').value = 0;
+        recalcFila(tr);
+      });
+      recalcTotals();
+
+      // 4) Feedback + aviso de códigos no encontrados en catálogo.
+      var msg = '✅ Importados ' + nota.items.length + ' ítems de la Nota AIR ' + (nota.number || '') +
+                ' (Total PDF: $' + Number(nota.totalArs||0).toLocaleString('es-AR',{minimumFractionDigits:2}) + ').';
+      if(nota.unmatchedCodes && nota.unmatchedCodes.length){
+        msg += '\n\n⚠️ Los siguientes códigos NO están en tu catálogo local de AIR (los cargué con la descripción y precio del PDF):\n· ' +
+               nota.unmatchedCodes.join('\n· ') +
+               '\n\nCorré una sincronización de AIR para traerlos al catálogo.';
+      }
+      alert(msg);
+      activarTab('items');
+    } catch(err){
+      alert('Error al importar PDF: ' + (err && err.message ? err.message : String(err)));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  }
 
   document.addEventListener('keydown',function(e){
     if(e.key === 'F8'){e.preventDefault();guardar()}
