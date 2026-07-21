@@ -164,12 +164,12 @@ export function parseAirNotaText(rawText: string): Omit<AirPdfNota, "items" | "u
   const startIdx = lines.findIndex((l) => /Cant\.?\s+C[óo]digo\s+Descripci/.test(l));
   const endIdx = lines.findIndex((l, i) => i > startIdx && /(R[ée]gimen|Subtotal\s+u\$s|TEL\s+GCBA)/i.test(l));
   const itemsLines = lines.slice(startIdx + 1, endIdx > startIdx ? endIdx : lines.length);
-  const items: Array<Omit<AirPdfItem, "match">> = [];
+  const rawItems: Array<Omit<AirPdfItem, "match">> = [];
   for (const line of itemsLines) {
     const m = matchItemLine(line);
     if (!m) continue;
     if (m.kind === "primary") {
-      items.push({
+      rawItems.push({
         qty: m.qty,
         code: m.code,
         descriptionFromPdf: m.desc,
@@ -179,7 +179,7 @@ export function parseAirNotaText(rawText: string): Omit<AirPdfNota, "items" | "u
         isPrimary: true,
       });
     } else {
-      items.push({
+      rawItems.push({
         qty: m.qty,
         code: m.code,
         descriptionFromPdf: m.desc,
@@ -189,6 +189,26 @@ export function parseAirNotaText(rawText: string): Omit<AirPdfNota, "items" | "u
         isPrimary: false,
       });
     }
+  }
+  // Colapsa kits: una línea primaria en AIR trae el subtotal AGREGADO de todos
+  // sus componentes. Si a un `isPrimary` le siguen `component`s (mismo grupo,
+  // hasta el próximo primary), se descarta la primaria porque su precio ya
+  // está representado por la suma de los componentes — cargar ambos duplica el
+  // total. Si un primary no tiene componentes debajo, es un ítem suelto y se
+  // conserva tal cual.
+  const items: Array<Omit<AirPdfItem, "match">> = [];
+  for (let i = 0; i < rawItems.length; i++) {
+    const cur = rawItems[i];
+    if (cur.isPrimary) {
+      let hasComponents = false;
+      for (let j = i + 1; j < rawItems.length; j++) {
+        if (rawItems[j].isPrimary) break;
+        hasComponents = true;
+        break;
+      }
+      if (hasComponents) continue; // dropear primaria, los componentes ya vienen
+    }
+    items.push(cur);
   }
   return {
     number: header.number,

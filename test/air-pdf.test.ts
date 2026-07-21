@@ -68,24 +68,35 @@ describe("air-pdf — parser de Nota de Venta de AIR", () => {
     expect(matchItemLine("Subtotal u$s 528,38 $ 792.564,51")).toBeNull();
   });
 
-  it("parsea la nota completa: header + totales + 4 ítems (marcando primary vs component)", () => {
+  it("parsea la nota completa: colapsa el kit padre y conserva sólo sus componentes (evita doble-conteo)", () => {
     const parsed = parseAirNotaText(SAMPLE_TEXT);
     expect(parsed.number).toBe("0004-02504060");
-    expect(parsed.items).toHaveLength(4);
-    // Kit padre
-    expect(parsed.items[0].code).toBe("214031");
+    // El kit padre 214031 (isPrimary) trae el subtotal agregado de sus 3
+    // componentes → se descarta y quedan solo los componentes. Si no se
+    // colapsara, el total sumaría el doble del PDF.
+    expect(parsed.items).toHaveLength(3);
+    expect(parsed.items.some((it) => it.code === "214031")).toBe(false);
+    expect(parsed.items[0].code).toBe("218249");
+    expect(parsed.items[0].isPrimary).toBe(false);
+    expect(parsed.items[1].code).toBe("49945");
+    // Monitor con qty=2 (venía como sub-línea de 4 columnas en el ejemplo).
+    expect(parsed.items[2].code).toBe("214651");
+    expect(parsed.items[2].qty).toBe(2);
+    expect(parsed.items[2].unitPrice).toBeCloseTo(93148.80 / 2);
+    // Sanity: la suma de subtotales de los ítems importados ≈ subtotal PDF.
+    const sum = parsed.items.reduce((s, it) => s + it.subtotal, 0);
+    expect(sum).toBeCloseTo(223641.75 + 6581.25 + 93148.80, 2);
+  });
+
+  it("conserva un ítem primario suelto (sin componentes debajo)", () => {
+    const SOLO = `Cant. Código Descripción GI/GP %IVA I.Int Precio Subtotal
+1 999999 ITEM SUELTO CON IVA PROPIO 0/0 21,00 0,00 1.000,00 1.000,00
+Régimen de Transparencia
+`;
+    const parsed = parseAirNotaText(SOLO);
+    expect(parsed.items).toHaveLength(1);
+    expect(parsed.items[0].code).toBe("999999");
     expect(parsed.items[0].isPrimary).toBe(true);
-    expect(parsed.items[0].ivaPct).toBeCloseTo(10.5);
-    // Componentes del kit (sin IVA propio)
-    expect(parsed.items[1].code).toBe("218249");
-    expect(parsed.items[1].isPrimary).toBe(false);
-    expect(parsed.items[1].ivaPct).toBe(0);
-    expect(parsed.items[2].code).toBe("49945");
-    expect(parsed.items[2].isPrimary).toBe(false);
-    // Ítem suelto de 4 columnas (el monitor, con qty=2)
-    expect(parsed.items[3].code).toBe("214651");
-    expect(parsed.items[3].qty).toBe(2);
-    expect(parsed.items[3].unitPrice).toBeCloseTo(93148.80 / 2);
   });
 
   it("acepta importes en formato AR (con coma decimal) y en formato EN (con punto decimal)", () => {
