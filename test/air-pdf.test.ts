@@ -15,7 +15,7 @@ Cant. Código Descripción GI/GP %IVA I.Int Precio Subtotal
 1 214031 PC AIR AMD RYZEN 5 5600GT TRAY + COOLER 0/0 10,50 17.702,49 810.267,00 810.267,00
 1 218249 CPU AMD RYZEN 5 5600GT AM4 65W MPK CON COOLER 223.641,75
 1 49945 CPU COOLER AMD PERFORMANCE AM4 6.581,25
-2 214651 MONITOR 22 HIKVISION DS-D5022F2-1V2 VGA/HDMI 93.148,80
+2 214651 MONITOR 22 HIKVISION DS-D5022F2-1V2 VGA/HDMI 46.574,40
 Régimen de Transparencia Fiscal al Consumidor LEY: 27443
 Subtotal u$s 528,38 $ 792.564,51
 IVA Insc. u$s 55,48 $ 83.219,27
@@ -64,14 +64,23 @@ describe("air-pdf — parser de Nota de Venta de AIR", () => {
     expect(m.subtotal).toBeCloseTo(810267);
   });
 
-  it("detecta sub-línea (componente de kit) con 4 columnas", () => {
+  it("detecta sub-línea (componente de kit) con 4 columnas — el número es el precio UNITARIO", () => {
     const m = matchItemLine("1 218249 CPU AMD RYZEN 5 5600GT AM4 65W MPK CON COOLER 223.641,75");
     expect(m).not.toBeNull();
     expect(m?.kind).toBe("component");
     if (m?.kind !== "component") throw new Error("unreachable");
     expect(m.qty).toBe(1);
     expect(m.code).toBe("218249");
-    expect(m.subtotal).toBeCloseTo(223641.75);
+    expect(m.unitPrice).toBeCloseTo(223641.75);
+  });
+
+  it("componente con qty>1: el número del PDF es precio unitario (no subtotal)", () => {
+    // AIR imprime "2 214651 MONITOR ... 46.574,40" — donde 46.574,40 es POR
+    // UNIDAD. El subtotal real es 46.574,40 × 2 = 93.148,80.
+    const m = matchItemLine("2 214651 MONITOR 22 HIKVISION DS-D5022F2-1V2 VGA/HDMI 46.574,40");
+    if (m?.kind !== "component") throw new Error("unreachable");
+    expect(m.qty).toBe(2);
+    expect(m.unitPrice).toBeCloseTo(46574.40);
   });
 
   it("ignora líneas que no coinciden con el patrón", () => {
@@ -91,10 +100,11 @@ describe("air-pdf — parser de Nota de Venta de AIR", () => {
     expect(parsed.items[0].code).toBe("218249");
     expect(parsed.items[0].isPrimary).toBe(false);
     expect(parsed.items[1].code).toBe("49945");
-    // Monitor con qty=2 (venía como sub-línea de 4 columnas en el ejemplo).
+    // Monitor con qty=2: PDF trae 46.574,40 por unidad → subtotal 93.148,80.
     expect(parsed.items[2].code).toBe("214651");
     expect(parsed.items[2].qty).toBe(2);
-    expect(parsed.items[2].unitPrice).toBeCloseTo(93148.80 / 2);
+    expect(parsed.items[2].unitPrice).toBeCloseTo(46574.40);
+    expect(parsed.items[2].subtotal).toBeCloseTo(93148.80);
     // Sanity: la suma de subtotales de los ítems importados ≈ subtotal PDF.
     const sum = parsed.items.reduce((s, it) => s + it.subtotal, 0);
     expect(sum).toBeCloseTo(223641.75 + 6581.25 + 93148.80, 2);
@@ -115,7 +125,7 @@ Régimen de Transparencia
     // Formato AR: 1.500,50 → 1500.50
     const ar = matchItemLine("3 12345 DESC 1.500,50");
     expect(ar?.kind).toBe("component");
-    if (ar?.kind === "component") expect(ar.subtotal).toBeCloseTo(1500.5);
+    if (ar?.kind === "component") expect(ar.unitPrice).toBeCloseTo(1500.5);
     // La cotización usa formato EN internamente; ya validado en el test de extractTotals.
   });
 });

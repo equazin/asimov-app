@@ -94,7 +94,7 @@ function parseAmount(raw: string): number {
  */
 export function matchItemLine(line: string):
   | { kind: "primary"; qty: number; code: string; desc: string; ivaPct: number; unitPrice: number; subtotal: number }
-  | { kind: "component"; qty: number; code: string; desc: string; subtotal: number }
+  | { kind: "component"; qty: number; code: string; desc: string; unitPrice: number }
   | null
 {
   const clean = line.trim();
@@ -113,16 +113,21 @@ export function matchItemLine(line: string):
       subtotal: parseAmount(subS),
     };
   }
-  // Component: cant CÓDIGO DESCRIPCIÓN SUBTOTAL
+  // Component: cant CÓDIGO DESCRIPCIÓN PRECIO_UNITARIO
+  // El número es el precio POR UNIDAD, no el subtotal — el subtotal se
+  // deriva multiplicando por qty. (Verificado empíricamente con notas de AIR
+  // donde qty>1: la suma de los componentes con esta interpretación cuadra
+  // con el subtotal del kit padre; con la interpretación anterior daba la
+  // mitad para ítems con qty>1.)
   const comp = clean.match(/^(\d+)\s+(\d{4,7})\s+(.+?)\s+([\d.,]+)$/);
   if (comp && NUM_LOCALE.test(comp[4])) {
-    const [, qtyS, code, desc, subS] = comp;
+    const [, qtyS, code, desc, priceS] = comp;
     return {
       kind: "component",
       qty: Number(qtyS) || 0,
       code,
       desc: desc.trim(),
-      subtotal: parseAmount(subS),
+      unitPrice: parseAmount(priceS),
     };
   }
   return null;
@@ -189,8 +194,8 @@ export function parseAirNotaText(rawText: string): Omit<AirPdfNota, "items" | "u
         qty: m.qty,
         code: m.code,
         descriptionFromPdf: m.desc,
-        subtotal: m.subtotal,
-        unitPrice: m.qty > 0 ? m.subtotal / m.qty : 0,
+        unitPrice: m.unitPrice,
+        subtotal: m.unitPrice * m.qty,
         ivaPct: 0, // los componentes de un kit no traen IVA propio
         isPrimary: false,
       });
