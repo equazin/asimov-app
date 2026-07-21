@@ -981,12 +981,16 @@ td{ border-color:var(--border) !important; }
       nota.items.forEach(function(it){
         var tr = agregarFila();
         var descripcion = (it.match && it.match.localName) ? it.match.localName : it.descriptionFromPdf;
-        var precio = (it.match && Number.isFinite(it.match.localCostArs) && it.match.localCostArs > 0)
-          ? it.match.localCostArs
-          : it.unitPrice;
-        var iva = (it.match && Number.isFinite(it.match.localIvaPct) && it.match.localIvaPct > 0)
-          ? it.match.localIvaPct
-          : (it.ivaPct > 0 ? it.ivaPct : 21);
+        // Precio: prioriza el del PDF (es la Nota real que estás pagando);
+        // sólo cae al catálogo local si el PDF no trajo precio.
+        var precio = (Number.isFinite(it.unitPrice) && it.unitPrice > 0)
+          ? it.unitPrice
+          : ((it.match && Number.isFinite(it.match.localCostArs) && it.match.localCostArs > 0) ? it.match.localCostArs : 0);
+        // IVA: prioriza el del PDF (viene del kit padre propagado), y sólo si
+        // no vino cae al catálogo local, y sino 21 por defecto.
+        var iva = (it.ivaPct > 0)
+          ? it.ivaPct
+          : ((it.match && Number.isFinite(it.match.localIvaPct) && it.match.localIvaPct > 0) ? it.match.localIvaPct : 21);
         tr.dataset.articleId = (it.match && it.match.articleId) ? it.match.articleId : '';
         tr.dataset.ivaPct = String(iva);
         tr.querySelector('[data-col=codigo]').value = it.code || '';
@@ -997,6 +1001,20 @@ td{ border-color:var(--border) !important; }
         tr.querySelector('[data-col=desc_pct]').value = 0;
         recalcFila(tr);
       });
+      // Si el PDF trae Impuesto Interno (viene en el pie), lo cargo como una
+      // fila extra con IVA 0 para que el total de la OC cuadre 1:1 con AIR.
+      if(nota.internalTaxArs && nota.internalTaxArs > 0){
+        var trIi = agregarFila();
+        trIi.dataset.articleId = '';
+        trIi.dataset.ivaPct = '0';
+        trIi.querySelector('[data-col=codigo]').value = '';
+        trIi.querySelector('[data-col=desc]').value = 'Impuestos Internos (AIR)';
+        trIi.querySelector('[data-col=unidad]').value = 'UN';
+        trIi.querySelector('[data-col=cant]').value = 1;
+        trIi.querySelector('[data-col=precio]').value = nota.internalTaxArs;
+        trIi.querySelector('[data-col=desc_pct]').value = 0;
+        recalcFila(trIi);
+      }
       recalcTotals();
 
       // 4) Feedback + aviso de códigos no encontrados en catálogo.

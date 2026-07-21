@@ -39,6 +39,18 @@ describe("air-pdf — parser de Nota de Venta de AIR", () => {
     expect(t.exchangeRate).toBe(1500);
   });
 
+  it("extrae el Imp. Interno del pie del PDF", () => {
+    const SAMPLE_WITH_II = SAMPLE_TEXT + "Imp. Int.. u$s 11,80 $ 17.702,49\n";
+    const t = extractTotals(SAMPLE_WITH_II);
+    expect(t.internalTaxArs).toBeCloseTo(17702.49);
+  });
+
+  it("propaga el ivaPct del kit padre a los componentes al colapsar", () => {
+    const parsed = parseAirNotaText(SAMPLE_TEXT);
+    // 214031 (kit padre) tenía IVA 10,5 → sus componentes también.
+    expect(parsed.items.every((it) => it.ivaPct === 10.5)).toBe(true);
+  });
+
   it("detecta ítem principal con 8 columnas (kit padre o ítem con IVA)", () => {
     const m = matchItemLine("1 214031 PC AIR AMD RYZEN 5 5600GT TRAY + COOLER 0/0 10,50 17.702,49 810.267,00 810.267,00");
     expect(m).not.toBeNull();

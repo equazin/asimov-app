@@ -29,6 +29,7 @@ const api = {
       totalArs: number;
       totalUsd: number;
       exchangeRate: number;
+      internalTaxArs: number;
       items: Array<{
         qty: number;
         code: string;

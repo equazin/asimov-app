@@ -58,6 +58,9 @@ export interface AirPdfNota {
   totalUsd: number;
   /** Cotización USD → ARS declarada en el comprobante (1 U$S = X $). */
   exchangeRate: number;
+  /** Impuesto Interno agregado del pie del PDF (en ARS). Se prorratea a nivel
+   *  Nota (viene del kit padre y no se puede atribuir a un componente puntual). */
+  internalTaxArs: number;
   /** Ítems parseados con match contra el catálogo local. */
   items: AirPdfItem[];
   /** Ítems que no se pudieron matchear contra air_products (para avisar al operador). */
@@ -138,17 +141,20 @@ export function extractHeader(text: string): { number: string; date: string } {
   };
 }
 
-/** Extrae totales del pie del PDF (Subtotal / TOTAL / cotización). */
-export function extractTotals(text: string): { totalArs: number; totalUsd: number; exchangeRate: number } {
+/** Extrae totales del pie del PDF (Subtotal / TOTAL / cotización / Imp. Interno). */
+export function extractTotals(text: string): { totalArs: number; totalUsd: number; exchangeRate: number; internalTaxArs: number } {
   // "TOTAL u$s 595,66 $ 893.486,27" — anclado a inicio de línea para no
   // capturar accidentalmente "Subtotal u$s ..." (substring de "TOTAL").
   const totalMatch = text.match(/^TOTAL\s+u\$s\s+([\d.,]+)\s+\$\s+([\d.,]+)/im);
   // "Comprobante expresado en DOLARES BILLETES USA: 1.00 = $ 1500.00"
   const rateMatch = text.match(/1[.,]00\s*=\s*\$\s*([\d.,]+)/);
+  // "Imp. Int.. u$s 11,80 $ 17.702,49" — solo el ARS nos interesa.
+  const impIntMatch = text.match(/Imp\.?\s*Int[.\s]+u\$s\s+[\d.,]+\s+\$\s+([\d.,]+)/i);
   return {
     totalUsd: totalMatch ? parseAmount(totalMatch[1]) : 0,
     totalArs: totalMatch ? parseAmount(totalMatch[2]) : 0,
     exchangeRate: rateMatch ? parseAmount(rateMatch[1]) : 0,
+    internalTaxArs: impIntMatch ? parseAmount(impIntMatch[1]) : 0,
   };
 }
 
@@ -197,18 +203,29 @@ export function parseAirNotaText(rawText: string): Omit<AirPdfNota, "items" | "u
   // total. Si un primary no tiene componentes debajo, es un ítem suelto y se
   // conserva tal cual.
   const items: Array<Omit<AirPdfItem, "match">> = [];
+  let currentGroupIvaPct = 0;
   for (let i = 0; i < rawItems.length; i++) {
     const cur = rawItems[i];
     if (cur.isPrimary) {
+      // Averiguar si tiene componentes hasta el próximo primary.
       let hasComponents = false;
       for (let j = i + 1; j < rawItems.length; j++) {
         if (rawItems[j].isPrimary) break;
         hasComponents = true;
         break;
       }
-      if (hasComponents) continue; // dropear primaria, los componentes ya vienen
+      if (hasComponents) {
+        // Dropear primaria pero propagar su ivaPct a los componentes del grupo
+        // (los sub-renglones no declaran IVA propio y están tributados al mismo
+        // porcentaje que el kit padre).
+        currentGroupIvaPct = cur.ivaPct;
+        continue;
+      }
+      currentGroupIvaPct = 0;
+      items.push(cur);
+      continue;
     }
-    items.push(cur);
+    items.push(currentGroupIvaPct > 0 ? { ...cur, ivaPct: currentGroupIvaPct } : cur);
   }
   return {
     number: header.number,
@@ -216,6 +233,7 @@ export function parseAirNotaText(rawText: string): Omit<AirPdfNota, "items" | "u
     totalArs: totals.totalArs,
     totalUsd: totals.totalUsd,
     exchangeRate: totals.exchangeRate,
+    internalTaxArs: totals.internalTaxArs,
     items,
     rawText,
   };
@@ -265,6 +283,7 @@ export async function parseAirNotaFromFile(filePath: string): Promise<AirPdfNota
     totalArs: parsed.totalArs,
     totalUsd: parsed.totalUsd,
     exchangeRate: parsed.exchangeRate,
+    internalTaxArs: parsed.internalTaxArs,
     items: hydrated,
     unmatchedCodes,
     rawText: parsed.rawText,
