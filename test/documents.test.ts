@@ -54,6 +54,67 @@ describe("documents — recepción de mercadería (stock IN)", () => {
     expect(stockOf("art-COD1")).toBe(7);
     expect(one("SELECT COUNT(*) c FROM stock_movements WHERE reference_id=?", res.id).c).toBe(1);
   });
+
+  it("persiste lote, vencimiento y una serie por unidad recibida", () => {
+    seedArticle("COD1", 1);
+    const res = persistGoodsReceipt({
+      proveedorNombre: "Prov", estado: "Recibido",
+      items: [{
+        codigo: "COD1", descripcion: "Cámara IP", cantPedida: 3, cantRecibida: 3,
+        lote: "L-2026-07", fechaVenc: "2027-01-31",
+        series: [" SN-001 ", "SN-002", "", "SN-003"],
+      }],
+    });
+    const row = one("SELECT lot, expiry, serials FROM goods_receipt_items WHERE receipt_id=?", res.id);
+    expect(row.lot).toBe("L-2026-07");
+    expect(row.expiry).toBe("2027-01-31");
+    expect(JSON.parse(row.serials)).toEqual(["SN-001", "SN-002", "SN-003"]);
+  });
+
+  it("rechaza más series que unidades recibidas", () => {
+    seedArticle("COD1", 1);
+    expect(() => persistGoodsReceipt({
+      proveedorNombre: "Prov", estado: "Recibido",
+      items: [{ codigo: "COD1", cantRecibida: 2, series: ["A", "B", "C"] }],
+    })).toThrow(/n[úu]meros de serie/i);
+  });
+
+  it("rechaza series con cantidad recibida fraccionaria o cero", () => {
+    seedArticle("COD1", 1);
+    expect(() => persistGoodsReceipt({
+      proveedorNombre: "Prov", estado: "Recibido",
+      items: [{ codigo: "COD1", cantRecibida: 2.5, series: ["A", "B"] }],
+    })).toThrow(/entero/i);
+    expect(() => persistGoodsReceipt({
+      proveedorNombre: "Prov", estado: "Recibido",
+      items: [{ codigo: "COD1", cantRecibida: 0, series: ["A"] }],
+    })).toThrow(/entero/i);
+  });
+
+  it("re-guardar reemplaza las series anteriores, no las acumula", () => {
+    seedArticle("COD1", 1);
+    const res = persistGoodsReceipt({
+      proveedorNombre: "Prov", estado: "Recibido",
+      items: [{ codigo: "COD1", cantRecibida: 2, series: ["A", "B"] }],
+    });
+    persistGoodsReceipt({
+      id: res.id, proveedorNombre: "Prov", estado: "Recibido",
+      items: [{ codigo: "COD1", cantRecibida: 2, series: ["C", "D"] }],
+    });
+    const rows = getDb().prepare("SELECT serials FROM goods_receipt_items WHERE receipt_id=?").all(res.id) as Array<{ serials: string }>;
+    expect(rows).toHaveLength(1);
+    expect(JSON.parse(rows[0].serials)).toEqual(["C", "D"]);
+  });
+
+  it("ítems sin series guardan serials en null", () => {
+    seedArticle("COD1", 1);
+    const res = persistGoodsReceipt({
+      proveedorNombre: "Prov", estado: "Recibido",
+      items: [{ codigo: "COD1", cantRecibida: 1 }],
+    });
+    const row = one("SELECT lot, expiry, serials FROM goods_receipt_items WHERE receipt_id=?", res.id);
+    expect(row.serials).toBeNull();
+  });
 });
 
 describe("documents — remito (stock OUT)", () => {

@@ -390,6 +390,9 @@ CREATE TABLE IF NOT EXISTS goods_receipt_items (
   qty_ordered  REAL NOT NULL DEFAULT 0,
   qty_received REAL NOT NULL DEFAULT 0,
   unit_price   REAL NOT NULL DEFAULT 0,
+  lot          TEXT,
+  serials      TEXT,
+  expiry       TEXT,
   FOREIGN KEY (receipt_id) REFERENCES goods_receipts(id) ON DELETE CASCADE
 );
 
@@ -1036,6 +1039,11 @@ export function initDb(dbPath?: string): void {
   try { _db.exec("ALTER TABLE invoice_items ADD COLUMN cost REAL NOT NULL DEFAULT 0"); } catch {}
   // Desglose JSON de los medios usados en cada recibo de compra.
   try { _db.exec("ALTER TABLE purchase_receipts ADD COLUMN payment_breakdown TEXT"); } catch {}
+  // Trazabilidad por ítem recibido: lote, vencimiento y números de serie
+  // (JSON array, una serie por unidad recibida).
+  try { _db.exec("ALTER TABLE goods_receipt_items ADD COLUMN lot TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE goods_receipt_items ADD COLUMN serials TEXT"); } catch {}
+  try { _db.exec("ALTER TABLE goods_receipt_items ADD COLUMN expiry TEXT"); } catch {}
   migrateCrmSchema();
   migrateInvoiceNumberUniqueness();
   migrateCrmUnification();

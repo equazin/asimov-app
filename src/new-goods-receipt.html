@@ -205,6 +205,24 @@ tbody td{padding:4px 6px}
   opacity:0.6;
 }
 .del-row:hover{opacity:1;background:#fde}
+.lote-cell{display:flex;align-items:center;gap:3px}
+.lote-cell input{min-width:0}
+.serie-btn{
+  flex:0 0 auto;
+  background:#16283C;
+  border:1px solid var(--input-border);
+  border-radius:4px;
+  color:var(--text-muted);
+  cursor:pointer;
+  font-size:10px;
+  font-weight:700;
+  padding:3px 6px;
+  white-space:nowrap;
+  transition:background 0.15s,color 0.15s,border-color 0.15s;
+}
+.serie-btn:hover{border-color:var(--accent);color:var(--accent)}
+.serie-btn.ok{border-color:var(--success);color:var(--success)}
+.serie-btn.partial{border-color:var(--warning);color:var(--warning)}
 .semaforo{
   display:inline-block;
   width:10px;
@@ -553,7 +571,7 @@ td{ border-color:var(--border) !important; }
             <th style="width:90px">Cant. pedida</th>
             <th style="width:90px">Cant. recibida</th>
             <th style="width:80px">Diferencia</th>
-            <th style="width:90px">Lote / serie</th>
+            <th style="width:140px">Lote / serie</th>
             <th style="width:100px">Fecha venc.</th>
             <th style="width:36px"></th>
           </tr>
@@ -651,6 +669,23 @@ td{ border-color:var(--border) !important; }
   </div>
 </div>
 
+<div id="serieModal" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.62);align-items:center;justify-content:center">
+  <div style="width:min(520px,92vw);max-height:80vh;display:flex;flex-direction:column;background:#151c25;border:1px solid #344155;border-radius:10px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px">
+      <strong id="serieModalTitulo" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Números de serie</strong>
+      <button class="btn-sm secondary" type="button" onclick="cerrarSeries()">✕</button>
+    </div>
+    <div id="serieModalInfo" style="font-size:11px;color:#8A96A6;margin-bottom:10px"></div>
+    <textarea id="serieTextarea" spellcheck="false" placeholder="Un número de serie por línea.&#10;Podés escanear con lector de código de barras: cada lectura pasa a la línea siguiente." style="flex:1;min-height:220px;font-family:'Courier New',monospace;font-size:13px;line-height:1.6;resize:vertical"></textarea>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
+      <span id="serieContador" style="font-size:12px;color:#8A96A6"></span>
+      <div style="flex:1"></div>
+      <button class="btn-sm secondary" type="button" onclick="cerrarSeries()">Cancelar</button>
+      <button class="btn-sm" type="button" onclick="aceptarSeries()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
   <button class="footer-btn btn-save" onclick="guardar()">💾 Guardar <span class="kbd">F8</span></button>
   <button class="footer-btn btn-print" onclick="imprimir()">🖨 Imprimir</button>
@@ -704,12 +739,36 @@ td{ border-color:var(--border) !important; }
     tr.querySelector('.dif-cell').innerHTML = semaforoHtml(dif);
   }
 
+  function seriesDe(tr){
+    try{
+      var arr = JSON.parse(tr.dataset.series||'[]');
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
+  }
+
+  function cantRecibidaDe(tr){
+    return parseFloat(tr.querySelector('[data-col=recibida]').value)||0;
+  }
+
+  function actualizarSerieBtn(tr){
+    var btn = tr.querySelector('.serie-btn');
+    if(!btn) return;
+    var cargadas = seriesDe(tr).length;
+    var recibida = cantRecibidaDe(tr);
+    btn.textContent = 'S/N '+cargadas+'/'+(recibida||0);
+    btn.classList.remove('ok','partial');
+    if(cargadas > 0 && recibida > 0){
+      btn.classList.add(cargadas >= recibida ? 'ok' : 'partial');
+    }
+  }
+
   function agregarFila(data){
     data = data || {};
     rowCounter++;
     var tbody = document.getElementById('itemsBody');
     var tr = document.createElement('tr');
     tr.dataset.id = rowCounter;
+    tr.dataset.series = JSON.stringify(Array.isArray(data.series) ? data.series : []);
     tr.innerHTML =
       '<td style="text-align:center;color:#999;font-size:11px">'+rowCounter+'</td>'+
       '<td><input class="cell-input" data-col="codigo" value="'+esc(data.codigo||'')+'"></td>'+
@@ -718,16 +777,81 @@ td{ border-color:var(--border) !important; }
       '<td><input class="cell-input right" type="number" data-col="pedida" value="'+esc(data.pedida||0)+'" min="0" step="any"></td>'+
       '<td><input class="cell-input right" type="number" data-col="recibida" value="'+esc(data.pedida||0)+'" min="0" step="any"></td>'+
       '<td class="dif-cell" style="white-space:nowrap;font-size:12px"></td>'+
-      '<td><input class="cell-input" data-col="lote" value="'+esc(data.lote||'')+'"></td>'+
+      '<td><div class="lote-cell">'+
+        '<input class="cell-input" data-col="lote" value="'+esc(data.lote||'')+'" placeholder="Lote">'+
+        '<button class="serie-btn" type="button" title="Cargar números de serie (uno por unidad recibida)"></button>'+
+      '</div></td>'+
       '<td><input class="cell-input" type="date" data-col="venc" value="'+esc(data.venc||'')+'"></td>'+
       '<td><button class="del-row" title="Eliminar fila">✕</button></td>';
     tbody.appendChild(tr);
     tr.querySelector('.del-row').addEventListener('click',function(){tr.remove()});
+    tr.querySelector('.serie-btn').addEventListener('click',function(){abrirSeries(tr)});
     tr.querySelectorAll('input[data-col=pedida],input[data-col=recibida]').forEach(function(inp){
-      inp.addEventListener('input',function(){actualizarDif(tr)});
+      inp.addEventListener('input',function(){actualizarDif(tr);actualizarSerieBtn(tr)});
     });
     actualizarDif(tr);
+    actualizarSerieBtn(tr);
   }
+
+  // ── Editor de números de serie (uno por unidad recibida) ──
+  var serieRowActual = null;
+
+  function abrirSeries(tr){
+    serieRowActual = tr;
+    var desc = tr.querySelector('[data-col=desc]').value.trim() || tr.querySelector('[data-col=codigo]').value.trim() || 'Ítem sin descripción';
+    document.getElementById('serieModalTitulo').textContent = desc;
+    var ta = document.getElementById('serieTextarea');
+    ta.value = seriesDe(tr).join('\n');
+    document.getElementById('serieModal').style.display = 'flex';
+    actualizarContadorSeries();
+    ta.focus();
+  }
+
+  function cerrarSeries(){
+    document.getElementById('serieModal').style.display = 'none';
+    serieRowActual = null;
+  }
+
+  function leerSeriesTextarea(){
+    return document.getElementById('serieTextarea').value
+      .split('\n')
+      .map(function(s){return s.trim()})
+      .filter(function(s){return s.length > 0});
+  }
+
+  function actualizarContadorSeries(){
+    if(!serieRowActual) return;
+    var recibida = cantRecibidaDe(serieRowActual);
+    var cargadas = leerSeriesTextarea().length;
+    document.getElementById('serieModalInfo').textContent =
+      'Cantidad recibida: '+fmtNum(recibida,0)+' · una serie por línea';
+    var cont = document.getElementById('serieContador');
+    cont.textContent = 'Series cargadas: '+cargadas+' de '+fmtNum(recibida,0);
+    cont.style.color = cargadas > recibida ? 'var(--danger)' : (cargadas === recibida && recibida > 0 ? 'var(--success)' : '#8A96A6');
+  }
+
+  function aceptarSeries(){
+    if(!serieRowActual) return;
+    var series = leerSeriesTextarea();
+    var recibida = cantRecibidaDe(serieRowActual);
+    if(series.length > 0 && recibida > 0){
+      if(recibida !== Math.trunc(recibida)){
+        alert('Los números de serie identifican unidades enteras.\nLa cantidad recibida ('+recibida+') debe ser un número entero.');
+        return;
+      }
+      if(series.length > recibida){
+        alert('Cargaste '+series.length+' números de serie pero la cantidad recibida es '+fmtNum(recibida,0)+'.\nQuitá los sobrantes o corregí la cantidad recibida.');
+        return;
+      }
+    }
+    var repetidas = series.filter(function(s,i){return series.indexOf(s) !== i});
+    if(repetidas.length && !confirm('Hay números de serie repetidos: '+repetidas.join(', ')+'\n¿Guardar igual?')) return;
+    serieRowActual.dataset.series = JSON.stringify(series);
+    actualizarSerieBtn(serieRowActual);
+    cerrarSeries();
+  }
+
+  document.getElementById('serieTextarea').addEventListener('input',actualizarContadorSeries);
 
   function abrirProveedorPicker(){
     if(window.asimovNewGoodsReceipt && window.asimovNewGoodsReceipt.openSupplierSelection)
@@ -838,9 +962,26 @@ td{ border-color:var(--border) !important; }
   function guardar(){
     if(!validar()) return;
     var items = [];
+    var incompletas = [];
+    var errores = [];
+    var todasLasSeries = [];
     document.querySelectorAll('#itemsBody tr').forEach(function(tr){
       var pedida = parseFloat(tr.querySelector('[data-col=pedida]').value)||0;
       var recibida = parseFloat(tr.querySelector('[data-col=recibida]').value)||0;
+      var series = seriesDe(tr);
+      var etiqueta = tr.querySelector('[data-col=desc]').value.trim()||tr.querySelector('[data-col=codigo]').value.trim()||'ítem sin código';
+      if(series.length > 0){
+        // El guardado en main.ts loguea los errores del backend sin mostrarlos:
+        // todo lo que el backend rechaza debe bloquearse acá con mensaje claro.
+        if(recibida !== Math.trunc(recibida) || recibida <= 0){
+          errores.push(etiqueta+': la cantidad recibida ('+recibida+') debe ser un entero mayor a cero para cargar series');
+        }else if(series.length > recibida){
+          errores.push(etiqueta+': '+series.length+' series para '+fmtNum(recibida,0)+' unidades recibidas');
+        }else if(series.length < recibida){
+          incompletas.push(etiqueta+' ('+series.length+'/'+fmtNum(recibida,0)+')');
+        }
+        series.forEach(function(s){todasLasSeries.push(s)});
+      }
       items.push({
         codigo: tr.querySelector('[data-col=codigo]').value,
         descripcion: tr.querySelector('[data-col=desc]').value,
@@ -849,9 +990,18 @@ td{ border-color:var(--border) !important; }
         cantRecibida: recibida,
         diferencia: recibida - pedida,
         lote: tr.querySelector('[data-col=lote]').value,
+        series: series,
         fechaVenc: tr.querySelector('[data-col=venc]').value
       });
     });
+    if(errores.length){
+      alert('Corregí antes de guardar:\n· '+errores.join('\n· '));
+      activarTab('items');
+      return;
+    }
+    var duplicadas = todasLasSeries.filter(function(s,i){return todasLasSeries.indexOf(s) !== i});
+    if(duplicadas.length && !confirm('Hay números de serie repetidos entre ítems: '+duplicadas.join(', ')+'\n¿Guardar igual?')) return;
+    if(incompletas.length && !confirm('Hay ítems con menos series cargadas que unidades recibidas:\n· '+incompletas.join('\n· ')+'\n¿Guardar igual?')) return;
     var payload = {
       nroRmc: document.getElementById('nroRmc').value,
       fecha: document.getElementById('fecha').value,
@@ -890,6 +1040,12 @@ td{ border-color:var(--border) !important; }
   }
 
   document.addEventListener('keydown',function(e){
+    var serieAbierto = document.getElementById('serieModal').style.display === 'flex';
+    if(serieAbierto){
+      if(e.key === 'Escape'){e.preventDefault();cerrarSeries()}
+      if(e.key === 'Enter' && e.ctrlKey){e.preventDefault();aceptarSeries()}
+      return;
+    }
     if(e.key === 'F8'){e.preventDefault();guardar()}
     if(e.key === 'F4'){e.preventDefault();abrirProductoPicker()}
     if(e.key === 'Insert'){
@@ -903,6 +1059,8 @@ td{ border-color:var(--border) !important; }
     abrirProductoPicker: abrirProductoPicker,
     abrirFacturaPicker: abrirFacturaPicker,
     cerrarFacturaPicker: cerrarFacturaPicker,
+    cerrarSeries: cerrarSeries,
+    aceptarSeries: aceptarSeries,
     agregarFila: agregarFila,
     guardar: guardar,
     imprimir: imprimir,

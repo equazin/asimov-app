@@ -209,9 +209,24 @@ export interface GoodsReceiptForm {
   ocOrigen?: string;
   estado?: string;
   notasInternas?: string;
-  items?: Array<{ codigo?: string; descripcion?: string; cantPedida?: number | string; cantRecibida?: number | string }>;
+  items?: Array<{
+    codigo?: string;
+    descripcion?: string;
+    cantPedida?: number | string;
+    cantRecibida?: number | string;
+    lote?: string;
+    fechaVenc?: string;
+    /** Números de serie de las unidades recibidas (una serie por unidad). */
+    series?: string[];
+  }>;
   /** Factura de compra de origen. */
   origen?: DocumentSource | null;
+}
+
+/** Normaliza series recibidas: recorta espacios y descarta vacías. */
+function normalizeSerials(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((s) => str(s)).filter((s) => s.length > 0);
 }
 
 export function persistGoodsReceipt(form: GoodsReceiptForm): PersistResult {
@@ -239,10 +254,26 @@ export function persistGoodsReceipt(form: GoodsReceiptForm): PersistResult {
     for (const item of items) {
       const code = str(item.codigo);
       const qtyReceived = num(item.cantRecibida);
+      const serials = normalizeSerials(item.series);
+      if (serials.length > 0) {
+        const label = code || str(item.descripcion) || "sin código";
+        // Las series identifican unidades físicas discretas: exigen cantidad entera.
+        if (!Number.isInteger(qtyReceived) || qtyReceived <= 0) {
+          throw new Error(
+            `El ítem ${label} tiene números de serie pero la cantidad recibida (${qtyReceived}) no es un entero mayor a cero.`,
+          );
+        }
+        if (serials.length > qtyReceived) {
+          throw new Error(
+            `El ítem ${label} tiene ${serials.length} números de serie pero solo ${qtyReceived} unidades recibidas.`,
+          );
+        }
+      }
       const article = findArticleByCode(code);
       dbRun(
-        "INSERT INTO goods_receipt_items (id,receipt_id,article_id,code,description,qty_ordered,qty_received,unit_price) VALUES (?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, article?.id ?? null, code, str(item.descripcion), num(item.cantPedida), qtyReceived, 0],
+        "INSERT INTO goods_receipt_items (id,receipt_id,article_id,code,description,qty_ordered,qty_received,unit_price,lot,serials,expiry) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        [randomUUID(), id, article?.id ?? null, code, str(item.descripcion), num(item.cantPedida), qtyReceived, 0,
+         str(item.lote) || null, serials.length ? JSON.stringify(serials) : null, str(item.fechaVenc) || null],
       );
       if (!rejected && article && article.manages_stock && qtyReceived > 0) {
         applyStockDelta(article.id, warehouseId, qtyReceived, "entrada", "goods_receipt", id, `Remito de compra ${number}`);
