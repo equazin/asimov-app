@@ -2,8 +2,10 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync(resolve(process.cwd(), "src/main.ts"), "utf8");
-const smoke = readFileSync(resolve(process.cwd(), "scripts/smoke-test.js"), "utf8");
+// Normaliza CRLF: en Windows con core.autocrlf el checkout usa \r\n y las
+// comparaciones literales multi-línea fallarían aunque el código sea correcto.
+const source = readFileSync(resolve(process.cwd(), "src/main.ts"), "utf8").replace(/\r\n/g, "\n");
+const smoke = readFileSync(resolve(process.cwd(), "scripts/smoke-test.js"), "utf8").replace(/\r\n/g, "\n");
 
 describe("errores durante el arranque", () => {
   it("muestra el error y cierra la aplicación en vez de dejar un proceso sin ventana", () => {
