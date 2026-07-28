@@ -1890,7 +1890,7 @@
   <div id="cloud-status-bar" style="display:flex;align-items:center;gap:8px;font-size:12px;">
     <span id="cloud-dot" style="width:8px;height:8px;border-radius:50%;background:#999;"></span>
     <span id="cloud-text">Nube: desconectado</span>
-    <span id="sync-badge" style="display:none;background:#f39c12;color:#fff;padding:2px 6px;border-radius:10px;font-size:11px;"></span>
+    <span id="sync-badge" onclick="openSyncDiagnostics()" title="Ver diagnóstico de sincronización" style="display:none;background:#f39c12;color:#fff;padding:2px 6px;border-radius:10px;font-size:11px;cursor:pointer;"></span>
     <button id="cloud-login-btn" class="btn btn-sm btn-outline">Conectar</button>
     <button id="cloud-logout-btn" class="btn btn-sm btn-outline" style="display:none;">Desconectar</button>
   </div>
@@ -1912,6 +1912,31 @@
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
       <button class="btn btn-outline" id="cloud-cancel-login">Cancelar</button>
       <button class="btn btn-primary" id="cloud-submit-login">Conectar</button>
+    </div>
+  </div>
+</div>
+
+<div id="sync-diag-modal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:640px;width:92%;">
+    <h3>Diagnóstico de sincronización</h3>
+    <div id="sync-diag-summary" style="font-size:13px;color:var(--muted);margin-bottom:10px;"></div>
+    <div id="sync-diag-error" style="display:none;background:#fdecea;border:1px solid #e74c3c;color:#c0392b;border-radius:6px;padding:8px 10px;font-size:12.5px;margin-bottom:10px;white-space:pre-wrap;word-break:break-word;"></div>
+    <div style="display:flex;gap:12px;max-height:46vh;overflow:hidden;">
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+        <h4 style="margin:0 0 6px;font-size:12.5px;">Pendientes <span id="sync-diag-pending-count" class="badge"></span></h4>
+        <div id="sync-diag-pending" style="overflow-y:auto;border:1px solid var(--border);border-radius:6px;min-height:60px;"></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0;">
+        <h4 style="margin:0 0 6px;font-size:12.5px;color:#c0392b;">Bloqueados <span id="sync-diag-parked-count" class="badge"></span></h4>
+        <div id="sync-diag-parked" style="overflow-y:auto;border:1px solid #e74c3c;border-radius:6px;min-height:60px;"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-top:12px;">
+      <button class="btn btn-outline" id="sync-diag-refresh">Refrescar</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline" id="sync-diag-close">Cerrar</button>
+        <button class="btn btn-primary" id="sync-diag-retry">Reintentar bloqueados</button>
+      </div>
     </div>
   </div>
 </div>
@@ -4785,6 +4810,7 @@
             <div class="h-name">${esc(chat.name || formatPhone(chat.phone))}</div>
             <div class="h-phone">${esc(formatPhone(chat.phone))}${chat.client_id ? " · cliente vinculado" : ""}</div>
           </div>
+          <button class="btn btn-outline btn-sm" onclick="openPersonalContact('${esc(id)}')" title="Generar un mensaje con el contexto de la conversación y abrir WhatsApp con tu número personal">Contactar desde mi número</button>
         </div>
         <div class="wa-msg-list" id="wa-msg-list-${esc(id)}">
           ${msgs.length ? msgs.map(m => renderWaMessage(m)).join("") : '<div style="margin:auto;color:var(--muted);font-size:12px">Sin mensajes en este chat.</div>'}
@@ -4834,6 +4860,79 @@
     } finally {
       if (btn) btn.disabled = false;
     }
+  }
+
+  // ── Contactar desde número personal ────────────────────────────────────
+  // Genera un mensaje con el contexto de la conversación del bot y abre
+  // WhatsApp (wa.me) para que el usuario lo envíe desde SU número personal.
+  // El mensaje es editable antes de abrir el link.
+
+  function buildPersonalMessage(chat, msgs) {
+    const nombre = (chat.name && !/^\d+$/.test(String(chat.name).trim())) ? String(chat.name).trim().split(" ")[0] : "";
+    // Contexto: lo que preguntó/pidió el cliente (mensajes entrantes).
+    const inbound = (msgs || []).filter(m => m.direction === "in" && m.body && m.body.trim());
+    const lastClientMsg = inbound.length ? inbound[inbound.length - 1].body.trim() : "";
+    const saludo = nombre ? `Hola ${nombre}` : "Hola";
+    let cuerpo;
+    if (lastClientMsg) {
+      const resumen = lastClientMsg.length > 180 ? lastClientMsg.slice(0, 177) + "…" : lastClientMsg;
+      cuerpo = `soy del equipo de Bartez Tecnología. Te escribo desde mi número personal por tu consulta: "${resumen}". ¿Me comentás un poco más así te ayudo?`;
+    } else {
+      cuerpo = "soy del equipo de Bartez Tecnología. Te escribo desde mi número personal para seguir con tu consulta. ¿Cómo estás?";
+    }
+    return `${saludo}, ${cuerpo}`;
+  }
+
+  async function openPersonalContact(chatId) {
+    const chat = _convData.find(c => c.id === chatId) || {};
+    const phone = String(chat.phone || chatId || "").replace(/\D/g, "");
+    if (!phone) { alert("No hay un número válido para esta conversación."); return; }
+    let msgs = [];
+    try {
+      const api = await waitForAsimov();
+      msgs = await api.whatsapp.listMessages(chatId);
+    } catch { /* si falla, generamos igual con lo que haya */ }
+    const suggested = buildPersonalMessage(chat, msgs);
+
+    const overlay = document.createElement("div");
+    overlay.className = "asimov-modal-overlay";
+    overlay.innerHTML =
+      '<div class="asimov-modal" role="dialog" aria-modal="true">' +
+        '<div class="am-header"><span>Contactar desde mi número</span><button type="button" class="am-close" aria-label="Cerrar">&times;</button></div>' +
+        '<form class="am-body">' +
+          '<div class="am-field"><span>Se abre WhatsApp con el número <strong>' + esc(formatPhone(phone)) + '</strong> desde tu app (tu número personal).</span></div>' +
+          '<label class="am-field"><span>Mensaje (editable)</span><textarea data-msg rows="5" style="resize:vertical;width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--input-bg);color:var(--text);font-size:13px;font-family:inherit;"></textarea></label>' +
+          '<div class="am-actions">' +
+            '<button type="button" class="btn btn-outline btn-sm am-cancel">Cancelar</button>' +
+            '<button type="submit" class="btn btn-primary btn-sm">Abrir WhatsApp</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    const form = overlay.querySelector("form");
+    const msgEl = overlay.querySelector("[data-msg]");
+    msgEl.value = suggested;
+    const close = () => { overlay.remove(); document.removeEventListener("keydown", onKey); };
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    overlay.querySelector(".am-close").addEventListener("click", close);
+    overlay.querySelector(".am-cancel").addEventListener("click", close);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const text = msgEl.value.trim();
+      if (!text) { msgEl.focus(); return; }
+      const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(text);
+      try {
+        const api = await waitForAsimov();
+        const res = await api.openExternal(url);
+        if (res && res.ok === false) { alert("No se pudo abrir WhatsApp: " + (res.error || "")); return; }
+        close();
+      } catch (err) {
+        alert("Error al abrir WhatsApp: " + (err && err.message ? err.message : err));
+      }
+    });
+    setTimeout(() => { msgEl.focus(); msgEl.setSelectionRange(msgEl.value.length, msgEl.value.length); }, 30);
   }
 
   // Plantillas de WhatsApp. name + lang DEBEN coincidir EXACTO con lo aprobado
@@ -5007,6 +5106,7 @@
 
   window.filterConversations = filterConversations;
   window.openConversation = openConversation;
+  window.openPersonalContact = openPersonalContact;
   window.openTemplatePicker = openTemplatePicker;
   window.newConversation = newConversation;
   window.sendMessage = sendMessage;
@@ -5204,6 +5304,86 @@
 
   setInterval(refreshSyncStatus, 10_000);
   refreshSyncStatus();
+
+  // ── Diagnóstico de sincronización ──────────────────────────────────────
+  function escDiag(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+  function fmtDiagDate(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleString("es-AR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function renderDiagList(el, rows, showError) {
+    if (!rows.length) {
+      el.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--muted);text-align:center;">Vacío</div>';
+      return;
+    }
+    el.innerHTML = rows.map(r =>
+      '<div style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:11.5px;">' +
+        '<div style="display:flex;justify-content:space-between;gap:6px;">' +
+          '<strong>' + escDiag(r.entity) + ' · ' + escDiag(r.action) + '</strong>' +
+          '<span style="color:var(--muted);white-space:nowrap;">' + fmtDiagDate(r.created_at) + '</span>' +
+        '</div>' +
+        '<div style="color:var(--muted);word-break:break-all;">id: ' + escDiag(r.entity_id) + ' · intentos: ' + (r.attempts | 0) + '</div>' +
+        (showError && r.error ? '<div style="color:#c0392b;margin-top:2px;white-space:pre-wrap;word-break:break-word;">' + escDiag(r.error) + '</div>' : '') +
+      '</div>'
+    ).join("");
+  }
+
+  async function loadSyncDiagnostics() {
+    const api = await waitForAsimov();
+    if (!api?.cloudSync) return;
+    const [s, q] = await Promise.all([api.cloudSync.status(), api.cloudSync.queueDetails()]);
+    const summary = document.getElementById("sync-diag-summary");
+    summary.textContent =
+      (s.connected ? "Conectado" : "Desconectado") +
+      " · último sync: " + (s.lastSync ? fmtDiagDate(s.lastSync) : "nunca") +
+      " · " + (s.pendingChanges | 0) + " pendientes · " + (s.parkedChanges | 0) + " bloqueados";
+    const errBox = document.getElementById("sync-diag-error");
+    if (s.lastError) {
+      errBox.style.display = "";
+      errBox.textContent = "Último error: " + s.lastError;
+    } else {
+      errBox.style.display = "none";
+    }
+    document.getElementById("sync-diag-pending-count").textContent = q.pending.length;
+    document.getElementById("sync-diag-parked-count").textContent = q.parked.length;
+    renderDiagList(document.getElementById("sync-diag-pending"), q.pending, false);
+    renderDiagList(document.getElementById("sync-diag-parked"), q.parked, true);
+    document.getElementById("sync-diag-retry").style.display = q.parked.length ? "" : "none";
+  }
+
+  async function openSyncDiagnostics() {
+    const modal = document.getElementById("sync-diag-modal");
+    modal.style.display = "flex";
+    document.getElementById("sync-diag-summary").textContent = "Cargando…";
+    try { await loadSyncDiagnostics(); }
+    catch (e) { document.getElementById("sync-diag-summary").textContent = "Error: " + (e && e.message ? e.message : e); }
+  }
+
+  function closeSyncDiagnostics() {
+    document.getElementById("sync-diag-modal").style.display = "none";
+  }
+
+  window.openSyncDiagnostics = openSyncDiagnostics;
+
+  document.getElementById("sync-diag-close").addEventListener("click", closeSyncDiagnostics);
+  document.getElementById("sync-diag-refresh").addEventListener("click", () => void loadSyncDiagnostics());
+  document.getElementById("sync-diag-retry").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.textContent = "Reintentando…";
+    try {
+      const api = await waitForAsimov();
+      await api.cloudSync.retryParked();
+      await loadSyncDiagnostics();
+      await refreshSyncStatus();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Reintentar bloqueados";
+    }
+  });
 
   function openCloudLogin() {
     document.getElementById('cloud-login-modal').style.display = 'flex';
