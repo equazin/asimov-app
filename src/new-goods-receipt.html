@@ -467,9 +467,26 @@ td{ border-color:var(--border) !important; }
 ::-webkit-scrollbar-thumb{ background:#242D39; border-radius:5px; }
 ::-webkit-scrollbar-track{ background:#0F141B; }
 /* ASIMOV-THEME-END */
+
+    /* --- Arrastre de ventana ---------------------------------------------
+       titleBarStyle:"hidden" oculta la barra de título nativa y con ella la
+       única zona arrastrable, así que la ventana quedaba clavada en pantalla.
+       Esta franja transparente cubre los 32px que el body ya reserva con
+       padding-top y devuelve el arrastre (y el doble clic para maximizar).
+       Los botones nativos de minimizar/maximizar/cerrar se dibujan encima y
+       siguen recibiendo sus clics. */
+    .win-drag{
+      position:fixed; top:0; left:0; right:0; height:32px;
+      z-index:1; -webkit-app-region:drag;
+    }
+    /* La barra de título propia también arrastra; sus controles, no. */
+    .header{-webkit-app-region:drag}
+    .header button,.header input,.header select,.header textarea,
+    .header a,.header [contenteditable]{-webkit-app-region:no-drag}
   </style>
 </head>
 <body>
+<div class="win-drag" aria-hidden="true"></div>
 
 <div class="header">
   <span class="header-icon">📥</span>

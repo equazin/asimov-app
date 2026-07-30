@@ -4,7 +4,7 @@
  * App completamente nativa: todas las pantallas son HTML local con SQLite.
  * No hay carga de servidores remotos, sin partición de sesión web.
  */
-import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu } from "electron";
+import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, screen } from "electron";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import {
@@ -939,8 +939,7 @@ function createProductSelectionWindow(parentWindow: BrowserWindow, rowId: string
   }
 
   productSelectionWindow = new BrowserWindow({
-    width: 820,
-    height: 520,
+    ...fitToWorkArea({ width: 820, height: 520 }, parentWindow),
     resizable: true,
     parent: parentWindow,
     modal: true,
@@ -1033,8 +1032,7 @@ function createClientSelectionWindow(parentWindow: BrowserWindow, contextId: str
   }
 
   clientSelectionWindow = new BrowserWindow({
-    width: 860,
-    height: 540,
+    ...fitToWorkArea({ width: 860, height: 540 }, parentWindow),
     resizable: true,
     parent: parentWindow,
     modal: true,
@@ -1095,8 +1093,7 @@ function createSupplierSelectionWindow(parentWindow: BrowserWindow, contextId: s
   }
 
   supplierSelectionWindow = new BrowserWindow({
-    width: 860,
-    height: 540,
+    ...fitToWorkArea({ width: 860, height: 540 }, parentWindow),
     resizable: true,
     parent: parentWindow,
     modal: true,
@@ -1154,7 +1151,8 @@ function loadSuppliersForPicker(): void {
 function createNewArticleWindow(parentWindow: BrowserWindow) {
   if (newArticleWindow && !newArticleWindow.isDestroyed()) { newArticleWindow.focus(); return; }
   newArticleWindow = new BrowserWindow({
-    width: 900, height: 600, resizable: true, parent: parentWindow, modal: true,
+    ...fitToWorkArea({ width: 900, height: 600 }, parentWindow),
+    resizable: true, parent: parentWindow, modal: true,
     show: false, backgroundColor: "#14171D", title: "Artículos — NUEVO", icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: { preload: path.join(__dirname, "new-article-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
@@ -1168,7 +1166,8 @@ function createNewArticleWindow(parentWindow: BrowserWindow) {
 function createNewClientWindow(parentWindow: BrowserWindow) {
   if (newClientWindow && !newClientWindow.isDestroyed()) { newClientWindow.focus(); return; }
   newClientWindow = new BrowserWindow({
-    width: 920, height: 640, resizable: true, parent: parentWindow, modal: true,
+    ...fitToWorkArea({ width: 920, height: 640 }, parentWindow),
+    resizable: true, parent: parentWindow, modal: true,
     show: false, backgroundColor: "#14171D", title: "Clientes — NUEVO", icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: { preload: path.join(__dirname, "new-client-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
@@ -1182,7 +1181,8 @@ function createNewClientWindow(parentWindow: BrowserWindow) {
 function createNewSupplierWindow(parentWindow: BrowserWindow) {
   if (newSupplierWindow && !newSupplierWindow.isDestroyed()) { newSupplierWindow.focus(); return; }
   newSupplierWindow = new BrowserWindow({
-    width: 920, height: 640, resizable: true, parent: parentWindow, modal: true,
+    ...fitToWorkArea({ width: 920, height: 640 }, parentWindow),
+    resizable: true, parent: parentWindow, modal: true,
     show: false, backgroundColor: "#14171D", title: "Proveedores — NUEVO", icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
     webPreferences: { preload: path.join(__dirname, "new-supplier-preload.js"), contextIsolation: true, nodeIntegration: false, sandbox: true },
@@ -1197,6 +1197,36 @@ function createNewSupplierWindow(parentWindow: BrowserWindow) {
 // Standalone form creators (opened from menu — non-modal)
 // ---------------------------------------------------------------------------
 
+/**
+ * Ajusta el tamaño pedido al área útil de la pantalla (descuenta la barra de
+ * tareas) y centra la ventana ahí.
+ *
+ * Sin esto, los formularios de 720–780 px de alto no entran en pantallas de
+ * 1366×768 (~728 px útiles) y el pie de la ventana —donde viven Imprimir,
+ * Guardar y Autorizar ARCA— queda fuera de la vista, sin forma de alcanzarlo.
+ * Los mínimos también se recortan: un minHeight mayor que el alto disponible
+ * haría que Windows volviera a estirar la ventana fuera de la pantalla.
+ */
+function fitToWorkArea(
+  opts: { width: number; height: number; minWidth?: number; minHeight?: number },
+  parent: BrowserWindow | null,
+): { width: number; height: number; x: number; y: number; minWidth?: number; minHeight?: number } {
+  const MARGIN = 16;
+  const anchor = parent && !parent.isDestroyed() ? parent.getBounds() : null;
+  const area = (anchor ? screen.getDisplayMatching(anchor) : screen.getPrimaryDisplay()).workArea;
+
+  const width = Math.min(opts.width, area.width - MARGIN);
+  const height = Math.min(opts.height, area.height - MARGIN);
+
+  return {
+    width, height,
+    x: Math.round(area.x + (area.width - width) / 2),
+    y: Math.round(area.y + (area.height - height) / 2),
+    minWidth: opts.minWidth === undefined ? undefined : Math.min(opts.minWidth, width),
+    minHeight: opts.minHeight === undefined ? undefined : Math.min(opts.minHeight, height),
+  };
+}
+
 function makeStandaloneForm(
   windowRef: BrowserWindow | null,
   setRef: (w: BrowserWindow | null) => void,
@@ -1205,8 +1235,7 @@ function makeStandaloneForm(
 ): void {
   if (windowRef && !windowRef.isDestroyed()) { windowRef.focus(); return; }
   const win = new BrowserWindow({
-    width: opts.width, height: opts.height,
-    minWidth: opts.minWidth, minHeight: opts.minHeight,
+    ...fitToWorkArea(opts, parent),
     resizable: true, parent: parent ?? undefined, modal: false,
     show: false, backgroundColor: opts.bg, title: opts.title, icon: APP_ICON_FILE,
     titleBarStyle: TITLE_BAR_STYLE, titleBarOverlay: TITLE_BAR_OVERLAY,
