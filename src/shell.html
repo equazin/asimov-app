@@ -1217,6 +1217,8 @@
         <h1><svg class="ic"><use href="#i-file"/></svg> Facturas de Venta</h1>
         <span class="badge" id="badge-facturas">—</span>
         <button class="btn btn-primary" onclick="A.openNativeForm('invoice')">+ Nueva Factura</button>
+        <button class="btn btn-outline" onclick="A.openNativeForm('invoice', { kind: 'NC' })" title="Nota de crédito: se asocia a una factura autorizada del cliente">+ Nota de Crédito</button>
+        <button class="btn btn-outline" onclick="A.openNativeForm('invoice', { kind: 'ND' })" title="Nota de débito: se asocia a una factura autorizada del cliente">+ Nota de Débito</button>
       </div>
       <div class="toolbar">
         <div class="search-wrap"><span class="search-icon"><svg class="ic"><use href="#i-magnify"/></svg></span><input type="search" placeholder="Buscar número, cliente..." oninput="A.loadView('facturas',this.value)" /></div>

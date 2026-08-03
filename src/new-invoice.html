@@ -1124,7 +1124,10 @@ td{ border-color:var(--border) !important; }
     let clienteData = null;
     let tipoActual = "B";
     let currentInvoiceId = null;
-    let origenDoc = null; // documento traído: { tipo: "sale-order"|"delivery-note", id, numero }
+    let origenDoc = null; // documento traído: { tipo: "sale-order"|"delivery-note"|"invoice", id, numero }
+    // El operador eligió NC/ND explícitamente (botón de tipo, menú o "Anular con
+    // nota de crédito"): elegir el cliente NO debe volver el tipo a factura.
+    let kindLocked = false;
 
     /* ─── Init ─── */
     (function init() {
@@ -1186,6 +1189,7 @@ td{ border-color:var(--border) !important; }
         document.querySelectorAll(".tipo-btn").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         tipoActual = btn.dataset.tipo;
+        kindLocked = tipoActual === "NC" || tipoActual === "ND";
         updateHeader();
         updateTraerFactura();
       });
@@ -1223,11 +1227,14 @@ td{ border-color:var(--border) !important; }
         document.getElementById("txtClienteCuit").value = data.client.cuit || "";
         document.getElementById("txtClienteIva").value = data.client.condicionIva || "";
         document.getElementById("txtClienteDomicilio").value = data.client.domicilio || data.client.address || "";
-        // Auto-suggest tipo comprobante
-        var iva = (data.client.condicionIva || "").toLowerCase();
-        if (iva.includes("inscripto")) setTipo("A");
-        else if (iva.includes("monotributo")) setTipo("C");
-        else setTipo("B");
+        // Auto-suggest tipo comprobante. En una NC/ND no aplica: el tipo ya lo
+        // fijó el operador y la letra (A/B) la resuelve ARCA por el cliente.
+        if (!kindLocked) {
+          var iva = (data.client.condicionIva || "").toLowerCase();
+          if (iva.includes("inscripto")) setTipo("A");
+          else if (iva.includes("monotributo")) setTipo("C");
+          else setTipo("B");
+        }
       });
 
       window.asimovNewInvoice.onProductSelected(function(data) {
@@ -1271,6 +1278,7 @@ td{ border-color:var(--border) !important; }
 
     function setTipo(t) {
       tipoActual = t;
+      kindLocked = t === "NC" || t === "ND";
       document.querySelectorAll(".tipo-btn").forEach(function(b) {
         b.classList.toggle("active", b.dataset.tipo === t);
       });
@@ -1280,10 +1288,22 @@ td{ border-color:var(--border) !important; }
 
     function applyAdjustmentPrefill(data) {
       if (!data || (data.kind !== "NC" && data.kind !== "ND")) return;
-      var client = data.client || {};
-      clienteData = client;
       setTipo(data.kind);
       document.querySelector(".header-title").textContent = data.kind === "NC" ? "Nueva Nota de Crédito" : "Nueva Nota de Débito";
+
+      // Nota creada desde cero (menú o botón "+ Nota de Crédito"): no viene una
+      // factura original. El operador elige el cliente y después asocia la
+      // factura con "Traer factura", que es lo que exige ARCA (RG 4540).
+      if (!data.original && !data.client) {
+        document.querySelectorAll(".tab").forEach(function(tab) {
+          if (tab.dataset.tab === "comprobante") tab.click();
+        });
+        document.getElementById("txtClienteNombre").focus();
+        return;
+      }
+
+      var client = data.client || {};
+      clienteData = client;
       document.getElementById("txtClienteCodigo").value = client.codigo || client.id || "";
       document.getElementById("txtClienteNombre").value = client.razonSocial || "";
       document.getElementById("txtClienteCuit").value = client.cuit || "";
@@ -1720,6 +1740,14 @@ td{ border-color:var(--border) !important; }
         document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "items") t.click(); });
         return null;
       }
+      // ARCA exige el comprobante asociado (CbtesAsoc) en toda NC/ND: sin la
+      // factura original la autorización se rechaza sí o sí.
+      if ((tipoActual === "NC" || tipoActual === "ND") && (!origenDoc || origenDoc.tipo !== "invoice")) {
+        alert('Asociá la factura original con "Traer factura": ARCA la exige en toda nota de crédito o débito.');
+        document.querySelectorAll(".tab").forEach(function(t) { if (t.dataset.tab === "items") t.click(); });
+        document.getElementById("btnTraerFactura").focus();
+        return null;
+      }
       recalcTotals();
       if (document.getElementById("selMonedaPrecios").value === "USD" && invoiceCurrencyFactor() <= 0) {
         alert("Ingresá una cotización USD → ARS válida antes de guardar o autorizar la factura.");
@@ -1750,7 +1778,8 @@ td{ border-color:var(--border) !important; }
     document.getElementById("btnSave").addEventListener("click", function() {
       var invoice = buildInvoicePayload();
       if (!invoice) return;
-      if (!confirm("La factura se guardará como borrador, sin autorización fiscal, CAE ni QR. Podrás autorizarla más tarde desde Facturas. ¿Querés continuar?")) return;
+      var esNota = tipoActual === "NC" || tipoActual === "ND";
+      if (!confirm((esNota ? "La nota" : "La factura") + " se guardará como borrador, sin autorización fiscal, CAE ni QR. Podrás autorizarla más tarde desde Facturas. ¿Querés continuar?")) return;
       if (window.asimovNewInvoice) window.asimovNewInvoice.saveInvoice(invoice);
     });
 

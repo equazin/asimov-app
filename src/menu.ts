@@ -21,7 +21,7 @@ import { setLaunchAtStartupEnabled } from "./tray";
 
 interface MenuDeps {
   isDev: boolean;
-  openNativeForm: (type: NativeFormType) => void;
+  openNativeForm: (type: NativeFormType, context?: Record<string, unknown>) => void;
 }
 
 type NativeFormType =
@@ -129,7 +129,13 @@ function bookmarkMenuItems(deps: MenuDeps, bookmarks: BookmarkEntry[]): MenuItem
   }));
 }
 
-type NativeEntry = { label: string; type: NativeFormType; accel: string };
+type NativeEntry = {
+  label: string;
+  type: NativeFormType;
+  accel?: string;
+  /** Contexto con el que se abre el formulario (ej. `{ kind: "NC" }` para una nota). */
+  context?: Record<string, unknown>;
+};
 
 const MODULES: { label: string; navPath?: string; navAccel?: string; forms: NativeEntry[] }[] = [
   {
@@ -166,6 +172,10 @@ const MODULES: { label: string; navPath?: string; navAccel?: string; forms: Nati
     navPath: "/facturacion",
     forms: [
       { label: "Nueva Factura", type: "invoice", accel: "CmdOrCtrl+Shift+F" },
+      // Notas fiscales: mismo formulario que la factura, abierto ya en modo NC/ND.
+      // La factura asociada se elige adentro con "Traer factura" (la exige ARCA).
+      { label: "Nueva Nota de Crédito", type: "invoice", context: { kind: "NC" } },
+      { label: "Nueva Nota de Débito", type: "invoice", context: { kind: "ND" } },
       { label: "Nuevo Remito", type: "delivery-note", accel: "CmdOrCtrl+Shift+R" },
       { label: "Nuevo Recibo", type: "receipt", accel: "CmdOrCtrl+Shift+E" },
     ],
@@ -201,7 +211,7 @@ function moduleMenu(m: typeof MODULES[number], deps: MenuDeps): MenuItemConstruc
   if (m.forms.length > 0) {
     if (m.navPath) items.push({ type: "separator" });
     for (const f of m.forms) {
-      items.push({ label: f.label, accelerator: f.accel, click: () => deps.openNativeForm(f.type) });
+      items.push({ label: f.label, accelerator: f.accel, click: () => deps.openNativeForm(f.type, f.context) });
     }
   }
   return { label: m.label, submenu: items.length > 0 ? items : [{ label: "Próximamente", enabled: false }] };

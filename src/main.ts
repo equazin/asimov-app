@@ -340,7 +340,18 @@ function openNativeForm(type: NativeFormType, context?: Record<string, unknown>)
       if (!existed) sendCrmClientPrefill(newQuoteWindow, "cot-cliente", context);
       break;
     }
-    case "invoice":     createNewInvoiceWindowStandalone(parent); break;
+    case "invoice": {
+      // `kind` abre el formulario ya en modo nota de crédito/débito. Si la
+      // ventana ya estaba abierta sólo se enfoca: pisar el tipo perdería la
+      // carga en curso del operador.
+      const kind = String(context?.kind ?? "").toUpperCase();
+      const existed = Boolean(newInvoiceWindow && !newInvoiceWindow.isDestroyed());
+      createNewInvoiceWindowStandalone(parent);
+      if (!existed && (kind === "NC" || kind === "ND")) {
+        sendInvoicePrefill(newInvoiceWindow, "invoice-adjustment:prefill", { kind });
+      }
+      break;
+    }
     case "delivery-note": createNewDeliveryNoteWindowStandalone(parent); break;
     case "receipt":     createNewReceiptWindowStandalone(parent); break;
     case "purchase-order":   createNewPurchaseOrderWindowStandalone(parent); break;
@@ -349,6 +360,14 @@ function openNativeForm(type: NativeFormType, context?: Record<string, unknown>)
     case "payment-order":    createNewPaymentOrderWindowStandalone(parent); break;
     case "purchase-receipt": createNewPurchaseReceiptWindowStandalone(parent); break;
   }
+}
+
+/** Envía un prefill al formulario de factura, esperando a que termine de cargar. */
+function sendInvoicePrefill(win: BrowserWindow | null, channel: string, payload: unknown): void {
+  if (!win || win.isDestroyed()) return;
+  const send = () => { if (!win.isDestroyed()) win.webContents.send(channel, payload); };
+  if (win.webContents.isLoadingMainFrame()) win.webContents.once("did-finish-load", send);
+  else send();
 }
 
 function openInvoiceAdjustment(invoiceId: string, kind: "NC" | "ND"):
@@ -395,11 +414,7 @@ function openInvoiceAdjustment(invoiceId: string, kind: "NC" | "ND"):
   createNewInvoiceWindowStandalone(mainWindow && !mainWindow.isDestroyed() ? mainWindow : null);
   const win = newInvoiceWindow;
   if (!win || win.isDestroyed()) return { ok: false, error: "No se pudo abrir el formulario del ajuste fiscal." };
-  const sendPrefill = () => {
-    if (!win.isDestroyed()) win.webContents.send("invoice-adjustment:prefill", prefill);
-  };
-  if (win.webContents.isLoadingMainFrame()) win.webContents.once("did-finish-load", sendPrefill);
-  else sendPrefill();
+  sendInvoicePrefill(win, "invoice-adjustment:prefill", prefill);
   return { ok: true };
 }
 
@@ -451,11 +466,7 @@ function openInvoiceForEdit(invoiceId: string): { ok: boolean; error?: string } 
   createNewInvoiceWindowStandalone(mainWindow && !mainWindow.isDestroyed() ? mainWindow : null);
   const win = newInvoiceWindow;
   if (!win || win.isDestroyed()) return { ok: false, error: "No se pudo abrir el editor de la factura." };
-  const sendPrefill = () => {
-    if (!win.isDestroyed()) win.webContents.send("invoice-edit:prefill", prefill);
-  };
-  if (win.webContents.isLoadingMainFrame()) win.webContents.once("did-finish-load", sendPrefill);
-  else sendPrefill();
+  sendInvoicePrefill(win, "invoice-edit:prefill", prefill);
   return { ok: true };
 }
 

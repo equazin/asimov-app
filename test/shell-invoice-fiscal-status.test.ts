@@ -42,7 +42,9 @@ describe("estado fiscal de facturas en el shell", () => {
     expect(shell).toContain('openAdjustment("NC")');
     expect(shell).toContain('openAdjustment("ND")');
     expect(main).toContain('ipcMain.handle("shell:open-invoice-adjustment"');
-    expect(main).toContain('win.webContents.send("invoice-adjustment:prefill", prefill)');
+    expect(main).toContain('sendInvoicePrefill(win, "invoice-adjustment:prefill", prefill)');
+    // La helper es la que efectivamente emite al canal (compartida por ajuste, edición y nota nueva).
+    expect(main).toContain("win.webContents.send(channel, payload)");
     expect(preload).toContain('ipcRenderer.on("invoice-adjustment:prefill"');
     expect(invoiceForm).toContain("onAdjustmentPrefill(applyAdjustmentPrefill)");
     expect(invoiceForm).toContain('document.getElementById("selMonedaPrecios").value = "ARS"');
@@ -58,7 +60,7 @@ describe("estado fiscal de facturas en el shell", () => {
     expect(shellPreload).toContain('ipcRenderer.invoke("shell:open-invoice-edit", invoiceId)');
     expect(main).toContain('ipcMain.handle("shell:open-invoice-edit"');
     expect(main).toContain('return { ok: false, error: "No tenés permisos para editar facturas." }');
-    expect(main).toContain('win.webContents.send("invoice-edit:prefill", prefill)');
+    expect(main).toContain('sendInvoicePrefill(win, "invoice-edit:prefill", prefill)');
     expect(preload).toContain('ipcRenderer.on("invoice-edit:prefill"');
     expect(invoiceForm).toContain("function applyEditPrefill(data)");
     expect(invoiceForm).toContain("currentInvoiceId = invoice.id || null");
