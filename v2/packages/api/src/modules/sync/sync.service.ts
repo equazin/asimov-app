@@ -10,9 +10,66 @@ interface SyncChange {
   updatedAt: string;
 }
 
+/** Tipos de documento del desktop que se pueden consultar por fecha. */
+export const DOCUMENT_TYPES = [
+  'invoice', 'sale_order', 'quote', 'delivery_note', 'receipt',
+  'purchase_order', 'purchase_invoice', 'goods_receipt', 'purchase_receipt', 'payment_order', 'internal_expense',
+] as const;
+
+export interface DocumentQuery {
+  types: string[];
+  from?: string;          // yyyy-mm-dd, fecha del documento (header.date)
+  to?: string;
+  clientId?: string;
+  withItems?: boolean;
+  limit?: number;
+}
+
+export interface DocumentRow {
+  docId: string;
+  type: string;
+  number: string;
+  updatedAt: Date;
+  header: Record<string, unknown>;
+  items: Array<Record<string, unknown>> | null;
+}
+
 @Injectable()
 export class SyncService {
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * Consulta de solo lectura sobre los documentos sincronizados (facturas,
+   * pedidos, recibos…) filtrando por tipo, fecha y cliente. Evita tener que
+   * bajar todo el pull (que incluye catálogo y maestros) para listar documentos.
+   * Devuelve la cabecera del envelope tal como la guarda el desktop y,
+   * opcionalmente, los ítems.
+   */
+  async listDocuments(tenantId: string, q: DocumentQuery): Promise<DocumentRow[]> {
+    const types = q.types.filter((t) => (DOCUMENT_TYPES as readonly string[]).includes(t));
+    if (types.length === 0) return [];
+    const isDate = (v?: string) => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
+    const from = isDate(q.from) ? q.from! : '0000-01-01';
+    const to = isDate(q.to) ? q.to! : '9999-12-31';
+    const limit = Math.min(Math.max(Math.trunc(q.limit ?? 500), 1), 2000);
+    const clientFilter = q.clientId
+      ? Prisma.sql`AND payload->'header'->>'client_id' = ${q.clientId}`
+      : Prisma.empty;
+    const itemsCol = q.withItems ? Prisma.sql`payload->'items'` : Prisma.sql`NULL::jsonb`;
+    return this.prisma.$queryRaw<DocumentRow[]>`
+      SELECT "docId", "type", "number", "updatedAt",
+             payload->'header' AS header,
+             ${itemsCol} AS items
+      FROM synced_documents
+      WHERE "tenantId" = ${tenantId}
+        AND "deletedAt" IS NULL
+        AND "type" IN (${Prisma.join(types)})
+        AND LEFT(COALESCE(payload->'header'->>'date', ''), 10) BETWEEN ${from} AND ${to}
+        ${clientFilter}
+      ORDER BY payload->'header'->>'date' DESC, "updatedAt" DESC
+      LIMIT ${limit}
+    `;
+  }
 
   async pullChanges(tenantId: string, since: string): Promise<{
     changes: SyncChange[];
