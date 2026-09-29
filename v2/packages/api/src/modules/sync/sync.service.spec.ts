@@ -137,3 +137,41 @@ describe('SyncService — contratos del desktop', () => {
     }));
   });
 });
+
+describe('SyncService — consulta de documentos', () => {
+  function withRaw(rows: unknown[] = []) {
+    const prisma = { $queryRaw: vi.fn().mockResolvedValue(rows) };
+    return { prisma, service: new SyncService(prisma as never) };
+  }
+
+  it('filtra por tenant, tipos válidos y rango de fechas', async () => {
+    const { prisma, service } = withRaw([{ docId: 'd1', type: 'invoice' }]);
+    const rows = await service.listDocuments('tenant-1', { types: ['invoice', 'sale_order', 'nada'], from: '2026-09-01', to: '2026-09-30' });
+    expect(rows).toHaveLength(1);
+    const [strings, ...values] = prisma.$queryRaw.mock.calls[0];
+    const sql = (strings as string[]).join('?');
+    expect(sql).toContain('FROM synced_documents');
+    expect(sql).toContain('"deletedAt" IS NULL');
+    const flat = JSON.stringify(values);
+    expect(flat).toContain('tenant-1');
+    expect(flat).toContain('2026-09-01');
+    expect(flat).toContain('2026-09-30');
+    expect(flat).toContain('invoice');
+    expect(flat).not.toContain('nada');
+  });
+
+  it('sin tipos válidos no consulta', async () => {
+    const { prisma, service } = withRaw();
+    expect(await service.listDocuments('tenant-1', { types: ['clientes; drop table x'] })).toEqual([]);
+    expect(prisma.$queryRaw).not.toHaveBeenCalled();
+  });
+
+  it('ignora fechas mal formadas y acota el límite', async () => {
+    const { prisma, service } = withRaw();
+    await service.listDocuments('tenant-1', { types: ['invoice'], from: "2026'; --", limit: 99999 });
+    const flat = JSON.stringify(prisma.$queryRaw.mock.calls[0].slice(1));
+    expect(flat).toContain('0000-01-01');
+    expect(flat).not.toContain("2026'");
+    expect(flat).toContain('2000');
+  });
+});

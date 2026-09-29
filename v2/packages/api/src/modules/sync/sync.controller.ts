@@ -21,6 +21,25 @@ export class SyncController {
     return { success: true, data };
   }
 
+  @Get('documents')
+  async documents(
+    @CurrentUser() user: RequestUser,
+    @Query('types') types?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+    @Query('clientId') clientId?: string,
+    @Query('items') items?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const data = await this.syncService.listDocuments(user.tenantId, {
+      types: String(types ?? 'invoice').split(',').map((t) => t.trim()).filter(Boolean),
+      from, to, clientId,
+      withItems: items === '1' || items === 'true',
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+    return { success: true, data };
+  }
+
   @Post('push')
   async push(
     @CurrentUser() user: RequestUser,
