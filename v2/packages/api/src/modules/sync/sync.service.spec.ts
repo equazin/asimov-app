@@ -152,6 +152,8 @@ describe('SyncService — consulta de documentos', () => {
     const sql = (strings as string[]).join('?');
     expect(sql).toContain('FROM synced_documents');
     expect(sql).toContain('"deletedAt" IS NULL');
+    expect(sql).toContain('FROM document_links l');
+    expect(sql).toContain('l."tenantId" = sd."tenantId"');
     const flat = JSON.stringify(values);
     expect(flat).toContain('tenant-1');
     expect(flat).toContain('2026-09-01');

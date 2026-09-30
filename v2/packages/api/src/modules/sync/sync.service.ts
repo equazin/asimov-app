@@ -32,6 +32,8 @@ export interface DocumentRow {
   updatedAt: Date;
   header: Record<string, unknown>;
   items: Array<Record<string, unknown>> | null;
+  /** Documentos de origen (document_links → este): la factura de una NC/ND, el pedido de una factura… */
+  sources: Array<{ type: string; id: string }>;
 }
 
 @Injectable()
@@ -53,20 +55,25 @@ export class SyncService {
     const to = isDate(q.to) ? q.to! : '9999-12-31';
     const limit = Math.min(Math.max(Math.trunc(q.limit ?? 500), 1), 2000);
     const clientFilter = q.clientId
-      ? Prisma.sql`AND payload->'header'->>'client_id' = ${q.clientId}`
+      ? Prisma.sql`AND sd.payload->'header'->>'client_id' = ${q.clientId}`
       : Prisma.empty;
-    const itemsCol = q.withItems ? Prisma.sql`payload->'items'` : Prisma.sql`NULL::jsonb`;
+    const itemsCol = q.withItems ? Prisma.sql`sd.payload->'items'` : Prisma.sql`NULL::jsonb`;
     return this.prisma.$queryRaw<DocumentRow[]>`
-      SELECT "docId", "type", "number", "updatedAt",
-             payload->'header' AS header,
-             ${itemsCol} AS items
-      FROM synced_documents
-      WHERE "tenantId" = ${tenantId}
-        AND "deletedAt" IS NULL
-        AND "type" IN (${Prisma.join(types)})
-        AND LEFT(COALESCE(payload->'header'->>'date', ''), 10) BETWEEN ${from} AND ${to}
+      SELECT sd."docId", sd."type", sd."number", sd."updatedAt",
+             sd.payload->'header' AS header,
+             ${itemsCol} AS items,
+             COALESCE((
+               SELECT json_agg(json_build_object('type', l."sourceType", 'id', l."sourceId"))
+               FROM document_links l
+               WHERE l."tenantId" = sd."tenantId" AND l."targetId" = sd."docId"
+             ), '[]'::json) AS sources
+      FROM synced_documents sd
+      WHERE sd."tenantId" = ${tenantId}
+        AND sd."deletedAt" IS NULL
+        AND sd."type" IN (${Prisma.join(types)})
+        AND LEFT(COALESCE(sd.payload->'header'->>'date', ''), 10) BETWEEN ${from} AND ${to}
         ${clientFilter}
-      ORDER BY payload->'header'->>'date' DESC, "updatedAt" DESC
+      ORDER BY sd.payload->'header'->>'date' DESC, sd."updatedAt" DESC
       LIMIT ${limit}
     `;
   }
