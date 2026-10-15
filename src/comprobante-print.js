@@ -207,45 +207,75 @@
     return '<table class="items">' + head + "<tbody>" + body + "</tbody></table>";
   }
 
+  // ---------- Discriminación de IVA ----------
+  // En Argentina la Factura A discrimina IVA (precios netos + IVA aparte);
+  // la Factura B/C no (precios con IVA incluido en cada renglón, sin fila de
+  // IVA en los totales). Para pedidos y presupuestos — que no tienen letra —
+  // decidimos por la condición IVA del cliente: sólo "Responsable Inscripto"
+  // discrimina; Exento, Monotributo, Consumidor Final o No Responsable no.
+  function shouldDiscriminateIva(data) {
+    if (data && data.letter) {
+      var L = String(data.letter).toUpperCase();
+      return L === "A" || L === "M";
+    }
+    var iva = String((data && data.party && data.party.iva) || "").toLowerCase();
+    if (!iva) return false;
+    if (iva.indexOf("no inscripto") >= 0 || iva.indexOf("no responsable") >= 0) return false;
+    if (iva.indexOf("exento") >= 0 || iva.indexOf("monotrib") >= 0 || iva.indexOf("consumidor") >= 0) return false;
+    if (iva.indexOf("inscripto") >= 0) return true;
+    return false;
+  }
+  function round2(n) { var v = Number(n); return isFinite(v) ? Math.round(v * 100) / 100 : 0; }
+
   // ---------- Tabla de ítems ----------
   function itemsTable(type, data) {
     if (type === "comision") return comisionItemsTable(data);
     var items = data.items || [];
     if (!items.length) return "";
     var withPrices = type !== "remito";
+    var discrimina = withPrices ? shouldDiscriminateIva(data) : true;
     var head =
       "<thead><tr>" +
       "<th>Código</th><th>Descripción</th><th class=\"c\">Cant.</th>" +
-      (withPrices ? "<th class=\"r\">P. Unit.</th><th class=\"c\">%IVA</th><th class=\"r\">Importe</th>" : "<th class=\"c\">U.M.</th>") +
+      (withPrices
+        ? ("<th class=\"r\">P. Unit.</th>" + (discrimina ? "<th class=\"c\">%IVA</th>" : "") + "<th class=\"r\">Importe</th>")
+        : "<th class=\"c\">U.M.</th>") +
       "</tr></thead>";
 
     // Modo consolidado: un solo renglón principal con la descripción provista y
-    // el total neto (subtotal), y todos los ítems reales como sub-líneas
-    // informativas sin precio individual. La totalización fiscal (IVA por
-    // alícuota + total) sigue calculándose sobre los ítems reales en el bloque
-    // de totales, no acá.
+    // el importe único (neto si discrimina, con IVA incluido si no), y todos
+    // los ítems reales como sub-líneas informativas sin precio individual.
     if (withPrices && data.consolidated && items.length > 0) {
       var t = data.totals || {};
-      var mainNet = Number(t.subtotal != null ? t.subtotal : items.reduce(function (acc, it) {
-        return acc + Number(it.qty || 0) * Number(it.unitPrice || 0);
-      }, 0));
+      var mainAmount;
+      if (discrimina) {
+        mainAmount = Number(t.subtotal != null ? t.subtotal : items.reduce(function (acc, it) {
+          return acc + Number(it.qty || 0) * Number(it.unitPrice || 0);
+        }, 0));
+      } else {
+        mainAmount = Number(t.total != null ? t.total : items.reduce(function (acc, it) {
+          var pct = Number(it.ivaPct) || 0;
+          return acc + Number(it.qty || 0) * Number(it.unitPrice || 0) * (1 + pct / 100);
+        }, 0));
+      }
       var label = String(data.consolidatedLabel || "Equipo armado");
       var mainRow =
         "<tr>" +
         "<td>—</td>" +
         "<td>" + esc(label) + "</td>" +
         '<td class="c">1</td>' +
-        '<td class="r">' + money(mainNet) + "</td>" +
-        '<td class="c">—</td>' +
-        '<td class="r">' + money(mainNet) + "</td>" +
+        '<td class="r">' + money(mainAmount) + "</td>" +
+        (discrimina ? '<td class="c">—</td>' : "") +
+        '<td class="r">' + money(mainAmount) + "</td>" +
         "</tr>";
+      var consolidatedCols = discrimina ? 3 : 2;
       var subRows = items.map(function (it) {
         return (
           '<tr class="kit-component">' +
           '<td class="kit-comp-code">' + esc(it.code || "") + "</td>" +
           '<td class="kit-comp-desc">' + esc(it.description || "") + "</td>" +
           '<td class="c">' + num3(it.qty) + "</td>" +
-          '<td colspan="3"></td>' +
+          '<td colspan="' + consolidatedCols + '"></td>' +
           "</tr>"
         );
       }).join("");
@@ -253,21 +283,27 @@
     }
 
     var body = items.map(function (it) {
-      var line = withPrices ? (Number(it.qty) * Number(it.unitPrice)) : 0;
+      var ivaPct = Number(it.ivaPct) || 0;
+      var ivaMul = discrimina ? 1 : (1 + ivaPct / 100);
+      var unitPriceShown = withPrices ? round2(Number(it.unitPrice) * ivaMul) : 0;
+      var lineBase = withPrices ? (it.lineTotal != null ? Number(it.lineTotal) : (Number(it.qty) * Number(it.unitPrice))) : 0;
+      var lineShown = round2(lineBase * ivaMul);
       var mainRow =
         "<tr>" +
         "<td>" + esc(it.code) + "</td>" +
         "<td>" + esc(it.description) + "</td>" +
         '<td class="c">' + num3(it.qty) + "</td>" +
         (withPrices
-          ? '<td class="r">' + money(it.unitPrice) + '</td><td class="c">' + esc(it.ivaPct) + '</td><td class="r">' + money(it.lineTotal != null ? it.lineTotal : line) + "</td>"
+          ? ('<td class="r">' + money(unitPriceShown) + "</td>" +
+             (discrimina ? '<td class="c">' + esc(it.ivaPct) + "</td>" : "") +
+             '<td class="r">' + money(lineShown) + "</td>")
           : '<td class="c">' + esc(d(it.unit, "UN")) + "</td>") +
         "</tr>";
       // Sub-líneas informativas de un kit: cantidad + descripción del componente
       // con el resto de las columnas vacías (sin precio unitario, sin importe).
       var subRows = "";
       if (Array.isArray(it.components) && it.components.length > 0) {
-        var extraCols = withPrices ? 3 : 1;
+        var extraCols = withPrices ? (discrimina ? 3 : 2) : 1;
         subRows = it.components.map(function (c) {
           return (
             '<tr class="kit-component">' +
@@ -304,9 +340,12 @@
         "</table></div>";
     }
     var t = data.totals || {};
+    var discrimina = shouldDiscriminateIva(data);
     var rows = "";
-    if (t.subtotal != null) rows += '<tr><td class="k">Subtotal</td><td class="v">' + money(t.subtotal) + "</td></tr>";
-    if (t.iva != null) rows += '<tr><td class="k">IVA</td><td class="v">' + money(t.iva) + "</td></tr>";
+    if (discrimina) {
+      if (t.subtotal != null) rows += '<tr><td class="k">Subtotal</td><td class="v">' + money(t.subtotal) + "</td></tr>";
+      if (t.iva != null) rows += '<tr><td class="k">IVA</td><td class="v">' + money(t.iva) + "</td></tr>";
+    }
     if (t.perc) rows += '<tr><td class="k">Percep. IIBB</td><td class="v">' + money(t.perc) + "</td></tr>";
     rows += '<tr class="grand"><td class="k">TOTAL</td><td class="v">' + money(t.total) + "</td></tr>";
     return '<div class="totals"><table>' + rows + "</table></div>";

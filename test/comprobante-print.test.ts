@@ -103,8 +103,8 @@ describe("impresión monocroma de comprobantes", () => {
     const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
 
     renderComprobante("factura", {
-      letter: "B", number: "0001-00058140", date: "2026-07-14",
-      party: { name: "Cliente Demo" },
+      letter: "A", number: "0001-00058140", date: "2026-07-14",
+      party: { name: "Cliente Demo", iva: "Responsable Inscripto" },
       notes: "",
       usdRate: 1510,
       items: [
@@ -148,6 +148,8 @@ describe("impresión monocroma de comprobantes", () => {
     const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
 
     renderComprobante("factura", {
+      letter: "A",
+      party: { iva: "Responsable Inscripto" },
       consolidated: true,
       consolidatedLabel: "PC gaming completa",
       items: [
@@ -166,6 +168,64 @@ describe("impresión monocroma de comprobantes", () => {
     expect(itemsTable).not.toContain("199,12");
     expect(itemsTable).not.toContain("83,45");
     expect(itemsTable).toMatch(/kit-component[\s\S]*colspan="3"/);
+  });
+
+  it("no discrimina IVA en facturas B ni en pedidos/presupuestos a clientes IVA exento", () => {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, {
+      window,
+      document: { getElementById: () => area },
+      Intl, Number, String, isFinite, setTimeout,
+    });
+    const renderComprobante = window.renderComprobante as (type: string, data: unknown) => void;
+
+    // Factura B a cliente Exento: ni la columna %IVA en los items ni las
+    // filas Subtotal/IVA en los totales se muestran; el precio unitario y
+    // el importe de cada renglón incluyen IVA.
+    renderComprobante("factura", {
+      letter: "B",
+      number: "0001-00058140",
+      date: "2026-10-14",
+      party: { name: "Universidad Nacional del Comahue", iva: "Exento" },
+      items: [
+        { code: "A", description: "Item 21", qty: 1, unit: "UN", unitPrice: 100, ivaPct: 21, lineTotal: 100 },
+      ],
+      totals: { subtotal: 100, iva: 21, total: 121 },
+    });
+
+    const facturaTotals = area.innerHTML.match(/<div class="totals">[\s\S]*?<\/div>/)?.[0] || "";
+    expect(facturaTotals).toContain("TOTAL");
+    expect(facturaTotals).not.toContain("Subtotal");
+    expect(facturaTotals).not.toContain(">IVA<");
+
+    const itemsTable = area.innerHTML.match(/<table class="items">[\s\S]*?<\/table>/)?.[0] || "";
+    expect(itemsTable).not.toContain("%IVA");
+    expect(itemsTable).toContain("$ 121,00");
+
+    // Pedido sin letra fiscal: el renderer decide por la condición IVA
+    // del cliente y aplica el mismo criterio que para Factura B.
+    const pedidoArea = { className: "", innerHTML: "" };
+    const pedidoWindow: Record<string, unknown> = {};
+    runInNewContext(js, {
+      window: pedidoWindow,
+      document: { getElementById: () => pedidoArea },
+      Intl, Number, String, isFinite, setTimeout,
+    });
+    const renderPedido = pedidoWindow.renderComprobante as (type: string, data: unknown) => void;
+    renderPedido("pedido", {
+      number: "PED-00001", date: "2026-10-14",
+      party: { name: "Cliente Exento SA", iva: "Exento" },
+      items: [
+        { code: "A", description: "Item 21", qty: 1, unit: "UN", unitPrice: 100, ivaPct: 21, lineTotal: 100 },
+      ],
+      totals: { subtotal: 100, iva: 21, total: 121 },
+    });
+    const pedidoTotals = pedidoArea.innerHTML.match(/<div class="totals">[\s\S]*?<\/div>/)?.[0] || "";
+    expect(pedidoTotals).not.toContain("Subtotal");
+    expect(pedidoTotals).not.toContain(">IVA<");
+    expect(pedidoTotals).toContain("TOTAL");
+    expect(pedidoArea.innerHTML).toContain("$ 121,00");
   });
 
   it("titula correctamente las notas de crédito y débito", () => {
