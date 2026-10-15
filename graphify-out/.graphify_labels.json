@@ -152,5 +152,19 @@
   "150": "AfipController",
   "151": "new-purchase-receipt-preload.ts",
   "152": "auth.module.ts",
-  "160": "migration.sql"
+  "153": "air-pdf.ts",
+  "154": "TenantService",
+  "155": "createMainWindow",
+  "156": "Global Constraints",
+  "157": "AuthService",
+  "158": "dependencies",
+  "159": "auth.service.spec.ts",
+  "160": "migration.sql",
+  "161": "Política interna de versiones y releases",
+  "162": "commission-modal-ui.test.ts",
+  "163": "internal-expenses-ui.test.ts",
+  "164": "new-client-optional-cuit-ui.test.ts",
+  "165": "purchase-receipt-payments-ui.test.ts",
+  "166": "stock-adjustments-ui.test.ts",
+  "167": "delivery-note-from-invoice-ui.test.ts"
 }
