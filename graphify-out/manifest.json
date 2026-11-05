@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792093083.7294128,
-    "ast_hash": "1d7434472a340dcbdb6cdc35fa902a09",
+    "mtime": 1793887089.8580341,
+    "ast_hash": "b1517e94b571789b0036c74185bbdc4a",
     "semantic_hash": ""
   },
   "scripts/apply-brand-theme.js": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "src/comprobante-print.js": {
-    "mtime": 1792093001.75312,
-    "ast_hash": "0d45888b2c7eb82fe10294e00719f5f1",
+    "mtime": 1793887086.565503,
+    "ast_hash": "24e931d50cc06eb1121639e006276c26",
     "semantic_hash": ""
   },
   "src/config.ts": {
@@ -90,8 +90,8 @@
     "semantic_hash": ""
   },
   "src/documents.ts": {
-    "mtime": 1785251101.8882468,
-    "ast_hash": "a7ff105959317c9d6353583081e4e7ff",
+    "mtime": 1793887086.565503,
+    "ast_hash": "eb1bc0f5e9fc565d992e610d437f40f8",
     "semantic_hash": ""
   },
   "src/ipc-cloud.ts": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "test/documents.test.ts": {
-    "mtime": 1785251101.891251,
-    "ast_hash": "3e53c59d73f268ba1aa8b0cb548831b8",
+    "mtime": 1793887086.5675077,
+    "ast_hash": "92fd23151bb680eabd6d321eb21a1965",
     "semantic_hash": ""
   },
   "test/helpers.ts": {
@@ -1090,8 +1090,8 @@
     "semantic_hash": ""
   },
   "src/new-invoice.html": {
-    "mtime": 1792092982.1155844,
-    "ast_hash": "eca25b06f47cc4dad60373f7b727c2a5",
+    "mtime": 1793887086.5665076,
+    "ast_hash": "dc5b0eedf82f16aa9a158900dcec1006",
     "semantic_hash": ""
   },
   "src/new-payment-order.html": {
@@ -1480,8 +1480,8 @@
     "semantic_hash": ""
   },
   "test/comprobante-print.test.ts": {
-    "mtime": 1792093001.75312,
-    "ast_hash": "52795309b665feb15ac0e185e4eecd0d",
+    "mtime": 1793887086.5675077,
+    "ast_hash": "0c8fb6166841c98523c021b886fb8fd2",
     "semantic_hash": ""
   },
   "src/air-kit-proxy.ts": {
