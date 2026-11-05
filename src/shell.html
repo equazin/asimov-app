@@ -2639,7 +2639,7 @@
           party: { name: inv.client_name || "", cuit: "", iva: "", address: "" },
           notes: inv.notes || "", items: printItems,
           totals: { subtotal: inv.subtotal, iva: inv.iva_amount, total: inv.total },
-          usdRate: inv.usd_rate != null ? Number(inv.usd_rate) : 0,
+          usdRate: inv.source_currency === "USD" && inv.usd_rate != null ? Number(inv.usd_rate) : 0,
           showKitComponents: showKitComponents,
           consolidated: consolidated,
           consolidatedLabel: inv.consolidated_label || "Equipo armado",

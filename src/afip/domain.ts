@@ -122,6 +122,24 @@ export const CONDICION_IVA_RECEPTOR: Record<string, number> = {
   no_responsable: 7,
 };
 
+const IVA_CONDITION_LABEL: Record<ReturnType<typeof normalizeIvaCondition>, string> = {
+  responsable_inscripto: 'Responsable Inscripto',
+  monotributista: 'Monotributista',
+  exento: 'Exento',
+  consumidor_final: 'Consumidor Final',
+  no_responsable: 'No Responsable',
+};
+
+/**
+ * Etiqueta de la condición de IVA tal como se informa a ARCA (misma
+ * normalización que `condicionIvaReceptorId`), para mostrar e imprimir.
+ * Vacío sólo si el cliente no tiene ningún valor cargado.
+ */
+export function ivaConditionLabel(clientIvaCondition: string | null | undefined | unknown): string {
+  const raw = String(clientIvaCondition ?? '').trim();
+  return raw ? IVA_CONDITION_LABEL[normalizeIvaCondition(raw)] : '';
+}
+
 export function condicionIvaReceptorId(clientIvaCondition: string | null | undefined): number {
   return CONDICION_IVA_RECEPTOR[normalizeIvaCondition(clientIvaCondition)] ?? 5;
 }

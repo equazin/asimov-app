@@ -296,3 +296,27 @@ describe("descripción larga por renglón", () => {
     expect(css).toMatch(/\.item-detail \{[^}]*white-space: pre-line/);
   });
 });
+
+describe("datos del receptor y cotización", () => {
+  function render(data: Record<string, unknown>) {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, { window, document: { getElementById: () => area }, Intl, Number, String, isFinite, setTimeout });
+    (window.renderComprobante as (t: string, d: unknown) => void)("factura", {
+      letter: "B",
+      items: [{ code: "1", description: "X", qty: 1, unit: "UN", unitPrice: 100, ivaPct: 10.5, lineTotal: 100 }],
+      totals: { subtotal: 100, iva: 10.5, total: 110.5 },
+      ...data,
+    });
+    return area.innerHTML;
+  }
+
+  it("imprime la condición de IVA legible aunque venga como fiscal_type crudo", () => {
+    expect(render({ party: { name: "Cli", iva: "final" } })).toContain("Consumidor Final");
+    expect(render({ party: { name: "Cli", iva: "exento" } })).toContain("Exento");
+  });
+
+  it("no imprime la cotización si no viene usdRate", () => {
+    expect(render({ party: { name: "Cli" }, usdRate: 0 })).not.toContain("Cotización:");
+  });
+});

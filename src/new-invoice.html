@@ -1925,7 +1925,8 @@ td{ border-color:var(--border) !important; }
         condVenta: document.getElementById("selCondVenta").value,
         vendedor: document.getElementById("txtVendedor") ? document.getElementById("txtVendedor").value : "",
         notes: document.getElementById("txtObsCliente").value,
-        usdRate: parseFloat(document.getElementById("txtCotizacionUsd").value) || 0,
+        // La cotización sólo se imprime si los precios se cargaron en USD.
+        usdRate: document.getElementById("selMonedaPrecios").value === "USD" ? (parseFloat(document.getElementById("txtCotizacionUsd").value) || 0) : 0,
         showKitComponents: showKits,
         consolidated: document.getElementById("chkConsolidar").checked,
         consolidatedLabel: document.getElementById("txtConsolidarLabel").value.trim() || "Equipo armado",

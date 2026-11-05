@@ -42,6 +42,18 @@
     return detail ? title + '<div class="item-detail">' + esc(detail) + "</div>" : title;
   }
 
+  // Condición de IVA legible (clients.fiscal_type puede venir como "final",
+  // "exento", "Responsable Inscripto"...). Misma normalización que ARCA.
+  function ivaLabel(v) {
+    var c = String(v == null ? "" : v).toLowerCase();
+    if (!c.trim()) return "";
+    if (c.indexOf("inscript") >= 0) return "Responsable Inscripto";
+    if (c.indexOf("monotribut") >= 0) return "Monotributista";
+    if (c.indexOf("exent") >= 0) return "Exento";
+    if (c.indexOf("no responsable") >= 0) return "No Responsable";
+    return "Consumidor Final";
+  }
+
   function d(v, def) { v = String(v == null ? "" : v).trim(); return v || (def || ""); }
 
   // ---------- Cabecera común (dos columnas) ----------
@@ -183,7 +195,7 @@
         '<div class="full"><span class="k">Sr./es:</span> <b>' + esc(p.name) + "</b></div>" +
         (p.address ? '<div><span class="k">Domicilio:</span> ' + esc(p.address) + "</div>" : "<div></div>") +
         (p.cuit ? '<div><span class="k">CUIT:</span> ' + esc(p.cuit) + "</div>" : "<div></div>") +
-        (p.iva ? '<div><span class="k">IVA:</span> ' + esc(p.iva) + "</div>" : "<div></div>") +
+        (p.iva ? '<div><span class="k">IVA:</span> ' + esc(ivaLabel(p.iva)) + "</div>" : "<div></div>") +
         (data.condVenta ? '<div><span class="k">Cond. venta:</span> ' + esc(data.condVenta) + "</div>" : "<div></div>") +
       "</div>"
     );

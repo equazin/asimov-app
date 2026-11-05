@@ -16,6 +16,7 @@ import {
   AfipUnavailableError, isAfipUnavailable,
   resolveVoucherTypeCode, validateVoucherForClient, requiresAssociatedInvoice, voucherLetterForClient,
   condicionIvaReceptorId,
+  ivaConditionLabel,
 } from "../src/afip/domain";
 import { buildAfipQrUrl } from "../src/afip/qr";
 import { buildGetPersonaEnvelope, parsePersonaResponse } from "../src/afip/padron";
@@ -281,6 +282,15 @@ describe("afip/domain — Fase 4: NC/ND, letra según cliente y validación", ()
     expect(requiresAssociatedInvoice("nd")).toBe(true);
     expect(requiresAssociatedInvoice("A")).toBe(false);
     expect(requiresAssociatedInvoice("")).toBe(false);
+  });
+
+  it("ivaConditionLabel muestra la misma condición que se informa a ARCA", () => {
+    expect(ivaConditionLabel("Exento")).toBe("Exento");
+    expect(ivaConditionLabel("exento")).toBe("Exento");
+    expect(ivaConditionLabel("final")).toBe("Consumidor Final");
+    expect(ivaConditionLabel("Responsable Inscripto")).toBe("Responsable Inscripto");
+    expect(ivaConditionLabel("")).toBe("");
+    expect(ivaConditionLabel(null)).toBe("");
   });
 
   it("condicionIvaReceptorId mapea la condición del cliente (RG 5616)", () => {

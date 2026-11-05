@@ -21,7 +21,7 @@ import { initTray, isQuitting, syncLaunchAtStartup } from "./tray";
 import { initDb, dbAll, dbGet } from "./db";
 import { startDolarAutoUpdate, getPricingUsdRate } from "./dolar";
 import { authorizeStoredInvoice, retryPendingCae, getAfipConfig } from "./afip-service";
-import { isAfipUnavailable } from "./afip/domain";
+import { isAfipUnavailable, ivaConditionLabel } from "./afip/domain";
 import { isAirEnabled } from "./air";
 import { loadLocalProductsForPicker, type ProductPickerItem } from "./product-picker";
 import { persistClientForm, persistSupplierForm, persistArticleForm } from "./masters";
@@ -1076,16 +1076,19 @@ function loadClientsForPicker(): void {
   if (!clientSelectionWindow || clientSelectionWindow.isDestroyed()) return;
   try {
     const rows = dbAll(
-      "SELECT id, code, business_name, cuit, phone, address FROM clients WHERE active = 1 ORDER BY business_name LIMIT 1000",
+      "SELECT id, code, business_name, cuit, phone, address, city, province, fiscal_type FROM clients WHERE active = 1 ORDER BY business_name LIMIT 1000",
       [],
     ) as Array<Record<string, unknown>>;
     const mapped = rows.map((c) => ({
       id: c.id,
       codigo: c.code ?? c.id,
       razonSocial: c.business_name ?? "",
-      domicilio: c.address ?? "",
+      domicilio: [c.address, c.city, c.province].map((v) => String(v ?? "").trim()).filter(Boolean).join(", "),
       telefono: c.phone ?? "",
       cuit: c.cuit ?? "",
+      // Sin esto la factura quedaba sin condición de IVA del receptor: no se
+      // imprimía y no se sugería la letra (A/B) al elegir el cliente.
+      condicionIva: ivaConditionLabel(c.fiscal_type),
     }));
     clientSelectionWindow?.webContents.send("client-selection:loaded", mapped);
   } catch {
