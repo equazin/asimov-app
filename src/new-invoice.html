@@ -261,6 +261,11 @@
       box-shadow: 0 0 0 2px rgba(0,107,90,0.14);
     }
     .cell-input.right { text-align: right; }
+    textarea.cell-desc {
+      display: block; resize: none; overflow: hidden;
+      min-height: 24px; padding: 4px; line-height: 1.35;
+      white-space: pre-wrap;
+    }
     .cell-select {
       width: 100%; height: 24px;
       border: 1px solid transparent;
@@ -544,7 +549,7 @@ input,select,textarea,.cell-input{
   border-radius:7px !important;
   box-shadow:none !important;
 }
-input:not(.cell-input),select,textarea{ min-height:30px !important; padding:6px 9px !important; }
+input:not(.cell-input),select,textarea:not(.cell-input){ min-height:30px !important; padding:6px 9px !important; }
 input[readonly],textarea[readonly]{ background:#0D1219 !important; color:var(--text-muted) !important; }
 input::placeholder,textarea::placeholder{ color:#8A96A6 !important; opacity:1 !important; }
 input:focus,select:focus,textarea:focus,.cell-input:focus{
@@ -1423,7 +1428,7 @@ td{ border-color:var(--border) !important; }
             '<input class="cell-input" data-id="' + row.id + '" data-field="codigo" value="' + esc(row.codigo) + '" />' +
             '<button class="picker-btn" data-rowid="' + row.id + '" title="Buscar artículo (F4)">+</button>' +
           '</div></td>' +
-          '<td><input class="cell-input" data-id="' + row.id + '" data-field="descripcion" value="' + esc(row.descripcion) + '" /></td>' +
+          '<td><textarea class="cell-input cell-desc" rows="1" data-id="' + row.id + '" data-field="descripcion" title="Primera línea: producto. Debajo (Enter): detalle técnico, se imprime en letra chica.">' + esc(row.descripcion) + '</textarea></td>' +
           '<td><input class="cell-input" data-id="' + row.id + '" data-field="unidad" value="' + esc(row.unidad) + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" step="1" data-id="' + row.id + '" data-field="cantidad" value="' + row.cantidad + '" /></td>' +
           '<td><input class="cell-input right" type="number" min="0" step="0.01" data-id="' + row.id + '" data-field="costo" value="' + row.costo + '" /></td>' +
@@ -1442,6 +1447,10 @@ td{ border-color:var(--border) !important; }
       });
       tbody.querySelectorAll(".cell-select").forEach(function(sel) {
         sel.addEventListener("change", onCellChange);
+      });
+      tbody.querySelectorAll(".cell-desc").forEach(function(ta) {
+        autoGrowDesc(ta);
+        ta.addEventListener("input", function() { autoGrowDesc(ta); });
       });
       tbody.querySelectorAll(".picker-btn").forEach(function(btn) {
         btn.addEventListener("click", function() { openPickerForRow(parseInt(btn.dataset.rowid)); });
@@ -1482,7 +1491,16 @@ td{ border-color:var(--border) !important; }
 
     function onCellKeydown(e) {
       var rowId = parseInt(e.target.dataset.id);
-      if (e.key === "F4" || e.key === "+") { e.preventDefault(); openPickerForRow(rowId); }
+      // "+" sólo abre el buscador desde el código: en la descripción es texto
+      // ("Wi-Fi 7 + Bluetooth"). F4 funciona en cualquier celda.
+      if (e.key === "F4" || (e.key === "+" && e.target.dataset.field === "codigo")) { e.preventDefault(); openPickerForRow(rowId); }
+    }
+
+    // La descripción admite varias líneas: la primera es el producto y el resto
+    // el detalle técnico. El textarea crece con el contenido.
+    function autoGrowDesc(ta) {
+      ta.style.height = "auto";
+      ta.style.height = Math.max(24, ta.scrollHeight + 2) + "px";
     }
 
     function openPickerForRow(rowId) {

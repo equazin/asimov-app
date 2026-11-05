@@ -255,6 +255,18 @@ describe("documents — comprobantes header + ítems (sin efecto de stock/caja)"
     });
   });
 
+  it("factura de venta: conserva la descripción larga en varias líneas", () => {
+    const detalle = Array.from({ length: 14 }, (_, i) => `- Característica técnica número ${i + 1} del equipo con su especificación completa`).join("\n");
+    const descripcion = "Notebook Lenovo ThinkPad P16 Gen 3\n" + detalle;
+    expect(descripcion.length).toBeGreaterThan(500);
+    const res = persistInvoice({
+      tipo: "B", ptoVta: "0001", clienteNombre: "Cli", fecha: "06/07/2026",
+      items: [{ codigo: "P16", descripcion, cantidad: 1, precio: 100, iva: 10.5 }],
+      totales: { neto21: 0, neto10: 100, neto0: 0, iva21: 0, iva10: 10.5, total: 110.5 },
+    });
+    expect(one("SELECT description FROM invoice_items WHERE invoice_id=?", res.id).description).toBe(descripcion);
+  });
+
   it("factura de venta: número con punto de venta e IVA por línea", () => {
     const res = persistInvoice({
       tipo: "B", ptoVta: "0001", clienteNombre: "Cli", fecha: "06/07/2026",

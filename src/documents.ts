@@ -33,6 +33,9 @@ export function enqueueDocSnapshot(type: string, id: string): void {
   }
 }
 
+/** Límite de la descripción de un renglón: admite título + detalle técnico en varias líneas. */
+const ITEM_DESC_MAX = 4000;
+
 function str(v: unknown, max = 500): string {
   return String(v ?? "").slice(0, max).trim();
 }
@@ -711,7 +714,7 @@ export function persistSaleOrder(form: SaleOrderForm): PersistResult {
       const qty = num(it.cantidad), price = num(it.precio);
       dbRun(
         "INSERT INTO sale_order_items (id,order_id,article_id,code,description,unit,qty,unit_price,iva_pct,subtotal) VALUES (?,?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, resolveSaleArticleId(it), str(it.codigo), str(it.descripcion), str(it.unidad) || "un", qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
+        [randomUUID(), id, resolveSaleArticleId(it), str(it.codigo), str(it.descripcion, ITEM_DESC_MAX), str(it.unidad) || "un", qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
       );
     }
   });
@@ -757,7 +760,7 @@ export function persistQuote(form: QuoteForm): PersistResult {
       const qty = num(it.cantidad), price = num(it.precio);
       dbRun(
         "INSERT INTO quote_items (id,quote_id,article_id,code,description,qty,unit_price,iva_pct,subtotal) VALUES (?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, resolveSaleArticleId(it), str(it.codigo), str(it.descripcion), qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
+        [randomUUID(), id, resolveSaleArticleId(it), str(it.codigo), str(it.descripcion, ITEM_DESC_MAX), qty, price, num(it.iva) || 21, lineSubtotal(qty, price)],
       );
     }
   });
@@ -841,7 +844,7 @@ export function persistInvoice(form: InvoiceForm): PersistResult {
         : round2(num(it.costo));
       dbRun(
         "INSERT INTO invoice_items (id,invoice_id,article_id,code,description,qty,unit_price,iva_pct,subtotal,iva_amount,cost) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion), qty, price, ivaPct, sub, Math.round(sub * ivaPct) / 100, cost],
+        [randomUUID(), id, findArticleByCode(str(it.codigo))?.id ?? null, str(it.codigo), str(it.descripcion, ITEM_DESC_MAX), qty, price, ivaPct, sub, Math.round(sub * ivaPct) / 100, cost],
       );
     }
     if (form.origen) applySourceLink("invoice", id, form.origen);

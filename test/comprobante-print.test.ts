@@ -269,3 +269,30 @@ describe("impresión monocroma de comprobantes", () => {
     expect(area.innerHTML).not.toContain('class="afip-cae"');
   });
 });
+
+describe("descripción larga por renglón", () => {
+  function render(description: string) {
+    const area = { className: "", innerHTML: "" };
+    const window: Record<string, unknown> = {};
+    runInNewContext(js, { window, document: { getElementById: () => area }, Intl, Number, String, isFinite, setTimeout });
+    (window.renderComprobante as (t: string, d: unknown) => void)("factura", {
+      letter: "B",
+      items: [{ code: "P16", description, qty: 1, unit: "UN", unitPrice: 100, ivaPct: 10.5, lineTotal: 100 }],
+      totals: { subtotal: 100, iva: 10.5, total: 110.5 },
+    });
+    return area.innerHTML;
+  }
+
+  it("imprime la primera línea como producto y el resto como detalle", () => {
+    const html = render("Notebook Lenovo ThinkPad P16 Gen 3\n- Procesador: Core Ultra 9\n- RAM: 96 GB <DDR5>");
+    expect(html).toContain("Notebook Lenovo ThinkPad P16 Gen 3<div class=\"item-detail\">- Procesador: Core Ultra 9\n- RAM: 96 GB &lt;DDR5&gt;</div>");
+  });
+
+  it("sin detalle no agrega el bloque", () => {
+    expect(render("Mouse óptico")).not.toContain("item-detail");
+  });
+
+  it("el detalle se imprime chico y respetando los saltos de línea", () => {
+    expect(css).toMatch(/\.item-detail \{[^}]*white-space: pre-line/);
+  });
+});

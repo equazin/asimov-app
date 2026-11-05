@@ -33,6 +33,15 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  // Descripción de un renglón: la primera línea es el producto; las siguientes
+  // (si las hay) son el detalle técnico y se imprimen debajo en letra chica.
+  function descHtml(text) {
+    var lines = String(text == null ? "" : text).replace(/\r\n?/g, "\n").split("\n");
+    var title = esc(lines.shift());
+    var detail = lines.join("\n").replace(/^\s+|\s+$/g, "");
+    return detail ? title + '<div class="item-detail">' + esc(detail) + "</div>" : title;
+  }
+
   function d(v, def) { v = String(v == null ? "" : v).trim(); return v || (def || ""); }
 
   // ---------- Cabecera común (dos columnas) ----------
@@ -273,7 +282,7 @@
         return (
           '<tr class="kit-component">' +
           '<td class="kit-comp-code">' + esc(it.code || "") + "</td>" +
-          '<td class="kit-comp-desc">' + esc(it.description || "") + "</td>" +
+          '<td class="kit-comp-desc">' + descHtml(it.description) + "</td>" +
           '<td class="c">' + num3(it.qty) + "</td>" +
           '<td colspan="' + consolidatedCols + '"></td>' +
           "</tr>"
@@ -291,7 +300,7 @@
       var mainRow =
         "<tr>" +
         "<td>" + esc(it.code) + "</td>" +
-        "<td>" + esc(it.description) + "</td>" +
+        "<td>" + descHtml(it.description) + "</td>" +
         '<td class="c">' + num3(it.qty) + "</td>" +
         (withPrices
           ? ('<td class="r">' + money(unitPriceShown) + "</td>" +
